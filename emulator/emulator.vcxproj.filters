@@ -27,6 +27,9 @@
     <ClCompile Include="dcpuops.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dcpuscrn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dcpu.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dcpuops.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dcpuscrn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

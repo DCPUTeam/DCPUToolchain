@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include "dcpu.h"
 #include "dcpubase.h"
+#include "dcpuscrn.h"
 
 vm_t* vm_create()
 {
@@ -22,7 +23,7 @@ vm_t* vm_create()
 	for (i = 0; i < 0x8; i++)
 		new_vm->registers[i] = 0x0;
 	new_vm->pc = 0x0;
-	new_vm->sp = 0xffff;
+	new_vm->sp = 0x0;
 	new_vm->o = 0x0;
 	for (i = 0; i < 0x10000; i++)
 		new_vm->ram[i] = 0x0;
@@ -30,12 +31,18 @@ vm_t* vm_create()
 	new_vm->halted = false;
 	new_vm->skip = false;
 	
+	// Initialize DCPU-16 components.
+	vm_scrn_init(new_vm);
+
 	// Return.
 	return new_vm;
 }
 
 void vm_free(vm_t* vm)
 {
+	// Shutdown components.
+	vm_scrn_free(vm);
+
 	// Free the memory.
 	free(vm);
 }
@@ -47,7 +54,7 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 	for (i = 0; i < 0x8; i++)
 		vm->registers[i] = 0x0;
 	vm->pc = 0x0;
-	vm->sp = 0xffff;
+	vm->sp = 0x0;
 	vm->o = 0x0;
 	for (i = 0; i < 0x10000; i++)
 		vm->ram[i] = memory[i];
@@ -60,5 +67,8 @@ void vm_execute(vm_t* vm)
 {
 	// Execute the memory using DCPU-16 specifications.
 	while (!vm->halted)
+	{
 		vm_cycle(vm);
+		vm_scrn_cycle(vm);
+	}
 }

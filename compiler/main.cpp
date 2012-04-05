@@ -1,6 +1,5 @@
 //
 // DCPU Compiler by James Rhodes
 //
-// Lexer
+// Main entry point.
 //
-

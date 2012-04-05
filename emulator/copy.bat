@@ -1,0 +1,1 @@
+xcopy /Y *.dcpu16 ..\Debug

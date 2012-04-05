@@ -13,15 +13,37 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Lexer / Parser Files">
+      <UniqueIdentifier>{09a2787e-8ce3-4ea7-827a-c90068d2f26b}</UniqueIdentifier>
+      <Extensions>*.y;*.l</Extensions>
+    </Filter>
+    <Filter Include="Lexer / Parser Files\Generated Files">
+      <UniqueIdentifier>{fd74e29a-5d31-4074-b4cb-4bb20c94086b}</UniqueIdentifier>
+      <Extensions>*.h;*.c</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="clexer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="clexer.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lexer.c">
+      <Filter>Lexer / Parser Files\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="parser.c">
+      <Filter>Lexer / Parser Files\Generated Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="lexer.l">
+      <Filter>Lexer / Parser Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="parser.y">
+      <Filter>Lexer / Parser Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="parser.h">
+      <Filter>Lexer / Parser Files\Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
