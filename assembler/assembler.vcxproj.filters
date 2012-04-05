@@ -13,44 +13,38 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Lexer / Parser Files">
+      <UniqueIdentifier>{92a126d4-b5a1-4f93-81a3-03f41c9e71d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lexer / Parser Files\Generated Files">
+      <UniqueIdentifier>{404e102e-6dac-46cd-8867-3fd92b4e5d09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dcpu.cpp">
-      <Filter>Source Files</Filter>
+    <CustomBuild Include="lexer.l">
+      <Filter>Lexer / Parser Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="parser.y">
+      <Filter>Lexer / Parser Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lexer.c">
+      <Filter>Lexer / Parser Files\Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="parser.c">
+      <Filter>Lexer / Parser Files\Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="dcpubase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dcpuops.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dcpuscrn.cpp">
+    <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dcpu.h">
+    <ClInclude Include="node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dcpubase.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="parser.h">
+      <Filter>Lexer / Parser Files\Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="dcpuops.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dcpuscrn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="console.dcpu16">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test.dcpu16">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

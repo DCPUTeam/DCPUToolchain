@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Emulator", "Emulator\Emulator.vcxproj", "{FCC49B9E-B04C-4931-9A15-EC81D9B2D4F5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "emulator", "emulator\Emulator.vcxproj", "{FCC49B9E-B04C-4931-9A15-EC81D9B2D4F5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "compiler", "compiler\compiler.vcxproj", "{A0836579-0021-4EA4-A22C-FE6F353CFA47}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assembler", "assembler\assembler.vcxproj", "{E248CA24-4242-4134-9EF0-806280B21BCA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +21,10 @@ Global
 		{A0836579-0021-4EA4-A22C-FE6F353CFA47}.Debug|Win32.Build.0 = Debug|Win32
 		{A0836579-0021-4EA4-A22C-FE6F353CFA47}.Release|Win32.ActiveCfg = Release|Win32
 		{A0836579-0021-4EA4-A22C-FE6F353CFA47}.Release|Win32.Build.0 = Release|Win32
+		{E248CA24-4242-4134-9EF0-806280B21BCA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E248CA24-4242-4134-9EF0-806280B21BCA}.Debug|Win32.Build.0 = Debug|Win32
+		{E248CA24-4242-4134-9EF0-806280B21BCA}.Release|Win32.ActiveCfg = Release|Win32
+		{E248CA24-4242-4134-9EF0-806280B21BCA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -113,9 +113,8 @@ xcopy /Y "$(SolutionDir)third-party\libtcod\bin\*" "$(TargetDir)"</Command>
     <ClInclude Include="dcpuscrn.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="test.dcpu">
-      <FileType>Document</FileType>
-    </None>
+    <None Include="console.dcpu16" />
+    <None Include="test.dcpu16" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

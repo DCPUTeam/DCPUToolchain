@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{A0836579-0021-4EA4-A22C-FE6F353CFA47}</ProjectGuid>
+    <ProjectGuid>{E248CA24-4242-4134-9EF0-806280B21BCA}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>compiler</RootNamespace>
+    <RootNamespace>assembler</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -45,55 +45,43 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;YY_NO_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProgramFiles)\GnuWin32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;YY_NO_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProgramFiles)\GnuWin32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="lexer.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="parser.c" />
-  </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lexer.l">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">flex -olexer.c lexer.l</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating assembly lexer...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating assembly lexer...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">flex -olexer.c lexer.l</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lexer.c</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parser.y parser.c</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating C lexer...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">flex -olexer.c lexer.l</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating C lexer...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lexer.c</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parser.y parser.c</AdditionalInputs>
     </CustomBuild>
@@ -101,15 +89,21 @@
   <ItemGroup>
     <CustomBuild Include="parser.y">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bison -d -oparser.c parser.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bison --verbose -d -oparser.c parser.y</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating assembly parser...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parser.c parser.h</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bison -d -oparser.c parser.y</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating assembly parser...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parser.c parser.h</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating C parser...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating C parser...</Message>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="lexer.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="parser.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="node.h" />
     <ClInclude Include="parser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
