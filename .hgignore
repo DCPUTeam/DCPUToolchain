@@ -1,0 +1,10 @@
+syntax: glob
+*/Debug/*
+Debug/*
+*/Release/*
+Release/*
+*.sdf
+*.suo
+*.user
+ipch/*
+*.opensdf
