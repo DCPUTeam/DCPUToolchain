@@ -39,18 +39,79 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NUMBER = 258,
-     TOKHEAT = 259,
-     STATE = 260,
-     TOKTARGET = 261,
-     TOKTEMPERATURE = 262
+     CURVED_OPEN = 258,
+     CURVED_CLOSE = 259,
+     BRACE_OPEN = 260,
+     BRACE_CLOSE = 261,
+     COMMA = 262,
+     STAR = 263,
+     SEMICOLON = 264,
+     DOT = 265,
+     NUMBER = 266,
+     IDENTIFIER = 267,
+     CHARACTER = 268,
+     STRING = 269,
+     ASSIGN_EQUAL = 270,
+     ASSIGN_ADD = 271,
+     ASSIGN_SUBTRACT = 272,
+     ASSIGN_MULTIPLY = 273,
+     ASSIGN_DIVIDE = 274,
+     COMPARE_EQUAL = 275,
+     COMPARE_NOT_EQUAL = 276,
+     COMPARE_LESS_THAN = 277,
+     COMPARE_LESS_THAN_EQUAL = 278,
+     COMPARE_GREATER_THAN = 279,
+     COMPARE_GREATER_THAN_EQUAL = 280,
+     NEGATE = 281,
+     INCREMENT = 282,
+     DECREMENT = 283,
+     ADD = 284,
+     SUBTRACT = 285,
+     SLASH = 286,
+     BOOLEAN_AND = 287,
+     BOOLEAN_OR = 288,
+     BINARY_AND = 289,
+     BINARY_OR = 290,
+     BINARY_XOR = 291,
+     BINARY_LEFT_SHIFT = 292,
+     BINARY_RIGHT_SHIFT = 293,
+     RETURN = 294,
+     IF = 295,
+     ELSE = 296
    };
 #endif
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+typedef union YYSTYPE
+{
+
+/* Line 1676 of yacc.c  */
+#line 19 "parser.y"
+
+	NBlock* block;
+	NExpression* expr;
+	NStatement* stmt;
+	NIdentifier* ident;
+	NInteger* numeric;
+	NType* type;
+	NDeclarations* decls;
+	NFunctionDeclaration* function;
+	NVariableDeclaration *variable;
+	std::vector<NExpression*> *exprvec;
+	std::vector<NDeclaration*> *declvec;
+	std::vector<NVariableDeclaration*> *varvec;
+	std::string* string;
+	const char* data;
+	long number;
+	int token;
+
+
+
+/* Line 1676 of yacc.c  */
+#line 114 "parser.hpp"
+} YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

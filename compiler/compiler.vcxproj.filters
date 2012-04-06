@@ -21,16 +21,22 @@
       <UniqueIdentifier>{fd74e29a-5d31-4074-b4cb-4bb20c94086b}</UniqueIdentifier>
       <Extensions>*.h;*.c</Extensions>
     </Filter>
+    <Filter Include="Test Files">
+      <UniqueIdentifier>{49873856-90c4-4d14-a72e-d9949595ce65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lexer.c">
-      <Filter>Lexer / Parser Files\Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="parser.c">
-      <Filter>Lexer / Parser Files\Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.c">
+    <ClCompile Include="pp.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="parser.cpp">
+      <Filter>Lexer / Parser Files\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lexer.cpp">
+      <Filter>Lexer / Parser Files\Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -42,8 +48,22 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="parser.h">
+    <ClInclude Include="pp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="parser.hpp">
       <Filter>Lexer / Parser Files\Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test.c">
+      <Filter>Test Files</Filter>
+    </None>
+    <None Include="screen.m">
+      <Filter>Test Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -63,11 +63,14 @@
       <Message>Copying library files...</Message>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>"$(ProjectDir)emulator-postbuild.bat" "$(ConfigurationName)"</Command>
+      <Command>
+      </Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Message>Running emulator post-build...</Message>
-      <Outputs>nonexistant.file</Outputs>
+      <Message>
+      </Message>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -94,9 +97,12 @@ xcopy /Y "$(SolutionDir)third-party\libtcod\bin\*" "$(TargetDir)"</Command>
       <Message>Copying flash and library files...</Message>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>"$(ProjectDir)emulator-postbuild.bat" "$(ConfigurationName)"</Command>
-      <Outputs>nonexistant.file</Outputs>
-      <Message>Running emulator post-build...</Message>
+      <Command>
+      </Command>
+      <Outputs>
+      </Outputs>
+      <Message>
+      </Message>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>

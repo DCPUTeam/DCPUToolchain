@@ -12,9 +12,11 @@
 #include <stdint.h>
 
 // Boolean stuff.
+#ifndef __cplusplus
 typedef uint8_t bool;
 #define true 1
 #define false 0
+#endif
 
 // Value definitions
 #define REG_A 0x00

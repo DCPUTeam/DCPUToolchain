@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_lit* invoke_emulator = arg_lit0("e", NULL, "Invoke the emulator on the output automatically.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file.");
-	struct arg_file* output_file = arg_file0("o", "output", "<file>", "The output file.");
+	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file.");
 	struct arg_end *end = arg_end(20);
 	void *argtable[] = { output_file, show_help, invoke_emulator, input_file, end };
 
@@ -45,6 +45,11 @@ int main(int argc, char* argv[])
 
 	// Parse assembly.
 	yyin = fopen(input_file->filename[0], "r");
+	if (yyin == NULL)
+	{
+		printf("assembler: input file not found.");
+		return 1;
+	}
 	yyparse();
 	fclose(yyin);
 	
@@ -53,6 +58,11 @@ int main(int argc, char* argv[])
 
 	// Write to file.
 	img = fopen(output_file->filename[0], "wb");
+	if (img == NULL)
+	{
+		printf("assembler: output file not writable.");
+		return 1;
+	}
 	aout_write(img);
 	fclose(img);
 
