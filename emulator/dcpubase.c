@@ -4,18 +4,18 @@
 // Virtual machine - core instructions.
 //
 
-#include <cstdarg>
+#include <stdarg.h>
 #include <stdio.h>
 #include "dcpubase.h"
 #include "dcpuops.h"
 
 void vm_halt(vm_t* vm, const char* message, ...)
 {
-	vm->halted = true;
     va_list argptr;
     va_start(argptr, message);
     vfprintf(stderr, message, argptr);
     va_end(argptr);
+	vm->halted = true;
 	return;
 }
 
@@ -48,7 +48,7 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val)
 	case VAL_Z:
 	case VAL_I:
 	case VAL_J:
-		return vm->ram[(int16_t)vm->registers[val - VAL_A]];
+		return vm->ram[(uint16_t)vm->registers[val - VAL_A]];
 	case NXT_VAL_A:
 	case NXT_VAL_B:
 	case NXT_VAL_C:
@@ -57,7 +57,7 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val)
 	case NXT_VAL_Z:
 	case NXT_VAL_I:
 	case NXT_VAL_J:
-		return vm->ram[(int16_t)(vm->registers[val - NXT_VAL_A] + vm_consume_word(vm))];
+		return vm->ram[(uint16_t)(vm->registers[val - NXT_VAL_A] + vm_consume_word(vm))];
 	case POP:
 		t = vm->sp++;
 		return vm->ram[t];
@@ -74,7 +74,7 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val)
 	case O:
 		return vm->o;
 	case NXT:
-		return vm->ram[(int16_t)vm_consume_word(vm)];
+		return vm->ram[(uint16_t)vm_consume_word(vm)];
 	case NXT_LIT:
 		return vm_consume_word(vm);
 	default:
@@ -90,7 +90,7 @@ void vm_print_op(const char* opname, vm_t* vm, uint16_t a, uint16_t b)
 		printf("%s 0x%04X 0x%04X", opname, a, b);
 }
 
-void vm_print_op(const char* opname, vm_t* vm, uint16_t a)
+void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
 {
 	if (vm->skip)
 		printf("(skipped) %s 0x%04X", opname, a);
@@ -174,7 +174,7 @@ void vm_cycle(vm_t* vm)
 		switch (t)
 		{
 		case NBOP_JSR:
-			vm_print_op("JSR", vm, a);
+			vm_print_op_nonbasic("JSR", vm, a);
 			vm_op_jsr(vm, a);
 			break;
 		default:

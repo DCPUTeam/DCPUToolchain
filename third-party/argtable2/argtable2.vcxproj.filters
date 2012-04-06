@@ -15,42 +15,50 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dcpu.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dcpubase.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dcpuops.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dcpuscrn.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="dcpu.h">
+    <ClInclude Include="argtable2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dcpubase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dcpuops.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dcpuscrn.h">
+    <ClInclude Include="getopt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="console.dcpu16">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test.dcpu16">
-      <Filter>Resource Files</Filter>
+    <ClCompile Include="arg_dbl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="arg_end.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="arg_file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="arg_int.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="arg_lit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="arg_rem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="arg_str.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="argtable2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="getopt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="getopt1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AUTHORS" />
+    <None Include="COPYING" />
+    <None Include="argtable2.def">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

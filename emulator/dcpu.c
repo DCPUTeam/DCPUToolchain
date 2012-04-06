@@ -4,8 +4,8 @@
 // Virtual machine.
 //
 
-#include <cstdlib>
-#include <cstdarg>
+#include <stdlib.h>
+#include <varargs.h>
 #include <stdio.h>
 #include <stdint.h>
 #include "dcpu.h"

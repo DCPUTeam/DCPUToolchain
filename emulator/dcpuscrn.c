@@ -33,7 +33,7 @@ void vm_scrn_cycle(vm_t* vm)
 		for (y = 0; y < VM_SCREEN_HEIGHT; y += 1)
 		{
 			// Read memory value.
-			i = 0x1000 + x + y * VM_SCREEN_WIDTH;
+			i = 0x8000 + x + y * VM_SCREEN_WIDTH;
 			val = vm->ram[i];
 			
 			// Get foreground, background and character components.

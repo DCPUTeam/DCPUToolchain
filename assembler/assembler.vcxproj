@@ -50,11 +50,23 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\emulator;$(SolutionDir)\third-party\argtable2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>argtable2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Command>"$(ProjectDir)assembler-postbuild.bat" "$(ConfigurationName)"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Running assembler post-build...</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>nonexistant.file</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -65,13 +77,25 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\emulator;$(SolutionDir)\third-party\argtable2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>argtable2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\third-party\argtable2\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Command>"$(ProjectDir)assembler-postbuild.bat" "$(ConfigurationName)"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Running assembler post-build...</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>nonexistant.file</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CustomBuild Include="lexer.l">
@@ -98,11 +122,17 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="aout.c" />
+    <ClCompile Include="assem.c" />
+    <ClCompile Include="imap.c" />
     <ClCompile Include="lexer.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="parser.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aout.h" />
+    <ClInclude Include="assem.h" />
+    <ClInclude Include="imap.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="parser.h" />
   </ItemGroup>

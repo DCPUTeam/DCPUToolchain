@@ -5,7 +5,7 @@
 //
 
 #include <stdio.h>
-#include <cstdlib>
+#include <stdlib.h>
 #include "dcpu.h"
 
 int main(int argc, char* argv[])
@@ -16,6 +16,7 @@ int main(int argc, char* argv[])
 	unsigned int i, a;
 	int cread;
 	bool uread = true;
+	vm_t* vm;
 
 	// Zero out the flash space.
 	for (i = 0; i < 0x10000; i++)
@@ -44,21 +45,15 @@ int main(int argc, char* argv[])
 		if (cread == -1) break;
 		if (uread)
 			cread <<= 8;
-		flash[a] += cread;
+		flash[a] += ((cread << 8) | (cread >> 8));
 		if (!uread)
 			a += 1;
 		uread = !uread;
 	}
 	fclose(load);
 
-	// 7c010030
-	uint16_t inst = INSTRUCTION_CREATE(OP_ADD, NXT, NXT_LIT);
-	uint16_t a_a = INSTRUCTION_GET_A(flash[0]);
-	uint16_t a_b = INSTRUCTION_GET_B(flash[0]);
-	uint16_t op = INSTRUCTION_GET_OP(flash[0]);
-
 	// And then use the VM.
-	vm_t* vm = vm_create();
+	vm = vm_create();
 	vm_flash(vm, flash);
 	vm_execute(vm);
 	vm_free(vm);

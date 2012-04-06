@@ -6,6 +6,14 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "compiler", "compiler\compiler.vcxproj", "{A0836579-0021-4EA4-A22C-FE6F353CFA47}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assembler", "assembler\assembler.vcxproj", "{E248CA24-4242-4134-9EF0-806280B21BCA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AFB4FC9A-160F-4320-9842-95BCB7F4D997} = {AFB4FC9A-160F-4320-9842-95BCB7F4D997}
+		{FCC49B9E-B04C-4931-9A15-EC81D9B2D4F5} = {FCC49B9E-B04C-4931-9A15-EC81D9B2D4F5}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "third-party", "third-party", "{AF162D4D-48CD-4DEF-A4CF-59E056F51B78}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "argtable2", "third-party\argtable2\argtable2.vcxproj", "{AFB4FC9A-160F-4320-9842-95BCB7F4D997}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,8 +33,15 @@ Global
 		{E248CA24-4242-4134-9EF0-806280B21BCA}.Debug|Win32.Build.0 = Debug|Win32
 		{E248CA24-4242-4134-9EF0-806280B21BCA}.Release|Win32.ActiveCfg = Release|Win32
 		{E248CA24-4242-4134-9EF0-806280B21BCA}.Release|Win32.Build.0 = Release|Win32
+		{AFB4FC9A-160F-4320-9842-95BCB7F4D997}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AFB4FC9A-160F-4320-9842-95BCB7F4D997}.Debug|Win32.Build.0 = Debug|Win32
+		{AFB4FC9A-160F-4320-9842-95BCB7F4D997}.Release|Win32.ActiveCfg = Release|Win32
+		{AFB4FC9A-160F-4320-9842-95BCB7F4D997}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AFB4FC9A-160F-4320-9842-95BCB7F4D997} = {AF162D4D-48CD-4DEF-A4CF-59E056F51B78}
 	EndGlobalSection
 EndGlobal

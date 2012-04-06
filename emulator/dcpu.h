@@ -11,6 +11,11 @@
 
 #include <stdint.h>
 
+// Boolean stuff.
+typedef uint8_t bool;
+#define true 1
+#define false 0
+
 // Value definitions
 #define REG_A 0x00
 #define REG_B 0x01
@@ -90,8 +95,8 @@ typedef struct
 	uint16_t o;
 	uint16_t ram[0x10000];
 	uint16_t dummy; // Dummy position for assignments that silently fail.
-	bool halted;
-	bool skip;
+	uint8_t halted;
+	uint8_t skip;
 } vm_t;
 
 vm_t* vm_create();

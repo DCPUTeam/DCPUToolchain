@@ -23,14 +23,14 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="lexer.c">
       <Filter>Lexer / Parser Files\Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="parser.c">
       <Filter>Lexer / Parser Files\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

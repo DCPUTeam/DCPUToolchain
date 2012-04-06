@@ -35,7 +35,16 @@
     <ClCompile Include="parser.c">
       <Filter>Lexer / Parser Files\Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="assem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="aout.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -45,6 +54,15 @@
     </ClInclude>
     <ClInclude Include="parser.h">
       <Filter>Lexer / Parser Files\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="assem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aout.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

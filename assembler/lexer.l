@@ -11,7 +11,7 @@ unsigned int yylineno = 1;
 %%
 	
 [A-Za-z]+				yylval.string = strdup(yytext); return WORD;
-0x[0-9]+				yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
+0x[0-9A-Fa-f]+			yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
 [0-9]+					yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
 ,						return COMMA;
 \[						return BRACKET_OPEN;

@@ -11,7 +11,7 @@
 #include "dcpu.h"
 
 #define VM_SCREEN_WIDTH 32
-#define VM_SCREEN_HEIGHT 10
+#define VM_SCREEN_HEIGHT 24
 
 void vm_scrn_init(vm_t* vm);
 void vm_scrn_cycle(vm_t* vm);
