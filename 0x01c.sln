@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "emulator", "emulator\Emulator.vcxproj", "{FCC49B9E-B04C-4931-9A15-EC81D9B2D4F5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "compiler", "compiler\compiler.vcxproj", "{A0836579-0021-4EA4-A22C-FE6F353CFA47}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E248CA24-4242-4134-9EF0-806280B21BCA} = {E248CA24-4242-4134-9EF0-806280B21BCA}
+		{AFB4FC9A-160F-4320-9842-95BCB7F4D997} = {AFB4FC9A-160F-4320-9842-95BCB7F4D997}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assembler", "assembler\assembler.vcxproj", "{E248CA24-4242-4134-9EF0-806280B21BCA}"
 	ProjectSection(ProjectDependencies) = postProject

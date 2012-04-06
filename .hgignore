@@ -8,3 +8,4 @@ Release/*
 *.user
 ipch/*
 *.opensdf
+dist/*

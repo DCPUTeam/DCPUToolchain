@@ -19,8 +19,11 @@ rem Clean out any existing files
 del /Q *.dll > nul 2> nul
 del /Q *.exe > nul 2> nul
 del /Q *.png > nul 2> nul
+del /Q *.m > nul 2> nul
+del /Q *.asm > nul 2> nul
 del /Q examples\*.dcpu16 > nul 2> nul
 del /Q examples\*.dasm16 > nul 2> nul
+del /Q examples\*.c > nul 2> nul
 
 rem Stop if the configuration name doesn't exist
 if not exist ..\%ConfigurationName% goto noConfiguration
@@ -29,6 +32,9 @@ rem Copy all library and executable files
 xcopy /Y ..\%ConfigurationName%\*.dll . > nul
 xcopy /Y ..\%ConfigurationName%\*.exe . > nul
 xcopy /Y ..\%ConfigurationName%\terminal.png . > nul
+xcopy /Y ..\compiler\dist\*.c .\examples > nul
+xcopy /Y ..\compiler\dist\*.m .\ > nul
+xcopy /Y ..\compiler\bootstrap.asm .\ > nul
 
 rem Copy all example files
 xcopy /Y ..\emulator\*.dcpu16 .\examples > nul

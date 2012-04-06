@@ -111,7 +111,7 @@ void pp_base(FILE* in, FILE* out)
 
 char* pp_fname = NULL;
 
-FILE* pp_do(char* input)
+FILE* pp_do(const char* input)
 {
 	// Do preprocessing.
 	FILE* in;
