@@ -7,7 +7,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <setjmp.h>
 #include "aout.h";
+#include "aerr.h";
 
 struct aout_byte* start = NULL;
 struct aout_byte* end = NULL;
@@ -24,6 +26,8 @@ struct aout_byte* aout_create_opcode(uint16_t opcode, uint16_t a, uint16_t b)
 	byte->raw = 0x0;
 	byte->label = NULL;
 	byte->label_replace = NULL;
+	if (opcode == 0 && a == 0)
+		ahalt(ERR_OUTPUT_NULL, NULL);
 	return byte;
 }
 
@@ -119,6 +123,8 @@ void aout_write(FILE* out)
 				}
 				current_inner = current_inner->next;
 			}
+			if (current_outer->label_replace != NULL)
+				ahalt(ERR_LABEL_NOT_FOUND, current_outer->label_replace);
 		}
 		current_outer = current_outer->next;
 	}

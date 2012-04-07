@@ -47,6 +47,9 @@
     <ClCompile Include="aout.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="aerr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="node.h">
@@ -62,6 +65,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="aout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aerr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

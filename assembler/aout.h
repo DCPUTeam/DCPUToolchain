@@ -1,7 +1,7 @@
 //
 // DCPU Assembler by James Rhodes
 //
-// Instruction linked list.
+// Output control code.
 //
 
 #ifndef __DCPU_ASM_AOUT_H

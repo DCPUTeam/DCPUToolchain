@@ -128,6 +128,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="aerr.c" />
     <ClCompile Include="aout.c" />
     <ClCompile Include="assem.c" />
     <ClCompile Include="imap.c" />
@@ -136,6 +137,7 @@
     <ClCompile Include="parser.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aerr.h" />
     <ClInclude Include="aout.h" />
     <ClInclude Include="assem.h" />
     <ClInclude Include="imap.h" />

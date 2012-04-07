@@ -10,6 +10,9 @@
 #include <stdint.h>
 #include "dcpu.h"
 
+#define BRACKETS_UNSUPPORTED 0xFFFF
+#define VALUE_NEXT_UNSUPPORTED 0xFFFE
+
 struct instruction_mapping
 {
 	const char* name;

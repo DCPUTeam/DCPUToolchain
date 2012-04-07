@@ -12,6 +12,7 @@
 #include "dcpu.h"
 #include "imap.h"
 #include "aout.h"
+#include "aerr.h"
 
 void reverse_lines(struct ast_node_lines* lines)
 {
@@ -79,6 +80,12 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 	{
 		// This is of the form [0x1000+I].
 		registr = get_register_by_name_next(param->addcmpt);
+		if (registr->value == VALUE_NEXT_UNSUPPORTED)
+		{
+			// Attempt to use a register in brackets that can't be.
+			printf("\n");
+			ahalt(ERR_NEXTED_REGISTER_UNSUPPORTED, param->addcmpt);
+		}
 		printf("[0x%04X+%s]", param->value, registr->name);
 		result.v = registr->value;
 		result.v_extra = param->value;
@@ -118,6 +125,12 @@ struct process_parameter_results process_register(struct ast_node_register* para
 		result.v_extra = 0x0;
 		result.v_extra_used = false;
 		result.v_label = param->value;
+	}
+	else if (registr->value == BRACKETS_UNSUPPORTED)
+	{
+		// Attempt to use a register in brackets that can't be.
+		printf("\n");
+		ahalt(ERR_BRACKETED_REGISTER_UNSUPPORTED, param->value);
 	}
 	else
 	{

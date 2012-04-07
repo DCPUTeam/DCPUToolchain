@@ -6,9 +6,11 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <setjmp.h>
 #include <argtable2.h>
 #include "assem.h"
 #include "node.h"
+#include "aerr.h"
 
 extern int yyparse();
 extern FILE *yyin, *yyout;
@@ -17,10 +19,10 @@ extern FILE *yyin, *yyout;
 
 int main(int argc, char* argv[])
 {
-	FILE* img;
-	int nerrors;
+	FILE* img = NULL;
 	char emucmd[EMU_CMD_SIZE];
-	int emures;
+	int nerrors, emures;
+	struct errinfo* errval;
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
@@ -43,11 +45,23 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 
+	// Set up error handling.
+	errval = (struct errinfo*)setjmp(errjmp);
+	if (errval != NULL)
+	{
+		// Handle the error.
+		printf("assembler: internal error occurred.\n");
+		printf(err_strings[errval->errid], errval->errdata);
+		if (img != NULL)
+			fclose(img);
+		return 1;
+	}
+
 	// Parse assembly.
 	yyin = fopen(input_file->filename[0], "r");
 	if (yyin == NULL)
 	{
-		printf("assembler: input file not found.");
+		printf("assembler: input file not found.\n");
 		return 1;
 	}
 	yyparse();
@@ -60,11 +74,12 @@ int main(int argc, char* argv[])
 	img = fopen(output_file->filename[0], "wb");
 	if (img == NULL)
 	{
-		printf("assembler: output file not writable.");
+		printf("assembler: output file not writable.\n");
 		return 1;
 	}
 	aout_write(img);
 	fclose(img);
+	printf("assembler: completed successfully.\n");
 
 	// Execute emulator if desired.
 	if (invoke_emulator->count > 0)
@@ -73,12 +88,12 @@ int main(int argc, char* argv[])
 		strcat(emucmd, "emulator \"");
 		strcat(emucmd, output_file->filename[0]);
 		strcat(emucmd, "\"");
-		printf("Executing: %s", emucmd);
+		printf("assembler: executing %s", emucmd);
 		emures = system(emucmd);
 		if (emures == 0)
-			printf("Emulator exited successfully.");
+			printf("assembler: emulator exited successfully.\n");
 		else
-			printf("Emulator exited with code %i.", emures);
+			printf("assembler: emulator exited with code %i.\n", emures);
 	}
 	
 	return 0;
