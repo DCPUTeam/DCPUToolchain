@@ -48,7 +48,9 @@
      COMMENT = 264,
      ADD = 265,
      WORD = 266,
-     ADDRESS = 267
+     STRING = 267,
+     CHARACTER = 268,
+     ADDRESS = 269
    };
 #endif
 
@@ -76,7 +78,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 80 "parser.h"
+#line 82 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

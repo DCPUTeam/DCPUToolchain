@@ -29,6 +29,7 @@ struct ast_node_register
 // Type enumeration
 enum ast_node_type
 {
+	type_raw,
 	type_address,
 	type_register,
 	type_parameter,
@@ -43,6 +44,7 @@ struct ast_node_parameter
 	enum ast_node_type type;
 	struct ast_node_address* address;
 	struct ast_node_register* registr;
+	char* raw;
 	struct ast_node_parameter* prev;
 };
 

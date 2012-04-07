@@ -42,7 +42,7 @@ int yywrap()
 
 // Define our lexical token names.
 %token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT ADD
-%token <string> WORD
+%token <string> WORD STRING CHARACTER
 %token <number> ADDRESS
 
 // Defines the type of each parser symbols.
@@ -175,6 +175,7 @@ parameter:
 			$$->type = type_register;
 			$$->registr = $1;
 			$$->address = NULL;
+			$$->raw = NULL;
 			$$->prev = NULL;
 		} | 
 		bracketed_register
@@ -183,6 +184,7 @@ parameter:
 			$$->type = type_register;
 			$$->registr = $1;
 			$$->address = NULL;
+			$$->raw = NULL;
 			$$->prev = NULL;
 		} |
 		address
@@ -191,6 +193,7 @@ parameter:
 			$$->type = type_address;
 			$$->registr = NULL;
 			$$->address = $1;
+			$$->raw = NULL;
 			$$->prev = NULL;
 		} |
 		bracketed_address
@@ -199,6 +202,7 @@ parameter:
 			$$->type = type_address;
 			$$->registr = NULL;
 			$$->address = $1;
+			$$->raw = NULL;
 			$$->prev = NULL;
 		} |
 		bracketed_added_address
@@ -207,6 +211,16 @@ parameter:
 			$$->type = type_address;
 			$$->registr = NULL;
 			$$->address = $1;
+			$$->raw = NULL;
+			$$->prev = NULL;
+		} |
+		STRING
+		{
+			$$ = malloc(sizeof(struct ast_node_parameter));
+			$$->type = type_raw;
+			$$->registr = NULL;
+			$$->address = NULL;
+			$$->raw = $1;
 			$$->prev = NULL;
 		} ;
 
@@ -231,6 +245,14 @@ address:
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
 			$$->value = $1;
+			$$->bracketed = 0;
+			$$->added = 0;
+			$$->addcmpt = NULL;
+		} |
+		CHARACTER
+		{
+			$$ = malloc(sizeof(struct ast_node_parameter));
+			$$->value = (uint16_t)($1[0]);
 			$$->bracketed = 0;
 			$$->added = 0;
 			$$->addcmpt = NULL;

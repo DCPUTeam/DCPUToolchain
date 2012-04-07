@@ -67,6 +67,11 @@ int main(int argc, char* argv[])
 	}
 	yyparse();
 	fclose(yyin);
+	if (&ast_root == NULL)
+	{
+		printf("assembler: syntax error, see above.\n");
+		return 1;
+	}
 	
 	// Process AST.
 	process_root(&ast_root);

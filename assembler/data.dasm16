@@ -1,0 +1,17 @@
+; Console
+SET I, 0x8000
+SET A, data
+:loop
+	SET [I], [A]
+	ADD [I], 0x7000
+	ADD A, 1
+	ADD I, 1
+	IFN [A], 0x0
+		SET PC, loop
+
+; Loop forever
+:crash
+	SET PC, crash
+
+:data
+	DAT "this is my string", '!', 0x0

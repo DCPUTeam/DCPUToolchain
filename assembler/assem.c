@@ -58,6 +58,7 @@ struct process_parameter_results
 	uint16_t v_extra;
 	bool v_extra_used;
 	char* v_label;
+	char* v_raw;
 };
 
 struct process_parameters_results
@@ -70,12 +71,14 @@ struct process_parameters_results
 	bool b_extra_used;
 	char* a_label;
 	char* b_label;
+	char* raw;
 };
 
 struct process_parameter_results process_address(struct ast_node_address* param)
 {
 	struct process_parameter_results result;
 	struct register_mapping* registr;
+	result.v_raw = NULL;
 	if (param->bracketed && param->added)
 	{
 		// This is of the form [0x1000+I].
@@ -125,6 +128,7 @@ struct process_parameter_results process_register(struct ast_node_register* para
 		result.v_extra = 0x0;
 		result.v_extra_used = false;
 		result.v_label = param->value;
+		result.v_raw = NULL;
 	}
 	else if (registr->value == BRACKETS_UNSUPPORTED)
 	{
@@ -139,6 +143,7 @@ struct process_parameter_results process_register(struct ast_node_register* para
 		result.v_extra = 0x0;
 		result.v_extra_used = false;
 		result.v_label = NULL;
+		result.v_raw = NULL;
 	}
 	return result;
 }
@@ -149,6 +154,8 @@ struct process_parameter_results process_parameter(struct ast_node_parameter* pa
 	result.v = 0x0;
 	result.v_extra = 0x0;
 	result.v_extra_used = false;
+	result.v_label = NULL;
+	result.v_raw = NULL;
 	printf(" ");
 	switch (param->type)
 	{
@@ -156,8 +163,26 @@ struct process_parameter_results process_parameter(struct ast_node_parameter* pa
 		return process_address(param->address);
 	case type_register:
 		return process_register(param->registr);
+	case type_raw:
+		result.v_raw = param->raw;
 	}
 	return result;
+}
+
+char* str_concat(char* a, char* b)
+{
+	// TODO: Actually find out how abuse of not memory managing this is.
+	char* res;
+	if (a == NULL)
+		return b;
+	else
+	{
+		res = malloc(strlen(a) + strlen(b) + 1);
+		memcpy(res, a, strlen(a));
+		memcpy(res + strlen(a), b, strlen(b));
+		res[strlen(a) + strlen(b) + 1] = '\0';
+		return res;
+	}
 }
 
 struct process_parameters_results process_parameters(struct ast_node_parameters* params)
@@ -168,6 +193,11 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 	if (params->last != NULL)
 	{
 		t = process_parameter(params->last);
+		if (t.v_raw)
+		{
+			printf("\n");
+			ahalt(ERR_GEN_UNSUPPORTED_PARAMETER, NULL);
+		}
 		result.a = t.v;
 		result.a_extra = t.v_extra;
 		result.a_extra_used = t.v_extra_used;
@@ -175,6 +205,11 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 		if (params->last->prev != NULL)
 		{
 			t = process_parameter(params->last->prev);
+			if (t.v_raw)
+			{
+				printf("\n");
+				ahalt(ERR_GEN_UNSUPPORTED_PARAMETER, NULL);
+			}
 			result.b = t.v;
 			result.b_extra = t.v_extra;
 			result.b_extra_used = t.v_extra_used;
@@ -206,36 +241,76 @@ void process_line(struct ast_node_line* line)
 {
 	struct instruction_mapping* insttype;
 	struct process_parameters_results ppresults;
+	struct process_parameter_results dparam;
+	struct ast_node_parameter* dcurrent;
+	uint32_t dchrproc;
 
 	// Change depending on the type of line.
 	switch (line->type)
 	{
 	case type_instruction:
-		// Handle instruction.
-		insttype = get_instruction_by_name(line->instruction->instruction);
-		printf("EMIT %s", insttype->name);
-		ppresults = process_parameters(line->instruction->parameters);
+		// Check to see if this is DAT.
+		if (strcmp(line->instruction->instruction, "DAT") == 0)
+		{
+			// Handle data.
+			printf("EMIT DAT");
 
-		// Force the parameter value to be NXT if it's a label.
-		if (ppresults.a_label != NULL) ppresults.a = NXT_LIT;
-		if (ppresults.b_label != NULL) ppresults.b = NXT_LIT;
+			// Process parameters as data.
+			reverse_parameters(line->instruction->parameters);
+			dcurrent = line->instruction->parameters->last;
+			while (dcurrent != NULL)
+			{
+				// Process parameter normally.
+				dparam = process_parameter(dcurrent);
+				
+				// Output depending on what kind of parameter it was.
+				if (dparam.v_label != NULL) // If this is a label, output something that we need to replace.
+					aout_emit(aout_create_label_replace(dparam.v_label));
+				else if (dparam.v_raw != NULL) // If the raw field is not null, get each character and output it.
+				{
+					for (dchrproc = 0; dchrproc < strlen(dparam.v_raw); dchrproc++)
+						aout_emit(aout_create_raw(dparam.v_raw[dchrproc]));
+				}
+				else if (dparam.v_extra_used == true) // Just a single address.
+					aout_emit(aout_create_raw(dparam.v_extra));
+				else // Something that isn't handled by DAT.
+				{
+					printf("\n");
+					ahalt(ERR_DAT_UNSUPPORTED_PARAMETER, NULL);
+				}
 
-		// Output the initial opcode.
-		if (insttype->opcode != OP_NONBASIC)
-			aout_emit(aout_create_opcode(insttype->opcode, ppresults.a, ppresults.b));
+				dcurrent = dcurrent->prev;
+			}
+		}
 		else
-			aout_emit(aout_create_opcode(insttype->opcode, insttype->nbopcode, ppresults.a));
+		{
+			// Handle instruction.
+			insttype = get_instruction_by_name(line->instruction->instruction);
+			printf("EMIT %s", insttype->name);
 		
-		// If the parameter is a label or requires an extra word, output them.
-		if (ppresults.a_label != NULL)
-			aout_emit(aout_create_label_replace(ppresults.a_label));
-		else if (ppresults.a_extra_used)
-			aout_emit(aout_create_raw(ppresults.a_extra));
-		if (ppresults.b_label != NULL)
-			aout_emit(aout_create_label_replace(ppresults.b_label));
-		else if (ppresults.b_extra_used)
-			aout_emit(aout_create_raw(ppresults.b_extra));
+			// Process parameters normally.
+			ppresults = process_parameters(line->instruction->parameters);
 
+			// Force the parameter value to be NXT if it's a label.
+			if (ppresults.a_label != NULL) ppresults.a = NXT_LIT;
+			if (ppresults.b_label != NULL) ppresults.b = NXT_LIT;
+
+			// Output the initial opcode.
+			if (insttype->opcode != OP_NONBASIC)
+				aout_emit(aout_create_opcode(insttype->opcode, ppresults.a, ppresults.b));
+			else
+				aout_emit(aout_create_opcode(insttype->opcode, insttype->nbopcode, ppresults.a));
+		
+			// If the parameter is a label or requires an extra word, output them.
+			if (ppresults.a_label != NULL)
+				aout_emit(aout_create_label_replace(ppresults.a_label));
+			else if (ppresults.a_extra_used)
+				aout_emit(aout_create_raw(ppresults.a_extra));
+			if (ppresults.b_label != NULL)
+				aout_emit(aout_create_label_replace(ppresults.b_label));
+			else if (ppresults.b_extra_used)
+				aout_emit(aout_create_raw(ppresults.b_extra));
+		}
 		printf("\n");
 		break;
 	case type_label:
