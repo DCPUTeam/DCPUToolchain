@@ -1526,7 +1526,7 @@ yyreduce:
 #line 93 "parser.y"
     {
 			(yyval.function) = new NFunctionDeclaration(*(yyvsp[(1) - (6)].type), *(yyvsp[(2) - (6)].ident), *(yyvsp[(4) - (6)].varvec), *(yyvsp[(6) - (6)].block));
-			delete (yyvsp[(4) - (6)].varvec);
+			//delete $4;
 		;}
     break;
 

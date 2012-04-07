@@ -92,7 +92,7 @@ func_decl:
 		type ident CURVED_OPEN func_decl_args CURVED_CLOSE block
 		{
 			$$ = new NFunctionDeclaration(*$1, *$2, *$4, *$6);
-			delete $4;
+			//delete $4;
 		} ;
 
 func_decl_args:

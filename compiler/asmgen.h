@@ -9,7 +9,9 @@
 
 class NDeclarations;
 class NFunctionDeclaration;
+class NType;
 
+#include <exception>
 #include <sstream>
 #include <iostream>
 #include <fstream>
@@ -53,6 +55,20 @@ public:
 	
 	NFunctionDeclaration* getMainFunction(NDeclarations* function);
 	size_t getStackSize(NFunctionDeclaration* function);
+	size_t getTypeSize(const NType& type);
+};
+
+class CompilerException : public std::exception
+{
+private:
+	std::string m_Message;
+
+public:
+	CompilerException(std::string message) : m_Message(message) { };
+	virtual const char* what() const throw()
+	{
+		return this->m_Message.c_str();
+	}
 };
 
 #endif

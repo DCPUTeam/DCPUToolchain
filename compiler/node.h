@@ -121,7 +121,7 @@ public:
 	VariableList arguments;
 	NBlock& block;
 	NFunctionDeclaration(const NType& type, const NIdentifier& id, const VariableList& arguments, NBlock& block) :
-		type(type), id(id), block(block), NDeclaration("function") { };
+		type(type), id(id), block(block), arguments(arguments), NDeclaration("function") { };
 	virtual AsmBlock* compile(AsmGenerator& context);
 };
 

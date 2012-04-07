@@ -34,10 +34,29 @@ NFunctionDeclaration* AsmGenerator::getMainFunction(NDeclarations* decls)
 size_t AsmGenerator::getStackSize(NFunctionDeclaration* function)
 {
 	size_t size = 0;
-	/*for (VariableList::iterator i = function->arguments.begin(); i != function->arguments.end(); i++)
-		size += this->getTypeSize(*i
-	if (function->arguments*/
-	return 8;
+	for (VariableList::iterator i = function->arguments.begin(); i != function->arguments.end(); i++)		
+		size += this->getTypeSize((*i)->type);
+	return size;
+}
+
+// Calculates the size for the specified type, 
+size_t AsmGenerator::getTypeSize(const NType& type)
+{
+	if (type.pointerCount > 0)			return 16;
+	else if (type.name == "byte")		return 16; // 8
+	else if (type.name == "short")		return 16;
+	else if (type.name == "int")		return 32;
+	else if (type.name == "long")		return 64;
+	else if (type.name == "int8_t")		return 16; // 8
+	else if (type.name == "int16_t")	return 16;
+	else if (type.name == "int32_t")	return 32;
+	else if (type.name == "int64_t")	return 64;
+	else if (type.name == "uint8_t")	return 16; // 8
+	else if (type.name == "uint16_t")	return 16;
+	else if (type.name == "uint32_t")	return 32;
+	else if (type.name == "uint64_t")	return 64;
+	else
+		throw new CompilerException("Unknown type " + type.name + " encountered!");
 }
 
 //
