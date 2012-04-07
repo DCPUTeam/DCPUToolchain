@@ -65,6 +65,7 @@ struct process_parameter_results
 	uint16_t v;
 	uint16_t v_extra;
 	bool v_extra_used;
+	bool v_label_bracketed;
 	char* v_label;
 	char* v_raw;
 };
@@ -78,7 +79,9 @@ struct process_parameters_results
 	bool a_extra_used;
 	bool b_extra_used;
 	char* a_label;
+	bool a_label_bracketed;
 	char* b_label;
+	bool b_label_bracketed;
 	char* raw;
 };
 
@@ -127,7 +130,10 @@ struct process_parameter_results process_register(struct ast_node_register* para
 {
 	struct process_parameter_results result;
 	struct register_mapping* registr;
-	printf("%s", param->value);
+	if (param->bracketed)
+		printf("[%s]", param->value);
+	else
+		printf("%s", param->value);
 	registr = get_register_by_name(param->value, param->bracketed);
 	if (registr == NULL)
 	{
@@ -137,6 +143,7 @@ struct process_parameter_results process_register(struct ast_node_register* para
 		result.v_extra_used = false;
 		result.v_label = param->value;
 		result.v_raw = NULL;
+		result.v_label_bracketed = param->bracketed;
 	}
 	else if (registr->value == BRACKETS_UNSUPPORTED)
 	{
@@ -164,6 +171,7 @@ struct process_parameter_results process_parameter(struct ast_node_parameter* pa
 	result.v_extra_used = false;
 	result.v_label = NULL;
 	result.v_raw = NULL;
+	result.v_label_bracketed = false;
 	printf(" ");
 	switch (param->type)
 	{
@@ -210,6 +218,7 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 		result.a_extra = t.v_extra;
 		result.a_extra_used = t.v_extra_used;
 		result.a_label = t.v_label;
+		result.a_label_bracketed = t.v_label_bracketed;
 		if (params->last->prev != NULL)
 		{
 			t = process_parameter(params->last->prev);
@@ -222,6 +231,7 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 			result.b_extra = t.v_extra;
 			result.b_extra_used = t.v_extra_used;
 			result.b_label = t.v_label;
+			result.b_label_bracketed = t.v_label_bracketed;
 		}
 		else
 		{
@@ -302,6 +312,9 @@ void process_line(struct ast_node_line* line)
 			// Force the parameter value to be NXT if it's a label.
 			if (ppresults.a_label != NULL) ppresults.a = NXT_LIT;
 			if (ppresults.b_label != NULL) ppresults.b = NXT_LIT;
+
+			if (ppresults.a_label != NULL && ppresults.a_label_bracketed) ppresults.a = NXT;
+			if (ppresults.b_label != NULL && ppresults.b_label_bracketed) ppresults.b = NXT;
 
 			// Output the initial opcode.
 			if (insttype->opcode != OP_NONBASIC)
