@@ -35,6 +35,7 @@ xcopy /Y ..\%ConfigurationName%\terminal.png . > nul
 xcopy /Y ..\compiler\dist\*.c .\examples > nul
 xcopy /Y ..\compiler\dist\*.m .\ > nul
 xcopy /Y ..\compiler\bootstrap.asm .\ > nul
+xcopy /Y ..\*.dll . > nul
 
 rem Copy all example files
 xcopy /Y ..\emulator\*.dcpu16 .\examples > nul

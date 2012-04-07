@@ -10,6 +10,7 @@
 #include <setjmp.h>
 #include "aout.h";
 #include "aerr.h";
+#include "dcpu.h";
 
 struct aout_byte* start = NULL;
 struct aout_byte* end = NULL;
@@ -95,12 +96,46 @@ void aout_emit(struct aout_byte* byte)
 	}
 }
 
-void aout_write(FILE* out)
+#define RELOC_MAGIC 0x1234
+#define RELOC_VERSION 0x0001
+#define RELOC_OFFSET reloc_count + 5
+#define RELOC_MAXIMUM_ENTRIES 2000
+#define RELOC_WRITE_OP(opcode, a, b); \
+	inst = INSTRUCTION_CREATE(opcode, a, b); \
+	fwrite(&inst, sizeof(uint16_t), 1, out);
+#define RELOC_WRITE_RAW(raw); \
+	inst = raw; \
+	fwrite(&inst, sizeof(uint16_t), 1, out);
+
+void aout_write(FILE* out, bool relocatable)
 {
 	struct aout_byte* current_outer;
 	struct aout_byte* current_inner;
-	uint32_t mem_index;
+	uint32_t mem_index, i;
 	uint16_t inst;
+	uint16_t reloc_data[RELOC_MAXIMUM_ENTRIES];
+	uint16_t reloc_count = 0;
+
+	// If relocatable, set up our relocation table (maximum 2000 entries).
+	if (relocatable)
+	{
+		current_outer = start;
+		mem_index = 0;
+		while (current_outer != NULL)
+		{
+			if (current_outer->label == NULL)
+				mem_index += 1;
+			if (current_outer->label_replace != NULL)
+			{
+				printf("RELOC [0x%04X] 0x%04X (points to %s)\n", reloc_count, mem_index, current_outer->label_replace);
+				reloc_data[reloc_count] = mem_index;
+				reloc_count += 1;
+				if (reloc_count == RELOC_MAXIMUM_ENTRIES)
+					ahalt(ERR_RELOCATION_TABLE_TOO_LARGE, NULL);
+			}
+			current_outer = current_outer->next;
+		}
+	}
 
 	// First go through and replace all labels that need to be.
 	current_outer = start;
@@ -109,7 +144,7 @@ void aout_write(FILE* out)
 		if (current_outer->label_replace != NULL)
 		{
 			current_inner = start;
-			mem_index = 0;
+			mem_index = RELOC_OFFSET;
 			while (current_inner != NULL)
 			{
 				if (current_inner->label == NULL)
@@ -127,6 +162,20 @@ void aout_write(FILE* out)
 				ahalt(ERR_LABEL_NOT_FOUND, current_outer->label_replace);
 		}
 		current_outer = current_outer->next;
+	}
+
+	// If relocatable, write our start system.
+	if (relocatable)
+	{
+		RELOC_WRITE_OP(OP_SET, PC, NXT_LIT);
+		RELOC_WRITE_RAW(RELOC_OFFSET);
+		RELOC_WRITE_RAW(RELOC_MAGIC);
+		RELOC_WRITE_RAW(RELOC_VERSION);
+		RELOC_WRITE_RAW(reloc_count);
+		for (i = 0; i < reloc_count; i += 1)
+		{
+			RELOC_WRITE_RAW(reloc_data[i]);
+		}
 	}
 	
 	// Now write to the file.

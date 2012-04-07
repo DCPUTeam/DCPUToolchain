@@ -8,12 +8,14 @@
 #include "aerr.h"
 
 // Error strings
-const char* err_strings[4] = 
+const char* err_strings[6] = 
 {
 	"assembler: generic assembling error.\n",
 	"assembler: label '%s' not found.\n",
 	"assembler: attempted to output NULL operation.\n",
-	"assembler: can not use register '%s' in brackets.\n"
+	"assembler: can not use register '%s' in brackets.\n",
+	"assembler: can not use register '%s' as next value.\n",
+	"assembler: relocation table too large.\n"
 };
 
 // Error definition

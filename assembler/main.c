@@ -26,11 +26,12 @@ int main(int argc, char* argv[])
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
+	struct arg_lit* gen_relocatable = arg_lit0("r", "relocatable", "Generate relocatable code.");
 	struct arg_lit* invoke_emulator = arg_lit0("e", NULL, "Invoke the emulator on the output automatically.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file.");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file.");
 	struct arg_end *end = arg_end(20);
-	void *argtable[] = { output_file, show_help, invoke_emulator, input_file, end };
+	void *argtable[] = { output_file, gen_relocatable, show_help, invoke_emulator, input_file, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc,argv,argtable);
@@ -77,7 +78,7 @@ int main(int argc, char* argv[])
 		printf("assembler: output file not writable.\n");
 		return 1;
 	}
-	aout_write(img);
+	aout_write(img, (gen_relocatable->count > 0));
 	fclose(img);
 	printf("assembler: completed successfully.\n");
 

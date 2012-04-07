@@ -33,6 +33,10 @@ NFunctionDeclaration* AsmGenerator::getMainFunction(NDeclarations* decls)
 // address) for the specified function.
 size_t AsmGenerator::getStackSize(NFunctionDeclaration* function)
 {
+	size_t size = 0;
+	/*for (VariableList::iterator i = function->arguments.begin(); i != function->arguments.end(); i++)
+		size += this->getTypeSize(*i
+	if (function->arguments*/
 	return 8;
 }
 
