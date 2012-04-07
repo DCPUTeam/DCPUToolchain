@@ -59,12 +59,14 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val)
 	case NXT_VAL_J:
 		return vm->ram[(uint16_t)(vm->registers[val - NXT_VAL_A] + vm_consume_word(vm))];
 	case POP:
+		if(vm->skip) return vm->dummy;
 		t = vm->sp++;
 		return vm->ram[t];
 	case PEEK:
 		t = vm->sp;
 		return vm->ram[t];
 	case PUSH:
+		if(vm->skip) return vm->dummy;
 		t = --vm->sp;
 		return vm->ram[t];
 	case SP:
