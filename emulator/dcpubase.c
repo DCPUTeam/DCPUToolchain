@@ -1,8 +1,17 @@
-//
-// DCPU Emulator by James Rhodes
-//
-// Virtual machine - core instructions.
-//
+/**
+
+	File:			dcpubase.c
+
+	Project:		DCPU-16 Tools
+	Component:		Emulator
+
+	Authors:		James Rhodes
+					Aaron Miller
+
+	Description:	Handles core functionality of
+					the virtual machine.
+
+**/
 
 #include <stdarg.h>
 #include <stdio.h>

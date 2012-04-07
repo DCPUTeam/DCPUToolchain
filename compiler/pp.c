@@ -1,8 +1,16 @@
-//
-// DCPU Compiler by James Rhodes
-//
-// Preprocessor.
-//
+/**
+
+	File:			pp.c
+
+	Project:		DCPU-16 Tools
+	Component:		Compiler
+
+	Authors:		James Rhodes
+
+	Description:	Handles preprocessing of input 
+					files.
+
+**/
 
 #include <stdlib.h>
 #include <stdio.h>

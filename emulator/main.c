@@ -1,8 +1,15 @@
-//
-// DCPU Emulator by James Rhodes
-//
-// Main entry point.
-//
+/**
+
+	File:			main.c
+
+	Project:		DCPU-16 Tools
+	Component:		Emulator
+
+	Authors:		James Rhodes
+
+	Description:	Main entry point.
+
+**/
 
 #include <stdio.h>
 #include <stdlib.h>

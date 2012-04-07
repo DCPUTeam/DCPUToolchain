@@ -1,8 +1,17 @@
-//
-// DCPU Assembler by James Rhodes
-//
-// Error definitions
-//
+/**
+
+	File:			aerr.c
+
+	Project:		DCPU-16 Tools
+	Component:		Assembler
+
+	Authors:		James Rhodes
+
+	Description:	Implements error handling infrastructure
+					so that the assembler can safely handle
+					errors as they occur.
+
+**/
 
 #include <setjmp.h>
 #include "aerr.h"

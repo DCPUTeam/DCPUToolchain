@@ -1,8 +1,16 @@
-//
-// DCPU Assembler by James Rhodes
-//
-// Assembler code.
-//
+/**
+
+	File:			assem.h
+
+	Project:		DCPU-16 Tools
+	Component:		Assembler
+
+	Authors:		James Rhodes
+
+	Description:	Declares public functions to traverse and
+					process the AST.
+
+**/
 
 #ifndef __DCPU_ASM_ASSEM_H
 #define __DCPU_ASM_ASSEM_H

@@ -1,8 +1,16 @@
-//
-// DCPU Emulator by James Rhodes
-//
-// Virtual machine.
-//
+/**
+
+	File:			dcpu.c
+
+	Project:		DCPU-16 Tools
+	Component:		Emulator
+
+	Authors:		James Rhodes
+
+	Description:	Handles high-level operations performed
+					on the virtual machine (such as creation).
+
+**/
 
 #include <stdlib.h>
 #include <varargs.h>

@@ -1,8 +1,16 @@
-//
-// DCPU Compiler by James Rhodes
-//
-// AST node definitions.
-//
+/**
+
+	File:			node.h
+
+	Project:		DCPU-16 Tools
+	Component:		Compiler
+
+	Authors:		James Rhodes
+
+	Description:	Declares class hierarchy for AST nodes
+					in the compiler.
+
+**/
 
 #ifndef __DCPU_COMP_NODE_H
 #define __DCPU_COMP_NODE_H

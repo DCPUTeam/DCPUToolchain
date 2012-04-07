@@ -1,8 +1,16 @@
-//
-// DCPU Assembler by James Rhodes
-//
-// Output control code.
-//
+/**
+
+	File:			aout.h
+
+	Project:		DCPU-16 Tools
+	Component:		Assembler
+
+	Authors:		James Rhodes
+
+	Description:	Declares functions and structures used to emit
+					bytecode and raw values to RAM images.
+
+**/
 
 #ifndef __DCPU_ASM_AOUT_H
 #define __DCPU_ASM_AOUT_H

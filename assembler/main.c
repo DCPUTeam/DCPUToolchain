@@ -1,8 +1,15 @@
-//
-// DCPU Assembler by James Rhodes
-//
-// Main entry point.
-//
+/**
+
+	File:			main.c
+
+	Project:		DCPU-16 Tools
+	Component:		Assembler
+
+	Authors:		James Rhodes
+
+	Description:	Main entry point.
+
+**/
 
 #include <stdio.h>
 #include <string.h>

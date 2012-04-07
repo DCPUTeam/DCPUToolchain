@@ -1,8 +1,16 @@
-//
-// DCPU Compiler by James Rhodes
-//
-// AST node definitions.
-//
+/**
+
+	File:			node.cpp
+
+	Project:		DCPU-16 Tools
+	Component:		Compiler
+
+	Authors:		James Rhodes
+
+	Description:	Implements the functionality for compiling
+					AST nodes down into assembly.
+
+**/
 
 #include <iomanip>
 #include "node.h"

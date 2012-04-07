@@ -1,5 +1,18 @@
 %{
 
+/**
+
+	File:			lexer.y
+
+	Project:		DCPU-16 Tools
+	Component:		Compiler
+
+	Authors:		James Rhodes
+
+	Description:	Defines lexer for the compiler.
+
+**/
+
 #include <string>
 #include <cstdio>
 #include "Node.h"

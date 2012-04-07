@@ -1,8 +1,16 @@
-//
-// DCPU Assembler by James Rhodes
-//
-// Instruction map.
-//
+/**
+
+	File:			aout.h
+
+	Project:		DCPU-16 Tools
+	Component:		Assembler
+
+	Authors:		James Rhodes
+
+	Description:	Declares functions and structures for the instruction
+					and register maps.
+
+**/
 
 #ifndef __DCPU_ASM_IMAP_H
 #define __DCPU_ASM_IMAP_H

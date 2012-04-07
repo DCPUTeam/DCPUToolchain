@@ -1,8 +1,16 @@
-//
-// DCPU Emulator by James Rhodes
-//
-// Virtual machine - opcode handling.
-//
+/**
+
+	File:			dcpuops.h
+
+	Project:		DCPU-16 Tools
+	Component:		Emulator
+
+	Authors:		James Rhodes
+
+	Description:	Declares functions that handle individual
+					opcodes in the virtual machine.
+
+**/
 
 #ifndef __DCPUOPS_H
 #define __DCPUOPS_H

@@ -1,8 +1,15 @@
-//
-// DCPU Assembler by James Rhodes
-//
-// Definitions of AST nodes.
-//
+/**
+
+	File:			node.h
+
+	Project:		DCPU-16 Tools
+	Component:		Assembler
+
+	Authors:		James Rhodes
+
+	Description:	Declares node structures for the AST.
+
+**/
 
 #ifndef __DCPU_AST_NODE_H
 #define __DCPU_AST_NODE_H

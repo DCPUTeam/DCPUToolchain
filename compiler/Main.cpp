@@ -1,8 +1,15 @@
-//
-// DCPU Compiler by James Rhodes
-//
-// Main entry point.
-//
+/**
+
+	File:			main.cpp
+
+	Project:		DCPU-16 Tools
+	Component:		Compiler
+
+	Authors:		James Rhodes
+
+	Description:	Main entry point.
+
+**/
 
 #include <iostream>
 #include <fstream>

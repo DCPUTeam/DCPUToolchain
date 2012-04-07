@@ -1,8 +1,17 @@
-//
-// DCPU Assembler by James Rhodes
-//
-// Instruction map.
-//
+/**
+
+	File:			imap.c
+
+	Project:		DCPU-16 Tools
+	Component:		Assembler
+
+	Authors:		James Rhodes
+
+	Description:	Defines instruction and register maps so that
+					the assembler can turn character values into
+					their internal representations.
+
+**/
 
 #include <stdlib.h>
 #include <string.h>

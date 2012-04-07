@@ -1,8 +1,16 @@
-//
-// DCPU Emulator by James Rhodes
-//
-// Virtual screen.
-//
+/**
+
+	File:			dcpuscrn.h
+
+	Project:		DCPU-16 Tools
+	Component:		Emulator
+
+	Authors:		James Rhodes
+
+	Description:	Declares macros and functions used to
+					host the virtual screen.
+
+**/
 
 #ifndef __DCPUSCRN_H
 #define __DCPUSCRN_H

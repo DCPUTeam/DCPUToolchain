@@ -1,4 +1,17 @@
 %{
+
+/**
+
+	File:			lexer.y
+
+	Project:		DCPU-16 Tools
+	Component:		Assembler
+
+	Authors:		James Rhodes
+
+	Description:	Defines lexer for the assembler.
+
+**/
 	
 #include <string.h>
 #include <stdlib.h>

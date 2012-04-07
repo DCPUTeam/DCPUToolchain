@@ -1,8 +1,16 @@
-//
-// DCPU Assembler by James Rhodes
-//
-// Assembler code.
-//
+/**
+
+	File:			assem.c
+
+	Project:		DCPU-16 Tools
+	Component:		Assembler
+
+	Authors:		James Rhodes
+
+	Description:	Implements functions for traversing the AST
+					and emitting bytecode instructions.
+
+**/
 
 #include <stdint.h>
 #include <stdlib.h>

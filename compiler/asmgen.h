@@ -1,8 +1,16 @@
-//
-// DCPU Compiler by James Rhodes
-//
-// Assembly generation.
-//
+/**
+
+	File:			asmgen.h
+
+	Project:		DCPU-16 Tools
+	Component:		Compiler
+
+	Authors:		James Rhodes
+
+	Description:	Declares the classes used to assist AST
+					nodes in generating assembly.
+
+**/
 
 #ifndef __DCPU_COMP_ASMGEN_H
 #define __DCPU_COMP_ASMGEN_H

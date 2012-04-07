@@ -1,8 +1,16 @@
-//
-// DCPU Emulator by James Rhodes
-//
-// Definitions of macros and functions.
-//
+/**
+
+	File:			dcpu.h
+
+	Project:		DCPU-16 Tools
+	Component:		Emulator
+
+	Authors:		James Rhodes
+
+	Description:	Declares common macros and functions
+					use in all DCPU-16 Tools components.
+
+**/
 
 // This is correct as of version 1.1 of the DCPU.
 

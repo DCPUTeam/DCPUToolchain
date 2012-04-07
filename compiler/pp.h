@@ -1,8 +1,16 @@
-//
-// DCPU Compiler by James Rhodes
-//
-// Preprocessor.
-//
+/**
+
+	File:			pp.h
+
+	Project:		DCPU-16 Tools
+	Component:		Compiler
+
+	Authors:		James Rhodes
+
+	Description:	Declares the functions used by the
+					compiler for preprocessing.
+
+**/
 
 #ifndef __DCPU_COMP_PREPROCESSOR_H
 #define __DCPU_COMP_PREPROCESSOR_H

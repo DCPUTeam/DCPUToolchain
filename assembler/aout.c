@@ -1,8 +1,16 @@
-//
-// DCPU Assembler by James Rhodes
-//
-// Instruction linked list.
-//
+/**
+
+	File:			aout.c
+
+	Project:		DCPU-16 Tools
+	Component:		Assembler
+
+	Authors:		James Rhodes
+
+	Description:	Implements outputting emitted opcodes and raw
+					values into RAM images.
+
+**/
 
 #include <stdint.h>
 #include <stdlib.h>

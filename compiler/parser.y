@@ -1,4 +1,17 @@
 %{
+	
+/**
+
+	File:			parser.y
+
+	Project:		DCPU-16 Tools
+	Component:		Compiler
+
+	Authors:		James Rhodes
+
+	Description:	Defines parser for the compiler.
+
+**/
 
 #define YYERROR_VERBOSE
 
