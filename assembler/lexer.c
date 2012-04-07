@@ -387,6 +387,19 @@ char *yytext;
 #line 1 "lexer.l"
 #define INITIAL 0
 #line 2 "lexer.l"
+
+/**
+
+	File:			lexer.y
+
+	Project:		DCPU-16 Tools
+	Component:		Assembler
+
+	Authors:		James Rhodes
+
+	Description:	Defines lexer for the assembler.
+
+**/
 	
 #include <string.h>
 #include <stdlib.h>
@@ -424,7 +437,7 @@ char* trim_and_unescape(char* data, int mode)
 	return result;
 }
 
-#line 428 "lexer.c"
+#line 441 "lexer.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -575,10 +588,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 41 "lexer.l"
+#line 54 "lexer.l"
 
 	
-#line 582 "lexer.c"
+#line 595 "lexer.c"
 
 	if ( yy_init )
 		{
@@ -663,75 +676,75 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 43 "lexer.l"
+#line 56 "lexer.l"
 yylval.string = strdup(yytext); return WORD;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 44 "lexer.l"
+#line 57 "lexer.l"
 yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 45 "lexer.l"
+#line 58 "lexer.l"
 yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 46 "lexer.l"
+#line 59 "lexer.l"
 { yylval.string = trim_and_unescape(strdup(yytext), 1); return CHARACTER; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 47 "lexer.l"
+#line 60 "lexer.l"
 { yylval.string = trim_and_unescape(strdup(yytext), 0); return STRING; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 48 "lexer.l"
+#line 61 "lexer.l"
 return COMMA;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 49 "lexer.l"
+#line 62 "lexer.l"
 return BRACKET_OPEN;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 50 "lexer.l"
+#line 63 "lexer.l"
 return BRACKET_CLOSE;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 51 "lexer.l"
+#line 64 "lexer.l"
 return COLON;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 52 "lexer.l"
+#line 65 "lexer.l"
 return ADD;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 54 "lexer.l"
+#line 67 "lexer.l"
 yylineno++; return NEWLINE;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 55 "lexer.l"
+#line 68 "lexer.l"
 /* ignore comments */;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 56 "lexer.l"
+#line 69 "lexer.l"
 /* ignore whitespace */;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 57 "lexer.l"
+#line 70 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 735 "lexer.c"
+#line 748 "lexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1617,4 +1630,4 @@ int main()
 	return 0;
 	}
 #endif
-#line 57 "lexer.l"
+#line 70 "lexer.l"

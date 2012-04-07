@@ -6,6 +6,7 @@
 	Component:		Assembler
 
 	Authors:		James Rhodes
+					Aaron Miller
 
 	Description:	Implements functions for traversing the AST
 					and emitting bytecode instructions.
@@ -65,8 +66,8 @@ struct process_parameter_results
 	uint16_t v;
 	uint16_t v_extra;
 	bool v_extra_used;
-	bool v_label_bracketed;
 	char* v_label;
+	bool v_label_bracketed;
 	char* v_raw;
 };
 
@@ -78,10 +79,10 @@ struct process_parameters_results
 	uint16_t b_extra;
 	bool a_extra_used;
 	bool b_extra_used;
-	char* a_label;
 	bool a_label_bracketed;
-	char* b_label;
 	bool b_label_bracketed;
+	char* a_label;
+	char* b_label;
 	char* raw;
 };
 
@@ -142,8 +143,8 @@ struct process_parameter_results process_register(struct ast_node_register* para
 		result.v_extra = 0x0;
 		result.v_extra_used = false;
 		result.v_label = param->value;
-		result.v_raw = NULL;
 		result.v_label_bracketed = param->bracketed;
+		result.v_raw = NULL;
 	}
 	else if (registr->value == BRACKETS_UNSUPPORTED)
 	{
@@ -158,6 +159,7 @@ struct process_parameter_results process_register(struct ast_node_register* para
 		result.v_extra = 0x0;
 		result.v_extra_used = false;
 		result.v_label = NULL;
+		result.v_label_bracketed = false;
 		result.v_raw = NULL;
 	}
 	return result;
@@ -170,8 +172,8 @@ struct process_parameter_results process_parameter(struct ast_node_parameter* pa
 	result.v_extra = 0x0;
 	result.v_extra_used = false;
 	result.v_label = NULL;
-	result.v_raw = NULL;
 	result.v_label_bracketed = false;
+	result.v_raw = NULL;
 	printf(" ");
 	switch (param->type)
 	{
@@ -206,6 +208,7 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 	struct process_parameters_results result;
 	struct process_parameter_results t;
 	reverse_parameters(params);
+	result.raw = NULL;
 	if (params->last != NULL)
 	{
 		t = process_parameter(params->last);
@@ -239,6 +242,7 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 			result.b_extra = 0x0;
 			result.b_extra_used = false;
 			result.b_label = NULL;
+			result.b_label_bracketed = false;
 		}
 	}
 	else
@@ -247,10 +251,12 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 		result.a_extra = 0x0;
 		result.a_extra_used = false;
 		result.a_label = NULL;
+		result.b_label_bracketed = false;
 		result.b = 0x0;
 		result.b_extra = 0x0;
 		result.b_extra_used = false;
 		result.b_label = NULL;
+		result.b_label_bracketed = false;
 	}
 	return result;
 }

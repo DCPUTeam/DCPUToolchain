@@ -152,7 +152,10 @@ void aout_write(FILE* out, bool relocatable)
 		if (current_outer->label_replace != NULL)
 		{
 			current_inner = start;
-			mem_index = RELOC_OFFSET;
+			if (relocatable)
+				mem_index = RELOC_OFFSET;
+			else
+				mem_index = 0;
 			while (current_inner != NULL)
 			{
 				if (current_inner->label == NULL)

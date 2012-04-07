@@ -9,3 +9,4 @@ Release/*
 ipch/*
 *.opensdf
 dist/*
+standards/*
