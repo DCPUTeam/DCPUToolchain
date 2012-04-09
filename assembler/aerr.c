@@ -17,7 +17,7 @@
 #include "aerr.h"
 
 // Error strings
-const char* err_strings[8] = 
+const char* err_strings[9] = 
 {
 	"assembler: generic assembling error.\n",
 	"assembler: label '%s' not found.\n",
@@ -26,7 +26,8 @@ const char* err_strings[8] =
 	"assembler: can not use register '%s' as next value.\n",
 	"assembler: relocation table too large.\n",
 	"assembler: unsupported parameter passed to DAT instruction.\n",
-	"assembler: unsupported parameter passed to non-DAT instruction.\n"
+	"assembler: unsupported parameter passed to non-DAT instruction.\n",
+	"assembler: unsupported keyword encountered.\n"
 };
 
 // Error definition

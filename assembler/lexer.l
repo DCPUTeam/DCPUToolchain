@@ -52,8 +52,14 @@ char* trim_and_unescape(char* data, int mode)
 %}
 
 %%
-	
-[A-Za-z_]+				yylval.string = strdup(yytext); return WORD;
+
+	/* Assembler keywords */
+
+\.BOUNDARY				yylval.number = BOUNDARY; return KEYWORD;
+
+	/* General stuff */
+
+[A-Za-z_]+[A-Za-z0-9_]*	yylval.string = strdup(yytext); return WORD;
 0x[0-9A-Fa-f]+			yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
 [0-9]+					yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
 L?'(\\.|[^\\'])+'		{ yylval.string = trim_and_unescape(strdup(yytext), 1); return CHARACTER; }
@@ -67,4 +73,5 @@ L?\"(\\.|[^\\"])*\"		{ yylval.string = trim_and_unescape(strdup(yytext), 0); ret
 \n						yylineno++; return NEWLINE;
 \;[^\r\n]*              /* ignore comments */;
 [ \t]+                  /* ignore whitespace */;
+
 %%

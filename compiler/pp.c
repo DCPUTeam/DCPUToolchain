@@ -19,9 +19,12 @@
 #include "dcpu.h"
 
 #define INCLUDE_MAX 100
+#define PATH_COUNT_MAX 100
 
 int pp_included_count = 0;
 char* pp_included_names[INCLUDE_MAX];
+int pp_path_count = 0;
+const char* pp_path_names[PATH_COUNT_MAX];
 void pp_base(FILE* in, FILE* out);
 
 bool strsw(char* src, char* check)
@@ -43,12 +46,28 @@ void pp_init()
 		pp_included_names[i] = NULL;
 }
 
+void pp_add_search_path(const char* path)
+{
+	// Check to see whether we can't include any more paths.
+	if (pp_included_count == PATH_COUNT_MAX)
+	{
+		printf("preprocessor: maximum number of include paths (%i) reached, ignoring %s.\n", PATH_COUNT_MAX, path);
+		return;
+	}
+
+	// Add the path.
+	pp_path_names[pp_path_count] = malloc(strlen(path) + 1);
+	memcpy(pp_path_names[pp_path_count++], path, strlen(path) + 1);
+}
+
 void pp_include(char* line, FILE* in, FILE* out)
 {
-	FILE* included;
+	FILE* included = NULL;
 	char* pos_a = strchr(line, '<');
 	char* pos_b = strchr(line, '>');
 	char* fname;
+	char* cname;
+	int path_i = 0;
 
 	// Check to make sure the syntax is correct.
 	if (pos_a == NULL || pos_b == NULL)
@@ -68,7 +87,22 @@ void pp_include(char* line, FILE* in, FILE* out)
 	fname = malloc(pos_b - pos_a + 1);
 	strncpy(fname, pos_a + 1, pos_b - pos_a - 1);
 	fname[pos_b - pos_a - 1] = '\0';
-	included = fopen(fname, "r");
+
+	// Search all of our paths for the file.
+	while (included == NULL && path_i < pp_path_count)
+	{
+		// Calculate path.
+		cname = malloc(strlen(pp_path_names[path_i]) + 1 + strlen(fname) + 1);
+		memset(cname, 0, strlen(pp_path_names[path_i]) + 1 + strlen(fname) + 1);
+		memcpy(cname, pp_path_names[path_i], strlen(pp_path_names[path_i]));
+		memcpy(cname + strlen(pp_path_names[path_i]), "/", 1);
+		memcpy(cname + strlen(pp_path_names[path_i]) + 1, fname, strlen(fname));
+
+		// Attempt open.
+		included = fopen(cname, "r");
+		if (included == NULL)
+			path_i++;
+	}
 	if (included == NULL)
 		printf("preprocessor: can not include %s.\n", fname);
 	else

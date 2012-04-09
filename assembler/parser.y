@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "node.h"
+#include "imap.h"
 
 extern unsigned int yylineno;
 
@@ -33,7 +34,7 @@ void yyerror(const char *str)
 int yywrap()
 {
     return 1;
-} 
+}
 
 %}
 
@@ -51,10 +52,12 @@ int yywrap()
 	struct ast_node_line* line;
 	struct ast_node_lines* lines;
 	struct ast_node_root* root;
+	int* token;
 }
 
 // Define our lexical token names.
 %token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT ADD
+%token <token> KEYWORD BOUNDARY
 %token <string> WORD STRING CHARACTER
 %token <number> ADDRESS
 
@@ -116,10 +119,20 @@ line:
 		{
 			$$ = NULL;
 		} |
+		KEYWORD NEWLINE
+		{
+			$$ = malloc(sizeof(struct ast_node_line));
+			$$->type = type_keyword;
+			$$->keyword = $1;
+			$$->instruction = NULL;
+			$$->label = NULL;
+			$$->prev = NULL;
+		} |
 		instruction NEWLINE
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_instruction;
+			$$->keyword = NULL;
 			$$->instruction = $1;
 			$$->label = NULL;
 			$$->prev = NULL;
@@ -128,6 +141,7 @@ line:
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_label;
+			$$->keyword = NULL;
 			$$->instruction = NULL;
 			$$->label = $1;
 			$$->prev = NULL;
@@ -158,6 +172,7 @@ instruction:
 		WORD parameters
 		{
 			$$ = malloc(sizeof(struct ast_node_instruction));
+			strupper($1);
 			$$->instruction = $1;
 			$$->parameters = $2;
 		} ;
@@ -289,4 +304,12 @@ bracketed_added_address:
 			$$->bracketed = 1;
 			$$->added = 1;
 			$$->addcmpt = $4;
+		} |
+		BRACKET_OPEN WORD ADD ADDRESS BRACKET_CLOSE
+		{
+			$$ = malloc(sizeof(struct ast_node_address));
+			$$->value = $4;
+			$$->bracketed = 1;
+			$$->added = 1;
+			$$->addcmpt = $2;
 		};

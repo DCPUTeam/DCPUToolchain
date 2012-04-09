@@ -37,6 +37,7 @@ struct ast_node_register
 enum ast_node_type
 {
 	type_raw,
+	type_keyword,
 	type_address,
 	type_register,
 	type_parameter,
@@ -78,6 +79,7 @@ struct ast_node_label
 struct ast_node_line
 {
 	enum ast_node_type type;
+	int keyword;
 	struct ast_node_label* label;
 	struct ast_node_instruction* instruction;
 	struct ast_node_line* prev;

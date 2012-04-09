@@ -13,6 +13,7 @@
 
 **/
 
+#define YYDEBUG 1
 #define YYERROR_VERBOSE
 
 #include "Node.h"
@@ -32,6 +33,7 @@ void yyerror(const char* msg)
 %union {
 	NBlock* block;
 	NExpression* expr;
+	NAssignmentExpression* exprassign;
 	NStatement* stmt;
 	NIdentifier* ident;
 	NInteger* numeric;
@@ -58,9 +60,10 @@ void yyerror(const char* msg)
 %token <token> ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE
 %token <token> COMPARE_EQUAL COMPARE_NOT_EQUAL COMPARE_LESS_THAN COMPARE_LESS_THAN_EQUAL
 %token <token> COMPARE_GREATER_THAN COMPARE_GREATER_THAN_EQUAL
-%token <token> NEGATE INCREMENT DECREMENT ADD SUBTRACT SLASH
+%token <token> NEGATE BITWISE_NEGATE INCREMENT DECREMENT ADD SUBTRACT SLASH PERCENT
 %token <token> BOOLEAN_AND BOOLEAN_OR
 %token <token> BINARY_AND BINARY_OR BINARY_XOR BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
+%token <token> IREF IDEREF IADDROF IUNARYPLUS IUNARYMINUS IPREINC IPREDEC IPOSTINC IPOSTDEC
 
 /* TOKENS: Statement keywords */
 %token <token> RETURN IF ELSE
@@ -68,7 +71,8 @@ void yyerror(const char* msg)
 /* TYPES */
 %type <type> type
 %type <ident> ident
-%type <expr> expr numeric string character
+%type <expr> expr numeric string character deref
+%type <exprassign> expr_assign
 %type <varvec> func_decl_args
 %type <exprvec> call_args
 %type <decls> program func_list
@@ -77,6 +81,38 @@ void yyerror(const char* msg)
 %type <block> block stmts
 %type <stmt> stmt stmt_if stmt_return
 %type <token> assignop binaryop
+
+/* OPERATOR PRECEDENCE (LOWEST -> HIGHEST) */
+%left IPOSTINC IPOSTDEC DOT
+%right IPREINC IPREDEC IUNARYPLUS IUNARYMINUS NEGATE BITWISE_NEGATE IADDROF
+%left STAR SLASH PERCENT
+%left ADD SUBTRACT
+%left BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
+%left COMPARE_LESS_THAN COMPARE_LESS_THAN_EQUAL COMPARE_GREATER_THAN COMPARE_GREATER_THAN_EQUAL
+%left COMPARE_EQUAL COMPARE_NOT_EQUAL
+%left BINARY_AND
+%left BINARY_XOR
+%left BINARY_OR
+%left BOOLEAN_AND
+%left BOOLEAN_OR
+%right ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE
+%left COMMA
+
+	//%left COMMA
+	//%right ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE
+	//%left BOOLEAN_OR
+	//%left BOOLEAN_AND
+	//%left BINARY_OR
+	//%left BINARY_XOR
+	//%left BINARY_AND
+	//%left COMPARE_EQUAL COMPARE_NOT_EQUAL
+	//%left COMPARE_LESS_THAN COMPARE_LESS_THAN_EQUAL COMPARE_GREATER_THAN COMPARE_GREATER_THAN_EQUAL
+	//%left BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
+	//%left ADD SUBTRACT
+	//%left STAR SLASH PERCENT
+	//%right IPREINC IPREDEC IUNARYPLUS IUNARYMINUS NEGATE BITWISE_NEGATE IDEREF IADDROF
+	//%right IDEREFASSIGN
+	//%left IPOSTINC IPOSTDEC DOT
 
 /* START POINT */
 %start program
@@ -146,12 +182,12 @@ type:
 			$$ = new NType($<type>1->name, 0);
 			delete $1;
 		} |
-		ident STAR
+		ident STAR %prec IREF
 		{
 			$$ = new NType($<type>1->name, 1);
 			delete $1;
 		} |
-		type STAR
+		type STAR %prec IREF
 		{
 			$$ = new NType($<type>1->name, $<type>1->pointerCount + 1);
 			delete $1;
@@ -220,10 +256,35 @@ stmt_return:
 			$$ = new NReturnStatement(*$2);
 		} ;
 
+deref:
+		STAR ident
+		{
+			$$ = new NDereferenceOperator(*$<ident>2);
+		} |
+		STAR numeric
+		{
+			$$ = new NDereferenceOperator(*$2);
+		} |
+		STAR CURVED_OPEN expr CURVED_CLOSE
+		{
+			$$ = new NDereferenceOperator(*$3);
+		} |
+		deref assignop expr
+		{
+			if ($1->cType == "expression-dereference") // We can't accept NAssignments as the deref in this case.
+				$$ = new NAssignment(new NAssignmentDereference(((NDereferenceOperator*)$1)->expr), $2, *$3);
+			else
+				throw new CompilerException("Unable to apply dereferencing assignment operation to non-dereference operator based LHS.");
+		} ;
+
 expr:
 		ident assignop expr
 		{
-			$$ = new NAssignment(*$1, $2, *$3);
+			$$ = new NAssignment(new NAssignmentIdentifier(*$1), $2, *$3);
+		} |
+		deref
+		{
+			$$ = $1;
 		} |
 		ident CURVED_OPEN call_args CURVED_CLOSE
 		{
@@ -250,9 +311,23 @@ expr:
 		{
 			$$ = new NBinaryOperator(*$1, $2, *$3);
 		} |
+		BINARY_AND expr_assign %prec IADDROF
+		{
+			$$ = new NAddressOfOperator(*$2);
+		} |
 		CURVED_OPEN expr CURVED_CLOSE
 		{
 			$$ = $2;
+		} ;
+
+expr_assign:
+		ident
+		{
+			$$ = new NAssignmentIdentifier(*$1);
+		} |
+		STAR expr %prec IDEREF
+		{
+			$$ = new NAssignmentDereference(*$2);
 		} ;
 
 numeric:
@@ -298,6 +373,13 @@ assignop:
 		ASSIGN_DIVIDE ;
 
 binaryop:
+		BOOLEAN_AND |
+		BOOLEAN_OR |
+		BINARY_AND | 
+		BINARY_OR | 
+		BINARY_XOR |
+		BINARY_LEFT_SHIFT |
+		BINARY_RIGHT_SHIFT |
 		COMPARE_EQUAL |
 		COMPARE_NOT_EQUAL |
 		COMPARE_LESS_THAN |

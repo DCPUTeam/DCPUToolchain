@@ -15,16 +15,20 @@
 #ifndef __DCPU_COMP_ASMGEN_H
 #define __DCPU_COMP_ASMGEN_H
 
+class Assembler;
 class NDeclarations;
 class NFunctionDeclaration;
 class NType;
 
+#include <cstdint>
 #include <exception>
 #include <sstream>
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <map>
 #include "node.h"
+#include "asmtypes.h"
 
 class AsmBlock
 {
@@ -37,6 +41,7 @@ private:
 public:
 	AsmBlock();
 	
+	friend AsmBlock& operator<< (AsmBlock& block, char& input);
 	friend AsmBlock& operator<< (AsmBlock& block, const size_t& input);
 	friend AsmBlock& operator<< (AsmBlock& block, const char input[]);
 	friend AsmBlock& operator<< (AsmBlock& block, std::ifstream& input);
@@ -52,18 +57,47 @@ public:
     }
 };
 
+class StackFrame
+{
+public:
+	typedef std::map<std::string, const NType&> StackMap;
+	typedef std::pair<std::string, const NType&> StackPair;
+
+private:
+	AsmGenerator& m_Generator;
+	StackMap m_StackMap;
+
+public:
+	StackFrame(AsmGenerator& generator, StackMap& map) : m_StackMap(map), m_Generator(generator) { };
+	int32_t getPositionOfVariable(std::string name);
+	uint16_t getSize();
+};
+
 class AsmGenerator
 {
+private:
+	const Assembler* m_AssemblerTarget;
+	std::vector<std::string> m_AutomaticLabels;
+	static char getRandomCharacter();
+	static std::string getRandomString(std::string::size_type sz);
+
 public:
 	AsmBlock m_Preassembly;
 	AsmBlock m_Postassembly;
+	StackFrame* m_CurrentFrame;
+	NDeclarations* m_RootNode;
 
 public:
-	AsmGenerator();
+	AsmGenerator(std::string asmtarget);
 	
-	NFunctionDeclaration* getMainFunction(NDeclarations* function);
-	size_t getStackSize(NFunctionDeclaration* function);
-	size_t getTypeSize(const NType& type);
+	NFunctionDeclaration* getFunction(std::string name);
+	StackFrame* generateStackFrame(NFunctionDeclaration* function, bool referenceOnly = true);
+	void finishStackFrame(StackFrame* frame);
+	size_t getTypeBitSize(const NType& type);
+	size_t getTypeWordSize(const NType& type);
+	std::string getRandomLabel();
+	inline const Assembler& getAssembler() { return *(this->m_AssemblerTarget); }
+	inline bool isAssemblerDebug() { return true; }
 };
 
 class CompilerException : public std::exception
@@ -77,6 +111,7 @@ public:
 	{
 		return this->m_Message.c_str();
 	}
+	inline std::string getMessage() { return this->m_Message; }
 };
 
 #endif

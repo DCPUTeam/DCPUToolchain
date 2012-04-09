@@ -49,6 +49,14 @@ protected:
 	NExpression(std::string type) : Node("expression-" + type) { }
 };
 
+class NAssignmentExpression : public NExpression
+{
+protected:
+	NAssignmentExpression(std::string type) : NExpression("assignment-" + type) { }
+public:
+	virtual AsmBlock* reference(AsmGenerator& context) { return NULL; }
+};
+
 class NStatement : public Node
 {
 protected:
@@ -89,6 +97,22 @@ public:
     NIdentifier(const std::string& name) : name(name), NExpression("identifier") { }
     NIdentifier(const std::string& name, std::string type) : name(name), NExpression("identifier-" + type) { }
 	virtual AsmBlock* compile(AsmGenerator& context);
+};
+
+class NAssignmentIdentifier : public NAssignmentExpression
+{
+public:
+    NIdentifier& id;
+	NAssignmentIdentifier(NIdentifier& id) : id(id), NAssignmentExpression("identifier") { }
+	virtual AsmBlock* reference(AsmGenerator& context);
+};
+
+class NAssignmentDereference : public NAssignmentExpression
+{
+public:
+    NExpression& expr;
+	NAssignmentDereference(NExpression& expr) : expr(expr), NAssignmentExpression("dereference") { }
+	virtual AsmBlock* reference(AsmGenerator& context);
 };
 
 class NType : public NIdentifier
@@ -151,12 +175,13 @@ public:
 
 class NAssignment : public NExpression {
 public:
-    NIdentifier& lhs;
+    NAssignmentExpression* lhs;
     NExpression& rhs;
 	int op;
-    NAssignment(NIdentifier& lhs, int op, NExpression& rhs) :
+    NAssignment(NAssignmentExpression* lhs, int op, NExpression& rhs) :
         lhs(lhs), op(op), rhs(rhs), NExpression("assignment") { }
 	virtual AsmBlock* compile(AsmGenerator& context);
+	virtual ~NAssignment() { delete lhs; };
 };
 
 class NBinaryOperator : public NExpression {
@@ -166,6 +191,22 @@ public:
 	int op;
     NBinaryOperator(NExpression& lhs, int op, NExpression& rhs) :
         lhs(lhs), op(op), rhs(rhs), NExpression("binaryop") { }
+	virtual AsmBlock* compile(AsmGenerator& context);
+};
+
+class NAddressOfOperator : public NExpression
+{
+public:
+    NAssignmentExpression& expr;
+	NAddressOfOperator(NAssignmentExpression& expr) : expr(expr), NExpression("addressof") { }
+	virtual AsmBlock* compile(AsmGenerator& context);
+};
+
+class NDereferenceOperator : public NExpression
+{
+public:
+    NExpression& expr;
+	NDereferenceOperator(NExpression& expr) : expr(expr), NExpression("dereference") { }
 	virtual AsmBlock* compile(AsmGenerator& context);
 };
 

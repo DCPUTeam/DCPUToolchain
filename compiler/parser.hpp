@@ -63,21 +63,32 @@
      COMPARE_GREATER_THAN = 279,
      COMPARE_GREATER_THAN_EQUAL = 280,
      NEGATE = 281,
-     INCREMENT = 282,
-     DECREMENT = 283,
-     ADD = 284,
-     SUBTRACT = 285,
-     SLASH = 286,
-     BOOLEAN_AND = 287,
-     BOOLEAN_OR = 288,
-     BINARY_AND = 289,
-     BINARY_OR = 290,
-     BINARY_XOR = 291,
-     BINARY_LEFT_SHIFT = 292,
-     BINARY_RIGHT_SHIFT = 293,
-     RETURN = 294,
-     IF = 295,
-     ELSE = 296
+     BITWISE_NEGATE = 282,
+     INCREMENT = 283,
+     DECREMENT = 284,
+     ADD = 285,
+     SUBTRACT = 286,
+     SLASH = 287,
+     PERCENT = 288,
+     BOOLEAN_AND = 289,
+     BOOLEAN_OR = 290,
+     BINARY_AND = 291,
+     BINARY_OR = 292,
+     BINARY_XOR = 293,
+     BINARY_LEFT_SHIFT = 294,
+     BINARY_RIGHT_SHIFT = 295,
+     IREF = 296,
+     IDEREF = 297,
+     IADDROF = 298,
+     IUNARYPLUS = 299,
+     IUNARYMINUS = 300,
+     IPREINC = 301,
+     IPREDEC = 302,
+     IPOSTINC = 303,
+     IPOSTDEC = 304,
+     RETURN = 305,
+     IF = 306,
+     ELSE = 307
    };
 #endif
 
@@ -88,10 +99,11 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 32 "parser.y"
+#line 33 "parser.y"
 
 	NBlock* block;
 	NExpression* expr;
+	NAssignmentExpression* exprassign;
 	NStatement* stmt;
 	NIdentifier* ident;
 	NInteger* numeric;
@@ -110,7 +122,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 114 "parser.hpp"
+#line 126 "parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

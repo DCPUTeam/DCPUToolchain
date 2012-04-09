@@ -47,10 +47,12 @@
      NEWLINE = 263,
      COMMENT = 264,
      ADD = 265,
-     WORD = 266,
-     STRING = 267,
-     CHARACTER = 268,
-     ADDRESS = 269
+     KEYWORD = 266,
+     BOUNDARY = 267,
+     WORD = 268,
+     STRING = 269,
+     CHARACTER = 270,
+     ADDRESS = 271
    };
 #endif
 
@@ -61,7 +63,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 42 "parser.y"
+#line 43 "parser.y"
 
 	int number;
 	char* string;
@@ -74,11 +76,12 @@ typedef union YYSTYPE
 	struct ast_node_line* line;
 	struct ast_node_lines* lines;
 	struct ast_node_root* root;
+	int* token;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 82 "parser.h"
+#line 85 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

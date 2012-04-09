@@ -24,8 +24,12 @@ void count();
 void comment_line();
 void comment();
 extern "C" int yywrap() { return 1; }
+char* trim_and_unescape(char* data, int mode);
 
 %}
+
+%x IN_CHAR
+%x IN_STRING
 
 %%
 
@@ -35,6 +39,30 @@ extern "C" int yywrap() { return 1; }
 "if"					{ count(); return IF; }
 "else"					{ count(); return ELSE; }
 
+	/* String and character analysis */
+
+\'												{ ECHO; yylval.string = new std::string(); BEGIN(IN_CHAR); }
+\"												{ ECHO; yylval.string = new std::string(); BEGIN(IN_STRING); }
+<IN_CHAR>\'										{ ECHO; count(); BEGIN(INITIAL); return CHARACTER; }
+<IN_STRING>\"									{ ECHO; count(); BEGIN(INITIAL); return STRING; }
+<IN_STRING,IN_CHAR>\\a							{ ECHO; *yylval.string += '\a'; }
+<IN_STRING,IN_CHAR>\\b							{ ECHO; *yylval.string += '\b'; }
+<IN_STRING,IN_CHAR>\\f							{ ECHO; *yylval.string += '\f'; }
+<IN_STRING,IN_CHAR>\\n							{ ECHO; *yylval.string += '\n'; }
+<IN_STRING,IN_CHAR>\\r							{ ECHO; *yylval.string += '\r'; }
+<IN_STRING,IN_CHAR>\\t							{ ECHO; *yylval.string += '\t'; }
+<IN_STRING,IN_CHAR>\\v							{ ECHO; *yylval.string += '\v'; }
+<IN_STRING,IN_CHAR>\\\'							{ ECHO; *yylval.string += '\''; }
+<IN_STRING,IN_CHAR>\\\"							{ ECHO; *yylval.string += '\"'; }
+<IN_STRING,IN_CHAR>\\\\							{ ECHO; *yylval.string += '\\'; }
+<IN_STRING,IN_CHAR>\\\?							{ ECHO; *yylval.string += '\?'; }
+<IN_STRING,IN_CHAR>\\[0-7]{1,3}					{ ECHO; *yylval.string += strtoul(yytext + 1, NULL, 8); }
+<IN_STRING,IN_CHAR>\\x[a-fA-F0-9]{2}			{ ECHO; *yylval.string += strtoul(yytext + 2, NULL, 16); }
+<IN_STRING,IN_CHAR>\\[0-9]+						{ /* Generate error: bad escape sequence */ }
+<IN_STRING,IN_CHAR>\\(.|\n)						{ ECHO; *yylval.string += yytext[1]; }
+<IN_STRING>[^\\\n\"]+							{ ECHO; *yylval.string += yytext; }
+<IN_CHAR>[^\\\n\']+								{ ECHO; *yylval.string += yytext; }
+
 	/* Identifiers, numbers and basic lexical components */
 
 [A-Za-z_][A-Za-z0-9_]*	{ yylval.string = new std::string(strdup(yytext)); count(); return IDENTIFIER; }
@@ -42,43 +70,41 @@ extern "C" int yywrap() { return 1; }
 [1-9]+[0-9]*			{ yylval.number = strtoul(yytext, NULL, 10); count(); return NUMBER; }
 0[0-7]*					{ yylval.number = strtoul(yytext, NULL, 8); count(); return NUMBER; }
 0b[0-1]+				{ yylval.number = strtoul(yytext, NULL, 2); count(); return NUMBER; }
-L?'(\\.|[^\\'])+'		{ yylval.string = new std::string(strdup(yytext)); count(); return CHARACTER; }
-L?\"(\\.|[^\\"])*\"		{ yylval.string = new std::string(strdup(yytext)); count(); return STRING; }
-"("						{ count(); return CURVED_OPEN; }
-")"						{ count(); return CURVED_CLOSE; }
-"{"						{ count(); return BRACE_OPEN; }
-"}"						{ count(); return BRACE_CLOSE; }
-","						{ count(); return COMMA; }
-"*"						{ count(); return STAR; }
-";"						{ count(); return SEMICOLON; }
-"."						{ count(); return DOT; }
+"("						{ count(); return yylval.token = CURVED_OPEN; }
+")"						{ count(); return yylval.token = CURVED_CLOSE; }
+"{"						{ count(); return yylval.token = BRACE_OPEN; }
+"}"						{ count(); return yylval.token = BRACE_CLOSE; }
+","						{ count(); return yylval.token = COMMA; }
+"*"						{ count(); return yylval.token = STAR; }
+";"						{ count(); return yylval.token = SEMICOLON; }
+"."						{ count(); return yylval.token = DOT; }
 
 	/* Assignment, equivilance and mathematical operators */
 
-"="						{ count(); return ASSIGN_EQUAL; }
-"+="					{ count(); return ASSIGN_ADD; }
-"-="					{ count(); return ASSIGN_SUBTRACT; }
-"*="					{ count(); return ASSIGN_MULTIPLY; }
-"/="					{ count(); return ASSIGN_DIVIDE; }
-"=="					{ count(); return COMPARE_EQUAL; }
-"!="					{ count(); return COMPARE_NOT_EQUAL; }
-"<"						{ count(); return COMPARE_LESS_THAN; }
-"<="					{ count(); return COMPARE_LESS_THAN_EQUAL; }
-">"						{ count(); return COMPARE_GREATER_THAN; }
-">="					{ count(); return COMPARE_GREATER_THAN_EQUAL; }
-"!"						{ count(); return NEGATE; }
-"++"					{ count(); return INCREMENT; }
-"--"					{ count(); return DECREMENT; }
-"+"						{ count(); return ADD; }
-"-"						{ count(); return SUBTRACT; }
-"/"						{ count(); return SLASH; }
-"&&"					{ count(); return BOOLEAN_AND; }
-"||"					{ count(); return BOOLEAN_OR; }
-"&"						{ count(); return BINARY_AND; }
-"|"						{ count(); return BINARY_OR; }
-"^"						{ count(); return BINARY_XOR; }
-"<<"					{ count(); return BINARY_LEFT_SHIFT; }
-">>"					{ count(); return BINARY_RIGHT_SHIFT; }
+"="						{ count(); return yylval.token = ASSIGN_EQUAL; }
+"+="					{ count(); return yylval.token = ASSIGN_ADD; }
+"-="					{ count(); return yylval.token = ASSIGN_SUBTRACT; }
+"*="					{ count(); return yylval.token = ASSIGN_MULTIPLY; }
+"/="					{ count(); return yylval.token = ASSIGN_DIVIDE; }
+"=="					{ count(); return yylval.token = COMPARE_EQUAL; }
+"!="					{ count(); return yylval.token = COMPARE_NOT_EQUAL; }
+"<"						{ count(); return yylval.token = COMPARE_LESS_THAN; }
+"<="					{ count(); return yylval.token = COMPARE_LESS_THAN_EQUAL; }
+">"						{ count(); return yylval.token = COMPARE_GREATER_THAN; }
+">="					{ count(); return yylval.token = COMPARE_GREATER_THAN_EQUAL; }
+"!"						{ count(); return yylval.token = NEGATE; }
+"++"					{ count(); return yylval.token = INCREMENT; }
+"--"					{ count(); return yylval.token = DECREMENT; }
+"+"						{ count(); return yylval.token = ADD; }
+"-"						{ count(); return yylval.token = SUBTRACT; }
+"/"						{ count(); return yylval.token = SLASH; }
+"&&"					{ count(); return yylval.token = BOOLEAN_AND; }
+"||"					{ count(); return yylval.token = BOOLEAN_OR; }
+"&"						{ count(); return yylval.token = BINARY_AND; }
+"|"						{ count(); return yylval.token = BINARY_OR; }
+"^"						{ count(); return yylval.token = BINARY_XOR; }
+"<<"					{ count(); return yylval.token = BINARY_LEFT_SHIFT; }
+">>"					{ count(); return yylval.token = BINARY_RIGHT_SHIFT; }
 
 	/* Comments and whitespace */
 

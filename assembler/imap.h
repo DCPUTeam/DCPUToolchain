@@ -37,5 +37,6 @@ struct register_mapping
 struct instruction_mapping* get_instruction_by_name(char* name);
 struct register_mapping* get_register_by_name(char* name, bool bracketed);
 struct register_mapping* get_register_by_name_next(char* name);
+void strupper(char *str);
 
 #endif

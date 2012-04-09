@@ -22,6 +22,7 @@
 #include "imap.h"
 #include "aout.h"
 #include "aerr.h"
+#include "parser.h"
 
 void reverse_lines(struct ast_node_lines* lines)
 {
@@ -268,10 +269,27 @@ void process_line(struct ast_node_line* line)
 	struct process_parameter_results dparam;
 	struct ast_node_parameter* dcurrent;
 	uint32_t dchrproc;
+	uint16_t i;
 
 	// Change depending on the type of line.
 	switch (line->type)
 	{
+	case type_keyword:
+		switch (line->keyword)
+		{
+		case BOUNDARY:
+			printf(".BOUNDARY");
+
+			// Emit safety boundary of 16 NULL words.
+			for (i = 0; i < 16; i += 1)
+				aout_emit(aout_create_raw(0));
+
+			break;
+		default:
+			printf("\n");
+			ahalt(ERR_UNSUPPORTED_KEYWORD, NULL);
+		}
+		break;
 	case type_instruction:
 		// Check to see if this is DAT.
 		if (strcmp(line->instruction->instruction, "DAT") == 0)

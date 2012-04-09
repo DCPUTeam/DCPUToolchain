@@ -81,7 +81,7 @@ uint16_t vm_resolve_value_once(vm_t* vm, uint16_t val)
 	switch (val)
 	{
 	case NXT:
-		return vm->ram[(uint16_t)vm->pc];
+		return vm->ram[(uint16_t)vm->ram[(uint16_t)(vm->pc - 1)]];
 	case POP:
 	case PUSH:
 		return vm->ram[(uint16_t)vm->sp];
@@ -93,7 +93,7 @@ uint16_t vm_resolve_value_once(vm_t* vm, uint16_t val)
 	case NXT_VAL_Z:
 	case NXT_VAL_I:
 	case NXT_VAL_J:
-		return vm->ram[(uint16_t)(vm->registers[val - NXT_VAL_A] + vm->ram[vm->pc])];
+		return vm->ram[(uint16_t)(vm->registers[val - NXT_VAL_A] + vm->ram[(uint16_t)(vm->pc - 1)])];
 	default:
 		return vm_resolve_value(vm, val);
 	}

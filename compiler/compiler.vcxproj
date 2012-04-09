@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClCompile Include="asmgen.cpp" />
     <None Include="dist\test.c" />
+    <ClCompile Include="asmtypes.cpp" />
     <ClCompile Include="lexer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -109,16 +110,17 @@
   <ItemGroup>
     <CustomBuild Include="parser.y">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bison -d -oparser.cpp parser.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bison -v -d -oparser.cpp parser.y</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parser.cpp parser.h</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bison -d -oparser.c parser.y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parser.c parser.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bison -v -d -oparser.cpp parser.y</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parser.cpp parser.h</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating C parser...</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating C parser...</Message>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="asmgen.h" />
+    <ClInclude Include="asmtypes.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="parser.hpp" />
     <ClInclude Include="pp.h" />

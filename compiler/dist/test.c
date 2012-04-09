@@ -2,30 +2,34 @@
 // Test file for the DCPU-16 compiler.
 //
 
-#include <screen.m>
+void subcall()
+{
+}
+
+int set(char chr, int x, int y)
+{
+	int mem = 0x8000 + x + y * 32;
+	*mem = chr + 0x7000;
+	subcall();
+	return chr;
+}
 
 void main()
 {
-	int val;
-	val = a(5);
-	scrn_setc('H',  0, 0);
-	scrn_setc('e',  1, 0);
-	scrn_setc('l',  2, 0);
-	scrn_setc('l',  3, 0);
-	scrn_setc('o',  4, 0);
-	scrn_setc(' ',  5, 0);
-	scrn_setc('W',  6, 0);
-	scrn_setc('o',  7, 0);
-	scrn_setc('r',  8, 0);
-	scrn_setc('l',  9, 0);
-	scrn_setc('d', 10, 0);
-	if (val == 10)
-		scrn_setc('!', 11, 0);
-	else
-		scrn_setc('#', 11, 0);
-}
+	set('H', 0, 0);
+	set('e', 1, 0);
+	set('l', 2, 0);
+	set('l', 3, 0);
+	set('o', 4, 0);
+	set(' ', 5, 0);
+	set('0', 6, 0);
+	set('x', 7, 0);
+	set('1', 8, 0);
+	set('0', 9, 0);
+	set('c', 10, 0);
 
-int a(int b)
-{
-	return 5 + b;
+	set('T', 0, 1);
+	set('e', 1, 1);
+	set('s', 2, 1);
+	set('t', 3, 1);
 }

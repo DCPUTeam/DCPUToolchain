@@ -12,5 +12,5 @@ int* scrn_getmempos(int x, int y)
 void scrn_setc(char c, int x, int y)
 {
 	int* mem = scrn_getmempos(x, y);
-	mem = 0x7000 + c;
+	*mem = 0x7000 + c;
 }

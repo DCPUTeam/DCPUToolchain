@@ -44,6 +44,9 @@
     <ClCompile Include="node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="asmtypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lexer.l">
@@ -64,6 +67,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="asmgen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="asmtypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
