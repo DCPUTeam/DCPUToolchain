@@ -730,3 +730,10 @@ AsmBlock* NForStatement::compile(AsmGenerator& context)
 
 	return block;
 }
+
+AsmBlock* NStructureDeclaration::compile(AsmGenerator& context)
+{
+	// There is nothing to do for a structure declaration as
+	// everything is handled when we first use the structure.
+	return NULL;
+}

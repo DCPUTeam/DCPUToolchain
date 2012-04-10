@@ -38,9 +38,10 @@ vm_t* vm_create()
 	new_vm->dummy = 0x0;
 	new_vm->halted = false;
 	new_vm->skip = false;
+	new_vm->debug = false;
 	
 	// Initialize DCPU-16 components.
-	vm_scrn_init(new_vm);
+	vm_scrn_init(new_vm, 32, 16);
 
 	// Return.
 	return new_vm;
@@ -69,6 +70,7 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 	vm->dummy = 0x0;
 	vm->halted = false;
 	vm->skip = false;
+	vm->debug = false;
 }
 
 void vm_execute(vm_t* vm)

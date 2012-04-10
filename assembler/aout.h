@@ -20,8 +20,12 @@
 #include <stdio.h>
 #include "dcpu.h"
 
+#define AOUT_TYPE_NORMAL 0
+#define AOUT_TYPE_METADATA_EXTENSION 1
+
 struct aout_byte
 {
+	uint16_t type;
 	uint16_t opcode;
 	uint16_t a;
 	uint16_t b;
@@ -40,6 +44,7 @@ struct aout_byte* aout_create_opcode(uint16_t opcode, uint16_t a, uint16_t b);
 struct aout_byte* aout_create_raw(uint16_t raw);
 struct aout_byte* aout_create_label(char* name);
 struct aout_byte* aout_create_label_replace(char* name);
+struct aout_byte* aout_create_metadata_extension(char* name);
 void aout_emit(struct aout_byte* byte);
 void aout_write(FILE* out);
 

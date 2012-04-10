@@ -107,6 +107,7 @@ typedef struct
 	uint16_t dummy; // Dummy position for assignments that silently fail.
 	uint8_t halted;
 	uint8_t skip;
+	uint8_t debug;
 } vm_t;
 
 vm_t* vm_create();

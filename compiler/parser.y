@@ -25,7 +25,7 @@ extern int yycolumn;
 void yyerror(const char* msg)
 {
 	fflush(stdout);
-	printf("\n%*s\n%*s\n", yycolumn, "^", yycolumn, msg);
+	fprintf(stderr, "\n%*s\n%*s\n", yycolumn, "^", yycolumn, msg);
 }
 
 %}
@@ -40,6 +40,7 @@ void yyerror(const char* msg)
 	NType* type;
 	NDeclarations* decls;
 	NFunctionDeclaration* function;
+	NStructureDeclaration* structure;
 	NVariableDeclaration *variable;
 	std::vector<NExpression*> *exprvec;
 	std::vector<NDeclaration*> *declvec;
@@ -52,7 +53,7 @@ void yyerror(const char* msg)
 
 /* TOKENS: Identifiers, numbers and basic lexical components */
 %token <token> CURVED_OPEN CURVED_CLOSE BRACE_OPEN BRACE_CLOSE COMMA
-%token <token> STAR SEMICOLON DOT
+%token <token> STAR SEMICOLON DOT STRUCT
 %token <number> NUMBER
 %token <string> IDENTIFIER CHARACTER STRING
 
@@ -76,10 +77,11 @@ void yyerror(const char* msg)
 %type <ident> ident
 %type <expr> expr numeric string character deref
 %type <exprassign> expr_assign
-%type <varvec> func_decl_args
+%type <varvec> func_decl_args struct_decl_args
 %type <exprvec> call_args
-%type <decls> program func_list
+%type <decls> program prog_decl
 %type <function> func_decl
+%type <structure> struct_decl
 %type <variable> var_decl
 %type <block> block stmts block_or_stmt
 %type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug
@@ -107,21 +109,30 @@ void yyerror(const char* msg)
 %%
 
 program:
-		func_list
+		prog_decl
 		{
 			program = $1;
 			$$ = $1;
 		} ;
 
-func_list:
+prog_decl:
 		func_decl
 		{
 			$$ = new NDeclarations();
 			$$->definitions.push_back($<function>1);
 		} |
-		func_list func_decl
+		struct_decl
+		{
+			$$ = new NDeclarations();
+			$$->definitions.push_back($<structure>1);
+		} |
+		prog_decl func_decl
 		{
 			$1->definitions.push_back($<function>2);
+		} |
+		prog_decl struct_decl
+		{
+			$1->definitions.push_back($<structure>2);
 		} ;
 
 func_decl:
@@ -142,6 +153,28 @@ func_decl_args:
 			$$->push_back($<variable>1);
 		} |
 		func_decl_args COMMA var_decl
+		{
+			$1->push_back($<variable>3);
+		} ;
+
+struct_decl:
+		STRUCT ident BRACE_OPEN struct_decl_args BRACE_CLOSE SEMICOLON
+		{
+			$$ = new NStructureDeclaration(*$2, *$4);
+			//delete $4;
+		} ;
+
+struct_decl_args:
+		/* empty */
+		{
+			$$ = new VariableList();
+		} |
+		var_decl
+		{
+			$$ = new VariableList();
+			$$->push_back($<variable>1);
+		} |
+		struct_decl_args SEMICOLON var_decl
 		{
 			$1->push_back($<variable>3);
 		} ;

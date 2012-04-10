@@ -135,6 +135,8 @@
     <ClCompile Include="lexer.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="parser.c" />
+    <ClCompile Include="textn.c" />
+    <ClCompile Include="treloc.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aerr.h" />
@@ -143,6 +145,8 @@
     <ClInclude Include="imap.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="parser.h" />
+    <ClInclude Include="textn.h" />
+    <ClInclude Include="treloc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

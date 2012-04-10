@@ -13,8 +13,11 @@
 
 **/
 
+#define PRIVATE_VM_ACCESS
+
 #include "dcpubase.h"
 #include "dcpuops.h"
+#include "dcpuhook.h"
 
 #define VM_CHECK_ARITHMETIC_FLOW(op, val_a, val_b) \
 	if ((int32_t)val_a op (int32_t)val_b < (int32_t)0) \
@@ -25,6 +28,10 @@
 		vm->o = AR_NOFLOW;
 
 #define VM_SKIP_RESET if(vm->skip) {vm->skip = false; return;}
+
+#define VM_HOOK_FIRE \
+	if (store_a >= (uint16_t*)&vm->ram && store_a < (uint16_t*)&vm->ram + 0x10000) \
+		vm_hook_fire(vm, (uint16_t)(store_a - (uint16_t*)&vm->ram));
 
 uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc)
 {
@@ -105,6 +112,7 @@ void vm_op_set(vm_t* vm, uint16_t a, uint16_t b)
 	uint16_t* store_a = vm_internal_get_store(vm, a);
 	val_b = vm_resolve_value(vm, b);
 	*store_a = val_b;
+	VM_HOOK_FIRE;
 	vm->skip = false;
 }
 
@@ -117,6 +125,7 @@ void vm_op_add(vm_t* vm, uint16_t a, uint16_t b)
 	VM_SKIP_RESET;
 	*store_a = val_a + val_b;
 	VM_CHECK_ARITHMETIC_FLOW(+, val_a, val_b);
+	VM_HOOK_FIRE;
 }
 
 void vm_op_sub(vm_t* vm, uint16_t a, uint16_t b)
@@ -128,6 +137,7 @@ void vm_op_sub(vm_t* vm, uint16_t a, uint16_t b)
 	VM_SKIP_RESET;
 	*store_a = val_a - val_b;
 	VM_CHECK_ARITHMETIC_FLOW(-, val_a, val_b);
+	VM_HOOK_FIRE;
 }
 
 void vm_op_mul(vm_t* vm, uint16_t a, uint16_t b)
@@ -139,6 +149,7 @@ void vm_op_mul(vm_t* vm, uint16_t a, uint16_t b)
 	VM_SKIP_RESET;
 	*store_a = val_a * val_b;
 	vm->o = ((val_a * val_b) >> 16) & 0xffff;
+	VM_HOOK_FIRE;
 }
 
 void vm_op_div(vm_t* vm, uint16_t a, uint16_t b)
@@ -158,6 +169,7 @@ void vm_op_div(vm_t* vm, uint16_t a, uint16_t b)
 		*store_a = 0;
 		vm->o = 0;
 	}
+	VM_HOOK_FIRE;
 }
 
 void vm_op_mod(vm_t* vm, uint16_t a, uint16_t b)
@@ -171,6 +183,7 @@ void vm_op_mod(vm_t* vm, uint16_t a, uint16_t b)
 		*store_a = val_a % val_b;
 	else
 		*store_a = 0;
+	VM_HOOK_FIRE;
 }
 
 void vm_op_shl(vm_t* vm, uint16_t a, uint16_t b)
@@ -182,6 +195,7 @@ void vm_op_shl(vm_t* vm, uint16_t a, uint16_t b)
 	VM_SKIP_RESET;
 	*store_a = val_a << val_b;
 	vm->o = ((val_a << val_b) >> 16) & 0xffff;
+	VM_HOOK_FIRE;
 }
 
 void vm_op_shr(vm_t* vm, uint16_t a, uint16_t b)
@@ -193,6 +207,7 @@ void vm_op_shr(vm_t* vm, uint16_t a, uint16_t b)
 	VM_SKIP_RESET;
 	*store_a = val_a >> val_b;
 	vm->o = ((val_a << 16) >> val_b) & 0xffff;
+	VM_HOOK_FIRE;
 }
 
 void vm_op_and(vm_t* vm, uint16_t a, uint16_t b)
@@ -203,6 +218,7 @@ void vm_op_and(vm_t* vm, uint16_t a, uint16_t b)
 	val_b = vm_resolve_value(vm, b);
 	VM_SKIP_RESET;
 	*store_a = val_a & val_b;
+	VM_HOOK_FIRE;
 }
 
 void vm_op_bor(vm_t* vm, uint16_t a, uint16_t b)
@@ -223,6 +239,7 @@ void vm_op_xor(vm_t* vm, uint16_t a, uint16_t b)
 	val_b = vm_resolve_value(vm, b);
 	VM_SKIP_RESET;
 	*store_a = val_a ^ val_b;
+	VM_HOOK_FIRE;
 }
 
 void vm_op_ife(vm_t* vm, uint16_t a, uint16_t b)

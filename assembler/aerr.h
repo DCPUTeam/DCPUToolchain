@@ -27,6 +27,8 @@
 #define ERR_DAT_UNSUPPORTED_PARAMETER 6
 #define ERR_GEN_UNSUPPORTED_PARAMETER 7
 #define ERR_UNSUPPORTED_KEYWORD 8
+#define ERR_EXTENSION_TABLE_TOO_LARGE 9
+#define ERR_EXTENSION_UNKNOWN 10
 
 // Variables
 extern const char* err_strings[];

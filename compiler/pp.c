@@ -51,7 +51,7 @@ void pp_add_search_path(const char* path)
 	// Check to see whether we can't include any more paths.
 	if (pp_included_count == PATH_COUNT_MAX)
 	{
-		printf("preprocessor: maximum number of include paths (%i) reached, ignoring %s.\n", PATH_COUNT_MAX, path);
+		fprintf(stderr, "preprocessor: maximum number of include paths (%i) reached, ignoring %s.\n", PATH_COUNT_MAX, path);
 		return;
 	}
 
@@ -72,14 +72,14 @@ void pp_include(char* line, FILE* in, FILE* out)
 	// Check to make sure the syntax is correct.
 	if (pos_a == NULL || pos_b == NULL)
 	{
-		printf("preprocessor: include directive '#%s' must use angled brackets.\n", line);
+		fprintf(stderr, "preprocessor: include directive '#%s' must use angled brackets.\n", line);
 		return;
 	}
 
 	// Check to see whether we can't include any more files.
 	if (pp_included_count == INCLUDE_MAX)
 	{
-		printf("preprocessor: maximum number of includes (%i) reached.\n", INCLUDE_MAX);
+		fprintf(stderr, "preprocessor: maximum number of includes (%i) reached.\n", INCLUDE_MAX);
 		return;
 	}
 
@@ -104,10 +104,10 @@ void pp_include(char* line, FILE* in, FILE* out)
 			path_i++;
 	}
 	if (included == NULL)
-		printf("preprocessor: can not include %s.\n", fname);
+		fprintf(stderr, "preprocessor: can not include %s.\n", fname);
 	else
 	{
-		printf("preprocessor: including %s.\n", fname);
+		fprintf(stderr, "preprocessor: including %s.\n", fname);
 		pp_included_names[pp_included_count++] = fname;
 		pp_base(included, out);
 	}
@@ -137,7 +137,7 @@ void pp_base(FILE* in, FILE* out)
 			if (strsw(line, "include"))
 				pp_include(line, in, out);
 			else
-				printf("preprocessor: ignoring unknown directive #%s.\n", line);
+				fprintf(stderr, "preprocessor: ignoring unknown directive #%s.\n", line);
 			
 			// Reset variables.
 			has_newline = false;
@@ -160,26 +160,31 @@ FILE* pp_do(const char* input)
 	FILE* out;
 	if (pp_fname != NULL)
 	{
-		printf("preprocessor: a preprocessing output file is already open.\n");
+		fprintf(stderr, "preprocessor: a preprocessing output file is already open.\n");
 		return NULL;
 	}
 	pp_fname = _tempnam(".", "pp.");
-	in = fopen(input, "r");
+	if (strcmp(input, "-") == 0)
+		in = stdin;
+	else
+		in = fopen(input, "r");
 	if (in == NULL)
 	{
-		printf("preprocessor: unable to read from input file.\n");
+		fprintf(stderr, "preprocessor: unable to read from input file.\n");
 		return NULL;
 	}
 	out = fopen(pp_fname, "wb+");
 	if (out == NULL)
 	{
-		fclose(in);
-		printf("preprocessor: unable to write to temporary output file '%s'.\n", pp_fname);
+		if (strcmp(input, "-") != 0)
+			fclose(in);
+		fprintf(stderr, "preprocessor: unable to write to temporary output file '%s'.\n", pp_fname);
 		return NULL;
 	}
 	pp_init();
 	pp_base(in, out);
-	fclose(in);
+	if (strcmp(input, "-") != 0)
+		fclose(in);
 	fseek(out, 0, SEEK_SET);
 	return out;
 }

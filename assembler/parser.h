@@ -49,10 +49,11 @@
      ADD = 265,
      KEYWORD = 266,
      BOUNDARY = 267,
-     WORD = 268,
-     STRING = 269,
-     CHARACTER = 270,
-     ADDRESS = 271
+     EXTENSION = 268,
+     WORD = 269,
+     STRING = 270,
+     CHARACTER = 271,
+     ADDRESS = 272
    };
 #endif
 
@@ -81,7 +82,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 85 "parser.h"
+#line 86 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

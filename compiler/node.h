@@ -159,6 +159,16 @@ public:
 	virtual AsmBlock* compile(AsmGenerator& context);
 };
 
+class NStructureDeclaration : public NDeclaration
+{
+public:
+	const NIdentifier& id;
+	VariableList fields;
+	NStructureDeclaration(const NIdentifier& id, const VariableList& fields) :
+		id(id), fields(fields), NDeclaration("structure") { };
+	virtual AsmBlock* compile(AsmGenerator& context);
+};
+
 class NDeclarations : public Node
 {
 public:

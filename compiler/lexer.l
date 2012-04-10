@@ -47,6 +47,7 @@ char* trim_and_unescape(char* data, int mode);
 "while"					{ count(); return WHILE; }
 "for"					{ count(); return FOR; }
 "debug"					{ count(); return DEBUG; }
+"struct"				{ count(); return STRUCT; }
 
 	/* String and character analysis */
 

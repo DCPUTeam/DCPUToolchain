@@ -50,13 +50,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)third-party\libtcod\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)third-party\libtcod\include;$(SolutionDir)\third-party\argtable2</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)third-party\libtcod\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcod-VS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)third-party\libtcod\lib;$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcod-VS.lib;argtable2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(SolutionDir)third-party\libtcod\bin\*" "$(TargetDir)"</Command>
@@ -81,15 +81,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)third-party\libtcod\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)third-party\libtcod\include;$(SolutionDir)\third-party\argtable2</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)third-party\libtcod\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcod-VS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)third-party\libtcod\lib;$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcod-VS.lib;argtable2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)*.dcpu16" "$(TargetDir)"
@@ -108,6 +108,7 @@ xcopy /Y "$(SolutionDir)third-party\libtcod\bin\*" "$(TargetDir)"</Command>
   <ItemGroup>
     <ClCompile Include="dcpu.c" />
     <ClCompile Include="dcpubase.c" />
+    <ClCompile Include="dcpuhook.c" />
     <ClCompile Include="dcpuops.c" />
     <ClCompile Include="dcpuscrn.c" />
     <ClCompile Include="main.c" />
@@ -115,6 +116,7 @@ xcopy /Y "$(SolutionDir)third-party\libtcod\bin\*" "$(TargetDir)"</Command>
   <ItemGroup>
     <ClInclude Include="dcpu.h" />
     <ClInclude Include="dcpubase.h" />
+    <ClInclude Include="dcpuhook.h" />
     <ClInclude Include="dcpuops.h" />
     <ClInclude Include="dcpuscrn.h" />
   </ItemGroup>

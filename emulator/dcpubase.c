@@ -13,10 +13,13 @@
 
 **/
 
+#define PRIVATE_VM_ACCESS
+
 #include <stdarg.h>
 #include <stdio.h>
 #include "dcpubase.h"
 #include "dcpuops.h"
+#include "dcpuhook.h"
 
 void vm_halt(vm_t* vm, const char* message, ...)
 {
@@ -95,6 +98,8 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val)
 
 void vm_print_op(const char* opname, vm_t* vm, uint16_t a, uint16_t b)
 {
+	if (!vm->debug)
+		return;
 	if (vm->skip)
 		printf("(skipped) %s 0x%04X 0x%04X", opname, a, b);
 	else
@@ -103,6 +108,8 @@ void vm_print_op(const char* opname, vm_t* vm, uint16_t a, uint16_t b)
 
 void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
 {
+	if (!vm->debug)
+		return;
 	if (vm->skip)
 		printf("(skipped) %s 0x%04X", opname, a);
 	else
@@ -197,5 +204,6 @@ void vm_cycle(vm_t* vm)
 		vm_halt(vm, "Invalid opcode %u.", op);
 		break;
 	}
-	printf("\n");
+	if (vm->debug)
+		printf("\n");
 }

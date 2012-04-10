@@ -50,6 +50,12 @@
     <ClCompile Include="aerr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="treloc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="node.h">
@@ -68,6 +74,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="aerr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="treloc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="textn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

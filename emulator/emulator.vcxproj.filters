@@ -30,6 +30,9 @@
     <ClCompile Include="dcpuscrn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dcpuhook.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dcpu.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dcpuscrn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dcpuhook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -57,7 +57,7 @@ int yywrap()
 
 // Define our lexical token names.
 %token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT ADD
-%token <token> KEYWORD BOUNDARY
+%token <token> KEYWORD BOUNDARY EXTENSION
 %token <string> WORD STRING CHARACTER
 %token <number> ADDRESS
 
@@ -118,6 +118,15 @@ line:
 		NEWLINE
 		{
 			$$ = NULL;
+		} |
+		KEYWORD WORD NEWLINE
+		{
+			$$ = malloc(sizeof(struct ast_node_line));
+			$$->type = type_keyword;
+			$$->keyword = $1;
+			$$->instruction = NULL;
+			$$->label = $2;
+			$$->prev = NULL;
 		} |
 		KEYWORD NEWLINE
 		{

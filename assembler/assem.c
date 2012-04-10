@@ -99,10 +99,10 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 		if (registr->value == VALUE_NEXT_UNSUPPORTED)
 		{
 			// Attempt to use a register in brackets that can't be.
-			printf("\n");
+			fprintf(stderr, "\n");
 			ahalt(ERR_NEXTED_REGISTER_UNSUPPORTED, param->addcmpt);
 		}
-		printf("[0x%04X+%s]", param->value, registr->name);
+		fprintf(stderr, "[0x%04X+%s]", param->value, registr->name);
 		result.v = registr->value;
 		result.v_extra = param->value;
 		result.v_extra_used = true;
@@ -113,12 +113,12 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 		// This is either the form 0x1000 or [0x1000].
 		if (param->bracketed)
 		{
-			printf("[0x%04X]", param->value);
+			fprintf(stderr, "[0x%04X]", param->value);
 			result.v = NXT;
 		}
 		else
 		{
-			printf("0x%04X", param->value);
+			fprintf(stderr, "0x%04X", param->value);
 			result.v = NXT_LIT;
 		}
 		result.v_extra = param->value;
@@ -133,9 +133,9 @@ struct process_parameter_results process_register(struct ast_node_register* para
 	struct process_parameter_results result;
 	struct register_mapping* registr;
 	if (param->bracketed)
-		printf("[%s]", param->value);
+		fprintf(stderr, "[%s]", param->value);
 	else
-		printf("%s", param->value);
+		fprintf(stderr, "%s", param->value);
 	registr = get_register_by_name(param->value, param->bracketed);
 	if (registr == NULL)
 	{
@@ -150,7 +150,7 @@ struct process_parameter_results process_register(struct ast_node_register* para
 	else if (registr->value == BRACKETS_UNSUPPORTED)
 	{
 		// Attempt to use a register in brackets that can't be.
-		printf("\n");
+		fprintf(stderr, "\n");
 		ahalt(ERR_BRACKETED_REGISTER_UNSUPPORTED, param->value);
 	}
 	else
@@ -175,7 +175,7 @@ struct process_parameter_results process_parameter(struct ast_node_parameter* pa
 	result.v_label = NULL;
 	result.v_label_bracketed = false;
 	result.v_raw = NULL;
-	printf(" ");
+	fprintf(stderr, " ");
 	switch (param->type)
 	{
 	case type_address:
@@ -215,7 +215,7 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 		t = process_parameter(params->last);
 		if (t.v_raw)
 		{
-			printf("\n");
+			fprintf(stderr, "\n");
 			ahalt(ERR_GEN_UNSUPPORTED_PARAMETER, NULL);
 		}
 		result.a = t.v;
@@ -228,7 +228,7 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 			t = process_parameter(params->last->prev);
 			if (t.v_raw)
 			{
-				printf("\n");
+				fprintf(stderr, "\n");
 				ahalt(ERR_GEN_UNSUPPORTED_PARAMETER, NULL);
 			}
 			result.b = t.v;
@@ -278,24 +278,32 @@ void process_line(struct ast_node_line* line)
 		switch (line->keyword)
 		{
 		case BOUNDARY:
-			printf(".BOUNDARY");
+			fprintf(stderr, ".BOUNDARY");
 
 			// Emit safety boundary of 16 NULL words.
 			for (i = 0; i < 16; i += 1)
 				aout_emit(aout_create_raw(0));
 
 			break;
+		case EXTENSION:
+			fprintf(stderr, ".EXTENSION %s", line->label);
+
+			// Emit extension metadata.
+			aout_emit(aout_create_metadata_extension(line->label));
+
+			break;
 		default:
-			printf("\n");
+			fprintf(stderr, "\n");
 			ahalt(ERR_UNSUPPORTED_KEYWORD, NULL);
 		}
+		fprintf(stderr, "\n");
 		break;
 	case type_instruction:
 		// Check to see if this is DAT.
 		if (strcmp(line->instruction->instruction, "DAT") == 0)
 		{
 			// Handle data.
-			printf("EMIT DAT");
+			fprintf(stderr, "EMIT DAT");
 
 			// Process parameters as data.
 			reverse_parameters(line->instruction->parameters);
@@ -310,7 +318,7 @@ void process_line(struct ast_node_line* line)
 					aout_emit(aout_create_label_replace(dparam.v_label));
 				else if (dparam.v_raw != NULL) // If the raw field is not null, get each character and output it.
 				{
-					printf(" \"%s\"", (const char*)dparam.v_raw);
+					fprintf(stderr, " \"%s\"", (const char*)dparam.v_raw);
 					for (dchrproc = 0; dchrproc < strlen(dparam.v_raw); dchrproc++)
 						aout_emit(aout_create_raw(dparam.v_raw[dchrproc]));
 				}
@@ -318,7 +326,7 @@ void process_line(struct ast_node_line* line)
 					aout_emit(aout_create_raw(dparam.v_extra));
 				else // Something that isn't handled by DAT.
 				{
-					printf("\n");
+					fprintf(stderr, "\n");
 					ahalt(ERR_DAT_UNSUPPORTED_PARAMETER, NULL);
 				}
 
@@ -329,7 +337,7 @@ void process_line(struct ast_node_line* line)
 		{
 			// Handle instruction.
 			insttype = get_instruction_by_name(line->instruction->instruction);
-			printf("EMIT %s", insttype->name);
+			fprintf(stderr, "EMIT %s", insttype->name);
 		
 			// Process parameters normally.
 			ppresults = process_parameters(line->instruction->parameters);
@@ -357,11 +365,11 @@ void process_line(struct ast_node_line* line)
 			else if (ppresults.b_extra_used)
 				aout_emit(aout_create_raw(ppresults.b_extra));
 		}
-		printf("\n");
+		fprintf(stderr, "\n");
 		break;
 	case type_label:
 		// Handle label definition.
-		printf(":%s\n", line->label->name);
+		fprintf(stderr, ":%s\n", line->label->name);
 		aout_emit(aout_create_label(line->label->name));
 		break;
 	}

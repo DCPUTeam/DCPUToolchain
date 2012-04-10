@@ -47,53 +47,54 @@
      STAR = 263,
      SEMICOLON = 264,
      DOT = 265,
-     NUMBER = 266,
-     IDENTIFIER = 267,
-     CHARACTER = 268,
-     STRING = 269,
-     ASSIGN_EQUAL = 270,
-     ASSIGN_ADD = 271,
-     ASSIGN_SUBTRACT = 272,
-     ASSIGN_MULTIPLY = 273,
-     ASSIGN_DIVIDE = 274,
-     COMPARE_EQUAL = 275,
-     COMPARE_NOT_EQUAL = 276,
-     COMPARE_LESS_THAN = 277,
-     COMPARE_LESS_THAN_EQUAL = 278,
-     COMPARE_GREATER_THAN = 279,
-     COMPARE_GREATER_THAN_EQUAL = 280,
-     NEGATE = 281,
-     BITWISE_NEGATE = 282,
-     INCREMENT = 283,
-     DECREMENT = 284,
-     ADD = 285,
-     SUBTRACT = 286,
-     SLASH = 287,
-     PERCENT = 288,
-     BOOLEAN_AND = 289,
-     BOOLEAN_OR = 290,
-     BINARY_AND = 291,
-     BINARY_OR = 292,
-     BINARY_XOR = 293,
-     BINARY_LEFT_SHIFT = 294,
-     BINARY_RIGHT_SHIFT = 295,
-     IREF = 296,
-     IDEREF = 297,
-     IADDROF = 298,
-     IUNARYPLUS = 299,
-     IUNARYMINUS = 300,
-     IPREINC = 301,
-     IPREDEC = 302,
-     IPOSTINC = 303,
-     IPOSTDEC = 304,
-     TRUE = 305,
-     FALSE = 306,
-     RETURN = 307,
-     IF = 308,
-     ELSE = 309,
-     WHILE = 310,
-     FOR = 311,
-     DEBUG = 312
+     STRUCT = 266,
+     NUMBER = 267,
+     IDENTIFIER = 268,
+     CHARACTER = 269,
+     STRING = 270,
+     ASSIGN_EQUAL = 271,
+     ASSIGN_ADD = 272,
+     ASSIGN_SUBTRACT = 273,
+     ASSIGN_MULTIPLY = 274,
+     ASSIGN_DIVIDE = 275,
+     COMPARE_EQUAL = 276,
+     COMPARE_NOT_EQUAL = 277,
+     COMPARE_LESS_THAN = 278,
+     COMPARE_LESS_THAN_EQUAL = 279,
+     COMPARE_GREATER_THAN = 280,
+     COMPARE_GREATER_THAN_EQUAL = 281,
+     NEGATE = 282,
+     BITWISE_NEGATE = 283,
+     INCREMENT = 284,
+     DECREMENT = 285,
+     ADD = 286,
+     SUBTRACT = 287,
+     SLASH = 288,
+     PERCENT = 289,
+     BOOLEAN_AND = 290,
+     BOOLEAN_OR = 291,
+     BINARY_AND = 292,
+     BINARY_OR = 293,
+     BINARY_XOR = 294,
+     BINARY_LEFT_SHIFT = 295,
+     BINARY_RIGHT_SHIFT = 296,
+     IREF = 297,
+     IDEREF = 298,
+     IADDROF = 299,
+     IUNARYPLUS = 300,
+     IUNARYMINUS = 301,
+     IPREINC = 302,
+     IPREDEC = 303,
+     IPOSTINC = 304,
+     IPOSTDEC = 305,
+     TRUE = 306,
+     FALSE = 307,
+     RETURN = 308,
+     IF = 309,
+     ELSE = 310,
+     WHILE = 311,
+     FOR = 312,
+     DEBUG = 313
    };
 #endif
 
@@ -115,6 +116,7 @@ typedef union YYSTYPE
 	NType* type;
 	NDeclarations* decls;
 	NFunctionDeclaration* function;
+	NStructureDeclaration* structure;
 	NVariableDeclaration *variable;
 	std::vector<NExpression*> *exprvec;
 	std::vector<NDeclaration*> *declvec;
@@ -127,7 +129,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 131 "parser.hpp"
+#line 133 "parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

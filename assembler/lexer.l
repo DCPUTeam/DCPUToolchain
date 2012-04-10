@@ -55,23 +55,24 @@ char* trim_and_unescape(char* data, int mode)
 
 	/* Assembler keywords */
 
-\.BOUNDARY				yylval.number = BOUNDARY; return KEYWORD;
+\.BOUNDARY					yylval.number = BOUNDARY; return KEYWORD;
+\.EXTENSION					yylval.number = EXTENSION; return KEYWORD;
 
 	/* General stuff */
 
-[A-Za-z_]+[A-Za-z0-9_]*	yylval.string = strdup(yytext); return WORD;
-0x[0-9A-Fa-f]+			yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
-[0-9]+					yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
-L?'(\\.|[^\\'])+'		{ yylval.string = trim_and_unescape(strdup(yytext), 1); return CHARACTER; }
-L?\"(\\.|[^\\"])*\"		{ yylval.string = trim_and_unescape(strdup(yytext), 0); return STRING; }
-,						return COMMA;
-\[						return BRACKET_OPEN;
-\]						return BRACKET_CLOSE;
-\:						return COLON;
-\+						return ADD;
+[A-Za-z_-]+[A-Za-z0-9_-]*	yylval.string = strdup(yytext); return WORD;
+0x[0-9A-Fa-f]+				yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
+[0-9]+						yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
+L?'(\\.|[^\\'])+'			{ yylval.string = trim_and_unescape(strdup(yytext), 1); return CHARACTER; }
+L?\"(\\.|[^\\"])*\"			{ yylval.string = trim_and_unescape(strdup(yytext), 0); return STRING; }
+,							return COMMA;
+\[							return BRACKET_OPEN;
+\]							return BRACKET_CLOSE;
+\:							return COLON;
+\+							return ADD;
 
-\n						yylineno++; return NEWLINE;
-\;[^\r\n]*              /* ignore comments */;
-[ \t]+                  /* ignore whitespace */;
+\n							yylineno++; return NEWLINE;
+\;[^\r\n]*					/* ignore comments */;
+[ \t]+						/* ignore whitespace */;
 
 %%

@@ -11,6 +11,10 @@
 
 **/
 
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <setjmp.h>
@@ -34,11 +38,10 @@ int main(int argc, char* argv[])
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_lit* gen_relocatable = arg_lit0("r", "relocatable", "Generate relocatable code.");
-	struct arg_lit* invoke_emulator = arg_lit0("e", NULL, "Invoke the emulator on the output automatically.");
-	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file.");
-	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file.");
+	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
+	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	struct arg_end *end = arg_end(20);
-	void *argtable[] = { output_file, gen_relocatable, show_help, invoke_emulator, input_file, end };
+	void *argtable[] = { output_file, gen_relocatable, show_help, input_file, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc,argv,argtable);
@@ -46,9 +49,9 @@ int main(int argc, char* argv[])
 	{
 		if (show_help->count != 0)
 			arg_print_errors(stdout, end, "assembler");
-		printf("\syntax:\n    assembler");
+		fprintf(stderr,"\syntax:\n    assembler");
 		arg_print_syntax(stdout, argtable, "\n");
-		printf("\options:\n");
+		fprintf(stderr,"\options:\n");
 		arg_print_glossary(stdout, argtable, "    %-25s %s\n");
 		exit(1);
 	}
@@ -58,56 +61,69 @@ int main(int argc, char* argv[])
 	if (errval != NULL)
 	{
 		// Handle the error.
-		printf("assembler: internal error occurred.\n");
-		printf(err_strings[errval->errid], errval->errdata);
+		fprintf(stderr, "assembler: internal error occurred.\n");
+		fprintf(stderr, err_strings[errval->errid], errval->errdata);
 		if (img != NULL)
 			fclose(img);
 		return 1;
 	}
+	
+	// Load from either file or stdin.
+	if (strcmp(input_file->filename[0], "-") != 0)
+	{
+		// Open file.
+		yyin = fopen(input_file->filename[0], "r");
+		if (yyin == NULL)
+		{
+			fprintf(stderr,"assembler: input file not found.\n");
+			return 1;
+		}
+	}
+	else
+	{
+		// Set yyin to stdin.
+		yyin = stdin;
+	}
 
 	// Parse assembly.
-	yyin = fopen(input_file->filename[0], "r");
-	if (yyin == NULL)
-	{
-		printf("assembler: input file not found.\n");
-		return 1;
-	}
 	yyparse();
-	fclose(yyin);
+	if (yyin != stdin)
+		fclose(yyin);
 	if (&ast_root == NULL)
 	{
-		printf("assembler: syntax error, see above.\n");
+		fprintf(stderr, "assembler: syntax error, see above.\n");
 		return 1;
 	}
 	
 	// Process AST.
 	process_root(&ast_root);
-
-	// Write to file.
-	img = fopen(output_file->filename[0], "wb");
-	if (img == NULL)
+	
+	// Save to either file or stdout.
+	if (strcmp(output_file->filename[0], "-") != 0)
 	{
-		printf("assembler: output file not writable.\n");
-		return 1;
+		// Write to file.
+		img = fopen(output_file->filename[0], "wb");
+		if (img == NULL)
+		{
+			fprintf(stderr, "assembler: output file not writable.\n");
+			return 1;
+		}
 	}
+	else
+	{
+		// Windows needs stdout in binary mode.
+#ifdef _WIN32
+		_setmode( _fileno( stdout ), _O_BINARY );
+#endif
+
+		// Set img to stdout.
+		img = stdout;
+	}
+	
+	// Write content.
 	aout_write(img, (gen_relocatable->count > 0));
 	fclose(img);
-	printf("assembler: completed successfully.\n");
-
-	// Execute emulator if desired.
-	if (invoke_emulator->count > 0)
-	{
-		memset(emucmd, 0, EMU_CMD_SIZE);
-		strcat(emucmd, "emulator \"");
-		strcat(emucmd, output_file->filename[0]);
-		strcat(emucmd, "\"");
-		printf("assembler: executing %s", emucmd);
-		emures = system(emucmd);
-		if (emures == 0)
-			printf("assembler: emulator exited successfully.\n");
-		else
-			printf("assembler: emulator exited with code %i.\n", emures);
-	}
+	fprintf(stderr, "assembler: completed successfully.\n");
 	
 	return 0;
 }
