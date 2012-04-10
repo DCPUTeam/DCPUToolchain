@@ -105,6 +105,7 @@ public:
     NIdentifier& id;
 	NAssignmentIdentifier(NIdentifier& id) : id(id), NAssignmentExpression("identifier") { }
 	virtual AsmBlock* reference(AsmGenerator& context);
+	virtual AsmBlock* compile(AsmGenerator& context);
 };
 
 class NAssignmentDereference : public NAssignmentExpression
@@ -113,6 +114,7 @@ public:
     NExpression& expr;
 	NAssignmentDereference(NExpression& expr) : expr(expr), NAssignmentExpression("dereference") { }
 	virtual AsmBlock* reference(AsmGenerator& context);
+	virtual AsmBlock* compile(AsmGenerator& context);
 };
 
 class NType : public NIdentifier
@@ -222,13 +224,33 @@ public:
 
 class NIfStatement : public NStatement {
 public:
-    const NExpression& eval;
+    NExpression& eval;
     NBlock& if_true;
 	NBlock* if_false;
-    NIfStatement(const NExpression& eval, NBlock& if_true) :
+    NIfStatement(NExpression& eval, NBlock& if_true) :
         eval(eval), if_true(if_true), if_false(NULL), NStatement("if") { }
-    NIfStatement(const NExpression& eval, NBlock& if_true, NBlock* if_false) :
+    NIfStatement(NExpression& eval, NBlock& if_true, NBlock* if_false) :
         eval(eval), if_true(if_true), if_false(if_false), NStatement("if") { }
+	virtual AsmBlock* compile(AsmGenerator& context);
+};
+
+class NWhileStatement : public NStatement {
+public:
+    NExpression& eval;
+    NBlock& expr;
+    NWhileStatement(NExpression& eval, NBlock& expr) :
+        eval(eval), expr(expr), NStatement("while") { }
+	virtual AsmBlock* compile(AsmGenerator& context);
+};
+
+class NForStatement : public NStatement {
+public:
+	NExpression& initEval;
+	NExpression& checkEval;
+    NExpression& loopEval;
+	NBlock& expr;
+    NForStatement(NExpression& initEval, NExpression& checkEval, NExpression& loopEval, NBlock& expr) :
+        initEval(initEval), checkEval(checkEval), loopEval(loopEval), expr(expr), NStatement("for") { }
 	virtual AsmBlock* compile(AsmGenerator& context);
 };
 
@@ -237,6 +259,14 @@ public:
     const NExpression& result;
     NReturnStatement(const NExpression& result) :
         result(result), NStatement("return") { }
+	virtual AsmBlock* compile(AsmGenerator& context);
+};
+
+class NDebugStatement : public NStatement {
+public:
+    const NExpression& result;
+    NDebugStatement(const NExpression& result) :
+        result(result), NStatement("debug") { }
 	virtual AsmBlock* compile(AsmGenerator& context);
 };
 

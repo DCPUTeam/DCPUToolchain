@@ -95,7 +95,7 @@ public:
 	void finishStackFrame(StackFrame* frame);
 	size_t getTypeBitSize(const NType& type);
 	size_t getTypeWordSize(const NType& type);
-	std::string getRandomLabel();
+	std::string getRandomLabel(std::string prefix);
 	inline const Assembler& getAssembler() { return *(this->m_AssemblerTarget); }
 	inline bool isAssemblerDebug() { return true; }
 };

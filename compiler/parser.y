@@ -13,7 +13,7 @@
 
 **/
 
-#define YYDEBUG 1
+//#define YYDEBUG 1
 #define YYERROR_VERBOSE
 
 #include "Node.h"
@@ -65,8 +65,11 @@ void yyerror(const char* msg)
 %token <token> BINARY_AND BINARY_OR BINARY_XOR BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
 %token <token> IREF IDEREF IADDROF IUNARYPLUS IUNARYMINUS IPREINC IPREDEC IPOSTINC IPOSTDEC
 
+/* TOKENS: Constants */
+%token <token> TRUE FALSE
+
 /* TOKENS: Statement keywords */
-%token <token> RETURN IF ELSE
+%token <token> RETURN IF ELSE WHILE FOR DEBUG
 
 /* TYPES */
 %type <type> type
@@ -78,8 +81,8 @@ void yyerror(const char* msg)
 %type <decls> program func_list
 %type <function> func_decl
 %type <variable> var_decl
-%type <block> block stmts
-%type <stmt> stmt stmt_if stmt_return
+%type <block> block stmts block_or_stmt
+%type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug
 %type <token> assignop binaryop
 
 /* OPERATOR PRECEDENCE (LOWEST -> HIGHEST) */
@@ -97,22 +100,6 @@ void yyerror(const char* msg)
 %left BOOLEAN_OR
 %right ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE
 %left COMMA
-
-	//%left COMMA
-	//%right ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE
-	//%left BOOLEAN_OR
-	//%left BOOLEAN_AND
-	//%left BINARY_OR
-	//%left BINARY_XOR
-	//%left BINARY_AND
-	//%left COMPARE_EQUAL COMPARE_NOT_EQUAL
-	//%left COMPARE_LESS_THAN COMPARE_LESS_THAN_EQUAL COMPARE_GREATER_THAN COMPARE_GREATER_THAN_EQUAL
-	//%left BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
-	//%left ADD SUBTRACT
-	//%left STAR SLASH PERCENT
-	//%right IPREINC IPREDEC IUNARYPLUS IUNARYMINUS NEGATE BITWISE_NEGATE IDEREF IADDROF
-	//%right IDEREFASSIGN
-	//%left IPOSTINC IPOSTDEC DOT
 
 /* START POINT */
 %start program
@@ -220,32 +207,32 @@ stmt:
 			$$ = $1;
 		} |
 		stmt_if |
+		stmt_while |
+		stmt_for |
 		stmt_return |
+		stmt_debug |
 		expr SEMICOLON
 		{
 			$$ = new NExpressionStatement(*$1);
 		} ;
 
+block_or_stmt:
+		stmt
+		{
+			$$ = new NBlock();
+			$$->statements.push_back($<stmt>1);
+		} |
+		block
+		{
+			$$ = $1;
+		} ;
+
 stmt_if:
-		IF CURVED_OPEN expr CURVED_CLOSE stmt ELSE stmt
-		{
-			NBlock* blk1 = new NBlock();
-			NBlock* blk2 = new NBlock();
-			blk1->statements.push_back($<stmt>5);
-			blk2->statements.push_back($<stmt>7);
-			$$ = new NIfStatement(*$3, *blk1, blk2);
-		} |
-		IF CURVED_OPEN expr CURVED_CLOSE stmt
-		{
-			NBlock* blk1 = new NBlock();
-			blk1->statements.push_back($<stmt>5);
-			$$ = new NIfStatement(*$3, *blk1);
-		} |
-		IF CURVED_OPEN expr CURVED_CLOSE block ELSE block
+		IF CURVED_OPEN expr CURVED_CLOSE block_or_stmt ELSE block_or_stmt
 		{
 			$$ = new NIfStatement(*$3, *$5, $7);
 		} |
-		IF CURVED_OPEN expr CURVED_CLOSE block
+		IF CURVED_OPEN expr CURVED_CLOSE block_or_stmt
 		{
 			$$ = new NIfStatement(*$3, *$5);
 		} ;
@@ -254,6 +241,24 @@ stmt_return:
 		RETURN expr SEMICOLON
 		{
 			$$ = new NReturnStatement(*$2);
+		} ;
+
+stmt_debug:
+		DEBUG expr SEMICOLON
+		{
+			$$ = new NDebugStatement(*$2);
+		} ;
+
+stmt_while:
+		WHILE CURVED_OPEN expr CURVED_CLOSE block_or_stmt
+		{
+			$$ = new NWhileStatement(*$3, *$5);
+		} ;
+
+stmt_for:
+		FOR CURVED_OPEN expr SEMICOLON expr SEMICOLON expr CURVED_CLOSE block_or_stmt
+		{
+			$$ = new NForStatement(*$3, *$5, *$7, *$9);
 		} ;
 
 deref:
@@ -334,6 +339,14 @@ numeric:
 		NUMBER
 		{
 			$$ = new NInteger($1);
+		} |
+		TRUE
+		{
+			$$ = new NInteger(1);
+		} |
+		FALSE
+		{
+			$$ = new NInteger(0);
 		} ;
 
 character:

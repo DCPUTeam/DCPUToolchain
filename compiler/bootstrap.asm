@@ -31,6 +31,24 @@ DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	ADD Y, 1
 	SET PC, I
 
+;:_stack_init
+;	SET J, SP
+;	SUB SP, X
+;	SUB SP, 1
+;	:_stack_init_loop
+;		SET POP, 0
+;		IFN SP, J
+;			SET PC, _stack_init_loop
+;	SET PC, I
+;:_stack_call
+;	SET J, SP
+;	SUB SP, X
+;	SUB SP, 1
+;	SET PEEK, Z
+;	SET Y, SP
+;	ADD Y, 1
+;	SET PC, I
+
 ; Safety boundary
 ;.BOUNDARY
 DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -61,6 +79,24 @@ DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 ; Halts the CPU.
 :_halt
+	SET PC, _halt
+
+; Safety boundary
+;.BOUNDARY
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+; Halts the CPU clearing all registers except for
+; the A register.
+:_halt_debug
+	SET B, 0
+	SET C, 0
+	SET X, 0
+	SET Y, 0
+	SET Z, 0
+	SET I, 0
+	SET J, 0
+	SET SP, 0
+	SET O, 0
 	SET PC, _halt
 
 ; Safety boundary

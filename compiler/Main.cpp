@@ -25,7 +25,6 @@ extern "C"
 }
 extern int yyparse();
 extern FILE *yyin, *yyout;
-extern int yydebug;
 extern NDeclarations* program;
 
 // Utility directory name function (TODO: Move this into it's own file).
@@ -78,7 +77,6 @@ int main(int argc, char* argv[])
 		pp_cleanup();
 		return 1;
 	}
-	yydebug = 1;
 	yyparse();
 	fclose(yyin);
 	pp_cleanup();

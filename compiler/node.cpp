@@ -77,13 +77,10 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 	// Calculate total stack space required.
 	StackFrame* frame = context.generateStackFrame(this, false);
 
-	// Now run through each instruction and generate code for it.
-	for (StatementList::iterator i = this->block.statements.begin(); i != this->block.statements.end(); i++)
-	{
-		AsmBlock* inst = (*i)->compile(context);
-		*block << *inst;
-		delete inst;
-	}
+	// Now compile the block.
+	AsmBlock* iblock = this->block.compile(context);
+	*block << *iblock;
+	delete iblock;
 
 	// Return from this function.
 	*block <<  "	SET A, 0xFFFF" << std::endl;
@@ -109,15 +106,13 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	StackFrame* frame = context.generateStackFrame(funcdecl);
 
 	// Get a random label for our jump-back point.
-	std::string jmpback = context.getRandomLabel();
+	std::string jmpback = context.getRandomLabel("callback");
 	
-	// Initialize the stack for this method.
-	*block <<  "	SET X, " << frame->getSize() << std::endl;
-	*block <<  "	SET Z, " << jmpback << std::endl;
-	*block <<  "	JSR _stack_init" << std::endl;
+	// Copy a reference to the current position in
+	// the stack first (by temporarily using register C, ugh!).
+	*block <<  "	SET C, SP" << std::endl;
 
 	// Evaluate each of the argument expressions.
-	VariableList::iterator v = funcdecl->arguments.begin();
 	for (ExpressionList::iterator i = this->arguments.begin(); i != this->arguments.end(); i++)		
 	{
 		// Compile the expression.
@@ -125,26 +120,54 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		*block << *inst;
 		delete inst;
 		
-		// Get the position of the argument.
+		// Push the result onto the stack.
+		*block <<  "	SET PUSH, A" << std::endl;
+	}
+
+	// Initialize the stack for this method.
+	*block <<  "	SET X, " << frame->getSize() << std::endl;
+	*block <<  "	SET Z, " << jmpback << std::endl;
+	*block <<  "	JSR _stack_init" << std::endl;
+
+	// Now copy each of the evaluated parameter values into
+	// the correct parameter slots.
+	uint16_t a = 1;
+	for (VariableList::iterator v = funcdecl->arguments.begin(); v != funcdecl->arguments.end(); v++)		
+	{
+		// Get the location of the value.
+		std::stringstream vstr;
+		vstr << "[0x" << std::hex << (0x10000 - a) << "+C]";
+
+		// Get the location of the slot.
 		int32_t pos = frame->getPositionOfVariable((*v)->id.name);
 		if (pos == -1)
 			throw new CompilerException("The argument '" + (*v)->id.name + "' was not found in the argument list (internal error).");
-
-		// Load the position of the variable into register A.
 		std::stringstream sstr;
-		if (pos == 0)
+		if (a == 0)
 			sstr << "[Y]";
 		else
-			sstr << "[0x" << std::hex << pos << "+Y]";
-		*block <<	"	SET " << sstr.str() << ", A" << std::endl;
+			sstr << "[0x" << std::hex << pos << "+Y]"; // TODO: Optimize for 0 pos.
 
-		// Increment variable iterator.
-		v++;
+		// Now copy.
+		*block <<	"	SET " << sstr.str() << ", " << vstr.str() << std::endl;
+
+		// Increment.
+		a += 1;
 	}
 
 	// Then call the actual method and insert the return label.
 	*block <<  "	SET PC, cfunc_" << this->id.name << std::endl;
 	*block <<  ":" << jmpback << std::endl;
+
+	// Clean up all of our C values.
+	for (int b = 0; b < a - 1; b += 1)
+	{
+		*block <<  "	SET PEEK, 0" << std::endl;
+		*block <<  "	ADD SP, 1" << std::endl;
+	}
+
+	// Adjust Y frame by C amount.
+	*block <<  "	ADD Y, " << (a - 1) << std::endl;
 
 	// Clean up frame.
 	context.finishStackFrame(frame);
@@ -168,6 +191,23 @@ AsmBlock* NReturnStatement::compile(AsmGenerator& context)
 
 	// Return from this function.
 	*block <<  "	SET PC, _stack_return" << std::endl;
+
+	return block;
+}
+
+AsmBlock* NDebugStatement::compile(AsmGenerator& context)
+{
+	AsmBlock* block = new AsmBlock();
+	
+	// Evaluate the expression (the expression will always put
+	// it's output in register A).
+	AsmBlock* eval = ((NExpression&)this->result).compile(context);
+	*block << *eval;
+	delete eval;
+
+	// Perform a debug halt so the value of the expression
+	// can be inspected in an emulator.
+	*block <<  "	SET PC, _halt_debug" << std::endl;
 
 	return block;
 }
@@ -316,7 +356,7 @@ AsmBlock* NIdentifier::compile(AsmGenerator& context)
 	if (pos == -1)
 		throw new CompilerException("The variable '" + this->name + "' was not found in the scope.");
 
-	// Load the position of the variable into register A.
+	// Load the value of the variable into register A.
 	std::stringstream sstr;
 	if (pos == 0)
 		sstr << "[Y]";
@@ -331,13 +371,21 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
 	
-	// When an expression is evaluated, the result goes into the A register.
-	AsmBlock* lhs = this->lhs->compile(context);
+	// We only need to both to push the value of the LHS if we're
+	// doing a relative adjustment.
+	if (this->op != ASSIGN_EQUAL)
+	{
+		// When an expression is evaluated, the result goes into the A register.
+		AsmBlock* lhs = this->lhs->compile(context);
 
-	// Move the value onto the stack.
-	*block <<   *lhs;
-	*block <<	"	SET PUSH, A" << std::endl;
-	delete lhs;
+		// Move the value onto the stack.
+		*block <<   *lhs;
+		*block <<	"	SET PUSH, A" << std::endl;
+		delete lhs;
+	}
+	else
+		// We still need to push a value so our POPs work in order.
+		*block <<	"	SET PUSH, 0" << std::endl;
 
 	// When an expression is evaluated, the result goes into the A register.
 	AsmBlock* rhs = this->rhs.compile(context);
@@ -418,12 +466,34 @@ AsmBlock* NAssignmentIdentifier::reference(AsmGenerator& context)
 	return block;
 }
 
+AsmBlock* NAssignmentIdentifier::compile(AsmGenerator& context)
+{
+	// We want the value of what we're referring to.  Since we're an
+	// assignment to an identifier, we can just evaluate the identifier
+	// to get the value in A.
+	return this->id.compile(context);
+}
+
 AsmBlock* NAssignmentDereference::reference(AsmGenerator& context)
 {
 	// We want the value of the expression because we're using it as
 	// a memory address in assignment, hence we don't actually dereference
 	// the value.
 	return this->expr.compile(context);
+}
+
+AsmBlock* NAssignmentDereference::compile(AsmGenerator& context)
+{
+	AsmBlock* block = new AsmBlock();
+	
+	// We want the value of what we're referring to, so we need to evaluate
+	// the dereference operation.
+	AsmBlock* expr = this->expr.compile(context);
+	*block <<  *expr;
+	*block <<  "	SET A, [A]" << std::endl;
+	delete expr;
+
+	return block;
 }
 
 AsmBlock* NDereferenceOperator::compile(AsmGenerator& context)
@@ -469,7 +539,21 @@ AsmBlock* NCharacter::compile(AsmGenerator& context)
 
 AsmBlock* NString::compile(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to compile string AST node.");
+	AsmBlock* block = new AsmBlock();
+
+	// Stop if the assembler doesn't support DAT.
+	if (!context.getAssembler().supportsDataInstruction)
+		throw new CompilerException("Unable to compile strings without DAT support in assembler.");
+
+	// Generate a label for the DAT and then output the DAT.
+	std::string strlabel = context.getRandomLabel("cstr");
+	*block <<	"	SET PC, " << strlabel << "_jmpover" << std::endl;
+	*block <<	"	:" << strlabel << " DAT \"" << this->value << "\", 0" << std::endl;
+
+	// Load the address of the string in register A.
+	*block <<	"	:" << strlabel << "_jmpover SET A, " << strlabel << "" << std::endl;
+
+	return block;
 }
 
 AsmBlock* NType::compile(AsmGenerator& context)
@@ -479,7 +563,17 @@ AsmBlock* NType::compile(AsmGenerator& context)
 
 AsmBlock* NBlock::compile(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to compile block AST node.");
+	AsmBlock* block = new AsmBlock();
+	
+	// Now run through each instruction and generate code for it.
+	for (StatementList::iterator i = this->statements.begin(); i != this->statements.end(); i++)
+	{
+		AsmBlock* inst = (*i)->compile(context);
+		*block << *inst;
+		delete inst;
+	}
+
+	return block;
 }
 
 AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
@@ -514,5 +608,125 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 
 AsmBlock* NIfStatement::compile(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to compile if statement AST node.");
+	AsmBlock* block = new AsmBlock();
+	
+	// Create labels for the if statement.
+	std::string truelbl = context.getRandomLabel("if");
+	std::string falselbl = "";
+	std::string endlbl = context.getRandomLabel("end");
+	if (this->if_false != NULL)
+		falselbl = context.getRandomLabel("else");
+
+	// When an expression is evaluated, the result goes into the A register.
+	AsmBlock* expr = this->eval.compile(context);
+	*block << *expr;
+	delete expr;
+
+	// Check the value of A to see where the flow should go.
+	*block <<		"	IFE A, 0x1" << std::endl;
+	*block <<		"		SET PC, " << truelbl << std::endl;
+	if (this->if_false != NULL)
+		*block <<	"	SET PC, " << falselbl << std::endl;
+	else
+		*block <<	"	SET PC, " << endlbl << std::endl;
+
+	// Compile the true block.
+	AsmBlock* trueblk = this->if_true.compile(context);
+	*block << ":" << truelbl << std::endl;
+	*block << *trueblk;
+	*block <<	"	SET PC, " << endlbl << std::endl;
+	delete trueblk;
+
+	// Compile the false block if we have one.
+	if (this->if_false != NULL)
+	{
+		AsmBlock* falseblk = this->if_false->compile(context);
+		*block << ":" << falselbl << std::endl;
+		*block << *falseblk;
+		*block <<	"	SET PC, " << endlbl << std::endl;
+		delete falseblk;
+	}
+
+	// And insert the end label.
+	*block << ":" << endlbl << std::endl;
+
+	return block;
+}
+
+AsmBlock* NWhileStatement::compile(AsmGenerator& context)
+{
+	AsmBlock* block = new AsmBlock();
+	
+	// Create label for the while statement.
+	std::string startlbl = context.getRandomLabel("while");
+	std::string endlbl = context.getRandomLabel("endwhile");
+
+	// Output the start label.
+	*block << ":" << startlbl << std::endl;
+
+	// When an expression is evaluated, the result goes into the A register.
+	AsmBlock* eval = this->eval.compile(context);
+	*block << *eval;
+	delete eval;
+
+	// If A is not true, jump to the end.
+	*block <<	"	IFN A, 0x1" << std::endl;
+	*block <<	"		SET PC, " << endlbl << std::endl;
+
+	// Compile the main block.
+	AsmBlock* expr = this->expr.compile(context);
+	*block << *expr;
+	delete expr;
+
+	// Jump back up to the start to do the evaluation.
+	*block <<	"	SET PC, " << startlbl << std::endl;
+
+	// And insert the end label.
+	*block << ":" << endlbl << std::endl;
+
+	return block;
+}
+
+AsmBlock* NForStatement::compile(AsmGenerator& context)
+{
+	AsmBlock* block = new AsmBlock();
+	
+	// Create label for the while statement.
+	std::string startlbl = context.getRandomLabel("for");
+	std::string endlbl = context.getRandomLabel("endfor");
+
+	// Do the initalization statement.
+	AsmBlock* initEval = this->initEval.compile(context);
+	*block << *initEval;
+	delete initEval;
+
+	// Output the start label.
+	*block << ":" << startlbl << std::endl;
+
+	// When an expression is evaluated, the result goes into the A register.
+	AsmBlock* checkEval = this->checkEval.compile(context);
+	*block << *checkEval;
+	delete checkEval;
+
+	// If A is not true, jump to the end.
+	*block <<	"	IFN A, 0x1" << std::endl;
+	*block <<	"		SET PC, " << endlbl << std::endl;
+
+	// Compile the main block.
+	AsmBlock* expr = this->expr.compile(context);
+	*block << *expr;
+	delete expr;
+
+	// Do the loop statement.
+	AsmBlock* loopEval = this->loopEval.compile(context);
+	*block << *loopEval;
+	delete loopEval;
+
+	// Jump back up to the start to do the evaluation.
+	*block <<	"	SET PC, " << startlbl << std::endl;
+
+	// And insert the end label.
+	*block << ":" << endlbl << std::endl;
+
+	return block;
 }

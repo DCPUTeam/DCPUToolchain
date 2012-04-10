@@ -33,11 +33,20 @@ char* trim_and_unescape(char* data, int mode);
 
 %%
 
+	/* Constants */
+	
+"true"					{ count(); return TRUE; }
+"false"					{ count(); return FALSE; }
+"NULL"					{ count(); return FALSE; }
+
 	/* Statement keywords */
 
 "return"				{ count(); return RETURN; }
 "if"					{ count(); return IF; }
 "else"					{ count(); return ELSE; }
+"while"					{ count(); return WHILE; }
+"for"					{ count(); return FOR; }
+"debug"					{ count(); return DEBUG; }
 
 	/* String and character analysis */
 

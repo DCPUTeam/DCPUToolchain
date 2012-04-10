@@ -310,6 +310,7 @@ void process_line(struct ast_node_line* line)
 					aout_emit(aout_create_label_replace(dparam.v_label));
 				else if (dparam.v_raw != NULL) // If the raw field is not null, get each character and output it.
 				{
+					printf(" \"%s\"", (const char*)dparam.v_raw);
 					for (dchrproc = 0; dchrproc < strlen(dparam.v_raw); dchrproc++)
 						aout_emit(aout_create_raw(dparam.v_raw[dchrproc]));
 				}

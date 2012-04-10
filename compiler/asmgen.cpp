@@ -124,11 +124,11 @@ size_t AsmGenerator::getTypeWordSize(const NType& type)
 }
 
 // Generates a random, unique label for use in code.
-std::string AsmGenerator::getRandomLabel()
+std::string AsmGenerator::getRandomLabel(std::string prefix)
 {
 	std::string result = "";
 	while ((result == "") || (std::find(this->m_AutomaticLabels.begin(), this->m_AutomaticLabels.end(), result) != this->m_AutomaticLabels.end()))
-		result = "__auto_" + AsmGenerator::getRandomString(10);
+		result = "__" + prefix + "_" + AsmGenerator::getRandomString(10);
 	return result;
 }
 

@@ -86,9 +86,14 @@
      IPREDEC = 302,
      IPOSTINC = 303,
      IPOSTDEC = 304,
-     RETURN = 305,
-     IF = 306,
-     ELSE = 307
+     TRUE = 305,
+     FALSE = 306,
+     RETURN = 307,
+     IF = 308,
+     ELSE = 309,
+     WHILE = 310,
+     FOR = 311,
+     DEBUG = 312
    };
 #endif
 
@@ -122,7 +127,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 126 "parser.hpp"
+#line 131 "parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
