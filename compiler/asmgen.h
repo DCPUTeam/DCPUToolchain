@@ -16,9 +16,6 @@
 #define __DCPU_COMP_ASMGEN_H
 
 class Assembler;
-class NDeclarations;
-class NFunctionDeclaration;
-class NType;
 
 #include <cstdint>
 #include <exception>
@@ -26,9 +23,12 @@ class NType;
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <map>
-#include "node.h"
 #include "asmtypes.h"
+#include "nodes/NType.h"
+#include "nodes/NDeclarations.h"
+#include "nodes/NFunctionDeclaration.h"
 
 class AsmBlock
 {
@@ -60,8 +60,8 @@ public:
 class StackFrame
 {
 public:
-	typedef std::map<std::string, const NType&> StackMap;
-	typedef std::pair<std::string, const NType&> StackPair;
+	typedef std::map<std::string, NType&> StackMap;
+	typedef std::pair<std::string, NType&> StackPair;
 
 private:
 	AsmGenerator& m_Generator;
@@ -70,6 +70,7 @@ private:
 public:
 	StackFrame(AsmGenerator& generator, StackMap& map) : m_StackMap(map), m_Generator(generator) { };
 	int32_t getPositionOfVariable(std::string name);
+	NType* getTypeOfVariable(std::string name);
 	uint16_t getSize();
 };
 
@@ -93,8 +94,6 @@ public:
 	NFunctionDeclaration* getFunction(std::string name);
 	StackFrame* generateStackFrame(NFunctionDeclaration* function, bool referenceOnly = true);
 	void finishStackFrame(StackFrame* frame);
-	size_t getTypeBitSize(const NType& type);
-	size_t getTypeWordSize(const NType& type);
 	std::string getRandomLabel(std::string prefix);
 	inline const Assembler& getAssembler() { return *(this->m_AssemblerTarget); }
 	inline bool isAssemblerDebug() { return true; }

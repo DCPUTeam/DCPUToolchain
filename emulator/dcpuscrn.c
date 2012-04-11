@@ -49,9 +49,9 @@ void vm_scrn_update(vm_t* vm, uint16_t pos)
 	chr =  (val & 0x00FF);
 
 	// Create TCOD colours.
-	foreclr.r = 255 * ((fore & 0x4) >> 2);
-	foreclr.g = 255 * ((fore & 0x2) >> 1);
-	foreclr.b = 255 * (fore & 0x1);
+	foreclr.r = 255 - (255 * ((fore & 0x4) >> 2));
+	foreclr.g = 255 - (255 * ((fore & 0x2) >> 1));
+	foreclr.b = 255 - (255 * (fore & 0x1));
 	backclr.r = 255 * ((back & 0x4) >> 2);
 	backclr.g = 255 * ((back & 0x2) >> 1);
 	backclr.b = 255 * (back & 0x1);

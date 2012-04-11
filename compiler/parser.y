@@ -13,12 +13,20 @@
 
 **/
 
-//#define YYDEBUG 1
+class NAssignmentExpression;
+class NInteger;
+
+#include <vector>
+#include "asmgen.h"
+#include "node.h"
+
+// Turn on verbose error messages.
 #define YYERROR_VERBOSE
 
-#include "Node.h"
+// Defines the root node.
 NDeclarations* program;
 
+// YY-stuff.
 extern int yylex();
 extern int yycolumn;
 
@@ -33,7 +41,6 @@ void yyerror(const char* msg)
 %union {
 	NBlock* block;
 	NExpression* expr;
-	NAssignmentExpression* exprassign;
 	NStatement* stmt;
 	NIdentifier* ident;
 	NInteger* numeric;
@@ -70,13 +77,12 @@ void yyerror(const char* msg)
 %token <token> TRUE FALSE
 
 /* TOKENS: Statement keywords */
-%token <token> RETURN IF ELSE WHILE FOR DEBUG
+%token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF
 
 /* TYPES */
 %type <type> type
 %type <ident> ident
-%type <expr> expr numeric string character deref
-%type <exprassign> expr_assign
+%type <expr> expr numeric string character deref fldref addressable
 %type <varvec> func_decl_args struct_decl_args
 %type <exprvec> call_args
 %type <decls> program prog_decl
@@ -88,7 +94,7 @@ void yyerror(const char* msg)
 %type <token> assignop binaryop
 
 /* OPERATOR PRECEDENCE (LOWEST -> HIGHEST) */
-%left IPOSTINC IPOSTDEC DOT
+%left IPOSTINC IPOSTDEC DOT DEREFDOT
 %right IPREINC IPREDEC IUNARYPLUS IUNARYMINUS NEGATE BITWISE_NEGATE IADDROF
 %left STAR SLASH PERCENT
 %left ADD SUBTRACT
@@ -158,9 +164,14 @@ func_decl_args:
 		} ;
 
 struct_decl:
-		STRUCT ident BRACE_OPEN struct_decl_args BRACE_CLOSE SEMICOLON
+		STRUCT ident BRACE_OPEN struct_decl_args SEMICOLON BRACE_CLOSE SEMICOLON
 		{
 			$$ = new NStructureDeclaration(*$2, *$4);
+			//delete $4;
+		} |
+		STRUCT ident BRACE_OPEN BRACE_CLOSE SEMICOLON
+		{
+			$$ = new NStructureDeclaration(*$2, *(new VariableList()));
 			//delete $4;
 		} ;
 
@@ -199,17 +210,27 @@ ident:
 type:
 		ident
 		{
-			$$ = new NType($<type>1->name, 0);
+			$$ = new NType($<type>1->name, 0, false);
 			delete $1;
+		} |
+		STRUCT ident
+		{
+			$$ = new NType($<type>2->name, 0, true);
+			delete $2;
 		} |
 		ident STAR %prec IREF
 		{
-			$$ = new NType($<type>1->name, 1);
+			$$ = new NType($<type>1->name, 1, false);
 			delete $1;
+		} |
+		STRUCT ident STAR %prec IREF
+		{
+			$$ = new NType($<type>2->name, 1, true);
+			delete $2;
 		} |
 		type STAR %prec IREF
 		{
-			$$ = new NType($<type>1->name, $<type>1->pointerCount + 1);
+			$$ = new NType($<type>1->name, $<type>1->pointerCount + 1, $<type>1->isStruct);
 			delete $1;
 		};
 
@@ -294,6 +315,19 @@ stmt_for:
 			$$ = new NForStatement(*$3, *$5, *$7, *$9);
 		} ;
 
+fldref:
+		expr DOT ident
+		{
+			$$ = new NStructureResolutionOperator(*$1, *$3, false);
+		} |
+		fldref assignop expr
+		{
+			if ($1->cType == "expression-field") // We can't accept NAssignments as the fldref in this case.
+				$$ = new NAssignment(*$1, $2, *$3);
+			else
+				throw new CompilerException("Unable to apply field referencing assignment operation to non-field operator based LHS.");
+		} ;
+
 deref:
 		STAR ident
 		{
@@ -310,7 +344,7 @@ deref:
 		deref assignop expr
 		{
 			if ($1->cType == "expression-dereference") // We can't accept NAssignments as the deref in this case.
-				$$ = new NAssignment(new NAssignmentDereference(((NDereferenceOperator*)$1)->expr), $2, *$3);
+				$$ = new NAssignment(*$1, $2, *$3);
 			else
 				throw new CompilerException("Unable to apply dereferencing assignment operation to non-dereference operator based LHS.");
 		} ;
@@ -318,9 +352,13 @@ deref:
 expr:
 		ident assignop expr
 		{
-			$$ = new NAssignment(new NAssignmentIdentifier(*$1), $2, *$3);
+			$$ = new NAssignment(*$1, $2, *$3);
 		} |
 		deref
+		{
+			$$ = $1;
+		} |
+		fldref
 		{
 			$$ = $1;
 		} |
@@ -345,11 +383,15 @@ expr:
 		{
 			$$ = $1;
 		} |
+		/*expr DEREFDOT ident
+		{
+			$$ = new NStructureResolutionOperator(*$1, *$3, true);
+		} |*/
 		expr binaryop expr
 		{
 			$$ = new NBinaryOperator(*$1, $2, *$3);
 		} |
-		BINARY_AND expr_assign %prec IADDROF
+		BINARY_AND addressable %prec IADDROF
 		{
 			$$ = new NAddressOfOperator(*$2);
 		} |
@@ -358,14 +400,18 @@ expr:
 			$$ = $2;
 		} ;
 
-expr_assign:
+addressable:
 		ident
 		{
-			$$ = new NAssignmentIdentifier(*$1);
+			$$ = $1;
+		} |
+		expr DOT ident
+		{
+			$$ = new NStructureResolutionOperator(*$1, *$3, false);
 		} |
 		STAR expr %prec IDEREF
 		{
-			$$ = new NAssignmentDereference(*$2);
+			$$ = new NDereferenceOperator(*$2);
 		} ;
 
 numeric:
@@ -380,6 +426,10 @@ numeric:
 		FALSE
 		{
 			$$ = new NInteger(0);
+		} |
+		SIZEOF CURVED_OPEN type CURVED_CLOSE
+		{
+			$$ = new NSizeOfOperator(*$3);
 		} ;
 
 character:

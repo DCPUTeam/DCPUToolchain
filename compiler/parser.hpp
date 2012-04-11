@@ -94,7 +94,9 @@
      ELSE = 310,
      WHILE = 311,
      FOR = 312,
-     DEBUG = 313
+     DEBUG = 313,
+     SIZEOF = 314,
+     DEREFDOT = 315
    };
 #endif
 
@@ -105,11 +107,10 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 33 "parser.y"
+#line 41 "parser.y"
 
 	NBlock* block;
 	NExpression* expr;
-	NAssignmentExpression* exprassign;
 	NStatement* stmt;
 	NIdentifier* ident;
 	NInteger* numeric;
@@ -129,7 +130,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 133 "parser.hpp"
+#line 134 "parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

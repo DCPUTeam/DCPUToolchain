@@ -96,33 +96,6 @@ void AsmGenerator::finishStackFrame(StackFrame* frame)
 		delete frame;
 }
 
-// Calculates the bit size for the specified type, 
-size_t AsmGenerator::getTypeBitSize(const NType& type)
-{
-	if (type.pointerCount > 0)			return 16;
-	else if (type.name == "char")		return 16; // 8
-	else if (type.name == "byte")		return 16; // 8
-	else if (type.name == "short")		return 16;
-	else if (type.name == "int")		return 32;
-	else if (type.name == "long")		return 64;
-	else if (type.name == "int8_t")		return 16; // 8
-	else if (type.name == "int16_t")	return 16;
-	else if (type.name == "int32_t")	return 32;
-	else if (type.name == "int64_t")	return 64;
-	else if (type.name == "uint8_t")	return 16; // 8
-	else if (type.name == "uint16_t")	return 16;
-	else if (type.name == "uint32_t")	return 32;
-	else if (type.name == "uint64_t")	return 64;
-	else
-		throw new CompilerException("Unknown type " + type.name + " encountered!");
-}
-
-// Calculates the byte size for the specified type, 
-size_t AsmGenerator::getTypeWordSize(const NType& type)
-{
-	return (int)std::ceil((double)this->getTypeBitSize(type) / 16.0);
-}
-
 // Generates a random, unique label for use in code.
 std::string AsmGenerator::getRandomLabel(std::string prefix)
 {
@@ -158,9 +131,20 @@ int32_t StackFrame::getPositionOfVariable(std::string name)
 		if ((*i).first == name)
 			return size;
 		else
-			size += this->m_Generator.getTypeWordSize((*i).second);
+			size += (*i).second.getWordSize(this->m_Generator);
 	}
 	return -1;
+}
+
+// Gets a pointer to the type of a variable based on it's name.
+NType* StackFrame::getTypeOfVariable(std::string name)
+{
+	for (StackMap::iterator i = this->m_StackMap.begin(); i != this->m_StackMap.end(); i++)
+	{
+		if ((*i).first == name)
+			return &((*i).second);
+	}
+	return NULL;
 }
 
 // Gets the total size of the stack frame.
@@ -168,7 +152,7 @@ uint16_t StackFrame::getSize()
 {
 	uint16_t size = 0;
 	for (StackMap::iterator i = this->m_StackMap.begin(); i != this->m_StackMap.end(); i++)		
-		size += this->m_Generator.getTypeWordSize((*i).second);
+		size += (*i).second.getWordSize(this->m_Generator);
 	return size;
 }
 

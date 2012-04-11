@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 		arg_print_syntax(stdout, argtable, "\n");
 		fprintf(stderr, "\options:\n");
 		arg_print_glossary(stdout, argtable, "    %-25s %s\n");
-		exit(1);
+		return 1;
 	}
 
 	// Parse C.
