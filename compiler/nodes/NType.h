@@ -24,6 +24,10 @@ class NType : public NIdentifier
 private:
 	void resolveStruct(AsmGenerator& context);
 
+protected:
+    NType(std::string classifier, const std::string& name, unsigned int pointerCount, bool isStruct) :
+		pointerCount(pointerCount), isStruct(isStruct), resolvedStruct(NULL), NIdentifier(name, "type-" + classifier) { }
+
 public:
     unsigned int pointerCount;
     bool isStruct;

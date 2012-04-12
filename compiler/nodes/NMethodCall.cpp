@@ -19,12 +19,23 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	AsmBlock* block = new AsmBlock();
 	
 	// Get the function declaration.
-	NFunctionDeclaration* funcdecl = context.getFunction(this->id.name);
-	if (funcdecl == NULL)
-		throw new CompilerException("Called function was not found '" + this->id.name + "'.");
+	bool isDirect = true;
+	NFunctionSignature* funcsig = context.getFunction(this->id.name);
+	if (funcsig == NULL)
+	{
+		// Try and get a variable with matching signature then.
+		TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+		if (!varpos.isFound())
+			throw new CompilerException("Neither a function nor a function pointer was found by the name '" + this->id.name + "'.");
+		NType* vartype = context.m_CurrentFrame->getTypeOfVariable(this->id.name);
+		if (vartype->cType != "expression-identifier-type-function")
+			throw new CompilerException("Unable to call variable '" + this->id.name + "' as it is not a function pointer.");
+		funcsig = (NFunctionSignature*)((NFunctionPointerType*)vartype);
+		isDirect = false;
+	}
 
 	// Get the stack table of this method.
-	StackFrame* frame = context.generateStackFrame(funcdecl);
+	StackFrame* frame = context.generateStackFrameIncomplete(funcsig);
 
 	// Get a random label for our jump-back point.
 	std::string jmpback = context.getRandomLabel("callback");
@@ -46,38 +57,56 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	}
 
 	// Initialize the stack for this method.
-	*block <<  "	SET X, " << frame->getSize() << std::endl;
+	if (isDirect)
+	{
+		*block <<  "	SET X, cfunc_" << this->id.name << std::endl;
+		*block <<  "	ADD X, 2" << std::endl;
+	}
+	else
+	{
+		TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+		*block <<  varpos.pushAddress('X');
+		*block <<  "	SET X, [X]" << std::endl;
+		*block <<  "	ADD X, 2" << std::endl;
+	}
+	*block <<  "	SET X, [X]" << std::endl;
 	*block <<  "	SET Z, " << jmpback << std::endl;
 	*block <<  "	JSR _stack_init" << std::endl;
 
 	// Now copy each of the evaluated parameter values into
 	// the correct parameter slots.
 	uint16_t a = 1;
-	for (VariableList::iterator v = funcdecl->arguments.begin(); v != funcdecl->arguments.end(); v++)		
+	for (VariableList::const_iterator v = funcsig->arguments.begin(); v != funcsig->arguments.end(); v++)		
 	{
 		// Get the location of the value.
 		std::stringstream vstr;
 		vstr << "[0x" << std::hex << (0x10000 - a) << "+C]";
 
 		// Get the location of the slot.
-		int32_t pos = frame->getPositionOfVariable((*v)->id.name);
-		if (pos == -1)
+		TypePosition result = frame->getPositionOfVariable((*v)->id.name);
+		if (!result.isFound())
 			throw new CompilerException("The argument '" + (*v)->id.name + "' was not found in the argument list (internal error).");
-		std::stringstream sstr;
-		if (a == 0)
-			sstr << "[Y]";
-		else
-			sstr << "[0x" << std::hex << pos << "+Y]"; // TODO: Optimize for 0 pos.
 
 		// Now copy.
-		*block <<	"	SET " << sstr.str() << ", " << vstr.str() << std::endl;
+		*block << result.pushAddress('I');
+		*block <<	"	SET [I], " << vstr.str() << std::endl;
 
 		// Increment.
 		a += 1;
 	}
 
 	// Then call the actual method and insert the return label.
-	*block <<  "	SET PC, cfunc_" << this->id.name << std::endl;
+	if (isDirect)
+	{
+		*block <<  "	SET PC, cfunc_" << this->id.name << std::endl;
+	}
+	else
+	{
+		TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+		*block <<  varpos.pushAddress('X');
+		*block <<  "	SET X, [X]" << std::endl;
+		*block <<  "	SET PC, X" << std::endl;
+	}
 	*block <<  ":" << jmpback << std::endl;
 
 	// Clean up all of our C values.

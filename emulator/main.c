@@ -55,19 +55,12 @@ int main(int argc, char* argv[])
 	// Zero out the flash space.
 	for (i = 0; i < 0x10000; i++)
 		flash[i] = 0x0;
-
-	// See if we have the right number of arguments.
-	if (argc != 2)
-	{
-		printf("Invalid number of arguments.  Expected memory flash filename for simulation to run.\n");
-		exit(1);
-	}
 	
 	// Load from either file or stdin.
 	if (strcmp(input_file->filename[0], "-") != 0)
 	{
 		// Open file.
-		load = fopen(argv[1], "rb");
+		load = fopen(input_file->filename[0], "rb");
 		if (load == NULL)
 		{
 			printf("Unable to load %s from disk.\n", argv[1]);
@@ -102,6 +95,7 @@ int main(int argc, char* argv[])
 
 	// And then use the VM.
 	vm = vm_create();
+	vm->debug = (debug_mode->count > 0);
 	vm_flash(vm, flash);
 	vm_execute(vm);
 	vm_free(vm);

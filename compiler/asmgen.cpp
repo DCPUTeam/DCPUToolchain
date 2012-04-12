@@ -30,6 +30,10 @@ AsmGenerator::AsmGenerator(std::string target)
 	Assembler::loadAll();
 	this->m_AssemblerTarget = Assembler::getAssembler(target);
 
+	// Set the global frame to NULL as it doesn't
+	// exist until the NDeclarations root node is processed.
+	this->m_GlobalFrame = NULL;
+
 	// Load bootstrap data.
 	std::ifstream bootstrap("bootstrap.asm");
 	this->m_Preassembly << bootstrap;
@@ -54,9 +58,9 @@ StackFrame* AsmGenerator::generateStackFrame(NFunctionDeclaration* function, boo
 	StackFrame::StackMap map;
 
 	// Add stack frame data for arguments.
-	for (VariableList::iterator i = function->arguments.begin(); i != function->arguments.end(); i++)		
+	for (VariableList::const_iterator i = function->arguments.begin(); i != function->arguments.end(); i++)		
 	{
-		map.insert(StackFrame::StackPair((*i)->id.name, (*i)->type));
+		map.insert(map.end(), StackFrame::StackPair((*i)->id.name, (*i)->type));
 		// FIXME: Check to make sure arguments do not clash with any
 		//        other argument declarations (hint: check the map to
 		//        see if it already has a match).
@@ -68,7 +72,7 @@ StackFrame* AsmGenerator::generateStackFrame(NFunctionDeclaration* function, boo
 		if ((*i)->cType == "statement-declaration-variable")
 		{
 			NVariableDeclaration* nvd = (NVariableDeclaration*)(*i);
-			map.insert(StackFrame::StackPair(nvd->id.name, nvd->type));
+			map.insert(map.end(), StackFrame::StackPair(nvd->id.name, nvd->type));
 			// FIXME: Check to make sure variables do not clash with arguments
 			//        or other variable declarations (hint: check the map to
 			//        see if it already has a match).
@@ -82,6 +86,23 @@ StackFrame* AsmGenerator::generateStackFrame(NFunctionDeclaration* function, boo
 	}
 	else
 		return new StackFrame(*this, map);
+}
+
+// Generates an incomplete stack frame for the specified function.
+StackFrame* AsmGenerator::generateStackFrameIncomplete(NFunctionSignature* signature)
+{
+	StackFrame::StackMap map;
+
+	// Add stack frame data for arguments.
+	for (VariableList::const_iterator i = signature->arguments.begin(); i != signature->arguments.end(); i++)		
+	{
+		map.insert(map.end(), StackFrame::StackPair((*i)->id.name, (*i)->type));
+		// FIXME: Check to make sure arguments do not clash with any
+		//        other argument declarations (hint: check the map to
+		//        see if it already has a match).
+	}
+
+	return new StackFrame(*this, map);
 }
 
 // Frees the stack frame.
@@ -123,17 +144,27 @@ std::string AsmGenerator::getRandomString(std::string::size_type sz)
 }
 
 // Gets a relative stack position by the variable name.
-int32_t StackFrame::getPositionOfVariable(std::string name)
+TypePosition StackFrame::getPositionOfVariable(std::string name)
 {
 	uint16_t size = 0;
 	for (StackMap::iterator i = this->m_StackMap.begin(); i != this->m_StackMap.end(); i++)
 	{
 		if ((*i).first == name)
-			return size;
+			return TypePosition(true, this->m_Generator.m_GlobalFrame == this, size);
 		else
 			size += (*i).second.getWordSize(this->m_Generator);
 	}
-	return -1;
+	if (this->m_Generator.m_GlobalFrame == NULL || this->m_Generator.m_GlobalFrame == this)
+	{
+		// Also search defined functions.
+		NFunctionDeclaration* func = this->m_Generator.getFunction(name);
+		if (func != NULL)
+			return TypePosition(true, name);
+		else
+			return TypePosition(false, false, 0);
+	}
+	else
+		return this->m_Generator.m_GlobalFrame->getPositionOfVariable(name);
 }
 
 // Gets a pointer to the type of a variable based on it's name.
@@ -144,7 +175,17 @@ NType* StackFrame::getTypeOfVariable(std::string name)
 		if ((*i).first == name)
 			return &((*i).second);
 	}
-	return NULL;
+	if (this->m_Generator.m_GlobalFrame == NULL || this->m_Generator.m_GlobalFrame == this)
+	{
+		// Also search defined functions.
+		NFunctionDeclaration* func = this->m_Generator.getFunction(name);
+		if (func != NULL)
+			return func->pointerType;
+		else
+			return NULL;
+	}
+	else
+		return this->m_Generator.m_GlobalFrame->getTypeOfVariable(name);
 }
 
 // Gets the total size of the stack frame.
@@ -208,4 +249,52 @@ std::ostream& operator<< (std::ostream& output, const AsmBlock& block)
 {
 	output << block.m_Assembly;
 	return output;
+}
+
+//
+// Type position functions.
+//
+
+TypePosition::TypePosition(bool isFound, bool isGlobal, uint16_t position)
+{
+	this->m_Found = isFound;
+	this->m_Function = false;
+	this->m_FunctionName = "";
+	this->m_Global = isGlobal;
+	this->m_Position = position;
+}
+
+TypePosition::TypePosition(bool isFound, std::string funcName)
+{
+	this->m_Found = true;
+	this->m_Function = true;
+	this->m_FunctionName = funcName;
+	this->m_Global = true;
+	this->m_Position = 0;
+}
+
+bool TypePosition::isFound()
+{
+	return this->m_Found;
+}
+
+bool TypePosition::isFunction()
+{
+	return this->m_Function;
+}
+
+std::string TypePosition::pushAddress(char registr)
+{
+	std::stringstream sstr;
+	if (!this->m_Found)
+		throw new CompilerException("Attempted to push reference position of unknown type position result (internal error).");
+	if (this->m_Function)
+		sstr << "	SET " << registr << ", cfunc_" << this->m_FunctionName << std::endl;
+	else if (this->m_Global)
+		sstr << "	SET " << registr << ", _DATA" << std::endl;
+	else
+		sstr << "	SET " << registr << ", Y" << std::endl;
+	if (this->m_Position != 0)
+		sstr << "	ADD " << registr << ", " << this->m_Position << std::endl;
+	return sstr.str();
 }

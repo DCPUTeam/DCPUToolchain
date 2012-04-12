@@ -96,7 +96,13 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 	{
 		// This is of the form [0x1000+I].
 		registr = get_register_by_name_next(param->addcmpt);
-		if (registr->value == VALUE_NEXT_UNSUPPORTED)
+		if (registr == NULL)
+		{
+			// Attempt to use a label in brackets that can't be.
+			fprintf(stderr, "\n");
+			ahalt(ERR_NEXTED_LABEL_UNSUPPORTED, param->addcmpt);
+		}
+		else if (registr->value == VALUE_NEXT_UNSUPPORTED)
 		{
 			// Attempt to use a register in brackets that can't be.
 			fprintf(stderr, "\n");

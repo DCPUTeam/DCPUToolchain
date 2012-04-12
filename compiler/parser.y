@@ -132,6 +132,11 @@ prog_decl:
 			$$ = new NDeclarations();
 			$$->definitions.push_back($<structure>1);
 		} |
+		var_decl SEMICOLON
+		{
+			$$ = new NDeclarations();
+			$$->definitions.push_back($<variable>1);
+		} |
 		prog_decl func_decl
 		{
 			$1->definitions.push_back($<function>2);
@@ -139,6 +144,10 @@ prog_decl:
 		prog_decl struct_decl
 		{
 			$1->definitions.push_back($<structure>2);
+		} |
+		prog_decl var_decl SEMICOLON
+		{
+			$1->definitions.push_back($<variable>2);
 		} ;
 
 func_decl:
@@ -198,6 +207,14 @@ var_decl:
 		type ident ASSIGN_EQUAL expr
 		{
 			$$ = new NVariableDeclaration(*$1, *$2, $4);
+		} |
+		type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE
+		{
+			$$ = new NVariableDeclaration(*(new NFunctionPointerType(*$1, *$7)) /* TODO: free this memory */, *$4);
+		} |
+		type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE ASSIGN_EQUAL expr
+		{
+			$$ = new NVariableDeclaration(*(new NFunctionPointerType(*$1, *$7)) /* TODO: free this memory */, *$4, $10);
 		};
 		
 ident:

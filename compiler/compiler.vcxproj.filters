@@ -119,6 +119,9 @@
     <ClCompile Include="nodes\NSizeOfOperator.cpp">
       <Filter>Source Files\nodes</Filter>
     </ClCompile>
+    <ClCompile Include="nodes\NFunctionSignature.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lexer.l">
@@ -226,6 +229,12 @@
       <Filter>Header Files\nodes</Filter>
     </ClInclude>
     <ClInclude Include="nodes\NSizeOfOperator.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="nodes\NFunctionPointerType.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="nodes\NFunctionSignature.h">
       <Filter>Header Files\nodes</Filter>
     </ClInclude>
   </ItemGroup>

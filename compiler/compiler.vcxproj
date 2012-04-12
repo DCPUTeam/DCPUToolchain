@@ -97,6 +97,7 @@
     <ClCompile Include="nodes\NExpressionStatement.cpp" />
     <ClCompile Include="nodes\NForStatement.cpp" />
     <ClCompile Include="nodes\NFunctionDeclaration.cpp" />
+    <ClCompile Include="nodes\NFunctionSignature.cpp" />
     <ClCompile Include="nodes\NSizeOfOperator.cpp" />
     <ClCompile Include="nodes\NIdentifier.cpp" />
     <ClCompile Include="nodes\NIfStatement.cpp" />
@@ -158,6 +159,8 @@
     <ClInclude Include="nodes\NExpressionStatement.h" />
     <ClInclude Include="nodes\NForStatement.h" />
     <ClInclude Include="nodes\NFunctionDeclaration.h" />
+    <ClInclude Include="nodes\NFunctionPointerType.h" />
+    <ClInclude Include="nodes\NFunctionSignature.h" />
     <ClInclude Include="nodes\NSizeOfOperator.h" />
     <ClInclude Include="nodes\NIdentifier.h" />
     <ClInclude Include="nodes\NIfStatement.h" />

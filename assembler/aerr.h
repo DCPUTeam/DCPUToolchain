@@ -29,6 +29,7 @@
 #define ERR_UNSUPPORTED_KEYWORD 8
 #define ERR_EXTENSION_TABLE_TOO_LARGE 9
 #define ERR_EXTENSION_UNKNOWN 10
+#define ERR_NEXTED_LABEL_UNSUPPORTED 11
 
 // Variables
 extern const char* err_strings[];

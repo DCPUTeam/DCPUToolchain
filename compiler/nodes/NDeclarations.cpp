@@ -38,9 +38,44 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 	// Clean up frame.
 	context.finishStackFrame(frame);
 
+	// Create the global data frame.
+	StackFrame::StackMap* map = new StackFrame::StackMap();
+	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+	{
+		if ((*i)->cType != "statement-declaration-variable")
+			continue;
+		map->insert(map->end(), StackFrame::StackPair(((NVariableDeclaration*)(*i))->id.name, ((NVariableDeclaration*)(*i))->type));
+	}
+	context.m_GlobalFrame = new StackFrame(context, *map);
+
+	// Output the global data storage area.
+	*block << std::endl;
+	*block <<  ":_DATA" << std::endl;
+	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+	{
+		if ((*i)->cType != "statement-declaration-variable")
+			continue;
+		
+		// Calculate size.
+		unsigned int size = ((NVariableDeclaration*)(*i))->type.getWordSize(context);
+
+		// We can't have types with 0 word storage in the global scope.
+		if (size <= 0)
+			throw new CompilerException("Unable to store global variable with a type that has size of 0 words.");
+
+		// Output zero'd data sections.
+		*block <<  "	DAT 0";
+		for (unsigned int b = 1; b < size; b++)
+			*block <<  ", 0";
+		*block << std::endl;
+	}
+	*block << std::endl;
+
 	// Handle function definitions.
 	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
 	{
+		if ((*i)->cType == "statement-declaration-variable")
+			continue;
 		AsmBlock* inner = (*i)->compile(context);
 		*block << *inner;
 		if (inner != NULL)

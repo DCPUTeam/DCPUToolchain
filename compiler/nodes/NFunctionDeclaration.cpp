@@ -13,6 +13,20 @@
 
 #include "../asmgen.h"
 #include "NFunctionDeclaration.h"
+#include "NFunctionSignature.h"
+
+NFunctionDeclaration::NFunctionDeclaration(const NType& type, const NIdentifier& id, const VariableList& arguments, NBlock& block)
+	: id(id), block(block), pointerType(NULL), NDeclaration("function"), NFunctionSignature(type, arguments)
+{
+	// We need to generate an NFunctionPointerType for when we are resolved
+	// as a pointer (for storing a reference to us into a variable).
+	this->pointerType = new NFunctionPointerType(type, arguments);
+}
+
+NFunctionDeclaration::~NFunctionDeclaration()
+{
+	delete this->pointerType;
+}
 
 AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 {
@@ -28,11 +42,14 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 			*block << "DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0" << std::endl;
 	}
 
-	// Output the label.
-	*block <<  ":cfunc_" << this->id.name << std::endl;
-
 	// Calculate total stack space required.
 	StackFrame* frame = context.generateStackFrame(this, false);
+
+	// Output the leading information and immediate jump.
+	*block <<  ":cfunc_" << this->id.name << std::endl;
+	*block <<  "	SET PC, cfunc_" << this->id.name << "_actual" << std::endl;
+	*block <<  "	DAT " << frame->getSize() << std::endl;
+	*block <<  ":cfunc_" << this->id.name << "_actual" << std::endl;
 
 	// Now compile the block.
 	AsmBlock* iblock = this->block.compile(context);

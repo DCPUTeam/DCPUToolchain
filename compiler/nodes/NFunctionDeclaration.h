@@ -18,16 +18,16 @@
 #include "NIdentifier.h"
 #include "NBlock.h"
 #include "NType.h"
+#include "NFunctionPointerType.h"
 
-class NFunctionDeclaration : public NDeclaration
+class NFunctionDeclaration : public NDeclaration, public NFunctionSignature
 {
 public:
-	const NType& type;
 	const NIdentifier& id;
-	VariableList arguments;
 	NBlock& block;
-	NFunctionDeclaration(const NType& type, const NIdentifier& id, const VariableList& arguments, NBlock& block) :
-		type(type), id(id), block(block), arguments(arguments), NDeclaration("function") { };
+	NFunctionPointerType* pointerType;
+	NFunctionDeclaration(const NType& type, const NIdentifier& id, const VariableList& arguments, NBlock& block);
+	~NFunctionDeclaration();
 	virtual AsmBlock* compile(AsmGenerator& context);
 	virtual AsmBlock* reference(AsmGenerator& context);
 };

@@ -70,7 +70,6 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 	vm->dummy = 0x0;
 	vm->halted = false;
 	vm->skip = false;
-	vm->debug = false;
 }
 
 void vm_execute(vm_t* vm)

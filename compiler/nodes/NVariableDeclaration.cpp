@@ -29,17 +29,13 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 	delete expr;
 
 	// Get the position of the variable.
-	int32_t pos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
-	if (pos == -1)
+	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+	if (!result.isFound())
 		throw new CompilerException("The variable '" + this->id.name + "' was not found in the scope.");
 
 	// Set the value of the variable directly.
-	std::stringstream sstr;
-	if (pos == 0)
-		sstr << "[Y]";
-	else
-		sstr << "[0x" << std::hex << pos << "+Y]";
-	*block <<	"	SET " << sstr.str() << ", A" << std::endl;
+	*block << result.pushAddress('I');
+	*block <<	"	SET [I], A" << std::endl;
 
 	return block;
 }

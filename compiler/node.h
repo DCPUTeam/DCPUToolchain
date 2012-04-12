@@ -29,6 +29,7 @@
 #include "nodes/NExpressionStatement.h"
 #include "nodes/NForStatement.h"
 #include "nodes/NFunctionDeclaration.h"
+#include "nodes/NFunctionPointerType.h"
 #include "nodes/NSizeOfOperator.h"
 #include "nodes/NIdentifier.h"
 #include "nodes/NIfStatement.h"

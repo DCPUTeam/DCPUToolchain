@@ -30,6 +30,22 @@ class Assembler;
 #include "nodes/NDeclarations.h"
 #include "nodes/NFunctionDeclaration.h"
 
+class TypePosition
+{
+private:
+	bool m_Found;
+	bool m_Global;
+	bool m_Function;
+	uint16_t m_Position;
+	std::string m_FunctionName;
+public:
+	TypePosition(bool isFound, bool isGlobal, uint16_t position);
+	TypePosition(bool isFound, std::string funcName);
+	bool isFound();
+	bool isFunction();
+	std::string pushAddress(char registr);
+};
+
 class AsmBlock
 {
 private:
@@ -60,8 +76,8 @@ public:
 class StackFrame
 {
 public:
-	typedef std::map<std::string, NType&> StackMap;
 	typedef std::pair<std::string, NType&> StackPair;
+	typedef std::vector<StackPair> StackMap;
 
 private:
 	AsmGenerator& m_Generator;
@@ -69,7 +85,7 @@ private:
 
 public:
 	StackFrame(AsmGenerator& generator, StackMap& map) : m_StackMap(map), m_Generator(generator) { };
-	int32_t getPositionOfVariable(std::string name);
+	TypePosition getPositionOfVariable(std::string name);
 	NType* getTypeOfVariable(std::string name);
 	uint16_t getSize();
 };
@@ -86,6 +102,7 @@ public:
 	AsmBlock m_Preassembly;
 	AsmBlock m_Postassembly;
 	StackFrame* m_CurrentFrame;
+	StackFrame* m_GlobalFrame;
 	NDeclarations* m_RootNode;
 
 public:
@@ -93,6 +110,7 @@ public:
 	
 	NFunctionDeclaration* getFunction(std::string name);
 	StackFrame* generateStackFrame(NFunctionDeclaration* function, bool referenceOnly = true);
+	StackFrame* generateStackFrameIncomplete(NFunctionSignature* signature);
 	void finishStackFrame(StackFrame* frame);
 	std::string getRandomLabel(std::string prefix);
 	inline const Assembler& getAssembler() { return *(this->m_AssemblerTarget); }

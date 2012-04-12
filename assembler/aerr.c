@@ -17,7 +17,7 @@
 #include "aerr.h"
 
 // Error strings
-const char* err_strings[11] = 
+const char* err_strings[12] = 
 {
 	"assembler: generic assembling error.\n",
 	"assembler: label '%s' not found.\n",
@@ -29,7 +29,8 @@ const char* err_strings[11] =
 	"assembler: unsupported parameter passed to non-DAT instruction.\n",
 	"assembler: unsupported keyword encountered.\n",
 	"assembler: extension table too large.\n",
-	"assembler: extension %s is not known to the assembler.\n"
+	"assembler: extension %s is not known to the assembler.\n",
+	"assembler: can not use label '%s' as next value.\n"
 };
 
 // Error definition
