@@ -106,6 +106,11 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		*block <<  varpos.pushAddress('X');
 		*block <<  "	SET X, [X]" << std::endl;
 		*block <<  "	SET PC, X" << std::endl;
+
+		// TODO: In debug mode, there should be additional checks here to see if
+		//       the value that is going to be jumped to is 0 (NULL) so that it can
+		//       be reported back without doing weird stuff (like restarting the
+		//       program!)
 	}
 	*block <<  ":" << jmpback << std::endl;
 

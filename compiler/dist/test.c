@@ -6,7 +6,7 @@ int globalInt;
 int anotherInt;
 int thirdInt;
 
-void (*func)(char* msg, int x, int y);
+void (*func)(char* msg, int x, int y) = &print;
 
 struct container_t
 {
@@ -50,9 +50,6 @@ void main()
 	// Set string data.
 	data.string = "This is my string!";
 	data.test = 5;
-
-	// Set function pointer.
-	func = &print;
 	
 	// Print
 	print("Hello 0x10c!", 0, 0);
@@ -61,7 +58,7 @@ void main()
 	func(data.string, data.test, 3);
 	func("Is it on line 6?", 0, five);
 
-	// Change colour!
+	// Change colour by changing the function pointer!
 	func = &print_in_red;
 	func("Now with extra red!", 0, 6);
 }

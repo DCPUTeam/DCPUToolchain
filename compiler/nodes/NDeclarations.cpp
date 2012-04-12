@@ -26,17 +26,10 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 	if (main == NULL)
 		throw new CompilerException("Called function was not found 'main'.");
 
-	// Get the stack table of main.
-	StackFrame* frame = context.generateStackFrame(main, false);
 
-	// Output assembly for calling main.
-	*block <<  "	SET X, " << frame->getSize() << std::endl;
-	*block <<  "	SET Z, _halt" << std::endl;
-	*block <<  "	JSR _stack_init" << std::endl;
-	*block <<  "	SET PC, cfunc_main" << std::endl;
+	// Output assembly for calling global data initializer.
+	*block <<  "	SET PC, _data_init" << std::endl;
 	
-	// Clean up frame.
-	context.finishStackFrame(frame);
 
 	// Create the global data frame.
 	StackFrame::StackMap* map = new StackFrame::StackMap();
@@ -70,6 +63,33 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 		*block << std::endl;
 	}
 	*block << std::endl;
+
+	// Output the block for initializing global data storage.
+	*block <<  ":_data_init" << std::endl;
+	context.m_CurrentFrame = context.m_GlobalFrame; // So that the NVariableDeclaration compiles successfully.
+	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+	{
+		if ((*i)->cType != "statement-declaration-variable")
+			continue;
+		
+		// Compile initializer.
+		AsmBlock* inner = (*i)->compile(context);
+		*block << *inner;
+		if (inner != NULL)
+			delete inner;
+	}
+	
+	// Get the stack table of main.
+	StackFrame* frame = context.generateStackFrame(main, false);
+
+	// Output assembly for calling main.
+	*block <<  "	SET X, " << frame->getSize() << std::endl;
+	*block <<  "	SET Z, _halt" << std::endl;
+	*block <<  "	JSR _stack_init" << std::endl;
+	*block <<  "	SET PC, cfunc_main" << std::endl;
+	
+	// Clean up frame.
+	context.finishStackFrame(frame);
 
 	// Handle function definitions.
 	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
