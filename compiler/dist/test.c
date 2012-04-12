@@ -34,10 +34,18 @@ void print_in_red(char* msg, int x, int y)
 		set((*(msg + i) + 0x3000), x + i, y);
 }
 
+void print_in_yellow(char* msg, int x, int y)
+{
+	int i = 0;
+	for (i = 0; *(msg + i) != '\0'; i += 1)
+		set((*(msg + i) + 0x1000), x + i, y);
+}
+
 void main()
 {
 	struct container_t data;
 	int five;
+	void (*local)(char* msg, int x, int y) = &print;
 
 	// Set a global variable.
 	globalInt = 2;
@@ -60,5 +68,7 @@ void main()
 
 	// Change colour by changing the function pointer!
 	func = &print_in_red;
+	local = &print_in_yellow;
 	func("Now with extra red!", 0, 6);
+	local("Local function pointers work to!", 0, 7);
 }

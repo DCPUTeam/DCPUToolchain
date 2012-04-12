@@ -14,7 +14,7 @@
 #ifndef __DCPU_COMP_NODES_FUNCTION_POINTER_TYPE_H
 #define __DCPU_COMP_NODES_FUNCTION_POINTER_TYPE_H
 
-#include <cstdint>
+#include <stdint.h>
 #include "NFunctionSignature.h"
 #include "NType.h"
 #include "Lists.h"

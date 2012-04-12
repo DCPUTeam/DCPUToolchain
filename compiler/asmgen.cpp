@@ -144,13 +144,13 @@ std::string AsmGenerator::getRandomString(std::string::size_type sz)
 }
 
 // Gets a relative stack position by the variable name.
-TypePosition StackFrame::getPositionOfVariable(std::string name)
+TypePosition StackFrame::getPositionOfVariable(std::string name, bool stackStartAtC)
 {
 	uint16_t size = 0;
 	for (StackMap::iterator i = this->m_StackMap.begin(); i != this->m_StackMap.end(); i++)
 	{
 		if ((*i).first == name)
-			return TypePosition(true, this->m_Generator.m_GlobalFrame == this, size);
+			return TypePosition(true, this->m_Generator.m_GlobalFrame == this, stackStartAtC, size);
 		else
 			size += (*i).second.getWordSize(this->m_Generator);
 	}
@@ -161,7 +161,7 @@ TypePosition StackFrame::getPositionOfVariable(std::string name)
 		if (func != NULL)
 			return TypePosition(true, name);
 		else
-			return TypePosition(false, false, 0);
+			return TypePosition(false, false, false, 0);
 	}
 	else
 		return this->m_Generator.m_GlobalFrame->getPositionOfVariable(name);
@@ -255,12 +255,13 @@ std::ostream& operator<< (std::ostream& output, const AsmBlock& block)
 // Type position functions.
 //
 
-TypePosition::TypePosition(bool isFound, bool isGlobal, uint16_t position)
+TypePosition::TypePosition(bool isFound, bool isGlobal, bool hasStackStartAtC, uint16_t position)
 {
 	this->m_Found = isFound;
 	this->m_Function = false;
 	this->m_FunctionName = "";
 	this->m_Global = isGlobal;
+	this->m_StackStartAtC = hasStackStartAtC;
 	this->m_Position = position;
 }
 
@@ -270,6 +271,7 @@ TypePosition::TypePosition(bool isFound, std::string funcName)
 	this->m_Function = true;
 	this->m_FunctionName = funcName;
 	this->m_Global = true;
+	this->m_StackStartAtC = false;
 	this->m_Position = 0;
 }
 
@@ -292,6 +294,11 @@ std::string TypePosition::pushAddress(char registr)
 		sstr << "	SET " << registr << ", cfunc_" << this->m_FunctionName << std::endl;
 	else if (this->m_Global)
 		sstr << "	SET " << registr << ", _DATA" << std::endl;
+	else if (this->m_StackStartAtC)
+	{
+		sstr << "	SET " << registr << ", C" << std::endl;
+		sstr << "	ADD " << registr << ", 1" << std::endl;
+	}
 	else
 		sstr << "	SET " << registr << ", Y" << std::endl;
 	if (this->m_Position != 0)

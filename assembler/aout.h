@@ -46,6 +46,6 @@ struct aout_byte* aout_create_label(char* name);
 struct aout_byte* aout_create_label_replace(char* name);
 struct aout_byte* aout_create_metadata_extension(char* name);
 void aout_emit(struct aout_byte* byte);
-void aout_write(FILE* out);
+void aout_write(FILE* out, bool relocatable);
 
 #endif

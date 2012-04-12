@@ -16,7 +16,7 @@
 
 class NStructureDeclaration;
 
-#include <cstdint>
+#include <stdint.h>
 #include "NIdentifier.h"
 
 class NType : public NIdentifier

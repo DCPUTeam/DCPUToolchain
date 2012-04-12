@@ -163,7 +163,7 @@ FILE* pp_do(const char* input)
 		fprintf(stderr, "preprocessor: a preprocessing output file is already open.\n");
 		return NULL;
 	}
-	pp_fname = _tempnam(".", "pp.");
+	pp_fname = tempnam(".", "pp.");
 	if (strcmp(input, "-") == 0)
 		in = stdin;
 	else

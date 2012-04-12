@@ -96,7 +96,20 @@
      FOR = 312,
      DEBUG = 313,
      SIZEOF = 314,
-     DEREFDOT = 315
+     TYPE_VOID = 315,
+     TYPE_CHAR = 316,
+     TYPE_BYTE = 317,
+     TYPE_INT = 318,
+     TYPE_LONG = 319,
+     TYPE_INT8_T = 320,
+     TYPE_INT16_T = 321,
+     TYPE_INT32_T = 322,
+     TYPE_INT64_T = 323,
+     TYPE_UINT8_T = 324,
+     TYPE_UINT16_T = 325,
+     TYPE_UINT32_T = 326,
+     TYPE_UINT64_T = 327,
+     DEREFDOT = 328
    };
 #endif
 
@@ -130,7 +143,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 134 "parser.hpp"
+#line 147 "parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

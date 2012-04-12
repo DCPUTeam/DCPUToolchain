@@ -11,6 +11,8 @@
 
 **/
 
+#include <stdexcept>
+#include <cmath>
 #include "../asmgen.h"
 #include "NType.h"
 #include "NStructureDeclaration.h"

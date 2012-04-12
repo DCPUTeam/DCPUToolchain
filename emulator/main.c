@@ -45,9 +45,9 @@ int main(int argc, char* argv[])
 	{
 		if (show_help->count != 0)
 			arg_print_errors(stdout, end, "emulator");
-		printf("\syntax:\n    emulator");
+		printf("syntax:\n    emulator");
 		arg_print_syntax(stdout, argtable, "\n");
-		printf("\options:\n");
+		printf("options:\n");
 		arg_print_glossary(stdout, argtable, "    %-25s %s\n");
 		exit(1);
 	}

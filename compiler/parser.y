@@ -79,9 +79,14 @@ void yyerror(const char* msg)
 /* TOKENS: Statement keywords */
 %token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF
 
+/* TOKENS: Type keywords */
+%token <token> TYPE_VOID TYPE_CHAR TYPE_BYTE TYPE_INT TYPE_LONG TYPE_INT8_T
+%token <token> TYPE_INT16_T TYPE_INT32_T TYPE_INT64_T TYPE_UINT8_T TYPE_UINT16_T
+%token <token> TYPE_UINT32_T TYPE_UINT64_T
+
 /* TYPES */
 %type <type> type
-%type <ident> ident
+%type <ident> ident type_base
 %type <expr> expr numeric string character deref fldref addressable
 %type <varvec> func_decl_args struct_decl_args
 %type <exprvec> call_args
@@ -215,7 +220,7 @@ var_decl:
 		type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE ASSIGN_EQUAL expr
 		{
 			$$ = new NVariableDeclaration(*(new NFunctionPointerType(*$1, *$7)) /* TODO: free this memory */, *$4, $10);
-		};
+		} ;
 		
 ident:
 		IDENTIFIER
@@ -225,7 +230,7 @@ ident:
 		} ;
 
 type:
-		ident
+		type_base
 		{
 			$$ = new NType($<type>1->name, 0, false);
 			delete $1;
@@ -235,7 +240,7 @@ type:
 			$$ = new NType($<type>2->name, 0, true);
 			delete $2;
 		} |
-		ident STAR %prec IREF
+		type_base STAR %prec IREF
 		{
 			$$ = new NType($<type>1->name, 1, false);
 			delete $1;
@@ -503,3 +508,57 @@ binaryop:
 		SUBTRACT | 
 		STAR |
 		SLASH ;
+
+type_base:
+		TYPE_VOID
+		{
+			$$ = new NIdentifier("void");
+		} |
+		TYPE_CHAR
+		{
+			$$ = new NIdentifier("char");
+		} |
+		TYPE_BYTE
+		{
+			$$ = new NIdentifier("byte");
+		} |
+		TYPE_INT
+		{
+			$$ = new NIdentifier("int");
+		} |
+		TYPE_LONG
+		{
+			$$ = new NIdentifier("long");
+		} |
+		TYPE_INT8_T
+		{
+			$$ = new NIdentifier("int8_t");
+		} |
+		TYPE_INT16_T
+		{
+			$$ = new NIdentifier("int16_t");
+		} |
+		TYPE_INT32_T
+		{
+			$$ = new NIdentifier("int32_t");
+		} |
+		TYPE_INT64_T
+		{
+			$$ = new NIdentifier("int64_t");
+		} |
+		TYPE_UINT8_T
+		{
+			$$ = new NIdentifier("uint8_t");
+		} |
+		TYPE_UINT16_T
+		{
+			$$ = new NIdentifier("uint16_t");
+		} |
+		TYPE_UINT32_T
+		{
+			$$ = new NIdentifier("uint32_t");
+		} |
+		TYPE_UINT64_T
+		{
+			$$ = new NIdentifier("uint64_t");
+		} ;

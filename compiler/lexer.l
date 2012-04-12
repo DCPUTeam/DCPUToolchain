@@ -15,7 +15,7 @@
 
 #include <string>
 #include <cstdio>
-#include "Node.h"
+#include "node.h"
 #include "parser.hpp"
 
 unsigned int yylineno = 1;
@@ -25,6 +25,7 @@ void comment_line();
 void comment();
 extern "C" int yywrap() { return 1; }
 char* trim_and_unescape(char* data, int mode);
+int check_type();
 
 %}
 
@@ -49,6 +50,22 @@ char* trim_and_unescape(char* data, int mode);
 "debug"					{ count(); return DEBUG; }
 "struct"				{ count(); return STRUCT; }
 "sizeof"				{ count(); return SIZEOF; }
+
+	/* Type keywords */
+
+"void"					{ count(); return TYPE_VOID; }
+"char"					{ count(); return TYPE_CHAR; }
+"byte"					{ count(); return TYPE_BYTE; }
+"int"					{ count(); return TYPE_INT; }
+"long"					{ count(); return TYPE_LONG; }
+"int8_t"				{ count(); return TYPE_INT8_T; }
+"int16_t"				{ count(); return TYPE_INT16_T; }
+"int32_t"				{ count(); return TYPE_INT32_T; }
+"int64_t"				{ count(); return TYPE_INT64_T; }
+"uint8_t"				{ count(); return TYPE_UINT8_T; }
+"uint16_t"				{ count(); return TYPE_UINT16_T; }
+"uint32_t"				{ count(); return TYPE_UINT32_T; }
+"uint64_t"				{ count(); return TYPE_UINT64_T; }
 
 	/* String and character analysis */
 
@@ -76,7 +93,7 @@ char* trim_and_unescape(char* data, int mode);
 
 	/* Identifiers, numbers and basic lexical components */
 
-[A-Za-z_][A-Za-z0-9_]*	{ yylval.string = new std::string(strdup(yytext)); count(); return IDENTIFIER; }
+[A-Za-z_][A-Za-z0-9_]*	{ yylval.string = new std::string(yytext); count(); return check_type(); }
 0x[0-9A-Fa-f]+			{ yylval.number = strtoul(yytext, NULL, 16); count(); return NUMBER; }
 [1-9]+[0-9]*			{ yylval.number = strtoul(yytext, NULL, 10); count(); return NUMBER; }
 0[0-7]*					{ yylval.number = strtoul(yytext, NULL, 8); count(); return NUMBER; }
@@ -157,4 +174,30 @@ void count()
 			yycolumn++;
 
 	ECHO;
+}
+
+int check_type()
+{
+	// Basically we need to check to see whether our data
+	// matches a type name, and return a type token if it
+	// does.
+	std::string data = yytext;
+	if (data == "void")				return TYPE_VOID;
+	else if (data == "char")		return TYPE_CHAR;
+	else if (data == "byte")		return TYPE_BYTE;
+	else if (data == "int")			return TYPE_INT;
+	else if (data == "long")		return TYPE_LONG;
+	else if (data == "int8_t")		return TYPE_INT8_T;
+	else if (data == "int16_t")		return TYPE_INT16_T;
+	else if (data == "int32_t")		return TYPE_INT32_T;
+	else if (data == "int64_t")		return TYPE_INT64_T;
+	else if (data == "uint8_t")		return TYPE_UINT8_T;
+	else if (data == "uint16_t")	return TYPE_UINT16_T;
+	else if (data == "uint32_t")	return TYPE_UINT32_T;
+	else if (data == "uint64_t")	return TYPE_UINT64_T;
+
+	// TODO: When we support typedef's later on, we also
+	// need to check here for those as well.
+
+	return IDENTIFIER;
 }

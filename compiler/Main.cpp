@@ -37,7 +37,7 @@ string_t dirname(string_t source)
     }
     if (*(source.rbegin() + 1) == '/') //Remove trailing slash if it exists.
     {
-        source.pop_back();
+		source = source.substr(0, source.size() - 1);
     }
     source.erase(std::find(source.rbegin(), source.rend(), '/').base(), source.end());
     return source;
@@ -59,9 +59,9 @@ int main(int argc, char* argv[])
 	{
 		if (show_help->count != 0)
 			arg_print_errors(stdout, end, "compiler");
-		fprintf(stderr, "\syntax:\n    compiler");
+		fprintf(stderr, "syntax:\n    compiler");
 		arg_print_syntax(stdout, argtable, "\n");
-		fprintf(stderr, "\options:\n");
+		fprintf(stderr, "options:\n");
 		arg_print_glossary(stdout, argtable, "    %-25s %s\n");
 		return 1;
 	}

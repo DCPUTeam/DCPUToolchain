@@ -17,7 +17,7 @@
 
 class Assembler;
 
-#include <cstdint>
+#include <stdint.h>
 #include <exception>
 #include <sstream>
 #include <iostream>
@@ -36,10 +36,11 @@ private:
 	bool m_Found;
 	bool m_Global;
 	bool m_Function;
+	bool m_StackStartAtC;
 	uint16_t m_Position;
 	std::string m_FunctionName;
 public:
-	TypePosition(bool isFound, bool isGlobal, uint16_t position);
+	TypePosition(bool isFound, bool isGlobal, bool hasStackStartAtC, uint16_t position);
 	TypePosition(bool isFound, std::string funcName);
 	bool isFound();
 	bool isFunction();
@@ -76,7 +77,17 @@ public:
 class StackFrame
 {
 public:
-	typedef std::pair<std::string, NType&> StackPair;
+	// Work-around for GNU C++; can't just typedef here as we need to provide
+	// an assignment operator so that we can use it inside std::vector.
+	class StackPair : public std::pair<std::string, NType&>
+	{
+	public:
+		StackPair(std::string key, NType& value) : std::pair<std::string, NType&>(key, value) { };
+		inline StackPair& operator=(const StackPair& other)
+		{
+			throw new std::runtime_error("Attempt to use assignment operator on partial-const class NType (internal error)!");
+		}
+	};
 	typedef std::vector<StackPair> StackMap;
 
 private:
@@ -85,7 +96,7 @@ private:
 
 public:
 	StackFrame(AsmGenerator& generator, StackMap& map) : m_StackMap(map), m_Generator(generator) { };
-	TypePosition getPositionOfVariable(std::string name);
+	TypePosition getPositionOfVariable(std::string name, bool stackStartAtC = false);
 	NType* getTypeOfVariable(std::string name);
 	uint16_t getSize();
 };
@@ -124,6 +135,7 @@ private:
 
 public:
 	CompilerException(std::string message) : m_Message(message) { };
+	virtual ~CompilerException() throw() { };
 	virtual const char* what() const throw()
 	{
 		return this->m_Message.c_str();

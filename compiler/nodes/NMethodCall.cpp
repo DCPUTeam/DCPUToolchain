@@ -102,7 +102,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	}
 	else
 	{
-		TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+		TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name, true);
 		*block <<  varpos.pushAddress('X');
 		*block <<  "	SET X, [X]" << std::endl;
 		*block <<  "	SET PC, X" << std::endl;
