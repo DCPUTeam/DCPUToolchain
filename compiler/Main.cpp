@@ -68,6 +68,7 @@ int main(int argc, char* argv[])
 
 	// Parse C.
 	pp_add_search_path(".");
+	pp_add_search_path("lib");
 	pp_add_search_path(dirname<std::string>(input_file->filename[0]).c_str());
 	yyout = stderr;
 	yyin = pp_do(input_file->filename[0]);

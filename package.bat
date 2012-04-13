@@ -14,6 +14,7 @@ cd dist
 
 rem Create the example directory if needed
 if not exist examples mkdir examples
+if not exist include mkdir include
 
 rem Clean out any existing files
 del /Q *.dll > nul 2> nul
@@ -33,13 +34,9 @@ xcopy /Y ..\%ConfigurationName%\*.dll . > nul
 xcopy /Y ..\%ConfigurationName%\*.exe . > nul
 xcopy /Y ..\%ConfigurationName%\terminal.png . > nul
 xcopy /Y ..\compiler\dist\*.c .\examples > nul
-xcopy /Y ..\compiler\dist\*.m .\ > nul
+xcopy /Y ..\compiler\dist\*.m .\include > nul
 xcopy /Y ..\compiler\bootstrap.asm .\ > nul
 xcopy /Y ..\*.dll . > nul
-
-rem Copy all example files
-xcopy /Y ..\emulator\*.dcpu16 .\examples > nul
-xcopy /Y ..\assembler\*.dasm16 .\examples > nul
 
 rem Change directory back again
 popd
