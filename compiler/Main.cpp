@@ -15,6 +15,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 #include <algorithm>
 #include "node.h"
 #include "asmgen.h"

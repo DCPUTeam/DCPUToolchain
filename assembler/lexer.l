@@ -55,8 +55,11 @@ char* trim_and_unescape(char* data, int mode)
 
 	/* Assembler keywords */
 
-\.BOUNDARY					yylval.number = BOUNDARY; return KEYWORD;
-\.EXTENSION					yylval.number = EXTENSION; return KEYWORD;
+\.[Bb][Oo][Uu][Nn][Dd][Aa][Rr][Yy]			yylval.number = BOUNDARY; return KEYWORD;
+\.[Ee][Xx][Tt][Ee][Nn][Ss][Ii][Oo][Nn]		yylval.number = EXTENSION; return KEYWORD;
+\.[Or][Rr][Ii][Gg][Ii][Nn]					yylval.number = ORIGIN; return KEYWORD;
+\.[Oo][Rr][Gg]								yylval.number = ORIGIN; return KEYWORD;
+\.[Ii][Nn][Cc][Bb][Ii][Nn]					yylval.number = INCBIN; return KEYWORD;
 
 	/* General stuff */
 

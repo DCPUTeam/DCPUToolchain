@@ -30,6 +30,8 @@
 #define ERR_EXTENSION_TABLE_TOO_LARGE 9
 #define ERR_EXTENSION_UNKNOWN 10
 #define ERR_NEXTED_LABEL_UNSUPPORTED 11
+#define ERR_UNKNOWN_OPCODE 12
+#define ERR_UNABLE_TO_INCBIN 13
 
 // Variables
 extern const char* err_strings[];

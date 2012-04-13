@@ -27,10 +27,10 @@
     <ClCompile Include="dcpuops.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dcpuscrn.c">
+    <ClCompile Include="dcpuhook.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dcpuhook.c">
+    <ClCompile Include="hwio.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,10 +44,10 @@
     <ClInclude Include="dcpuops.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dcpuscrn.h">
+    <ClInclude Include="dcpuhook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dcpuhook.h">
+    <ClInclude Include="hwio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

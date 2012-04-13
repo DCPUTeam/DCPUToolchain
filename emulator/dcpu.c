@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include "dcpu.h"
 #include "dcpubase.h"
-#include "dcpuscrn.h"
+#include "hwio.h"
 
 vm_t* vm_create()
 {
@@ -41,7 +41,7 @@ vm_t* vm_create()
 	new_vm->debug = false;
 	
 	// Initialize DCPU-16 components.
-	vm_scrn_init(new_vm, 32, 16);
+	vm_hw_io_init(new_vm, 32, 16);
 
 	// Return.
 	return new_vm;
@@ -50,7 +50,7 @@ vm_t* vm_create()
 void vm_free(vm_t* vm)
 {
 	// Shutdown components.
-	vm_scrn_free(vm);
+	vm_hw_io_free(vm);
 
 	// Free the memory.
 	free(vm);
@@ -78,6 +78,6 @@ void vm_execute(vm_t* vm)
 	while (!vm->halted)
 	{
 		vm_cycle(vm);
-		vm_scrn_cycle(vm);
+		vm_hw_io_cycle(vm);
 	}
 }

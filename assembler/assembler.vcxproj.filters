@@ -56,6 +56,9 @@
     <ClCompile Include="textn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="node.h">
@@ -80,6 +83,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="textn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

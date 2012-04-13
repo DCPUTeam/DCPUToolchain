@@ -135,6 +135,7 @@
     <ClCompile Include="lexer.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="parser.c" />
+    <ClCompile Include="pp.c" />
     <ClCompile Include="textn.c" />
     <ClCompile Include="treloc.c" />
   </ItemGroup>
@@ -145,6 +146,7 @@
     <ClInclude Include="imap.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="parser.h" />
+    <ClInclude Include="pp.h" />
     <ClInclude Include="textn.h" />
     <ClInclude Include="treloc.h" />
   </ItemGroup>

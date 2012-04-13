@@ -21,9 +21,11 @@
 #include "dcpu.h"
 #include "treloc.h"
 #include "textn.h"
+#include "pp.h"
 
 struct aout_byte* start = NULL;
 struct aout_byte* end = NULL;
+extern char* fileloc;
 
 struct aout_byte* aout_create_opcode(uint16_t opcode, uint16_t a, uint16_t b)
 {
@@ -108,6 +110,38 @@ struct aout_byte* aout_create_metadata_extension(char* name)
 	return byte;
 }
 
+struct aout_byte* aout_create_metadata_incbin(char* path)
+{
+	struct aout_byte* byte = malloc(sizeof(struct aout_byte));
+	byte->type = AOUT_TYPE_METADATA_INCBIN;
+	byte->opcode = 0;
+	byte->a = 0;
+	byte->b = 0;
+	byte->next = NULL;
+	byte->prev = NULL;
+	byte->raw_used = false;
+	byte->raw = 0x0;
+	byte->label = path;
+	byte->label_replace = NULL;
+	return byte;
+}
+
+struct aout_byte* aout_create_metadata_origin(uint16_t address)
+{
+	struct aout_byte* byte = malloc(sizeof(struct aout_byte));
+	byte->type = AOUT_TYPE_METADATA_ORIGIN;
+	byte->opcode = address;
+	byte->a = 0;
+	byte->b = 0;
+	byte->next = NULL;
+	byte->prev = NULL;
+	byte->raw_used = false;
+	byte->raw = 0x0;
+	byte->label = NULL;
+	byte->label_replace = NULL;
+	return byte;
+}
+
 void aout_emit(struct aout_byte* byte)
 {
 	if (start == NULL && end == NULL)
@@ -131,9 +165,11 @@ void aout_write(FILE* out, bool relocatable)
 {
 	struct aout_byte* current_outer;
 	struct aout_byte* current_inner;
-	uint32_t mem_index, i;
+	uint32_t mem_index, i, path_i;
 	uint16_t inst;
 	uint16_t code_offset = 0;
+	FILE* temp = NULL;
+	char* cname;
 
 	// Initialize out our extension table.
 	code_offset += textn_init(start);
@@ -192,23 +228,61 @@ void aout_write(FILE* out, bool relocatable)
 	current_outer = start;
 	while (current_outer != NULL)
 	{
-		if (current_outer->type != AOUT_TYPE_NORMAL)
+		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
 		{
-			current_outer = current_outer->next;
-			continue;
+			// Adjust origin.
+			fseek(out, current_outer->opcode * 2 /* double because the number is in words, not bytes */, SEEK_SET);
+		}
+		else if (current_outer->type == AOUT_TYPE_METADATA_INCBIN)
+		{
+			// Include binary file.
+			temp = NULL;
+			path_i = 0;
+			while (temp == NULL && path_i < pp_path_count)
+			{
+				// Calculate path.
+				cname = malloc(strlen(pp_path_names[path_i]) + 1 + strlen(current_outer->label) + 1);
+				memset(cname, 0, strlen(pp_path_names[path_i]) + 1 + strlen(current_outer->label) + 1);
+				memcpy(cname, pp_path_names[path_i], strlen(pp_path_names[path_i]));
+				memcpy(cname + strlen(pp_path_names[path_i]), "/", 1);
+				memcpy(cname + strlen(pp_path_names[path_i]) + 1, current_outer->label, strlen(current_outer->label));
+
+				// Attempt open.
+				temp = fopen(cname, "rb");
+				if (temp == NULL)
+					path_i++;
+			}
+			if (temp == NULL)
+				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
+
+			// Copy binary data.
+			while (!feof(temp))
+			{
+				// TODO: This could be faster if we didn't do it character
+				// by character.
+				fputc(fgetc(temp), out);
+			}
+
+			// Finalize.
+			fclose(temp);
+			free(cname);
+		}
+		else if (current_outer->type == AOUT_TYPE_NORMAL)
+		{
+			// Normal output.
+			if (current_outer->raw_used == true)
+			{
+				inst = current_outer->raw;
+				fwrite(&inst, sizeof(uint16_t), 1, out);
+			}
+			else if (current_outer->label == NULL)
+			{
+				inst = INSTRUCTION_CREATE(current_outer->opcode, current_outer->a, current_outer->b);
+				fwrite(&inst, sizeof(uint16_t), 1, out);
+			}
 		}
 
-		if (current_outer->raw_used == true)
-		{
-			inst = current_outer->raw;
-			fwrite(&inst, sizeof(uint16_t), 1, out);
-		}
-		else if (current_outer->label == NULL)
-		{
-			inst = INSTRUCTION_CREATE(current_outer->opcode, current_outer->a, current_outer->b);
-			fwrite(&inst, sizeof(uint16_t), 1, out);
-		}
-
+		// Goto next in linked list.
 		current_outer = current_outer->next;
 	}
 

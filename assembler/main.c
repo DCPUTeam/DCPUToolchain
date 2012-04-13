@@ -14,19 +14,39 @@
 #ifdef _WIN32
 #include <io.h>
 #include <fcntl.h>
+#else
+#include <libgen.h>
 #endif
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
 #include <argtable2.h>
 #include "assem.h"
 #include "node.h"
 #include "aerr.h"
+#include "pp.h"
 
 extern int yyparse();
 extern FILE *yyin, *yyout;
+char* fileloc = NULL;
 
 #define EMU_CMD_SIZE 80
+
+#ifdef _WIN32
+char* dirname(char* path)
+{
+	// FIXME: This assumes the resulting path will always
+	// be shorter than the original (which it should be
+	// given that we're only returning a component of it, right?)
+	char drive[_MAX_DRIVE];
+	char dir[_MAX_DIR];
+	_splitpath(path, drive, dir, NULL, NULL);
+	strcpy(path, drive);
+	strcpy(path + strlen(path), dir);
+	return path;
+}
+#endif
 
 int main(int argc, char* argv[])
 {
@@ -67,29 +87,27 @@ int main(int argc, char* argv[])
 			fclose(img);
 		return 1;
 	}
-	
-	// Load from either file or stdin.
-	if (strcmp(input_file->filename[0], "-") != 0)
+
+	// Run the preprocessor.
+	fileloc = malloc(strlen(input_file->filename[0]) + 1);
+	memcpy(fileloc, input_file->filename[0], strlen(input_file->filename[0]) + 1);
+	dirname(fileloc);
+	pp_add_search_path(".");
+	pp_add_search_path(fileloc);
+	yyout = stderr;
+	yyin = pp_do(input_file->filename[0]);
+	if (yyin == NULL)
 	{
-		// Open file.
-		yyin = fopen(input_file->filename[0], "r");
-		if (yyin == NULL)
-		{
-			fprintf(stderr,"assembler: input file not found.\n");
-			return 1;
-		}
-	}
-	else
-	{
-		// Set yyin to stdin.
-		yyin = stdin;
+		pp_cleanup();
+		return 1;
 	}
 
 	// Parse assembly.
 	yyparse();
 	if (yyin != stdin)
 		fclose(yyin);
-	if (&ast_root == NULL)
+	pp_cleanup();
+	if (&ast_root == NULL || ast_root.values == NULL)
 	{
 		fprintf(stderr, "assembler: syntax error, see above.\n");
 		return 1;

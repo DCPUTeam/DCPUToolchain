@@ -118,24 +118,12 @@ struct instruction_mapping* get_instruction_by_name(char* name)
 struct register_mapping* get_register_by_name(char* name, bool bracketed)
 {
 	uint16_t i = 0;
-	char* cpy = malloc(strlen(name) + 1);
-	memset(cpy, 0, strlen(name) + 1);
-	strcpy(cpy, name);
-	strupper(cpy);
 	if (bracketed)
 	{
 		while (register_value_name_map[i].name != NULL)
 		{
-			if (strcmp(register_value_name_map[i].name, name) == 0)
-			{
-				free(cpy);
+			if (stricmp(register_value_name_map[i].name, name) == 0)
 				return &register_value_name_map[i];
-			}
-			if (strcmp(register_value_name_map[i].name, cpy) == 0)
-			{
-				free(cpy);
-				return &register_value_name_map[i];
-			}
 			i += 1;
 		}
 	}
@@ -143,40 +131,23 @@ struct register_mapping* get_register_by_name(char* name, bool bracketed)
 	{
 		while (register_name_map[i].name != NULL)
 		{
-			if (strcmp(register_name_map[i].name, name) == 0)
-			{
-				free(cpy);
+			if (stricmp(register_name_map[i].name, name) == 0)
 				return &register_name_map[i];
-			}
-			if (strcmp(register_name_map[i].name, cpy) == 0)
-			{
-				free(cpy);
-				return &register_name_map[i];
-			}
 			i += 1;
 		}
 	}
-	free(cpy);
 	return NULL;
 }
 
 struct register_mapping* get_register_by_name_next(char* name)
 {
 	uint16_t i = 0;
-	char* cpy = malloc(strlen(name) + 1);
-	memset(cpy, 0, strlen(name) + 1);
-	strcpy(cpy, name);
-	strupper(cpy);
 	while (register_value_next_map[i].name != NULL)
 	{
-		if (strcmp(register_value_next_map[i].name, name) == 0)
-		{
-			free(cpy);
+		if (stricmp(register_value_next_map[i].name, name) == 0)
 			return &register_value_next_map[i];
-		}
 		i += 1;
 	}
-	free(cpy);
 	return NULL;
 }
 

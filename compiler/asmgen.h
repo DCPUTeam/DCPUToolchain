@@ -18,6 +18,7 @@
 class Assembler;
 
 #include <stdint.h>
+#include <stdexcept>
 #include <exception>
 #include <sstream>
 #include <iostream>

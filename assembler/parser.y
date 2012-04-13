@@ -57,7 +57,7 @@ int yywrap()
 
 // Define our lexical token names.
 %token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT ADD
-%token <token> KEYWORD BOUNDARY EXTENSION
+%token <token> KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN
 %token <string> WORD STRING CHARACTER
 %token <number> ADDRESS
 
@@ -125,8 +125,32 @@ line:
 			$$->type = type_keyword;
 			$$->keyword = $1;
 			$$->instruction = NULL;
-			$$->label = $2;
+			$$->label = NULL;
 			$$->prev = NULL;
+			$$->keyword_data_string = $2;
+			$$->keyword_data_numeric = 0;
+		} |
+		KEYWORD STRING NEWLINE
+		{
+			$$ = malloc(sizeof(struct ast_node_line));
+			$$->type = type_keyword;
+			$$->keyword = $1;
+			$$->instruction = NULL;
+			$$->label = NULL;
+			$$->prev = NULL;
+			$$->keyword_data_string = $2;
+			$$->keyword_data_numeric = 0;
+		} |
+		KEYWORD ADDRESS NEWLINE
+		{
+			$$ = malloc(sizeof(struct ast_node_line));
+			$$->type = type_keyword;
+			$$->keyword = $1;
+			$$->instruction = NULL;
+			$$->label = NULL;
+			$$->prev = NULL;
+			$$->keyword_data_string = NULL;
+			$$->keyword_data_numeric = $2;
 		} |
 		KEYWORD NEWLINE
 		{
@@ -136,38 +160,130 @@ line:
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
+			$$->keyword_data_string = NULL;
+			$$->keyword_data_numeric = 0;
 		} |
 		instruction NEWLINE
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_instruction;
-			$$->keyword = NULL;
+			$$->keyword = 0;
 			$$->instruction = $1;
 			$$->label = NULL;
 			$$->prev = NULL;
+			$$->keyword_data_string = NULL;
+			$$->keyword_data_numeric = 0;
 		} |
 		label NEWLINE
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_label;
-			$$->keyword = NULL;
+			$$->keyword = 0;
 			$$->instruction = NULL;
 			$$->label = $1;
 			$$->prev = NULL;
+			$$->keyword_data_string = NULL;
+			$$->keyword_data_numeric = 0;
 		} |
 		label instruction NEWLINE
 		{
 			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
 			lnode->type = type_label;
+			lnode->keyword = 0;
 			lnode->instruction = NULL;
 			lnode->label = $1;
 			lnode->prev = NULL;
+			lnode->keyword_data_string = NULL;
+			lnode->keyword_data_numeric = 0;
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_instruction;
+			$$->keyword = 0;
 			$$->instruction = $2;
 			$$->label = NULL;
 			$$->prev = lnode;
+			$$->keyword_data_string = NULL;
+			$$->keyword_data_numeric = 0;
+		} |
+		label KEYWORD WORD NEWLINE
+		{
+			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
+			lnode->type = type_label;
+			lnode->keyword = 0;
+			lnode->instruction = NULL;
+			lnode->label = $1;
+			lnode->prev = NULL;
+			lnode->keyword_data_string = NULL;
+			lnode->keyword_data_numeric = 0;
+
+			$$ = malloc(sizeof(struct ast_node_line));
+			$$->type = type_keyword;
+			$$->keyword = $2;
+			$$->instruction = NULL;
+			$$->label = NULL;
+			$$->prev = lnode;
+			$$->keyword_data_string = $3;
+			$$->keyword_data_numeric = 0;
+		} |
+		label KEYWORD STRING NEWLINE
+		{
+			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
+			lnode->type = type_label;
+			lnode->keyword = 0;
+			lnode->instruction = NULL;
+			lnode->label = $1;
+			lnode->prev = NULL;
+			lnode->keyword_data_string = NULL;
+			lnode->keyword_data_numeric = 0;
+
+			$$ = malloc(sizeof(struct ast_node_line));
+			$$->type = type_keyword;
+			$$->keyword = $2;
+			$$->instruction = NULL;
+			$$->label = NULL;
+			$$->prev = lnode;
+			$$->keyword_data_string = $3;
+			$$->keyword_data_numeric = 0;
+		} |
+		label KEYWORD ADDRESS NEWLINE
+		{
+			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
+			lnode->type = type_label;
+			lnode->keyword = 0;
+			lnode->instruction = NULL;
+			lnode->label = $1;
+			lnode->prev = NULL;
+			lnode->keyword_data_string = NULL;
+			lnode->keyword_data_numeric = 0;
+
+			$$ = malloc(sizeof(struct ast_node_line));
+			$$->type = type_keyword;
+			$$->keyword = $2;
+			$$->instruction = NULL;
+			$$->label = NULL;
+			$$->prev = lnode;
+			$$->keyword_data_string = NULL;
+			$$->keyword_data_numeric = $3;
+		} |
+		label KEYWORD NEWLINE
+		{
+			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
+			lnode->type = type_label;
+			lnode->keyword = 0;
+			lnode->instruction = NULL;
+			lnode->label = $1;
+			lnode->prev = NULL;
+			lnode->keyword_data_string = NULL;
+			lnode->keyword_data_numeric = 0;
+
+			$$ = malloc(sizeof(struct ast_node_line));
+			$$->type = type_keyword;
+			$$->keyword = $2;
+			$$->instruction = NULL;
+			$$->label = NULL;
+			$$->prev = lnode;
+			$$->keyword_data_string = NULL;
+			$$->keyword_data_numeric = 0;
 		} ;
 
 label:

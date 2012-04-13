@@ -148,10 +148,13 @@ int yywrap()
      KEYWORD = 266,
      BOUNDARY = 267,
      EXTENSION = 268,
-     WORD = 269,
-     STRING = 270,
-     CHARACTER = 271,
-     ADDRESS = 272
+     ORIGIN = 269,
+     INCLUDE = 270,
+     INCBIN = 271,
+     WORD = 272,
+     STRING = 273,
+     CHARACTER = 274,
+     ADDRESS = 275
    };
 #endif
 
@@ -180,7 +183,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 184 "parser.c"
+#line 187 "parser.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -192,7 +195,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 196 "parser.c"
+#line 199 "parser.c"
 
 #ifdef short
 # undef short
@@ -405,22 +408,22 @@ union yyalloc
 #endif
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  25
+#define YYFINAL  27
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   33
+#define YYLAST   45
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  18
+#define YYNTOKENS  21
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  13
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  29
+#define YYNRULES  35
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  44
+#define YYNSTATES  56
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   272
+#define YYMAXUTOK   275
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -455,7 +458,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17
+      15,    16,    17,    18,    19,    20
 };
 
 #if YYDEBUG
@@ -463,31 +466,35 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     5,     7,    10,    11,    13,    17,    20,
-      23,    26,    30,    33,    36,    37,    39,    43,    45,    47,
-      49,    51,    53,    55,    57,    61,    63,    65,    69,    75
+       0,     0,     3,     5,     7,    10,    11,    13,    17,    21,
+      25,    28,    31,    34,    38,    43,    48,    53,    57,    60,
+      63,    64,    66,    70,    72,    74,    76,    78,    80,    82,
+      84,    88,    90,    92,    96,   102
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      19,     0,    -1,    20,    -1,    21,    -1,    20,    21,    -1,
-      -1,     8,    -1,    11,    14,     8,    -1,    11,     8,    -1,
-      23,     8,    -1,    22,     8,    -1,    22,    23,     8,    -1,
-       6,    14,    -1,    14,    24,    -1,    -1,    25,    -1,    24,
-       3,    25,    -1,    26,    -1,    27,    -1,    28,    -1,    29,
-      -1,    30,    -1,    15,    -1,    14,    -1,     4,    14,     5,
-      -1,    17,    -1,    16,    -1,     4,    17,     5,    -1,     4,
-      17,    10,    14,     5,    -1,     4,    14,    10,    17,     5,
-      -1
+      22,     0,    -1,    23,    -1,    24,    -1,    23,    24,    -1,
+      -1,     8,    -1,    11,    17,     8,    -1,    11,    18,     8,
+      -1,    11,    20,     8,    -1,    11,     8,    -1,    26,     8,
+      -1,    25,     8,    -1,    25,    26,     8,    -1,    25,    11,
+      17,     8,    -1,    25,    11,    18,     8,    -1,    25,    11,
+      20,     8,    -1,    25,    11,     8,    -1,     6,    17,    -1,
+      17,    27,    -1,    -1,    28,    -1,    27,     3,    28,    -1,
+      29,    -1,    30,    -1,    31,    -1,    32,    -1,    33,    -1,
+      18,    -1,    17,    -1,     4,    17,     5,    -1,    20,    -1,
+      19,    -1,     4,    20,     5,    -1,     4,    20,    10,    17,
+       5,    -1,     4,    17,    10,    20,     5,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    83,    83,    89,    94,   115,   118,   122,   131,   140,
-     149,   158,   174,   181,   190,   193,   198,   209,   218,   227,
-     236,   245,   254,   265,   273,   281,   289,   299,   309,   317
+       0,    83,    83,    89,    94,   115,   118,   122,   133,   144,
+     155,   166,   177,   188,   208,   228,   248,   268,   290,   297,
+     306,   309,   314,   325,   334,   343,   352,   361,   370,   381,
+     389,   397,   405,   415,   425,   433
 };
 #endif
 
@@ -498,9 +505,10 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "COMMA", "BRACKET_OPEN", "BRACKET_CLOSE",
   "COLON", "SEMICOLON", "NEWLINE", "COMMENT", "ADD", "KEYWORD", "BOUNDARY",
-  "EXTENSION", "WORD", "STRING", "CHARACTER", "ADDRESS", "$accept", "root",
-  "lines", "line", "label", "instruction", "parameters", "parameter",
-  "register", "bracketed_register", "address", "bracketed_address",
+  "EXTENSION", "ORIGIN", "INCLUDE", "INCBIN", "WORD", "STRING",
+  "CHARACTER", "ADDRESS", "$accept", "root", "lines", "line", "label",
+  "instruction", "parameters", "parameter", "register",
+  "bracketed_register", "address", "bracketed_address",
   "bracketed_added_address", 0
 };
 #endif
@@ -511,24 +519,27 @@ static const char *const yytname[] =
 static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271,   272
+     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
+     275
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    18,    19,    20,    20,    21,    21,    21,    21,    21,
-      21,    21,    22,    23,    24,    24,    24,    25,    25,    25,
-      25,    25,    25,    26,    27,    28,    28,    29,    30,    30
+       0,    21,    22,    23,    23,    24,    24,    24,    24,    24,
+      24,    24,    24,    24,    24,    24,    24,    24,    25,    26,
+      27,    27,    27,    28,    28,    28,    28,    28,    28,    29,
+      30,    31,    31,    32,    33,    33
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     1,     2,     0,     1,     3,     2,     2,
-       2,     3,     2,     2,     0,     1,     3,     1,     1,     1,
-       1,     1,     1,     1,     3,     1,     1,     3,     5,     5
+       0,     2,     1,     1,     2,     0,     1,     3,     3,     3,
+       2,     2,     2,     3,     4,     4,     4,     3,     2,     2,
+       0,     1,     3,     1,     1,     1,     1,     1,     1,     1,
+       3,     1,     1,     3,     5,     5
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -536,37 +547,39 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       5,     0,     6,     0,    14,     0,     2,     3,     0,     0,
-      12,     8,     0,     0,    23,    22,    26,    25,    13,    15,
-      17,    18,    19,    20,    21,     1,     4,    10,     0,     9,
-       7,     0,     0,     0,    11,    24,     0,    27,     0,    16,
-       0,     0,    29,    28
+       5,     0,     6,     0,    20,     0,     2,     3,     0,     0,
+      18,    10,     0,     0,     0,     0,    29,    28,    32,    31,
+      19,    21,    23,    24,    25,    26,    27,     1,     4,    12,
+       0,     0,    11,     7,     8,     9,     0,     0,     0,    17,
+       0,     0,     0,    13,    30,     0,    33,     0,    22,    14,
+      15,    16,     0,     0,    35,    34
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     5,     6,     7,     8,     9,    18,    19,    20,    21,
-      22,    23,    24
+      -1,     5,     6,     7,     8,     9,    20,    21,    22,    23,
+      24,    25,    26
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -11
+#define YYPACT_NINF -15
 static const yytype_int8 yypact[] =
 {
-      -5,    -9,   -11,    -6,    -4,    15,    -5,   -11,     6,    10,
-     -11,   -11,    16,   -10,   -11,   -11,   -11,   -11,    20,   -11,
-     -11,   -11,   -11,   -11,   -11,   -11,   -11,   -11,    17,   -11,
-     -11,    11,    12,    -4,   -11,   -11,     2,   -11,    13,   -11,
-      21,    23,   -11,   -11
+      17,   -14,   -15,     0,    -4,     5,    17,   -15,    -7,    11,
+     -15,   -15,    19,    22,    23,     9,   -15,   -15,   -15,   -15,
+       6,   -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,
+       4,    24,   -15,   -15,   -15,   -15,    -3,     1,    -4,   -15,
+      25,    27,    28,   -15,   -15,    18,   -15,    20,   -15,   -15,
+     -15,   -15,    34,    35,   -15,   -15
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -11,   -11,   -11,    24,   -11,    25,   -11,    -2,   -11,   -11,
-     -11,   -11,   -11
+     -15,   -15,   -15,    36,   -15,    33,   -15,     7,   -15,   -15,
+     -15,   -15,   -15
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -576,29 +589,32 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-      13,     1,    11,     2,    31,    10,     3,    32,    12,     4,
-      14,    15,    16,    17,    27,    25,    35,    37,    29,    40,
-       4,    36,    38,    33,    30,    34,    42,    41,    43,     0,
-      26,    39,     0,    28
+      15,    29,    44,    10,    30,    27,    46,    45,    11,    38,
+       4,    47,    39,    16,    17,    18,    19,    12,    13,    32,
+      14,    40,    41,     1,    42,     2,    36,    33,     3,    37,
+      34,    35,    43,    49,     4,    50,    51,    53,    52,    54,
+      55,    31,    28,     0,     0,    48
 };
 
 static const yytype_int8 yycheck[] =
 {
-       4,     6,     8,     8,    14,    14,    11,    17,    14,    14,
-      14,    15,    16,    17,     8,     0,     5,     5,     8,    17,
-      14,    10,    10,     3,     8,     8,     5,    14,     5,    -1,
-       6,    33,    -1,     8
+       4,     8,     5,    17,    11,     0,     5,    10,     8,     3,
+      17,    10,     8,    17,    18,    19,    20,    17,    18,     8,
+      20,    17,    18,     6,    20,     8,    17,     8,    11,    20,
+       8,     8,     8,     8,    17,     8,     8,    17,    20,     5,
+       5,     8,     6,    -1,    -1,    38
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     6,     8,    11,    14,    19,    20,    21,    22,    23,
-      14,     8,    14,     4,    14,    15,    16,    17,    24,    25,
-      26,    27,    28,    29,    30,     0,    21,     8,    23,     8,
-       8,    14,    17,     3,     8,     5,    10,     5,    10,    25,
-      17,    14,     5,     5
+       0,     6,     8,    11,    17,    22,    23,    24,    25,    26,
+      17,     8,    17,    18,    20,     4,    17,    18,    19,    20,
+      27,    28,    29,    30,    31,    32,    33,     0,    24,     8,
+      11,    26,     8,     8,     8,     8,    17,    20,     3,     8,
+      17,    18,    20,     8,     5,    10,     5,    10,    28,     8,
+       8,     8,    20,    17,     5,     5
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1479,15 +1495,49 @@ yyreduce:
 			(yyval.line)->type = type_keyword;
 			(yyval.line)->keyword = (yyvsp[(1) - (3)].token);
 			(yyval.line)->instruction = NULL;
-			(yyval.line)->label = (yyvsp[(2) - (3)].string);
+			(yyval.line)->label = NULL;
 			(yyval.line)->prev = NULL;
+			(yyval.line)->keyword_data_string = (yyvsp[(2) - (3)].string);
+			(yyval.line)->keyword_data_numeric = 0;
 		;}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 132 "parser.y"
+#line 134 "parser.y"
+    {
+			(yyval.line) = malloc(sizeof(struct ast_node_line));
+			(yyval.line)->type = type_keyword;
+			(yyval.line)->keyword = (yyvsp[(1) - (3)].token);
+			(yyval.line)->instruction = NULL;
+			(yyval.line)->label = NULL;
+			(yyval.line)->prev = NULL;
+			(yyval.line)->keyword_data_string = (yyvsp[(2) - (3)].string);
+			(yyval.line)->keyword_data_numeric = 0;
+		;}
+    break;
+
+  case 9:
+
+/* Line 1455 of yacc.c  */
+#line 145 "parser.y"
+    {
+			(yyval.line) = malloc(sizeof(struct ast_node_line));
+			(yyval.line)->type = type_keyword;
+			(yyval.line)->keyword = (yyvsp[(1) - (3)].token);
+			(yyval.line)->instruction = NULL;
+			(yyval.line)->label = NULL;
+			(yyval.line)->prev = NULL;
+			(yyval.line)->keyword_data_string = NULL;
+			(yyval.line)->keyword_data_numeric = (yyvsp[(2) - (3)].number);
+		;}
+    break;
+
+  case 10:
+
+/* Line 1455 of yacc.c  */
+#line 156 "parser.y"
     {
 			(yyval.line) = malloc(sizeof(struct ast_node_line));
 			(yyval.line)->type = type_keyword;
@@ -1495,70 +1545,182 @@ yyreduce:
 			(yyval.line)->instruction = NULL;
 			(yyval.line)->label = NULL;
 			(yyval.line)->prev = NULL;
-		;}
-    break;
-
-  case 9:
-
-/* Line 1455 of yacc.c  */
-#line 141 "parser.y"
-    {
-			(yyval.line) = malloc(sizeof(struct ast_node_line));
-			(yyval.line)->type = type_instruction;
-			(yyval.line)->keyword = NULL;
-			(yyval.line)->instruction = (yyvsp[(1) - (2)].instruction);
-			(yyval.line)->label = NULL;
-			(yyval.line)->prev = NULL;
-		;}
-    break;
-
-  case 10:
-
-/* Line 1455 of yacc.c  */
-#line 150 "parser.y"
-    {
-			(yyval.line) = malloc(sizeof(struct ast_node_line));
-			(yyval.line)->type = type_label;
-			(yyval.line)->keyword = NULL;
-			(yyval.line)->instruction = NULL;
-			(yyval.line)->label = (yyvsp[(1) - (2)].label);
-			(yyval.line)->prev = NULL;
+			(yyval.line)->keyword_data_string = NULL;
+			(yyval.line)->keyword_data_numeric = 0;
 		;}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 159 "parser.y"
+#line 167 "parser.y"
     {
-			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
-			lnode->type = type_label;
-			lnode->instruction = NULL;
-			lnode->label = (yyvsp[(1) - (3)].label);
-			lnode->prev = NULL;
-
 			(yyval.line) = malloc(sizeof(struct ast_node_line));
 			(yyval.line)->type = type_instruction;
-			(yyval.line)->instruction = (yyvsp[(2) - (3)].instruction);
+			(yyval.line)->keyword = 0;
+			(yyval.line)->instruction = (yyvsp[(1) - (2)].instruction);
 			(yyval.line)->label = NULL;
-			(yyval.line)->prev = lnode;
+			(yyval.line)->prev = NULL;
+			(yyval.line)->keyword_data_string = NULL;
+			(yyval.line)->keyword_data_numeric = 0;
 		;}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 175 "parser.y"
+#line 178 "parser.y"
     {
-			(yyval.label) = malloc(sizeof(struct ast_node_label));
-			(yyval.label)->name = (yyvsp[(2) - (2)].string);
+			(yyval.line) = malloc(sizeof(struct ast_node_line));
+			(yyval.line)->type = type_label;
+			(yyval.line)->keyword = 0;
+			(yyval.line)->instruction = NULL;
+			(yyval.line)->label = (yyvsp[(1) - (2)].label);
+			(yyval.line)->prev = NULL;
+			(yyval.line)->keyword_data_string = NULL;
+			(yyval.line)->keyword_data_numeric = 0;
 		;}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 182 "parser.y"
+#line 189 "parser.y"
+    {
+			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
+			lnode->type = type_label;
+			lnode->keyword = 0;
+			lnode->instruction = NULL;
+			lnode->label = (yyvsp[(1) - (3)].label);
+			lnode->prev = NULL;
+			lnode->keyword_data_string = NULL;
+			lnode->keyword_data_numeric = 0;
+
+			(yyval.line) = malloc(sizeof(struct ast_node_line));
+			(yyval.line)->type = type_instruction;
+			(yyval.line)->keyword = 0;
+			(yyval.line)->instruction = (yyvsp[(2) - (3)].instruction);
+			(yyval.line)->label = NULL;
+			(yyval.line)->prev = lnode;
+			(yyval.line)->keyword_data_string = NULL;
+			(yyval.line)->keyword_data_numeric = 0;
+		;}
+    break;
+
+  case 14:
+
+/* Line 1455 of yacc.c  */
+#line 209 "parser.y"
+    {
+			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
+			lnode->type = type_label;
+			lnode->keyword = 0;
+			lnode->instruction = NULL;
+			lnode->label = (yyvsp[(1) - (4)].label);
+			lnode->prev = NULL;
+			lnode->keyword_data_string = NULL;
+			lnode->keyword_data_numeric = 0;
+
+			(yyval.line) = malloc(sizeof(struct ast_node_line));
+			(yyval.line)->type = type_keyword;
+			(yyval.line)->keyword = (yyvsp[(2) - (4)].token);
+			(yyval.line)->instruction = NULL;
+			(yyval.line)->label = NULL;
+			(yyval.line)->prev = lnode;
+			(yyval.line)->keyword_data_string = (yyvsp[(3) - (4)].string);
+			(yyval.line)->keyword_data_numeric = 0;
+		;}
+    break;
+
+  case 15:
+
+/* Line 1455 of yacc.c  */
+#line 229 "parser.y"
+    {
+			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
+			lnode->type = type_label;
+			lnode->keyword = 0;
+			lnode->instruction = NULL;
+			lnode->label = (yyvsp[(1) - (4)].label);
+			lnode->prev = NULL;
+			lnode->keyword_data_string = NULL;
+			lnode->keyword_data_numeric = 0;
+
+			(yyval.line) = malloc(sizeof(struct ast_node_line));
+			(yyval.line)->type = type_keyword;
+			(yyval.line)->keyword = (yyvsp[(2) - (4)].token);
+			(yyval.line)->instruction = NULL;
+			(yyval.line)->label = NULL;
+			(yyval.line)->prev = lnode;
+			(yyval.line)->keyword_data_string = (yyvsp[(3) - (4)].string);
+			(yyval.line)->keyword_data_numeric = 0;
+		;}
+    break;
+
+  case 16:
+
+/* Line 1455 of yacc.c  */
+#line 249 "parser.y"
+    {
+			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
+			lnode->type = type_label;
+			lnode->keyword = 0;
+			lnode->instruction = NULL;
+			lnode->label = (yyvsp[(1) - (4)].label);
+			lnode->prev = NULL;
+			lnode->keyword_data_string = NULL;
+			lnode->keyword_data_numeric = 0;
+
+			(yyval.line) = malloc(sizeof(struct ast_node_line));
+			(yyval.line)->type = type_keyword;
+			(yyval.line)->keyword = (yyvsp[(2) - (4)].token);
+			(yyval.line)->instruction = NULL;
+			(yyval.line)->label = NULL;
+			(yyval.line)->prev = lnode;
+			(yyval.line)->keyword_data_string = NULL;
+			(yyval.line)->keyword_data_numeric = (yyvsp[(3) - (4)].number);
+		;}
+    break;
+
+  case 17:
+
+/* Line 1455 of yacc.c  */
+#line 269 "parser.y"
+    {
+			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
+			lnode->type = type_label;
+			lnode->keyword = 0;
+			lnode->instruction = NULL;
+			lnode->label = (yyvsp[(1) - (3)].label);
+			lnode->prev = NULL;
+			lnode->keyword_data_string = NULL;
+			lnode->keyword_data_numeric = 0;
+
+			(yyval.line) = malloc(sizeof(struct ast_node_line));
+			(yyval.line)->type = type_keyword;
+			(yyval.line)->keyword = (yyvsp[(2) - (3)].token);
+			(yyval.line)->instruction = NULL;
+			(yyval.line)->label = NULL;
+			(yyval.line)->prev = lnode;
+			(yyval.line)->keyword_data_string = NULL;
+			(yyval.line)->keyword_data_numeric = 0;
+		;}
+    break;
+
+  case 18:
+
+/* Line 1455 of yacc.c  */
+#line 291 "parser.y"
+    {
+			(yyval.label) = malloc(sizeof(struct ast_node_label));
+			(yyval.label)->name = (yyvsp[(2) - (2)].string);
+		;}
+    break;
+
+  case 19:
+
+/* Line 1455 of yacc.c  */
+#line 298 "parser.y"
     {
 			(yyval.instruction) = malloc(sizeof(struct ast_node_instruction));
 			strupper((yyvsp[(1) - (2)].string));
@@ -1567,29 +1729,29 @@ yyreduce:
 		;}
     break;
 
-  case 14:
+  case 20:
 
 /* Line 1455 of yacc.c  */
-#line 190 "parser.y"
+#line 306 "parser.y"
     {
 			(yyval.parameters) = NULL;
 		;}
     break;
 
-  case 15:
+  case 21:
 
 /* Line 1455 of yacc.c  */
-#line 194 "parser.y"
+#line 310 "parser.y"
     {
 			(yyval.parameters) = malloc(sizeof(struct ast_node_parameters));
 			(yyval.parameters)->last = (yyvsp[(1) - (1)].parameter);
 		;}
     break;
 
-  case 16:
+  case 22:
 
 /* Line 1455 of yacc.c  */
-#line 199 "parser.y"
+#line 315 "parser.y"
     {
 			if ((yyvsp[(3) - (3)].parameter) != NULL)
 			{
@@ -1600,10 +1762,10 @@ yyreduce:
 		;}
     break;
 
-  case 17:
+  case 23:
 
 /* Line 1455 of yacc.c  */
-#line 210 "parser.y"
+#line 326 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_register;
@@ -1614,10 +1776,10 @@ yyreduce:
 		;}
     break;
 
-  case 18:
+  case 24:
 
 /* Line 1455 of yacc.c  */
-#line 219 "parser.y"
+#line 335 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_register;
@@ -1628,10 +1790,10 @@ yyreduce:
 		;}
     break;
 
-  case 19:
+  case 25:
 
 /* Line 1455 of yacc.c  */
-#line 228 "parser.y"
+#line 344 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_address;
@@ -1642,10 +1804,10 @@ yyreduce:
 		;}
     break;
 
-  case 20:
+  case 26:
 
 /* Line 1455 of yacc.c  */
-#line 237 "parser.y"
+#line 353 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_address;
@@ -1656,10 +1818,10 @@ yyreduce:
 		;}
     break;
 
-  case 21:
+  case 27:
 
 /* Line 1455 of yacc.c  */
-#line 246 "parser.y"
+#line 362 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_address;
@@ -1670,10 +1832,10 @@ yyreduce:
 		;}
     break;
 
-  case 22:
+  case 28:
 
 /* Line 1455 of yacc.c  */
-#line 255 "parser.y"
+#line 371 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_raw;
@@ -1684,10 +1846,10 @@ yyreduce:
 		;}
     break;
 
-  case 23:
+  case 29:
 
 /* Line 1455 of yacc.c  */
-#line 266 "parser.y"
+#line 382 "parser.y"
     {
 			(yyval.registr) = malloc(sizeof(struct ast_node_register));
 			(yyval.registr)->value = (yyvsp[(1) - (1)].string);
@@ -1695,10 +1857,10 @@ yyreduce:
 		;}
     break;
 
-  case 24:
+  case 30:
 
 /* Line 1455 of yacc.c  */
-#line 274 "parser.y"
+#line 390 "parser.y"
     {
 			(yyval.registr) = malloc(sizeof(struct ast_node_register));
 			(yyval.registr)->value = (yyvsp[(2) - (3)].string);
@@ -1706,10 +1868,10 @@ yyreduce:
 		;}
     break;
 
-  case 25:
+  case 31:
 
 /* Line 1455 of yacc.c  */
-#line 282 "parser.y"
+#line 398 "parser.y"
     {
 			(yyval.address) = malloc(sizeof(struct ast_node_address));
 			(yyval.address)->value = (yyvsp[(1) - (1)].number);
@@ -1719,10 +1881,10 @@ yyreduce:
 		;}
     break;
 
-  case 26:
+  case 32:
 
 /* Line 1455 of yacc.c  */
-#line 290 "parser.y"
+#line 406 "parser.y"
     {
 			(yyval.address) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.address)->value = (uint16_t)((yyvsp[(1) - (1)].string)[0]);
@@ -1732,10 +1894,10 @@ yyreduce:
 		;}
     break;
 
-  case 27:
+  case 33:
 
 /* Line 1455 of yacc.c  */
-#line 300 "parser.y"
+#line 416 "parser.y"
     {
 			(yyval.address) = malloc(sizeof(struct ast_node_address));
 			(yyval.address)->value = (yyvsp[(2) - (3)].number);
@@ -1745,10 +1907,10 @@ yyreduce:
 		;}
     break;
 
-  case 28:
+  case 34:
 
 /* Line 1455 of yacc.c  */
-#line 310 "parser.y"
+#line 426 "parser.y"
     {
 			(yyval.address) = malloc(sizeof(struct ast_node_address));
 			(yyval.address)->value = (yyvsp[(2) - (5)].number);
@@ -1758,10 +1920,10 @@ yyreduce:
 		;}
     break;
 
-  case 29:
+  case 35:
 
 /* Line 1455 of yacc.c  */
-#line 318 "parser.y"
+#line 434 "parser.y"
     {
 			(yyval.address) = malloc(sizeof(struct ast_node_address));
 			(yyval.address)->value = (yyvsp[(4) - (5)].number);
@@ -1774,7 +1936,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1778 "parser.c"
+#line 1940 "parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

@@ -1,0 +1,23 @@
+.org 0x3000
+SET PC, echof
+
+.include "os_jumptable.dasm16"
+.include "kern_jumptable.dasm16"
+
+:echo dat "echo", 0
+
+:echof
+	jsr [kern_newline]
+	set a, echo
+	jsr [kern_strlen]
+	add a, 1	        ; +1 to kern_strlen,
+			            ; for the space
+
+	set b, [os_input]
+	set b, [b]
+	add b, a 	        ; start at `kern_strlen'
+	set a, b	        ; string pointer
+	jsr [kern_printnl]
+
+	set a, 1
+	set pc, [os_enterdone]

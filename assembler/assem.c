@@ -292,10 +292,24 @@ void process_line(struct ast_node_line* line)
 
 			break;
 		case EXTENSION:
-			fprintf(stderr, ".EXTENSION %s", line->label);
+			fprintf(stderr, ".EXTENSION %s", line->keyword_data_string);
 
 			// Emit extension metadata.
-			aout_emit(aout_create_metadata_extension(line->label));
+			aout_emit(aout_create_metadata_extension(line->keyword_data_string));
+
+			break;
+		case INCBIN:
+			fprintf(stderr, ".INCBIN %s", line->keyword_data_string);
+
+			// Emit binary include metadata.
+			aout_emit(aout_create_metadata_incbin(line->keyword_data_string));
+
+			break;
+		case ORIGIN:
+			fprintf(stderr, ".ORIGIN 0x%04X", line->keyword_data_numeric);
+
+			// Emit origin set metadata.
+			aout_emit(aout_create_metadata_origin(line->keyword_data_numeric));
 
 			break;
 		default:
@@ -343,6 +357,8 @@ void process_line(struct ast_node_line* line)
 		{
 			// Handle instruction.
 			insttype = get_instruction_by_name(line->instruction->instruction);
+			if (insttype == NULL)
+				ahalt(ERR_UNKNOWN_OPCODE, line->instruction->instruction);
 			fprintf(stderr, "EMIT %s", insttype->name);
 		
 			// Process parameters normally.

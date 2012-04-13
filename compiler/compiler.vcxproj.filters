@@ -21,14 +21,17 @@
       <UniqueIdentifier>{fd74e29a-5d31-4074-b4cb-4bb20c94086b}</UniqueIdentifier>
       <Extensions>*.h;*.c</Extensions>
     </Filter>
-    <Filter Include="Test Files">
-      <UniqueIdentifier>{49873856-90c4-4d14-a72e-d9949595ce65}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\nodes">
       <UniqueIdentifier>{4f38e002-6819-45df-9e97-64139c45f31c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\nodes">
       <UniqueIdentifier>{d310de38-f66a-4a7e-ab80-d97ed5cc259d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Standard Library">
+      <UniqueIdentifier>{49873856-90c4-4d14-a72e-d9949595ce65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Standard Library Examples">
+      <UniqueIdentifier>{f4a48a9a-c6ed-42bc-bdfd-a1b74f6d4929}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -243,10 +246,10 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="dist\screen.m">
-      <Filter>Test Files</Filter>
+      <Filter>Standard Library</Filter>
     </None>
     <None Include="dist\test.c">
-      <Filter>Test Files</Filter>
+      <Filter>Standard Library Examples</Filter>
     </None>
   </ItemGroup>
 </Project>
