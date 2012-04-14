@@ -110,6 +110,7 @@ xcopy /Y "$(SolutionDir)third-party\libtcod\bin\*" "$(TargetDir)"</Command>
     <ClCompile Include="dcpubase.c" />
     <ClCompile Include="dcpuhook.c" />
     <ClCompile Include="dcpuops.c" />
+    <ClCompile Include="hwioascii.c" />
     <ClCompile Include="hwio.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
@@ -118,6 +119,7 @@ xcopy /Y "$(SolutionDir)third-party\libtcod\bin\*" "$(TargetDir)"</Command>
     <ClInclude Include="dcpubase.h" />
     <ClInclude Include="dcpuhook.h" />
     <ClInclude Include="dcpuops.h" />
+    <ClInclude Include="hwioascii.h" />
     <ClInclude Include="hwio.h" />
   </ItemGroup>
   <ItemGroup>

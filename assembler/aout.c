@@ -194,21 +194,26 @@ void aout_write(FILE* out, bool relocatable)
 			mem_index = code_offset;
 			while (current_inner != NULL)
 			{
-				if (current_inner->type != AOUT_TYPE_NORMAL)
+				if (current_inner->type == AOUT_TYPE_METADATA_ORIGIN)
 				{
-					current_inner = current_inner->next;
-					continue;
+					// Adjust memory address.
+					mem_index = current_inner->opcode;
+				}
+				else if (current_inner->type == AOUT_TYPE_NORMAL)
+				{
+					// Replace the label position.
+					if (current_inner->label == NULL)
+						mem_index += 1;
+					else if (strcmp(current_inner->label, current_outer->label_replace) == 0)
+					{
+						//current_outer->raw = 0xff88;
+						current_outer->raw = mem_index;
+						current_outer->label_replace = NULL;
+						break;
+					}
 				}
 
-				if (current_inner->label == NULL)
-					mem_index += 1;
-				else if (strcmp(current_inner->label, current_outer->label_replace) == 0)
-				{
-					//current_outer->raw = 0xff88;
-					current_outer->raw = mem_index;
-					current_outer->label_replace = NULL;
-					break;
-				}
+				// Goto next.
 				current_inner = current_inner->next;
 			}
 			if (current_outer->label_replace != NULL)
