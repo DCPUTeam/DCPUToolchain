@@ -2,11 +2,13 @@
 // Test file for the DCPU-16 compiler.
 //
 
+#include <screen.m>
+
 int globalInt;
 int anotherInt;
 int thirdInt;
 
-void (*func)(char* msg, int x, int y) = &print;
+void (*func)(char* msg, int x, int y) = &scrn_sets;
 
 struct container_t
 {
@@ -14,38 +16,25 @@ struct container_t
 	int test;
 };
 
-void set(char chr, int x, int y)
-{
-	int mem = 0x8000 + x + y * 32;
-	*mem = chr;
-}
-
-void print(char* msg, int x, int y)
-{
-	int i = 0;
-	for (i = 0; *(msg + i) != '\0'; i += 1)
-		set(*(msg + i), x + i, y);
-}
-
 void print_in_red(char* msg, int x, int y)
 {
 	int i = 0;
 	for (i = 0; *(msg + i) != '\0'; i += 1)
-		set((*(msg + i) + 0x3000), x + i, y);
+		scrn_setc((*(msg + i) + 0xC000), x + i, y);
 }
 
 void print_in_yellow(char* msg, int x, int y)
 {
 	int i = 0;
 	for (i = 0; *(msg + i) != '\0'; i += 1)
-		set((*(msg + i) + 0x1000), x + i, y);
+		scrn_setc((*(msg + i) + 0xE000), x + i, y);
 }
 
 void main()
 {
 	struct container_t data;
 	int five;
-	void (*local)(char* msg, int x, int y) = &print;
+	void (*local)(char* msg, int x, int y) = &scrn_sets;
 
 	// Set a global variable.
 	globalInt = 2;
@@ -60,7 +49,7 @@ void main()
 	data.test = 5;
 	
 	// Print
-	print("Hello 0x10c!", 0, 0);
+	scrn_sets("Hello 0x10c!", 0, 0);
 	func("How do you like", 0, 1);
 	func("my C compiler? :D", 0, 2);
 	func(data.string, data.test, 3);

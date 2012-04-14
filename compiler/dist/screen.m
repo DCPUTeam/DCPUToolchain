@@ -4,13 +4,15 @@
 // Screen utilities.
 //
 
-int* scrn_getmempos(int x, int y)
+void scrn_setc(char chr, int x, int y)
 {
-	return 0x8000 + x + y * 32;
+	int mem = 0x8000 + x + y * 32;
+	*mem = chr;
 }
 
-void scrn_setc(char c, int x, int y)
+void scrn_sets(char* msg, int x, int y)
 {
-	int* mem = scrn_getmempos(x, y);
-	*mem = 0x7000 + c;
+	int i = 0;
+	for (i = 0; *(msg + i) != '\0'; i += 1)
+		scrn_setc(*(msg + i) + 0xF000, x + i, y);
 }

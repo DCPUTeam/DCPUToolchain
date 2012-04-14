@@ -33,10 +33,13 @@ rem Copy all library and executable files
 xcopy /Y ..\%ConfigurationName%\*.dll . > nul
 xcopy /Y ..\%ConfigurationName%\*.exe . > nul
 xcopy /Y ..\%ConfigurationName%\terminal.png . > nul
+xcopy /Y ..\%ConfigurationName%\terminal.new.png . > nul
 xcopy /Y ..\compiler\dist\*.c .\examples > nul
 xcopy /Y ..\compiler\dist\*.m .\include > nul
 xcopy /Y ..\compiler\bootstrap.asm .\ > nul
+xcopy /Y ..\kernel\dist\* .\ > nul
 xcopy /Y ..\*.dll . > nul
+xcopy /Y ..\MIT-LICENSE.txt . > nul
 
 rem Change directory back again
 popd
