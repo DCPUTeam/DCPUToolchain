@@ -30,7 +30,11 @@ void vm_hw_io_update(vm_t* vm, uint16_t pos);
 
 void vm_hw_io_init(vm_t* vm)
 {
+#if TCOD_HEXVERSION > 0x010500
+	TCOD_console_init_root(screen_width + 2, screen_height + 2, "DCPU-16 Tools Emulator", false, TCOD_RENDERER_SDL);
+#else
 	TCOD_console_init_root(screen_width + 2, screen_height + 2, "DCPU-16 Tools Emulator", false);
+#endif
 	TCOD_console_set_keyboard_repeat(200, 10);
 	TCOD_sys_set_fps(10000);
 	vm_hook_register(vm, &vm_hw_io_update, 0);
@@ -144,10 +148,17 @@ void vm_hw_io_update(vm_t* vm, uint16_t pos)
 		backclr.b = 255 * (back & 0x1)        / ((1 - ((back & 0x8) >> 3)) + 1);
 
 		// Redraw frame.
+#if TCOD_HEXVERSION > 0x010500
+		for (x = 0; x < screen_width + 2; x++)  TCOD_console_set_char_background(NULL, x, 0, foreclr, TCOD_BKGND_SET);
+		for (x = 0; x < screen_width + 2; x++)  TCOD_console_set_char_background(NULL, x, screen_height + 1, foreclr, TCOD_BKGND_SET);
+		for (y = 1; y < screen_height + 1; y++) TCOD_console_set_char_background(NULL, 0, y, foreclr, TCOD_BKGND_SET);
+		for (y = 1; y < screen_height + 1; y++) TCOD_console_set_char_background(NULL, screen_width + 1, y, foreclr, TCOD_BKGND_SET);
+#else
 		for (x = 0; x < screen_width + 2; x++)  TCOD_console_set_back(NULL, x, 0, foreclr, TCOD_BKGND_SET);
 		for (x = 0; x < screen_width + 2; x++)  TCOD_console_set_back(NULL, x, screen_height + 1, foreclr, TCOD_BKGND_SET);
 		for (y = 1; y < screen_height + 1; y++) TCOD_console_set_back(NULL, 0, y, foreclr, TCOD_BKGND_SET);
 		for (y = 1; y < screen_height + 1; y++) TCOD_console_set_back(NULL, screen_width + 1, y, foreclr, TCOD_BKGND_SET);
+#endif
 	}
 }
 

@@ -16,6 +16,7 @@
 #define __DCPU_ASM_TRELOC_H
 
 #include <stdio.h>
+#include "aout.h"
 
 #define RELOC_MAGIC 0x1234
 #define RELOC_VERSION 0x0001

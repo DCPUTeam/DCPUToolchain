@@ -33,7 +33,7 @@ bool strsw(char* src, char* check)
 	int r;
 	memcpy(buf, src, l);
 	buf[l] = '\0';
-	r = stricmp(buf, check);
+	r = strcasecmp(buf, check);
 	free(buf);
 	return (r == 0);
 }

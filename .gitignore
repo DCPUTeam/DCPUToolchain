@@ -34,6 +34,7 @@ website/*
 
 # Distribution folder #
 #######################
+build
 dist/*
 Debug/*
 Release/*

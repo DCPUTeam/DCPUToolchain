@@ -13,6 +13,7 @@
 **/
 
 #include <exception>
+#include <stdexcept>
 #include "asmtypes.h"
 
 // We haven't initially loaded anything.
@@ -35,7 +36,7 @@ const Assembler* Assembler::getAssembler(std::string name)
 {
 	std::map<std::string, const Assembler*>::iterator i = Assembler::m_Assemblers.find(name);
 	if (i == Assembler::m_Assemblers.end())
-		throw new std::exception("Requested assembler information not found (internal error).");
+		throw new std::runtime_error("Requested assembler information not found (internal error).");
 	else
 		return i->second;
 }

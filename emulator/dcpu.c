@@ -13,7 +13,7 @@
 **/
 
 #include <stdlib.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdint.h>
 #include "dcpu.h"
@@ -41,7 +41,7 @@ vm_t* vm_create()
 	new_vm->debug = false;
 	
 	// Initialize DCPU-16 components.
-	vm_hw_io_init(new_vm, 32, 16);
+	vm_hw_io_init(new_vm);
 
 	// Return.
 	return new_vm;

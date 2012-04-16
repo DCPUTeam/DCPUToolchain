@@ -98,7 +98,7 @@ char* textn_verify_name(char* name)
 	uint16_t i;
 	for (i = 0; i < EXTENSION_MAP_MAXIMUM; i += 1)
 	{
-		if (stricmp(name, extension_map[i]) == 0)
+		if (strcasecmp(name, extension_map[i]) == 0)
 			return extension_map[i];
 	}
 	return NULL;
