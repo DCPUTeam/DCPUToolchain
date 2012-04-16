@@ -1,0 +1,41 @@
+﻿# Visual Studio files #
+#######################
+*.sdf
+*.suo
+*.user
+*.opensdf
+ipch/*
+
+# Binary files #
+################
+*.exe
+*.dll
+*.lib
+*.obj
+*.log
+*.manifest
+*.res
+*.rc
+*.tlog
+*.idb
+*.pdb
+*.lastbuildstate
+*.cmake
+*.check_cache
+*.bin
+*parser.output
+
+# Other repos #
+###############
+standards/
+standards/*
+website/
+website/*
+
+# Distribution folder #
+#######################
+dist/*
+Debug/*
+Release/*
+*/Debug/*
+*/Release/*
