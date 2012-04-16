@@ -62,7 +62,7 @@ uint16_t vm_hw_io_ascii_get_map(TCOD_key_t key)
 	case TCODK_F12:							break;
 	case TCODK_NUMLOCK:						break;
 	case TCODK_SCROLLLOCK:					break;
-	case TCODK_SPACE:						break;
+	case TCODK_SPACE:		ascii = ' ';	break;
 	case TCODK_0:			ascii = '0';	break;
 	case TCODK_1:			ascii = '1';	break;
 	case TCODK_2:			ascii = '2';	break;
