@@ -9,122 +9,330 @@
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{FCC49B9E-B04C-4931-9A15-EC81D9B2D4F5}</ProjectGuid>
+    <ProjectGUID>{776F546C-5DCD-470E-A8E3-0717E5202224}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>emulator</RootNamespace>
+    <Platform>Win32</Platform>
     <ProjectName>emulator</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">emulator.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">emulator</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.exe</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">emulator.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">emulator</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.exe</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">emulator.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">emulator</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.exe</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">emulator.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">emulator</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.exe</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+    </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)third-party\libtcod\include;$(SolutionDir)\third-party\argtable2</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>Debug</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/Debug/emulator.pdb</ProgramDataBaseFileName>
     </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\third-party\libtcod\lib\libtcod-VS.lib;..\third-party\argtable2\Debug\argtable2.lib;..\libvm\Debug\libvm.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)third-party\libtcod\lib;$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcod-VS.lib;argtable2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/Debug/emulator.lib</ImportLibrary>
+      <LinkIncremental>true</LinkIncremental>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/Debug/emulator.pdb</ProgramDataBaseFileName>
+      <StackReserveSize>10000000</StackReserveSize>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /Y "$(SolutionDir)third-party\libtcod\bin\*" "$(TargetDir)"</Command>
-      <Message>Copying library files...</Message>
-    </PostBuildEvent>
-    <CustomBuildStep>
-      <Command>
-      </Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Message>
-      </Message>
-      <Outputs>
-      </Outputs>
-    </CustomBuildStep>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)third-party\libtcod\include;$(SolutionDir)\third-party\argtable2</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>Release</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/Release/emulator.pdb</ProgramDataBaseFileName>
     </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
     <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\third-party\libtcod\lib\libtcod-VS.lib;..\third-party\argtable2\Release\argtable2.lib;..\libvm\Release\libvm.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImportLibrary>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/Release/emulator.lib</ImportLibrary>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/Release/emulator.pdb</ProgramDataBaseFileName>
+      <StackReserveSize>10000000</StackReserveSize>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)third-party\libtcod\lib;$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcod-VS.lib;argtable2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version></Version>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /Y "$(ProjectDir)*.dcpu16" "$(TargetDir)"
-xcopy /Y "$(SolutionDir)third-party\libtcod\bin\*" "$(TargetDir)"</Command>
-      <Message>Copying flash and library files...</Message>
-    </PostBuildEvent>
-    <CustomBuildStep>
-      <Command>
-      </Command>
-      <Outputs>
-      </Outputs>
-      <Message>
-      </Message>
-    </CustomBuildStep>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>MinSizeRel</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/MinSizeRel/emulator.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\third-party\libtcod\lib\libtcod-VS.lib;..\third-party\argtable2\MinSizeRel\argtable2.lib;..\libvm\MinSizeRel\libvm.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImportLibrary>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/MinSizeRel/emulator.lib</ImportLibrary>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/MinSizeRel/emulator.pdb</ProgramDataBaseFileName>
+      <StackReserveSize>10000000</StackReserveSize>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>RelWithDebInfo</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/RelWithDebInfo/emulator.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/libtcod/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\third-party\libtcod\lib\libtcod-VS.lib;..\third-party\argtable2\RelWithDebInfo\argtable2.lib;..\libvm\RelWithDebInfo\libvm.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/RelWithDebInfo/emulator.lib</ImportLibrary>
+      <LinkIncremental>true</LinkIncremental>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/RelWithDebInfo/emulator.pdb</ProgramDataBaseFileName>
+      <StackReserveSize>10000000</StackReserveSize>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="dcpu.c" />
-    <ClCompile Include="dcpubase.c" />
-    <ClCompile Include="dcpuhook.c" />
-    <ClCompile Include="dcpuops.c" />
-    <ClCompile Include="hwioascii.c" />
-    <ClCompile Include="hwio.c" />
-    <ClCompile Include="main.c" />
+    <CustomBuild Include="CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" "-HC:/Server Storage/Projects/- Personal Projects/0x10c" "-BC:/Server Storage/Projects/- Personal Projects/0x10c" --check-stamp-file "C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" "-HC:/Server Storage/Projects/- Personal Projects/0x10c" "-BC:/Server Storage/Projects/- Personal Projects/0x10c" --check-stamp-file "C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" "-HC:/Server Storage/Projects/- Personal Projects/0x10c" "-BC:/Server Storage/Projects/- Personal Projects/0x10c" --check-stamp-file "C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" "-HC:/Server Storage/Projects/- Personal Projects/0x10c" "-BC:/Server Storage/Projects/- Personal Projects/0x10c" --check-stamp-file "C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/emulator/CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dcpu.h" />
-    <ClInclude Include="dcpubase.h" />
-    <ClInclude Include="dcpuhook.h" />
-    <ClInclude Include="dcpuops.h" />
-    <ClInclude Include="hwioascii.h" />
-    <ClInclude Include="hwio.h" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpu.c" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpubase.c" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpuhook.c" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpuops.c" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\hwio.c" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\hwioascii.c" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\main.c" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpubase.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpuhook.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpuops.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\hwio.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\hwioascii.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="console.dcpu16" />
-    <None Include="test.dcpu16" />
+    <ProjectReference Include="C:/Server Storage/Projects/- Personal Projects/0x10c/ZERO_CHECK.vcxproj">
+      <Project>DFDF6085-226D-4D1C-A450-C94B2B046C83</Project>
+    </ProjectReference>
+    <ProjectReference Include="C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2/argtable2.vcxproj">
+      <Project>F0D4AFD1-48A4-4BB6-BB06-D9BAA0004CFE</Project>
+    </ProjectReference>
+    <ProjectReference Include="C:/Server Storage/Projects/- Personal Projects/0x10c/libvm/libvm.vcxproj">
+      <Project>2C83F23F-E164-4CDE-80C2-2959866829B4</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

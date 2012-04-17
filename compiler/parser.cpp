@@ -210,6 +210,79 @@ void yyerror(const char* msg)
      DEREFDOT = 328
    };
 #endif
+/* Tokens.  */
+#define CURVED_OPEN 258
+#define CURVED_CLOSE 259
+#define BRACE_OPEN 260
+#define BRACE_CLOSE 261
+#define COMMA 262
+#define STAR 263
+#define SEMICOLON 264
+#define DOT 265
+#define STRUCT 266
+#define NUMBER 267
+#define IDENTIFIER 268
+#define CHARACTER 269
+#define STRING 270
+#define ASSIGN_EQUAL 271
+#define ASSIGN_ADD 272
+#define ASSIGN_SUBTRACT 273
+#define ASSIGN_MULTIPLY 274
+#define ASSIGN_DIVIDE 275
+#define COMPARE_EQUAL 276
+#define COMPARE_NOT_EQUAL 277
+#define COMPARE_LESS_THAN 278
+#define COMPARE_LESS_THAN_EQUAL 279
+#define COMPARE_GREATER_THAN 280
+#define COMPARE_GREATER_THAN_EQUAL 281
+#define NEGATE 282
+#define BITWISE_NEGATE 283
+#define INCREMENT 284
+#define DECREMENT 285
+#define ADD 286
+#define SUBTRACT 287
+#define SLASH 288
+#define PERCENT 289
+#define BOOLEAN_AND 290
+#define BOOLEAN_OR 291
+#define BINARY_AND 292
+#define BINARY_OR 293
+#define BINARY_XOR 294
+#define BINARY_LEFT_SHIFT 295
+#define BINARY_RIGHT_SHIFT 296
+#define IREF 297
+#define IDEREF 298
+#define IADDROF 299
+#define IUNARYPLUS 300
+#define IUNARYMINUS 301
+#define IPREINC 302
+#define IPREDEC 303
+#define IPOSTINC 304
+#define IPOSTDEC 305
+#define TRUE 306
+#define FALSE 307
+#define RETURN 308
+#define IF 309
+#define ELSE 310
+#define WHILE 311
+#define FOR 312
+#define DEBUG 313
+#define SIZEOF 314
+#define TYPE_VOID 315
+#define TYPE_CHAR 316
+#define TYPE_BYTE 317
+#define TYPE_INT 318
+#define TYPE_LONG 319
+#define TYPE_INT8_T 320
+#define TYPE_INT16_T 321
+#define TYPE_INT32_T 322
+#define TYPE_INT64_T 323
+#define TYPE_UINT8_T 324
+#define TYPE_UINT16_T 325
+#define TYPE_UINT32_T 326
+#define TYPE_UINT64_T 327
+#define DEREFDOT 328
+
 
 
 
@@ -241,7 +314,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 245 "parser.cpp"
+#line 318 "parser.cpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -253,7 +326,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 257 "parser.cpp"
+#line 330 "parser.cpp"
 
 #ifdef short
 # undef short
@@ -1769,7 +1842,7 @@ yyreduce:
     {
 			program = (yyvsp[(1) - (1)].decls);
 			(yyval.decls) = (yyvsp[(1) - (1)].decls);
-		;}
+		}
     break;
 
   case 3:
@@ -1779,7 +1852,7 @@ yyreduce:
     {
 			(yyval.decls) = new NDeclarations();
 			(yyval.decls)->definitions.push_back((yyvsp[(1) - (1)].function));
-		;}
+		}
     break;
 
   case 4:
@@ -1789,7 +1862,7 @@ yyreduce:
     {
 			(yyval.decls) = new NDeclarations();
 			(yyval.decls)->definitions.push_back((yyvsp[(1) - (1)].structure));
-		;}
+		}
     break;
 
   case 5:
@@ -1799,7 +1872,7 @@ yyreduce:
     {
 			(yyval.decls) = new NDeclarations();
 			(yyval.decls)->definitions.push_back((yyvsp[(1) - (2)].variable));
-		;}
+		}
     break;
 
   case 6:
@@ -1808,7 +1881,7 @@ yyreduce:
 #line 146 "parser.y"
     {
 			(yyvsp[(1) - (2)].decls)->definitions.push_back((yyvsp[(2) - (2)].function));
-		;}
+		}
     break;
 
   case 7:
@@ -1817,7 +1890,7 @@ yyreduce:
 #line 150 "parser.y"
     {
 			(yyvsp[(1) - (2)].decls)->definitions.push_back((yyvsp[(2) - (2)].structure));
-		;}
+		}
     break;
 
   case 8:
@@ -1826,7 +1899,7 @@ yyreduce:
 #line 154 "parser.y"
     {
 			(yyvsp[(1) - (3)].decls)->definitions.push_back((yyvsp[(2) - (3)].variable));
-		;}
+		}
     break;
 
   case 9:
@@ -1836,7 +1909,7 @@ yyreduce:
     {
 			(yyval.function) = new NFunctionDeclaration(*(yyvsp[(1) - (6)].type), *(yyvsp[(2) - (6)].ident), *(yyvsp[(4) - (6)].varvec), *(yyvsp[(6) - (6)].block));
 			//delete $4;
-		;}
+		}
     break;
 
   case 10:
@@ -1845,7 +1918,7 @@ yyreduce:
 #line 167 "parser.y"
     {
 			(yyval.varvec) = new VariableList();
-		;}
+		}
     break;
 
   case 11:
@@ -1855,7 +1928,7 @@ yyreduce:
     {
 			(yyval.varvec) = new VariableList();
 			(yyval.varvec)->push_back((yyvsp[(1) - (1)].variable));
-		;}
+		}
     break;
 
   case 12:
@@ -1864,7 +1937,7 @@ yyreduce:
 #line 176 "parser.y"
     {
 			(yyvsp[(1) - (3)].varvec)->push_back((yyvsp[(3) - (3)].variable));
-		;}
+		}
     break;
 
   case 13:
@@ -1874,7 +1947,7 @@ yyreduce:
     {
 			(yyval.structure) = new NStructureDeclaration(*(yyvsp[(2) - (7)].ident), *(yyvsp[(4) - (7)].varvec));
 			//delete $4;
-		;}
+		}
     break;
 
   case 14:
@@ -1884,7 +1957,7 @@ yyreduce:
     {
 			(yyval.structure) = new NStructureDeclaration(*(yyvsp[(2) - (5)].ident), *(new VariableList()));
 			//delete $4;
-		;}
+		}
     break;
 
   case 15:
@@ -1893,7 +1966,7 @@ yyreduce:
 #line 194 "parser.y"
     {
 			(yyval.varvec) = new VariableList();
-		;}
+		}
     break;
 
   case 16:
@@ -1903,7 +1976,7 @@ yyreduce:
     {
 			(yyval.varvec) = new VariableList();
 			(yyval.varvec)->push_back((yyvsp[(1) - (1)].variable));
-		;}
+		}
     break;
 
   case 17:
@@ -1912,7 +1985,7 @@ yyreduce:
 #line 203 "parser.y"
     {
 			(yyvsp[(1) - (3)].varvec)->push_back((yyvsp[(3) - (3)].variable));
-		;}
+		}
     break;
 
   case 18:
@@ -1921,7 +1994,7 @@ yyreduce:
 #line 209 "parser.y"
     {
 			(yyval.variable) = new NVariableDeclaration(*(yyvsp[(1) - (2)].type), *(yyvsp[(2) - (2)].ident));
-		;}
+		}
     break;
 
   case 19:
@@ -1930,7 +2003,7 @@ yyreduce:
 #line 213 "parser.y"
     {
 			(yyval.variable) = new NVariableDeclaration(*(yyvsp[(1) - (4)].type), *(yyvsp[(2) - (4)].ident), (yyvsp[(4) - (4)].expr));
-		;}
+		}
     break;
 
   case 20:
@@ -1939,7 +2012,7 @@ yyreduce:
 #line 217 "parser.y"
     {
 			(yyval.variable) = new NVariableDeclaration(*(new NFunctionPointerType(*(yyvsp[(1) - (8)].type), *(yyvsp[(7) - (8)].varvec))) /* TODO: free this memory */, *(yyvsp[(4) - (8)].ident));
-		;}
+		}
     break;
 
   case 21:
@@ -1948,7 +2021,7 @@ yyreduce:
 #line 221 "parser.y"
     {
 			(yyval.variable) = new NVariableDeclaration(*(new NFunctionPointerType(*(yyvsp[(1) - (10)].type), *(yyvsp[(7) - (10)].varvec))) /* TODO: free this memory */, *(yyvsp[(4) - (10)].ident), (yyvsp[(10) - (10)].expr));
-		;}
+		}
     break;
 
   case 22:
@@ -1958,7 +2031,7 @@ yyreduce:
     {
 			(yyval.ident) = new NIdentifier(*(yyvsp[(1) - (1)].string));
 			delete (yyvsp[(1) - (1)].string);
-		;}
+		}
     break;
 
   case 23:
@@ -1968,7 +2041,7 @@ yyreduce:
     {
 			(yyval.type) = new NType((yyvsp[(1) - (1)].type)->name, 0, false);
 			delete (yyvsp[(1) - (1)].ident);
-		;}
+		}
     break;
 
   case 24:
@@ -1978,7 +2051,7 @@ yyreduce:
     {
 			(yyval.type) = new NType((yyvsp[(2) - (2)].type)->name, 0, true);
 			delete (yyvsp[(2) - (2)].ident);
-		;}
+		}
     break;
 
   case 25:
@@ -1988,7 +2061,7 @@ yyreduce:
     {
 			(yyval.type) = new NType((yyvsp[(1) - (2)].type)->name, 1, false);
 			delete (yyvsp[(1) - (2)].ident);
-		;}
+		}
     break;
 
   case 26:
@@ -1998,7 +2071,7 @@ yyreduce:
     {
 			(yyval.type) = new NType((yyvsp[(2) - (3)].type)->name, 1, true);
 			delete (yyvsp[(2) - (3)].ident);
-		;}
+		}
     break;
 
   case 27:
@@ -2008,7 +2081,7 @@ yyreduce:
     {
 			(yyval.type) = new NType((yyvsp[(1) - (2)].type)->name, (yyvsp[(1) - (2)].type)->pointerCount + 1, (yyvsp[(1) - (2)].type)->isStruct);
 			delete (yyvsp[(1) - (2)].type);
-		;}
+		}
     break;
 
   case 28:
@@ -2017,7 +2090,7 @@ yyreduce:
 #line 261 "parser.y"
     {
 			(yyval.block) = (yyvsp[(2) - (3)].block);
-		;}
+		}
     break;
 
   case 29:
@@ -2026,7 +2099,7 @@ yyreduce:
 #line 265 "parser.y"
     {
 			(yyval.block) = new NBlock();
-		;}
+		}
     break;
 
   case 30:
@@ -2036,7 +2109,7 @@ yyreduce:
     {
 			(yyval.block) = new NBlock();
 			(yyval.block)->statements.push_back((yyvsp[(1) - (1)].stmt));
-		;}
+		}
     break;
 
   case 31:
@@ -2045,7 +2118,7 @@ yyreduce:
 #line 276 "parser.y"
     {
 			(yyvsp[(1) - (2)].block)->statements.push_back((yyvsp[(2) - (2)].stmt));
-		;}
+		}
     break;
 
   case 32:
@@ -2054,7 +2127,7 @@ yyreduce:
 #line 282 "parser.y"
     {
 			(yyval.stmt) = (yyvsp[(1) - (2)].variable);
-		;}
+		}
     break;
 
   case 38:
@@ -2063,7 +2136,7 @@ yyreduce:
 #line 291 "parser.y"
     {
 			(yyval.stmt) = new NExpressionStatement(*(yyvsp[(1) - (2)].expr));
-		;}
+		}
     break;
 
   case 39:
@@ -2073,7 +2146,7 @@ yyreduce:
     {
 			(yyval.block) = new NBlock();
 			(yyval.block)->statements.push_back((yyvsp[(1) - (1)].stmt));
-		;}
+		}
     break;
 
   case 40:
@@ -2082,7 +2155,7 @@ yyreduce:
 #line 302 "parser.y"
     {
 			(yyval.block) = (yyvsp[(1) - (1)].block);
-		;}
+		}
     break;
 
   case 41:
@@ -2091,7 +2164,7 @@ yyreduce:
 #line 308 "parser.y"
     {
 			(yyval.stmt) = new NIfStatement(*(yyvsp[(3) - (7)].expr), *(yyvsp[(5) - (7)].block), (yyvsp[(7) - (7)].block));
-		;}
+		}
     break;
 
   case 42:
@@ -2100,7 +2173,7 @@ yyreduce:
 #line 312 "parser.y"
     {
 			(yyval.stmt) = new NIfStatement(*(yyvsp[(3) - (5)].expr), *(yyvsp[(5) - (5)].block));
-		;}
+		}
     break;
 
   case 43:
@@ -2109,7 +2182,7 @@ yyreduce:
 #line 318 "parser.y"
     {
 			(yyval.stmt) = new NReturnStatement(*(yyvsp[(2) - (3)].expr));
-		;}
+		}
     break;
 
   case 44:
@@ -2118,7 +2191,7 @@ yyreduce:
 #line 324 "parser.y"
     {
 			(yyval.stmt) = new NDebugStatement(*(yyvsp[(2) - (3)].expr));
-		;}
+		}
     break;
 
   case 45:
@@ -2127,7 +2200,7 @@ yyreduce:
 #line 330 "parser.y"
     {
 			(yyval.stmt) = new NWhileStatement(*(yyvsp[(3) - (5)].expr), *(yyvsp[(5) - (5)].block));
-		;}
+		}
     break;
 
   case 46:
@@ -2136,7 +2209,7 @@ yyreduce:
 #line 336 "parser.y"
     {
 			(yyval.stmt) = new NForStatement(*(yyvsp[(3) - (9)].expr), *(yyvsp[(5) - (9)].expr), *(yyvsp[(7) - (9)].expr), *(yyvsp[(9) - (9)].block));
-		;}
+		}
     break;
 
   case 47:
@@ -2145,7 +2218,7 @@ yyreduce:
 #line 342 "parser.y"
     {
 			(yyval.expr) = new NStructureResolutionOperator(*(yyvsp[(1) - (3)].expr), *(yyvsp[(3) - (3)].ident), false);
-		;}
+		}
     break;
 
   case 48:
@@ -2157,7 +2230,7 @@ yyreduce:
 				(yyval.expr) = new NAssignment(*(yyvsp[(1) - (3)].expr), (yyvsp[(2) - (3)].token), *(yyvsp[(3) - (3)].expr));
 			else
 				throw new CompilerException("Unable to apply field referencing assignment operation to non-field operator based LHS.");
-		;}
+		}
     break;
 
   case 49:
@@ -2166,7 +2239,7 @@ yyreduce:
 #line 355 "parser.y"
     {
 			(yyval.expr) = new NDereferenceOperator(*(yyvsp[(2) - (2)].ident));
-		;}
+		}
     break;
 
   case 50:
@@ -2175,7 +2248,7 @@ yyreduce:
 #line 359 "parser.y"
     {
 			(yyval.expr) = new NDereferenceOperator(*(yyvsp[(2) - (2)].expr));
-		;}
+		}
     break;
 
   case 51:
@@ -2184,7 +2257,7 @@ yyreduce:
 #line 363 "parser.y"
     {
 			(yyval.expr) = new NDereferenceOperator(*(yyvsp[(3) - (4)].expr));
-		;}
+		}
     break;
 
   case 52:
@@ -2196,7 +2269,7 @@ yyreduce:
 				(yyval.expr) = new NAssignment(*(yyvsp[(1) - (3)].expr), (yyvsp[(2) - (3)].token), *(yyvsp[(3) - (3)].expr));
 			else
 				throw new CompilerException("Unable to apply dereferencing assignment operation to non-dereference operator based LHS.");
-		;}
+		}
     break;
 
   case 53:
@@ -2205,7 +2278,7 @@ yyreduce:
 #line 376 "parser.y"
     {
 			(yyval.expr) = new NAssignment(*(yyvsp[(1) - (3)].ident), (yyvsp[(2) - (3)].token), *(yyvsp[(3) - (3)].expr));
-		;}
+		}
     break;
 
   case 54:
@@ -2214,7 +2287,7 @@ yyreduce:
 #line 380 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].expr);
-		;}
+		}
     break;
 
   case 55:
@@ -2223,7 +2296,7 @@ yyreduce:
 #line 384 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].expr);
-		;}
+		}
     break;
 
   case 56:
@@ -2233,7 +2306,7 @@ yyreduce:
     {
 			(yyval.expr) = new NMethodCall(*(yyvsp[(1) - (4)].ident), *(yyvsp[(3) - (4)].exprvec));
 			delete (yyvsp[(3) - (4)].exprvec);
-		;}
+		}
     break;
 
   case 57:
@@ -2242,7 +2315,7 @@ yyreduce:
 #line 393 "parser.y"
     {
 			(yyval.ident) = (yyvsp[(1) - (1)].ident);
-		;}
+		}
     break;
 
   case 58:
@@ -2251,7 +2324,7 @@ yyreduce:
 #line 397 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].expr);
-		;}
+		}
     break;
 
   case 59:
@@ -2260,7 +2333,7 @@ yyreduce:
 #line 401 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].expr);
-		;}
+		}
     break;
 
   case 60:
@@ -2269,7 +2342,7 @@ yyreduce:
 #line 405 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].expr);
-		;}
+		}
     break;
 
   case 61:
@@ -2278,7 +2351,7 @@ yyreduce:
 #line 413 "parser.y"
     {
 			(yyval.expr) = new NBinaryOperator(*(yyvsp[(1) - (3)].expr), (yyvsp[(2) - (3)].token), *(yyvsp[(3) - (3)].expr));
-		;}
+		}
     break;
 
   case 62:
@@ -2287,7 +2360,7 @@ yyreduce:
 #line 417 "parser.y"
     {
 			(yyval.expr) = new NAddressOfOperator(*(yyvsp[(2) - (2)].expr));
-		;}
+		}
     break;
 
   case 63:
@@ -2296,7 +2369,7 @@ yyreduce:
 #line 421 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(2) - (3)].expr);
-		;}
+		}
     break;
 
   case 64:
@@ -2305,7 +2378,7 @@ yyreduce:
 #line 427 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].ident);
-		;}
+		}
     break;
 
   case 65:
@@ -2314,7 +2387,7 @@ yyreduce:
 #line 431 "parser.y"
     {
 			(yyval.expr) = new NStructureResolutionOperator(*(yyvsp[(1) - (3)].expr), *(yyvsp[(3) - (3)].ident), false);
-		;}
+		}
     break;
 
   case 66:
@@ -2323,7 +2396,7 @@ yyreduce:
 #line 435 "parser.y"
     {
 			(yyval.expr) = new NDereferenceOperator(*(yyvsp[(2) - (2)].expr));
-		;}
+		}
     break;
 
   case 67:
@@ -2332,7 +2405,7 @@ yyreduce:
 #line 441 "parser.y"
     {
 			(yyval.expr) = new NInteger((yyvsp[(1) - (1)].number));
-		;}
+		}
     break;
 
   case 68:
@@ -2341,7 +2414,7 @@ yyreduce:
 #line 445 "parser.y"
     {
 			(yyval.expr) = new NInteger(1);
-		;}
+		}
     break;
 
   case 69:
@@ -2350,7 +2423,7 @@ yyreduce:
 #line 449 "parser.y"
     {
 			(yyval.expr) = new NInteger(0);
-		;}
+		}
     break;
 
   case 70:
@@ -2359,7 +2432,7 @@ yyreduce:
 #line 453 "parser.y"
     {
 			(yyval.expr) = new NSizeOfOperator(*(yyvsp[(3) - (4)].type));
-		;}
+		}
     break;
 
   case 71:
@@ -2369,7 +2442,7 @@ yyreduce:
     {
 			(yyval.expr) = new NCharacter(*(yyvsp[(1) - (1)].string));
 			delete (yyvsp[(1) - (1)].string);
-		;}
+		}
     break;
 
   case 72:
@@ -2379,7 +2452,7 @@ yyreduce:
     {
 			(yyval.expr) = new NString(*(yyvsp[(1) - (1)].string));
 			delete (yyvsp[(1) - (1)].string);
-		;}
+		}
     break;
 
   case 73:
@@ -2388,7 +2461,7 @@ yyreduce:
 #line 473 "parser.y"
     {
 			(yyval.exprvec) = new ExpressionList();
-		;}
+		}
     break;
 
   case 74:
@@ -2398,7 +2471,7 @@ yyreduce:
     {
 			(yyval.exprvec) = new ExpressionList();
 			(yyval.exprvec)->push_back((yyvsp[(1) - (1)].expr));
-		;}
+		}
     break;
 
   case 75:
@@ -2407,7 +2480,7 @@ yyreduce:
 #line 482 "parser.y"
     {
 			(yyvsp[(1) - (3)].exprvec)->push_back((yyvsp[(3) - (3)].expr));
-		;}
+		}
     break;
 
   case 98:
@@ -2416,7 +2489,7 @@ yyreduce:
 #line 514 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("void");
-		;}
+		}
     break;
 
   case 99:
@@ -2425,7 +2498,7 @@ yyreduce:
 #line 518 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("char");
-		;}
+		}
     break;
 
   case 100:
@@ -2434,7 +2507,7 @@ yyreduce:
 #line 522 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("byte");
-		;}
+		}
     break;
 
   case 101:
@@ -2443,7 +2516,7 @@ yyreduce:
 #line 526 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("int");
-		;}
+		}
     break;
 
   case 102:
@@ -2452,7 +2525,7 @@ yyreduce:
 #line 530 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("long");
-		;}
+		}
     break;
 
   case 103:
@@ -2461,7 +2534,7 @@ yyreduce:
 #line 534 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("int8_t");
-		;}
+		}
     break;
 
   case 104:
@@ -2470,7 +2543,7 @@ yyreduce:
 #line 538 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("int16_t");
-		;}
+		}
     break;
 
   case 105:
@@ -2479,7 +2552,7 @@ yyreduce:
 #line 542 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("int32_t");
-		;}
+		}
     break;
 
   case 106:
@@ -2488,7 +2561,7 @@ yyreduce:
 #line 546 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("int64_t");
-		;}
+		}
     break;
 
   case 107:
@@ -2497,7 +2570,7 @@ yyreduce:
 #line 550 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("uint8_t");
-		;}
+		}
     break;
 
   case 108:
@@ -2506,7 +2579,7 @@ yyreduce:
 #line 554 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("uint16_t");
-		;}
+		}
     break;
 
   case 109:
@@ -2515,7 +2588,7 @@ yyreduce:
 #line 558 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("uint32_t");
-		;}
+		}
     break;
 
   case 110:
@@ -2524,13 +2597,13 @@ yyreduce:
 #line 562 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("uint64_t");
-		;}
+		}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 2534 "parser.cpp"
+#line 2607 "parser.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

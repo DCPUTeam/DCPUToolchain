@@ -1,9 +1,14 @@
-SET(EMULATOR_SRC dcpubase.c dcpu.c dcpuhook.c dcpuops.c hwioascii.c hwio.c
-    main.c)
+cmake_minimum_required (VERSION 2.6)
+project(emulator)
 
-# Should pass -DLIBTCOD_DIR=/path/to/built/libtcod to cmake
-include_directories(${LIBTCOD_DIR}/include)
-link_directories(${LIBTCOD_DIR})
+# Check to ensure that we are running as part of the
+# root CMakeLists.txt file.
+if(NOT DEFINED IS_ROOT)
+  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
+endif(NOT DEFINED IS_ROOT)
 
-add_executable(emulator ${EMULATOR_SRC})
-target_link_libraries(emulator tcod argtable2)
+# Define the emulator project.
+dt_project(executable)
+dt_needs_prebuilt(libtcod libtcod-VS)
+dt_needs(argtable2)
+dt_needs(libvm)

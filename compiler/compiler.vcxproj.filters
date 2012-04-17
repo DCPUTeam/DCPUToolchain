@@ -1,255 +1,246 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Lexer / Parser Files">
-      <UniqueIdentifier>{09a2787e-8ce3-4ea7-827a-c90068d2f26b}</UniqueIdentifier>
-      <Extensions>*.y;*.l</Extensions>
-    </Filter>
-    <Filter Include="Lexer / Parser Files\Generated Files">
-      <UniqueIdentifier>{fd74e29a-5d31-4074-b4cb-4bb20c94086b}</UniqueIdentifier>
-      <Extensions>*.h;*.c</Extensions>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NAddressOfOperator.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NAssignment.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NBinaryOperator.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NBlock.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NCharacter.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDebugStatement.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDeclarations.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDereferenceOperator.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NExpressionStatement.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NForStatement.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NFunctionDeclaration.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NFunctionSignature.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NIdentifier.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NIfStatement.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NInteger.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NMethodCall.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NReturnStatement.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NSizeOfOperator.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NString.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NStructureDeclaration.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NStructureResolutionOperator.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NType.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NVariableDeclaration.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NWhileStatement.cpp">
+      <Filter>Source Files\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\pp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\asmgen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\asmtypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\Lists.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NAddressOfOperator.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NAssignment.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NBinaryOperator.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NBlock.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NCharacter.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDebugStatement.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDeclaration.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDeclarations.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDereferenceOperator.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NExpression.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NExpressionStatement.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NForStatement.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NFunctionDeclaration.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NFunctionPointerType.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NFunctionSignature.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NIdentifier.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NIfStatement.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NInteger.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NMethodCall.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\Node.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NReturnStatement.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NSizeOfOperator.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NStatement.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NString.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NStructureDeclaration.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NStructureResolutionOperator.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NType.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NVariableDeclaration.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NWhileStatement.h">
+      <Filter>Header Files\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\asmgen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\asmtypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\pp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="parser.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lexer.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="parser.hpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files\nodes">
+      <UniqueIdentifier>{861F5722-F45A-461D-A2F1-1756CACA996C}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\nodes">
-      <UniqueIdentifier>{4f38e002-6819-45df-9e97-64139c45f31c}</UniqueIdentifier>
+      <UniqueIdentifier>{AC9C7B14-AC5A-4902-8C74-1BD8B79EDB15}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\nodes">
-      <UniqueIdentifier>{d310de38-f66a-4a7e-ab80-d97ed5cc259d}</UniqueIdentifier>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D6BF89B7-95B4-476C-A2C9-DF470DA7687F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Standard Library">
-      <UniqueIdentifier>{49873856-90c4-4d14-a72e-d9949595ce65}</UniqueIdentifier>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{3DB7EA69-17E0-4761-9E4E-2EA4F1BB7C39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Standard Library Examples">
-      <UniqueIdentifier>{f4a48a9a-c6ed-42bc-bdfd-a1b74f6d4929}</UniqueIdentifier>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{2B7F3704-85F3-412C-BBB2-B9510A106AF9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lexer / Parser Files">
+      <UniqueIdentifier>{95EBCC86-3F3D-4813-BE28-D1A03BED59E0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pp.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="parser.cpp">
-      <Filter>Lexer / Parser Files\Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lexer.cpp">
-      <Filter>Lexer / Parser Files\Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="asmgen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="asmtypes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NAddressOfOperator.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NAssignment.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NBinaryOperator.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NBlock.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NCharacter.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NDebugStatement.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NDeclarations.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NDereferenceOperator.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NExpressionStatement.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NForStatement.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NFunctionDeclaration.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NIdentifier.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NIfStatement.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NInteger.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NMethodCall.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NReturnStatement.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NString.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NStructureDeclaration.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NStructureResolutionOperator.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NType.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NVariableDeclaration.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NWhileStatement.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NSizeOfOperator.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="nodes\NFunctionSignature.cpp">
-      <Filter>Source Files\nodes</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="lexer.l">
+    <None Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.y">
       <Filter>Lexer / Parser Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="parser.y">
+    </None>
+    <None Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.l">
       <Filter>Lexer / Parser Files</Filter>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="pp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="parser.hpp">
-      <Filter>Lexer / Parser Files\Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="asmgen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="asmtypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NExpression.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\Node.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NAddressOfOperator.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NAssignment.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NBinaryOperator.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NBlock.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NCharacter.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NDebugStatement.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NDeclaration.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NDeclarations.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NDereferenceOperator.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NExpressionStatement.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NForStatement.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NFunctionDeclaration.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NIdentifier.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NIfStatement.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NInteger.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NMethodCall.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NReturnStatement.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NStatement.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NString.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NStructureDeclaration.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NStructureResolutionOperator.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NType.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NVariableDeclaration.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NWhileStatement.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\Lists.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NSizeOfOperator.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NFunctionPointerType.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="nodes\NFunctionSignature.h">
-      <Filter>Header Files\nodes</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="bootstrap.asm">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="dist\screen.m">
-      <Filter>Standard Library</Filter>
-    </None>
-    <None Include="dist\test.c">
-      <Filter>Standard Library Examples</Filter>
     </None>
   </ItemGroup>
 </Project>

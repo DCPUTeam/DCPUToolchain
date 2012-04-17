@@ -1,68 +1,60 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpubase.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpuhook.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpuops.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\hwio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\hwioascii.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpubase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpuhook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\dcpuops.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\hwio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\emulator\hwioascii.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <UniqueIdentifier>{D6BF89B7-95B4-476C-A2C9-DF470DA7687F}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+      <UniqueIdentifier>{3DB7EA69-17E0-4761-9E4E-2EA4F1BB7C39}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dcpu.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dcpubase.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dcpuops.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dcpuhook.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="hwio.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="hwioascii.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="dcpu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dcpubase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dcpuops.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dcpuhook.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hwio.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hwioascii.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="console.dcpu16">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test.dcpu16">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

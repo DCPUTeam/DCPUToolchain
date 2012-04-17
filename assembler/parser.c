@@ -157,6 +157,26 @@ int yywrap()
      ADDRESS = 275
    };
 #endif
+/* Tokens.  */
+#define COMMA 258
+#define BRACKET_OPEN 259
+#define BRACKET_CLOSE 260
+#define COLON 261
+#define SEMICOLON 262
+#define NEWLINE 263
+#define COMMENT 264
+#define ADD 265
+#define KEYWORD 266
+#define BOUNDARY 267
+#define EXTENSION 268
+#define ORIGIN 269
+#define INCLUDE 270
+#define INCBIN 271
+#define WORD 272
+#define STRING 273
+#define CHARACTER 274
+#define ADDRESS 275
+
 
 
 
@@ -183,7 +203,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 187 "parser.c"
+#line 207 "parser.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -195,7 +215,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 199 "parser.c"
+#line 219 "parser.c"
 
 #ifdef short
 # undef short
@@ -1431,7 +1451,7 @@ yyreduce:
 #line 84 "parser.y"
     {
 			ast_root.values = (yyvsp[(1) - (1)].lines);
-		;}
+		}
     break;
 
   case 3:
@@ -1441,7 +1461,7 @@ yyreduce:
     {
 			(yyval.lines) = malloc(sizeof(struct ast_node_lines));
 			(yyval.lines)->last = (yyvsp[(1) - (1)].line);
-		;}
+		}
     break;
 
   case 4:
@@ -1465,7 +1485,7 @@ yyreduce:
 				}
 				(yyvsp[(1) - (2)].lines)->last = (yyvsp[(2) - (2)].line);
 			}
-		;}
+		}
     break;
 
   case 5:
@@ -1474,7 +1494,7 @@ yyreduce:
 #line 115 "parser.y"
     {
 			(yyval.line) = NULL;
-		;}
+		}
     break;
 
   case 6:
@@ -1483,7 +1503,7 @@ yyreduce:
 #line 119 "parser.y"
     {
 			(yyval.line) = NULL;
-		;}
+		}
     break;
 
   case 7:
@@ -1499,7 +1519,7 @@ yyreduce:
 			(yyval.line)->prev = NULL;
 			(yyval.line)->keyword_data_string = (yyvsp[(2) - (3)].string);
 			(yyval.line)->keyword_data_numeric = 0;
-		;}
+		}
     break;
 
   case 8:
@@ -1515,7 +1535,7 @@ yyreduce:
 			(yyval.line)->prev = NULL;
 			(yyval.line)->keyword_data_string = (yyvsp[(2) - (3)].string);
 			(yyval.line)->keyword_data_numeric = 0;
-		;}
+		}
     break;
 
   case 9:
@@ -1531,7 +1551,7 @@ yyreduce:
 			(yyval.line)->prev = NULL;
 			(yyval.line)->keyword_data_string = NULL;
 			(yyval.line)->keyword_data_numeric = (yyvsp[(2) - (3)].number);
-		;}
+		}
     break;
 
   case 10:
@@ -1547,7 +1567,7 @@ yyreduce:
 			(yyval.line)->prev = NULL;
 			(yyval.line)->keyword_data_string = NULL;
 			(yyval.line)->keyword_data_numeric = 0;
-		;}
+		}
     break;
 
   case 11:
@@ -1563,7 +1583,7 @@ yyreduce:
 			(yyval.line)->prev = NULL;
 			(yyval.line)->keyword_data_string = NULL;
 			(yyval.line)->keyword_data_numeric = 0;
-		;}
+		}
     break;
 
   case 12:
@@ -1579,7 +1599,7 @@ yyreduce:
 			(yyval.line)->prev = NULL;
 			(yyval.line)->keyword_data_string = NULL;
 			(yyval.line)->keyword_data_numeric = 0;
-		;}
+		}
     break;
 
   case 13:
@@ -1604,7 +1624,7 @@ yyreduce:
 			(yyval.line)->prev = lnode;
 			(yyval.line)->keyword_data_string = NULL;
 			(yyval.line)->keyword_data_numeric = 0;
-		;}
+		}
     break;
 
   case 14:
@@ -1629,7 +1649,7 @@ yyreduce:
 			(yyval.line)->prev = lnode;
 			(yyval.line)->keyword_data_string = (yyvsp[(3) - (4)].string);
 			(yyval.line)->keyword_data_numeric = 0;
-		;}
+		}
     break;
 
   case 15:
@@ -1654,7 +1674,7 @@ yyreduce:
 			(yyval.line)->prev = lnode;
 			(yyval.line)->keyword_data_string = (yyvsp[(3) - (4)].string);
 			(yyval.line)->keyword_data_numeric = 0;
-		;}
+		}
     break;
 
   case 16:
@@ -1679,7 +1699,7 @@ yyreduce:
 			(yyval.line)->prev = lnode;
 			(yyval.line)->keyword_data_string = NULL;
 			(yyval.line)->keyword_data_numeric = (yyvsp[(3) - (4)].number);
-		;}
+		}
     break;
 
   case 17:
@@ -1704,7 +1724,7 @@ yyreduce:
 			(yyval.line)->prev = lnode;
 			(yyval.line)->keyword_data_string = NULL;
 			(yyval.line)->keyword_data_numeric = 0;
-		;}
+		}
     break;
 
   case 18:
@@ -1714,7 +1734,7 @@ yyreduce:
     {
 			(yyval.label) = malloc(sizeof(struct ast_node_label));
 			(yyval.label)->name = (yyvsp[(2) - (2)].string);
-		;}
+		}
     break;
 
   case 19:
@@ -1726,7 +1746,7 @@ yyreduce:
 			strupper((yyvsp[(1) - (2)].string));
 			(yyval.instruction)->instruction = (yyvsp[(1) - (2)].string);
 			(yyval.instruction)->parameters = (yyvsp[(2) - (2)].parameters);
-		;}
+		}
     break;
 
   case 20:
@@ -1735,7 +1755,7 @@ yyreduce:
 #line 306 "parser.y"
     {
 			(yyval.parameters) = NULL;
-		;}
+		}
     break;
 
   case 21:
@@ -1745,7 +1765,7 @@ yyreduce:
     {
 			(yyval.parameters) = malloc(sizeof(struct ast_node_parameters));
 			(yyval.parameters)->last = (yyvsp[(1) - (1)].parameter);
-		;}
+		}
     break;
 
   case 22:
@@ -1759,7 +1779,7 @@ yyreduce:
 					(yyvsp[(3) - (3)].parameter)->prev = (yyvsp[(1) - (3)].parameters)->last;
 				(yyvsp[(1) - (3)].parameters)->last = (yyvsp[(3) - (3)].parameter);
 			}
-		;}
+		}
     break;
 
   case 23:
@@ -1773,7 +1793,7 @@ yyreduce:
 			(yyval.parameter)->address = NULL;
 			(yyval.parameter)->raw = NULL;
 			(yyval.parameter)->prev = NULL;
-		;}
+		}
     break;
 
   case 24:
@@ -1787,7 +1807,7 @@ yyreduce:
 			(yyval.parameter)->address = NULL;
 			(yyval.parameter)->raw = NULL;
 			(yyval.parameter)->prev = NULL;
-		;}
+		}
     break;
 
   case 25:
@@ -1801,7 +1821,7 @@ yyreduce:
 			(yyval.parameter)->address = (yyvsp[(1) - (1)].address);
 			(yyval.parameter)->raw = NULL;
 			(yyval.parameter)->prev = NULL;
-		;}
+		}
     break;
 
   case 26:
@@ -1815,7 +1835,7 @@ yyreduce:
 			(yyval.parameter)->address = (yyvsp[(1) - (1)].address);
 			(yyval.parameter)->raw = NULL;
 			(yyval.parameter)->prev = NULL;
-		;}
+		}
     break;
 
   case 27:
@@ -1829,7 +1849,7 @@ yyreduce:
 			(yyval.parameter)->address = (yyvsp[(1) - (1)].address);
 			(yyval.parameter)->raw = NULL;
 			(yyval.parameter)->prev = NULL;
-		;}
+		}
     break;
 
   case 28:
@@ -1843,7 +1863,7 @@ yyreduce:
 			(yyval.parameter)->address = NULL;
 			(yyval.parameter)->raw = (yyvsp[(1) - (1)].string);
 			(yyval.parameter)->prev = NULL;
-		;}
+		}
     break;
 
   case 29:
@@ -1854,7 +1874,7 @@ yyreduce:
 			(yyval.registr) = malloc(sizeof(struct ast_node_register));
 			(yyval.registr)->value = (yyvsp[(1) - (1)].string);
 			(yyval.registr)->bracketed = 0;
-		;}
+		}
     break;
 
   case 30:
@@ -1865,7 +1885,7 @@ yyreduce:
 			(yyval.registr) = malloc(sizeof(struct ast_node_register));
 			(yyval.registr)->value = (yyvsp[(2) - (3)].string);
 			(yyval.registr)->bracketed = 1;
-		;}
+		}
     break;
 
   case 31:
@@ -1878,7 +1898,7 @@ yyreduce:
 			(yyval.address)->bracketed = 0;
 			(yyval.address)->added = 0;
 			(yyval.address)->addcmpt = NULL;
-		;}
+		}
     break;
 
   case 32:
@@ -1891,7 +1911,7 @@ yyreduce:
 			(yyval.address)->bracketed = 0;
 			(yyval.address)->added = 0;
 			(yyval.address)->addcmpt = NULL;
-		;}
+		}
     break;
 
   case 33:
@@ -1904,7 +1924,7 @@ yyreduce:
 			(yyval.address)->bracketed = 1;
 			(yyval.address)->added = 0;
 			(yyval.address)->addcmpt = NULL;
-		;}
+		}
     break;
 
   case 34:
@@ -1917,7 +1937,7 @@ yyreduce:
 			(yyval.address)->bracketed = 1;
 			(yyval.address)->added = 1;
 			(yyval.address)->addcmpt = (yyvsp[(4) - (5)].string);
-		;}
+		}
     break;
 
   case 35:
@@ -1930,13 +1950,13 @@ yyreduce:
 			(yyval.address)->bracketed = 1;
 			(yyval.address)->added = 1;
 			(yyval.address)->addcmpt = (yyvsp[(2) - (5)].string);
-		;}
+		}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1940 "parser.c"
+#line 1960 "parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

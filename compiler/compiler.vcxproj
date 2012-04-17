@@ -9,174 +9,546 @@
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{A0836579-0021-4EA4-A22C-FE6F353CFA47}</ProjectGuid>
+    <ProjectGUID>{20876382-947C-4E7E-BDD4-E8261D83533D}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>compiler</RootNamespace>
+    <Platform>Win32</Platform>
+    <ProjectName>compiler</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compiler.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compiler</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.exe</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compiler.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compiler</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.exe</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">compiler.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">compiler</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.exe</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">compiler.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">compiler</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.exe</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+    </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;YY_NO_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\emulator;C:\UNIX\GnuWin32\include;$(SolutionDir)\third-party\argtable2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>Debug</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/Debug/compiler.pdb</ProgramDataBaseFileName>
     </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\third-party\argtable2\Debug\argtable2.lib;..\libvm\Debug\libvm.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProgramFiles)\GnuWin32\lib;$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>argtable2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/Debug/compiler.lib</ImportLibrary>
+      <LinkIncremental>true</LinkIncremental>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/Debug/compiler.pdb</ProgramDataBaseFileName>
+      <StackReserveSize>10000000</StackReserveSize>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;YY_NO_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\emulator;C:\UNIX\GnuWin32\include;$(SolutionDir)\third-party\argtable2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>Release</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/Release/compiler.pdb</ProgramDataBaseFileName>
     </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
     <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\third-party\argtable2\Release\argtable2.lib;..\libvm\Release\libvm.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImportLibrary>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/Release/compiler.lib</ImportLibrary>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/Release/compiler.pdb</ProgramDataBaseFileName>
+      <StackReserveSize>10000000</StackReserveSize>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProgramFiles)\GnuWin32\lib;$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>argtable2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version></Version>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>MinSizeRel</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/MinSizeRel/compiler.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\third-party\argtable2\MinSizeRel\argtable2.lib;..\libvm\MinSizeRel\libvm.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImportLibrary>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/MinSizeRel/compiler.lib</ImportLibrary>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/MinSizeRel/compiler.pdb</ProgramDataBaseFileName>
+      <StackReserveSize>10000000</StackReserveSize>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalOptions> /Zm1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>RelWithDebInfo</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/RelWithDebInfo/compiler.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:/UNIX/GnuWin32/include;C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2;C:/Server Storage/Projects/- Personal Projects/0x10c/libvm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\third-party\argtable2\RelWithDebInfo\argtable2.lib;..\libvm\RelWithDebInfo\libvm.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/RelWithDebInfo/compiler.lib</ImportLibrary>
+      <LinkIncremental>true</LinkIncremental>
+      <ProgramDataBaseFileName>C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/RelWithDebInfo/compiler.pdb</ProgramDataBaseFileName>
+      <StackReserveSize>10000000</StackReserveSize>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="asmgen.cpp" />
-    <ClCompile Include="asmtypes.cpp" />
-    <None Include="dist\test.c" />
-    <ClCompile Include="lexer.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    <CustomBuild Include="parser.cpp.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating parser.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\bison.exe -d -y -oparser.cpp parser.y
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/parser.cpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.y;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating parser.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\bison.exe -d -y -oparser.cpp parser.y
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/parser.cpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.y;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Generating parser.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\bison.exe -d -y -oparser.cpp parser.y
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/parser.cpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.y;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Generating parser.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\bison.exe -d -y -oparser.cpp parser.y
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/parser.cpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.y;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.cpp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="lexer.cpp.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating lexer.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\flex.exe -olexer.cpp lexer.l
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/lexer.cpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.l;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating lexer.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\flex.exe -olexer.cpp lexer.l
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/lexer.cpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.l;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Generating lexer.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\flex.exe -olexer.cpp lexer.l
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/lexer.cpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.l;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Generating lexer.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\flex.exe -olexer.cpp lexer.l
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/lexer.cpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.l;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.cpp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="parser.hpp.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating parser.hpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\bison.exe -d -y -oparser.cpp parser.y
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/parser.hpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.y;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.hpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating parser.hpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\bison.exe -d -y -oparser.cpp parser.y
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/parser.hpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.y;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.hpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Generating parser.hpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\bison.exe -d -y -oparser.cpp parser.y
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/parser.hpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.y;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.hpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Generating parser.hpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+C:\UNIX\GnuWin32\bin\bison.exe -d -y -oparser.cpp parser.y
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/parser.hpp.rule;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.y;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.hpp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" "-HC:/Server Storage/Projects/- Personal Projects/0x10c" "-BC:/Server Storage/Projects/- Personal Projects/0x10c" --check-stamp-file "C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" "-HC:/Server Storage/Projects/- Personal Projects/0x10c" "-BC:/Server Storage/Projects/- Personal Projects/0x10c" --check-stamp-file "C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" "-HC:/Server Storage/Projects/- Personal Projects/0x10c" "-BC:/Server Storage/Projects/- Personal Projects/0x10c" --check-stamp-file "C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" "-HC:/Server Storage/Projects/- Personal Projects/0x10c" "-BC:/Server Storage/Projects/- Personal Projects/0x10c" --check-stamp-file "C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Server Storage/Projects/- Personal Projects/0x10c/compiler/CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeLists.txt;C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NAddressOfOperator.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NAssignment.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NBinaryOperator.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NBlock.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NCharacter.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDebugStatement.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDeclarations.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDereferenceOperator.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NExpressionStatement.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NForStatement.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NFunctionDeclaration.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NFunctionSignature.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NIdentifier.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NIfStatement.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NInteger.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NMethodCall.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NReturnStatement.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NSizeOfOperator.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NString.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NStructureDeclaration.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NStructureResolutionOperator.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NType.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NVariableDeclaration.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NWhileStatement.cpp" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\Lists.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NAddressOfOperator.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NAssignment.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NBinaryOperator.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NBlock.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NCharacter.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDebugStatement.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDeclaration.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDeclarations.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NDereferenceOperator.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NExpression.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NExpressionStatement.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NForStatement.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NFunctionDeclaration.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NFunctionPointerType.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NFunctionSignature.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NIdentifier.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NIfStatement.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NInteger.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NMethodCall.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\Node.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NReturnStatement.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NSizeOfOperator.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NStatement.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NString.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NStructureDeclaration.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NStructureResolutionOperator.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NType.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NVariableDeclaration.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\nodes\NWhileStatement.h" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\pp.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="nodes\NAddressOfOperator.cpp" />
-    <ClCompile Include="nodes\NAssignment.cpp" />
-    <ClCompile Include="nodes\NBinaryOperator.cpp" />
-    <ClCompile Include="nodes\NBlock.cpp" />
-    <ClCompile Include="nodes\NCharacter.cpp" />
-    <ClCompile Include="nodes\NDebugStatement.cpp" />
-    <ClCompile Include="nodes\NDeclarations.cpp" />
-    <ClCompile Include="nodes\NDereferenceOperator.cpp" />
-    <ClCompile Include="nodes\NExpressionStatement.cpp" />
-    <ClCompile Include="nodes\NForStatement.cpp" />
-    <ClCompile Include="nodes\NFunctionDeclaration.cpp" />
-    <ClCompile Include="nodes\NFunctionSignature.cpp" />
-    <ClCompile Include="nodes\NSizeOfOperator.cpp" />
-    <ClCompile Include="nodes\NIdentifier.cpp" />
-    <ClCompile Include="nodes\NIfStatement.cpp" />
-    <ClCompile Include="nodes\NInteger.cpp" />
-    <ClCompile Include="nodes\NMethodCall.cpp" />
-    <ClCompile Include="nodes\NReturnStatement.cpp" />
-    <ClCompile Include="nodes\NString.cpp" />
-    <ClCompile Include="nodes\NStructureDeclaration.cpp" />
-    <ClCompile Include="nodes\NStructureResolutionOperator.cpp" />
-    <ClCompile Include="nodes\NType.cpp" />
-    <ClCompile Include="nodes\NVariableDeclaration.cpp" />
-    <ClCompile Include="nodes\NWhileStatement.cpp" />
-    <ClCompile Include="parser.cpp" />
-    <ClCompile Include="pp.c" />
-    <None Include="bootstrap.asm" />
-    <None Include="dist\screen.m">
-      <FileType>CppHeader</FileType>
-    </None>
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\asmgen.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\asmtypes.cpp" />
+    <ClCompile Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\Main.cpp" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\asmgen.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\asmtypes.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\node.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\pp.h" />
+    <ClInclude Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.hpp" />
+    <None Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\parser.y" />
+    <None Include="C:\Server Storage\Projects\- Personal Projects\0x10c\compiler\lexer.l" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="lexer.l">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">flex -olexer.cpp lexer.l</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lexer.cpp</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parser.y parser.cpp</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating C lexer...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">flex -olexer.c lexer.l</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating C lexer...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lexer.c</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parser.y parser.c</AdditionalInputs>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="parser.y">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bison -v -d -oparser.cpp parser.y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parser.cpp parser.h</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bison -v -d -oparser.cpp parser.y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parser.cpp parser.h</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating C parser...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating C parser...</Message>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="asmgen.h" />
-    <ClInclude Include="asmtypes.h" />
-    <ClInclude Include="node.h" />
-    <ClInclude Include="nodes\Lists.h" />
-    <ClInclude Include="nodes\NAddressOfOperator.h" />
-    <ClInclude Include="nodes\NAssignment.h" />
-    <ClInclude Include="nodes\NBinaryOperator.h" />
-    <ClInclude Include="nodes\NBlock.h" />
-    <ClInclude Include="nodes\NCharacter.h" />
-    <ClInclude Include="nodes\NDebugStatement.h" />
-    <ClInclude Include="nodes\NDeclaration.h" />
-    <ClInclude Include="nodes\NDeclarations.h" />
-    <ClInclude Include="nodes\NDereferenceOperator.h" />
-    <ClInclude Include="nodes\NExpression.h" />
-    <ClInclude Include="nodes\NExpressionStatement.h" />
-    <ClInclude Include="nodes\NForStatement.h" />
-    <ClInclude Include="nodes\NFunctionDeclaration.h" />
-    <ClInclude Include="nodes\NFunctionPointerType.h" />
-    <ClInclude Include="nodes\NFunctionSignature.h" />
-    <ClInclude Include="nodes\NSizeOfOperator.h" />
-    <ClInclude Include="nodes\NIdentifier.h" />
-    <ClInclude Include="nodes\NIfStatement.h" />
-    <ClInclude Include="nodes\NInteger.h" />
-    <ClInclude Include="nodes\NMethodCall.h" />
-    <ClInclude Include="nodes\Node.h" />
-    <ClInclude Include="nodes\NReturnStatement.h" />
-    <ClInclude Include="nodes\NStatement.h" />
-    <ClInclude Include="nodes\NString.h" />
-    <ClInclude Include="nodes\NStructureDeclaration.h" />
-    <ClInclude Include="nodes\NStructureResolutionOperator.h" />
-    <ClInclude Include="nodes\NType.h" />
-    <ClInclude Include="nodes\NVariableDeclaration.h" />
-    <ClInclude Include="nodes\NWhileStatement.h" />
-    <ClInclude Include="parser.hpp" />
-    <ClInclude Include="pp.h" />
+    <ProjectReference Include="C:/Server Storage/Projects/- Personal Projects/0x10c/ZERO_CHECK.vcxproj">
+      <Project>DFDF6085-226D-4D1C-A450-C94B2B046C83</Project>
+    </ProjectReference>
+    <ProjectReference Include="C:/Server Storage/Projects/- Personal Projects/0x10c/third-party/argtable2/argtable2.vcxproj">
+      <Project>F0D4AFD1-48A4-4BB6-BB06-D9BAA0004CFE</Project>
+    </ProjectReference>
+    <ProjectReference Include="C:/Server Storage/Projects/- Personal Projects/0x10c/libvm/libvm.vcxproj">
+      <Project>2C83F23F-E164-4CDE-80C2-2959866829B4</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

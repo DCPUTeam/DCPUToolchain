@@ -21,7 +21,7 @@ struct lprov_entry
 {
 	char* label;
 	uint16_t address;
-	lprov_entry* next;
+	struct lprov_entry* next;
 };
 
 struct lprov_entry* lprov_create(char* label, uint16_t address);

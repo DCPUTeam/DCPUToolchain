@@ -112,6 +112,79 @@
      DEREFDOT = 328
    };
 #endif
+/* Tokens.  */
+#define CURVED_OPEN 258
+#define CURVED_CLOSE 259
+#define BRACE_OPEN 260
+#define BRACE_CLOSE 261
+#define COMMA 262
+#define STAR 263
+#define SEMICOLON 264
+#define DOT 265
+#define STRUCT 266
+#define NUMBER 267
+#define IDENTIFIER 268
+#define CHARACTER 269
+#define STRING 270
+#define ASSIGN_EQUAL 271
+#define ASSIGN_ADD 272
+#define ASSIGN_SUBTRACT 273
+#define ASSIGN_MULTIPLY 274
+#define ASSIGN_DIVIDE 275
+#define COMPARE_EQUAL 276
+#define COMPARE_NOT_EQUAL 277
+#define COMPARE_LESS_THAN 278
+#define COMPARE_LESS_THAN_EQUAL 279
+#define COMPARE_GREATER_THAN 280
+#define COMPARE_GREATER_THAN_EQUAL 281
+#define NEGATE 282
+#define BITWISE_NEGATE 283
+#define INCREMENT 284
+#define DECREMENT 285
+#define ADD 286
+#define SUBTRACT 287
+#define SLASH 288
+#define PERCENT 289
+#define BOOLEAN_AND 290
+#define BOOLEAN_OR 291
+#define BINARY_AND 292
+#define BINARY_OR 293
+#define BINARY_XOR 294
+#define BINARY_LEFT_SHIFT 295
+#define BINARY_RIGHT_SHIFT 296
+#define IREF 297
+#define IDEREF 298
+#define IADDROF 299
+#define IUNARYPLUS 300
+#define IUNARYMINUS 301
+#define IPREINC 302
+#define IPREDEC 303
+#define IPOSTINC 304
+#define IPOSTDEC 305
+#define TRUE 306
+#define FALSE 307
+#define RETURN 308
+#define IF 309
+#define ELSE 310
+#define WHILE 311
+#define FOR 312
+#define DEBUG 313
+#define SIZEOF 314
+#define TYPE_VOID 315
+#define TYPE_CHAR 316
+#define TYPE_BYTE 317
+#define TYPE_INT 318
+#define TYPE_LONG 319
+#define TYPE_INT8_T 320
+#define TYPE_INT16_T 321
+#define TYPE_INT32_T 322
+#define TYPE_INT64_T 323
+#define TYPE_UINT8_T 324
+#define TYPE_UINT16_T 325
+#define TYPE_UINT32_T 326
+#define TYPE_UINT64_T 327
+#define DEREFDOT 328
+
 
 
 
@@ -143,7 +216,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 147 "parser.hpp"
+#line 220 "parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

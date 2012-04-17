@@ -40,3 +40,6 @@ Debug/*
 Release/*
 */Debug/*
 */Release/*
+
+CMakeFiles/*
+*/CMakeFiles/*

@@ -1,5 +1,13 @@
-SET(ASSEMBLER_SRC aerr.c aout.c assem.c imap.c lexer.c main.c parser.c textn.c
-    treloc.c pp.c)
+cmake_minimum_required (VERSION 2.6)
+project(assembler)
 
-add_executable(assembler ${ASSEMBLER_SRC})
-target_link_libraries(assembler argtable2)
+# Check to ensure that we are running as part of the
+# root CMakeLists.txt file.
+if(NOT DEFINED IS_ROOT)
+  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
+endif(NOT DEFINED IS_ROOT)
+
+# Define the emulator project.
+dt_project(executable)
+dt_needs(argtable2)
+dt_needs(libvm)

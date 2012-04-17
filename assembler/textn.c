@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include "posix.h"
 #include "textn.h"
 #include "aout.h"
 #include "aerr.h"
@@ -98,7 +99,7 @@ char* textn_verify_name(char* name)
 	uint16_t i;
 	for (i = 0; i < EXTENSION_MAP_MAXIMUM; i += 1)
 	{
-		if (strcasecmp(name, extension_map[i]) == 0)
+		if (stricmp(name, extension_map[i]) == 0)
 			return extension_map[i];
 	}
 	return NULL;

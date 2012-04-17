@@ -1,0 +1,1233 @@
+; Immediately jump to _setup.
+SET PC, _setup
+
+; Safety boundary
+;.BOUNDARY
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+; Sets up the stack to hold data of the size
+; specified in the X register + 1.  It copies
+; the value of Z register (which should be the
+; return point) into the new stack location and
+; sets the Y position 1 word ahead of where the
+; return value was stored.  You should call this
+; by using the JSR operation.  After this returns
+; you then need to insert all of the arguments
+; into the stack (don't use PUSH; use [SP+OFFSET])
+; and then SET PC, _target.
+:_stack_init
+	SET I, POP
+	SET J, SP
+	SUB SP, X
+	SUB SP, 1
+	SET Y, SP
+	:_stack_init_loop
+		SET [Y], 0
+		ADD Y, 1
+		IFN Y, J
+			SET PC, _stack_init_loop
+	SET PEEK, Z
+	SET Y, SP
+	ADD Y, 1
+	SET PC, I
+
+;:_stack_init
+;	SET J, SP
+;	SUB SP, X
+;	SUB SP, 1
+;	:_stack_init_loop
+;		SET POP, 0
+;		IFN SP, J
+;			SET PC, _stack_init_loop
+;	SET PC, I
+;:_stack_call
+;	SET J, SP
+;	SUB SP, X
+;	SUB SP, 1
+;	SET PEEK, Z
+;	SET Y, SP
+;	ADD Y, 1
+;	SET PC, I
+
+; Safety boundary
+;.BOUNDARY
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+; Frees the stack of the size specified in the
+; X register, placing the position of the next
+; stack frame into Y.  It then jumps to the
+; return address that was specified in the just
+; free'd stack frame by using the Z register.
+:_stack_return
+	SET Z, PEEK												; [return] [stack frame]   Z -> return value, Y -> stack frame
+	SET J, Y												; J -> address of stack frame
+	ADD J, X												; J -> address of stack frame + stack size (excluding return value)
+	:_stack_return_loop
+		SET POP, 0											; First iteration pops return value, then pops through the stack
+		IFN SP, J											; Is the return value + stack frame cleared? (remember that the + size
+															; means it's the address beyond end-of-stack).
+			SET PC, _stack_return_loop						; If not, repeat until it is.
+	SET Y, SP												; SP is now at the start of the higher stack frame (points to the
+															; return value.  Set Y to the value of that.
+	ADD Y, 1												; Then add 1 to Y (because it points to the start of the stack frame, not
+															; the return value).
+	SET PC, Z												; Jump to the address of the original return value.
+
+; Safety boundary
+;.BOUNDARY
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+; Halts the CPU.
+:_halt
+	SET PC, _halt
+
+; Safety boundary
+;.BOUNDARY
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+; Halts the CPU clearing all registers except for
+; the A register.
+:_halt_debug
+	SET B, 0
+	SET C, 0
+	SET X, 0
+	SET Y, 0
+	SET Z, 0
+	SET I, 0
+	SET J, 0
+	SET SP, 0
+	SET O, 0
+	SET PC, _halt
+
+; Safety boundary
+;.BOUNDARY
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+; Handles initially jumping into the main function
+; that the user has provided.
+:_setup
+	
+; THE COMPILER MUST GENERATE THE CONTENTS
+; OF _setup SO THAT THE STACK IS CORRECTLY
+; INITIALIZED FOR THE main FUNCTION.
+
+; BEGIN USER CODE INSERT HERE.
+
+	SET PC, _data_init
+
+:_DATA
+	DAT 0, 0
+	DAT 0, 0
+	DAT 0, 0
+	DAT 0
+
+:_data_init
+	SET A, cfunc_print
+
+	SET I, _DATA
+	ADD I, 6
+	SET [I], A
+
+	SET X, 4
+	SET Z, _halt
+	JSR _stack_init
+	SET PC, cfunc_main
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+:cfunc_scrn_getmempos
+	SET PC, cfunc_scrn_getmempos_actual
+	DAT 4
+:cfunc_scrn_getmempos_actual
+	SET A, 32768
+
+	SET PUSH, A
+	SET I, Y
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 2
+	SET A, [I]
+
+	SET PUSH, A
+	SET A, 32
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	MUL A, B
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET X, 4
+	SET PC, _stack_return
+
+
+	SET A, 0xFFFF
+	SET X, 4
+	SET PC, _stack_return
+
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+:cfunc_scrn_setc
+	SET PC, cfunc_scrn_setc_actual
+	DAT 6
+:cfunc_scrn_setc_actual
+	SET C, SP
+	SET I, Y
+	ADD I, 1
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 3
+	SET A, [I]
+
+	SET PUSH, A
+	SET X, cfunc_scrn_getmempos
+	ADD X, 2
+	SET X, [X]
+	SET Z, __callback_lRIGMCZ8E2
+	JSR _stack_init
+	SET I, Y
+	SET [I], [0xffff+C]
+	SET I, Y
+	ADD I, 2
+	SET [I], [0xfffe+C]
+	SET PC, cfunc_scrn_getmempos
+:__callback_lRIGMCZ8E2
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	ADD Y, 2
+
+	SET I, Y
+	ADD I, 5
+	SET [I], A
+
+	SET PUSH, 0
+	SET A, 28672
+
+	SET PUSH, A
+	SET I, Y
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET [A], B
+
+
+	SET A, 0xFFFF
+	SET X, 6
+	SET PC, _stack_return
+
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+:cfunc_set
+	SET PC, cfunc_set_actual
+	DAT 7
+:cfunc_set_actual
+	SET A, 32768
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 1
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 3
+	SET A, [I]
+
+	SET PUSH, A
+	SET A, 32
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	MUL A, B
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET I, Y
+	ADD I, 5
+	SET [I], A
+
+	SET PUSH, 0
+	SET I, Y
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET [A], B
+
+
+	SET A, 0xFFFF
+	SET X, 7
+	SET PC, _stack_return
+
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+:cfunc_print
+	SET PC, cfunc_print_actual
+	DAT 7
+:cfunc_print_actual
+	SET A, 0
+
+	SET I, Y
+	ADD I, 5
+	SET [I], A
+
+	SET PUSH, 0
+	SET A, 0
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET A, Y
+	ADD A, 5
+
+	SET [A], B
+
+:__for_Px6I2IODfk
+	SET I, Y
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET A, [A]
+
+	SET PUSH, A
+	SET A, 0
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SUB A, B
+	IFN O, 0x0
+		SET A, 0x1
+	IFN A, 0x0
+		SET A, 0x1
+
+	IFN A, 0x1
+		SET PC, __endfor_02rISgfWIa
+	SET C, SP
+	SET I, Y
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET A, [A]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 1
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 3
+	SET A, [I]
+
+	SET PUSH, A
+	SET X, cfunc_set
+	ADD X, 2
+	SET X, [X]
+	SET Z, __callback_iarrOJw9S3
+	JSR _stack_init
+	SET I, Y
+	SET [I], [0xffff+C]
+	SET I, Y
+	ADD I, 1
+	SET [I], [0xfffe+C]
+	SET I, Y
+	ADD I, 3
+	SET [I], [0xfffd+C]
+	SET PC, cfunc_set
+:__callback_iarrOJw9S3
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	ADD Y, 3
+
+
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET A, 1
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+	SET B, A
+	SET A, Y
+	ADD A, 5
+
+	SET [A], B
+
+	SET PC, __for_Px6I2IODfk
+:__endfor_02rISgfWIa
+
+
+	SET A, 0xFFFF
+	SET X, 7
+	SET PC, _stack_return
+
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+:cfunc_print_in_red
+	SET PC, cfunc_print_in_red_actual
+	DAT 7
+:cfunc_print_in_red_actual
+	SET A, 0
+
+	SET I, Y
+	ADD I, 5
+	SET [I], A
+
+	SET PUSH, 0
+	SET A, 0
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET A, Y
+	ADD A, 5
+
+	SET [A], B
+
+:__for_tY52HuxDPa
+	SET I, Y
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET A, [A]
+
+	SET PUSH, A
+	SET A, 0
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SUB A, B
+	IFN O, 0x0
+		SET A, 0x1
+	IFN A, 0x0
+		SET A, 0x1
+
+	IFN A, 0x1
+		SET PC, __endfor_3pdTiFjsgh
+	SET C, SP
+	SET I, Y
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET A, [A]
+
+	SET PUSH, A
+	SET A, 12288
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 1
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 3
+	SET A, [I]
+
+	SET PUSH, A
+	SET X, cfunc_set
+	ADD X, 2
+	SET X, [X]
+	SET Z, __callback_JJWhvyRCEY
+	JSR _stack_init
+	SET I, Y
+	SET [I], [0xffff+C]
+	SET I, Y
+	ADD I, 1
+	SET [I], [0xfffe+C]
+	SET I, Y
+	ADD I, 3
+	SET [I], [0xfffd+C]
+	SET PC, cfunc_set
+:__callback_JJWhvyRCEY
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	ADD Y, 3
+
+
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET A, 1
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+	SET B, A
+	SET A, Y
+	ADD A, 5
+
+	SET [A], B
+
+	SET PC, __for_tY52HuxDPa
+:__endfor_3pdTiFjsgh
+
+
+	SET A, 0xFFFF
+	SET X, 7
+	SET PC, _stack_return
+
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+:cfunc_print_in_yellow
+	SET PC, cfunc_print_in_yellow_actual
+	DAT 7
+:cfunc_print_in_yellow_actual
+	SET A, 0
+
+	SET I, Y
+	ADD I, 5
+	SET [I], A
+
+	SET PUSH, 0
+	SET A, 0
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET A, Y
+	ADD A, 5
+
+	SET [A], B
+
+:__for_YvhIjyajTU
+	SET I, Y
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET A, [A]
+
+	SET PUSH, A
+	SET A, 0
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SUB A, B
+	IFN O, 0x0
+		SET A, 0x1
+	IFN A, 0x0
+		SET A, 0x1
+
+	IFN A, 0x1
+		SET PC, __endfor_8lfN0qGe8F
+	SET C, SP
+	SET I, Y
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET A, [A]
+
+	SET PUSH, A
+	SET A, 4096
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 1
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 3
+	SET A, [I]
+
+	SET PUSH, A
+	SET X, cfunc_set
+	ADD X, 2
+	SET X, [X]
+	SET Z, __callback_yzvxcmb49m
+	JSR _stack_init
+	SET I, Y
+	SET [I], [0xffff+C]
+	SET I, Y
+	ADD I, 1
+	SET [I], [0xfffe+C]
+	SET I, Y
+	ADD I, 3
+	SET [I], [0xfffd+C]
+	SET PC, cfunc_set
+:__callback_yzvxcmb49m
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	ADD Y, 3
+
+
+	SET I, Y
+	ADD I, 5
+	SET A, [I]
+
+	SET PUSH, A
+	SET A, 1
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+	SET B, A
+	SET A, Y
+	ADD A, 5
+
+	SET [A], B
+
+	SET PC, __for_YvhIjyajTU
+:__endfor_8lfN0qGe8F
+
+
+	SET A, 0xFFFF
+	SET X, 7
+	SET PC, _stack_return
+
+DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+:cfunc_main
+	SET PC, cfunc_main_actual
+	DAT 4
+:cfunc_main_actual
+	SET A, cfunc_print
+
+	SET I, Y
+	ADD I, 3
+	SET [I], A
+
+	SET PUSH, 0
+	SET A, 2
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET A, _DATA
+
+	SET [A], B
+
+	SET PUSH, 0
+	SET A, 3
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET A, _DATA
+	ADD A, 2
+
+	SET [A], B
+
+	SET PUSH, 0
+	SET A, 0
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET A, _DATA
+	ADD A, 4
+
+	SET [A], B
+
+	SET PUSH, 0
+	SET I, _DATA
+	SET A, [I]
+
+	SET PUSH, A
+	SET I, _DATA
+	ADD I, 2
+	SET A, [I]
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	ADD A, B
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET A, Y
+	ADD A, 1
+
+	SET [A], B
+
+	SET PUSH, 0
+	SET PC, __cstr_lAeaF6quxs_jmpover
+	:__cstr_lAeaF6quxs DAT "This is my string!", 0
+	:__cstr_lAeaF6quxs_jmpover SET A, __cstr_lAeaF6quxs
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET A, Y
+
+	ADD A, 0
+
+	SET [A], B
+
+	SET PUSH, 0
+	SET A, 5
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET A, Y
+
+	ADD A, 1
+
+	SET [A], B
+
+	SET C, SP
+	SET PC, __cstr_hrDfS3LLs1_jmpover
+	:__cstr_hrDfS3LLs1 DAT "Hello 0x10c!", 0
+	:__cstr_hrDfS3LLs1_jmpover SET A, __cstr_hrDfS3LLs1
+
+	SET PUSH, A
+	SET A, 0
+
+	SET PUSH, A
+	SET A, 0
+
+	SET PUSH, A
+	SET X, cfunc_print
+	ADD X, 2
+	SET X, [X]
+	SET Z, __callback_MFA0pT2hAO
+	JSR _stack_init
+	SET I, Y
+	SET [I], [0xffff+C]
+	SET I, Y
+	ADD I, 1
+	SET [I], [0xfffe+C]
+	SET I, Y
+	ADD I, 3
+	SET [I], [0xfffd+C]
+	SET PC, cfunc_print
+:__callback_MFA0pT2hAO
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	ADD Y, 3
+
+	SET C, SP
+	SET PC, __cstr_ABLsSCoZee_jmpover
+	:__cstr_ABLsSCoZee DAT "How do you like", 0
+	:__cstr_ABLsSCoZee_jmpover SET A, __cstr_ABLsSCoZee
+
+	SET PUSH, A
+	SET A, 0
+
+	SET PUSH, A
+	SET A, 1
+
+	SET PUSH, A
+	SET X, _DATA
+	ADD X, 6
+	SET X, [X]
+	ADD X, 2
+	SET X, [X]
+	SET Z, __callback_MyYBdLZNAg
+	JSR _stack_init
+	SET I, Y
+	SET [I], [0xffff+C]
+	SET I, Y
+	ADD I, 1
+	SET [I], [0xfffe+C]
+	SET I, Y
+	ADD I, 3
+	SET [I], [0xfffd+C]
+	SET X, _DATA
+	ADD X, 6
+	SET X, [X]
+	SET PC, X
+:__callback_MyYBdLZNAg
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	ADD Y, 3
+
+	SET C, SP
+	SET PC, __cstr_TqHxrtO7Wl_jmpover
+	:__cstr_TqHxrtO7Wl DAT "my C compiler? :D", 0
+	:__cstr_TqHxrtO7Wl_jmpover SET A, __cstr_TqHxrtO7Wl
+
+	SET PUSH, A
+	SET A, 0
+
+	SET PUSH, A
+	SET A, 2
+
+	SET PUSH, A
+	SET X, _DATA
+	ADD X, 6
+	SET X, [X]
+	ADD X, 2
+	SET X, [X]
+	SET Z, __callback_i24MV8akhb
+	JSR _stack_init
+	SET I, Y
+	SET [I], [0xffff+C]
+	SET I, Y
+	ADD I, 1
+	SET [I], [0xfffe+C]
+	SET I, Y
+	ADD I, 3
+	SET [I], [0xfffd+C]
+	SET X, _DATA
+	ADD X, 6
+	SET X, [X]
+	SET PC, X
+:__callback_i24MV8akhb
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	ADD Y, 3
+
+	SET C, SP
+	SET A, Y
+
+	ADD A, 0
+
+	SET A, [A]
+
+	SET PUSH, A
+	SET A, Y
+
+	ADD A, 1
+
+	SET A, [A]
+
+	SET PUSH, A
+	SET A, 3
+
+	SET PUSH, A
+	SET X, _DATA
+	ADD X, 6
+	SET X, [X]
+	ADD X, 2
+	SET X, [X]
+	SET Z, __callback_mtCeynbJ2a
+	JSR _stack_init
+	SET I, Y
+	SET [I], [0xffff+C]
+	SET I, Y
+	ADD I, 1
+	SET [I], [0xfffe+C]
+	SET I, Y
+	ADD I, 3
+	SET [I], [0xfffd+C]
+	SET X, _DATA
+	ADD X, 6
+	SET X, [X]
+	SET PC, X
+:__callback_mtCeynbJ2a
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	ADD Y, 3
+
+	SET C, SP
+	SET PC, __cstr_lCWPYI4NBs_jmpover
+	:__cstr_lCWPYI4NBs DAT "Is it on line 6?", 0
+	:__cstr_lCWPYI4NBs_jmpover SET A, __cstr_lCWPYI4NBs
+
+	SET PUSH, A
+	SET A, 0
+
+	SET PUSH, A
+	SET I, Y
+	ADD I, 1
+	SET A, [I]
+
+	SET PUSH, A
+	SET X, _DATA
+	ADD X, 6
+	SET X, [X]
+	ADD X, 2
+	SET X, [X]
+	SET Z, __callback_0JuojPCGH1
+	JSR _stack_init
+	SET I, Y
+	SET [I], [0xffff+C]
+	SET I, Y
+	ADD I, 1
+	SET [I], [0xfffe+C]
+	SET I, Y
+	ADD I, 3
+	SET [I], [0xfffd+C]
+	SET X, _DATA
+	ADD X, 6
+	SET X, [X]
+	SET PC, X
+:__callback_0JuojPCGH1
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	ADD Y, 3
+
+	SET PUSH, 0
+	SET A, cfunc_print_in_red
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET A, _DATA
+	ADD A, 6
+
+	SET [A], B
+
+	SET PUSH, 0
+	SET A, cfunc_print_in_yellow
+
+	SET PUSH, A
+	SET B, PEEK
+	SET POP, 0
+	SET A, PEEK
+	SET POP, 0
+	SET A, B
+	SET B, A
+	SET A, Y
+	ADD A, 3
+
+	SET [A], B
+
+	SET C, SP
+	SET PC, __cstr_k6ZrqNtuXF_jmpover
+	:__cstr_k6ZrqNtuXF DAT "Now with extra red!", 0
+	:__cstr_k6ZrqNtuXF_jmpover SET A, __cstr_k6ZrqNtuXF
+
+	SET PUSH, A
+	SET A, 0
+
+	SET PUSH, A
+	SET A, 6
+
+	SET PUSH, A
+	SET X, _DATA
+	ADD X, 6
+	SET X, [X]
+	ADD X, 2
+	SET X, [X]
+	SET Z, __callback_QPkCm1tjvK
+	JSR _stack_init
+	SET I, Y
+	SET [I], [0xffff+C]
+	SET I, Y
+	ADD I, 1
+	SET [I], [0xfffe+C]
+	SET I, Y
+	ADD I, 3
+	SET [I], [0xfffd+C]
+	SET X, _DATA
+	ADD X, 6
+	SET X, [X]
+	SET PC, X
+:__callback_QPkCm1tjvK
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	ADD Y, 3
+
+	SET C, SP
+	SET PC, __cstr_ilWhwsESYU_jmpover
+	:__cstr_ilWhwsESYU DAT "Local function pointers work to!", 0
+	:__cstr_ilWhwsESYU_jmpover SET A, __cstr_ilWhwsESYU
+
+	SET PUSH, A
+	SET A, 0
+
+	SET PUSH, A
+	SET A, 7
+
+	SET PUSH, A
+	SET X, Y
+	ADD X, 3
+	SET X, [X]
+	ADD X, 2
+	SET X, [X]
+	SET Z, __callback_6ItU35h2Zw
+	JSR _stack_init
+	SET I, Y
+	SET [I], [0xffff+C]
+	SET I, Y
+	ADD I, 1
+	SET [I], [0xfffe+C]
+	SET I, Y
+	ADD I, 3
+	SET [I], [0xfffd+C]
+	SET X, C
+	ADD X, 1
+	ADD X, 3
+	SET X, [X]
+	SET PC, X
+:__callback_6ItU35h2Zw
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	SET PEEK, 0
+	ADD SP, 1
+	ADD Y, 3
+
+
+	SET A, 0xFFFF
+	SET X, 4
+	SET PC, _stack_return
+
+
+

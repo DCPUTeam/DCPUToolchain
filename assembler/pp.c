@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "posix.h"
 #include "pp.h"
 #include "dcpu.h"
 
@@ -33,7 +34,7 @@ bool strsw(char* src, char* check)
 	int r;
 	memcpy(buf, src, l);
 	buf[l] = '\0';
-	r = strcasecmp(buf, check);
+	r = stricmp(buf, check);
 	free(buf);
 	return (r == 0);
 }

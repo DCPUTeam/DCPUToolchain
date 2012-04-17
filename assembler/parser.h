@@ -59,6 +59,26 @@
      ADDRESS = 275
    };
 #endif
+/* Tokens.  */
+#define COMMA 258
+#define BRACKET_OPEN 259
+#define BRACKET_CLOSE 260
+#define COLON 261
+#define SEMICOLON 262
+#define NEWLINE 263
+#define COMMENT 264
+#define ADD 265
+#define KEYWORD 266
+#define BOUNDARY 267
+#define EXTENSION 268
+#define ORIGIN 269
+#define INCLUDE 270
+#define INCBIN 271
+#define WORD 272
+#define STRING 273
+#define CHARACTER 274
+#define ADDRESS 275
+
 
 
 
@@ -85,7 +105,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 89 "parser.h"
+#line 109 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

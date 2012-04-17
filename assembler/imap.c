@@ -16,6 +16,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include "posix.h"
 #include "imap.h"
 #include "dcpu.h"
 
@@ -122,7 +123,7 @@ struct register_mapping* get_register_by_name(char* name, bool bracketed)
 	{
 		while (register_value_name_map[i].name != NULL)
 		{
-			if (strcasecmp(register_value_name_map[i].name, name) == 0)
+			if (stricmp(register_value_name_map[i].name, name) == 0)
 				return &register_value_name_map[i];
 			i += 1;
 		}
@@ -131,7 +132,7 @@ struct register_mapping* get_register_by_name(char* name, bool bracketed)
 	{
 		while (register_name_map[i].name != NULL)
 		{
-			if (strcasecmp(register_name_map[i].name, name) == 0)
+			if (stricmp(register_name_map[i].name, name) == 0)
 				return &register_name_map[i];
 			i += 1;
 		}
@@ -144,7 +145,7 @@ struct register_mapping* get_register_by_name_next(char* name)
 	uint16_t i = 0;
 	while (register_value_next_map[i].name != NULL)
 	{
-		if (strcasecmp(register_value_next_map[i].name, name) == 0)
+		if (stricmp(register_value_next_map[i].name, name) == 0)
 			return &register_value_next_map[i];
 		i += 1;
 	}

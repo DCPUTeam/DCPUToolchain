@@ -57,10 +57,7 @@ void objfile_load(const char* filename, FILE* in)
 	// length so that we can adjust what will be the offset.
 	sz = ftell(in);
 	fseek(in, 0, SEEK_END);
-	offset += 
-
-	while (!feof(in))
-		fseek(
+	offset += ftell(in) - sz;
 }
 
 int main(int argc, char* argv[])
