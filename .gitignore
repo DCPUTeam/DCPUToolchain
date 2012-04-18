@@ -47,3 +47,6 @@ CMakeFiles/*
 *.vcxproj
 *.vcxproj.filters
 *.rule
+
+CMakeCache.txt
+*.sln
