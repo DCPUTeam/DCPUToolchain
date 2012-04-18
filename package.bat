@@ -38,7 +38,7 @@ xcopy /Y ..\compiler\dist\*.c .\examples > nul
 xcopy /Y ..\compiler\dist\*.m .\include > nul
 xcopy /Y ..\compiler\bootstrap.asm .\ > nul
 xcopy /Y ..\kernel\dist\* .\ > nul
-xcopy /Y ..\*.dll . > nul
+xcopy /Y ..\third-party\*.dll . > nul
 xcopy /Y ..\MIT-LICENSE.txt . > nul
 
 rem Change directory back again

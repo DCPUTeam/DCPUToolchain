@@ -43,3 +43,7 @@ Release/*
 
 CMakeFiles/*
 */CMakeFiles/*
+
+*.vcxproj
+*.vcxproj.filters
+*.rule
