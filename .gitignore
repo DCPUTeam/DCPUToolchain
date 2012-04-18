@@ -1,9 +1,12 @@
-﻿# Visual Studio files #
+# Visual Studio files #
 #######################
+*.sln
 *.sdf
 *.suo
 *.user
 *.opensdf
+*.vcxproj
+*.vcxproj.filters
 ipch/*
 
 # Binary files #
@@ -41,12 +44,10 @@ Release/*
 */Debug/*
 */Release/*
 
+# CMake files #
+###############
+CMakeCache.txt
 CMakeFiles/*
 */CMakeFiles/*
-
-*.vcxproj
-*.vcxproj.filters
 *.rule
-
-CMakeCache.txt
-*.sln
+*/*.dir/*

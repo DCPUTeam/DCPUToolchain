@@ -12,3 +12,9 @@ message("  >> ${PROJECT_NAME}: prebuilt")
 add_library(libtcod STATIC IMPORTED)
 set(IMPORTED_LOCATION ./lib)
 
+# Copy supporting files.
+file(GLOB_RECURSE libtcod_to_copy RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/bin" bin/*)
+foreach(i ${libtcod_to_copy})
+	#message("    .. copying ${i}")
+	file(COPY ./bin/${i} DESTINATION "${ROOT_DIR}/Debug" USE_SOURCE_PERMISSIONS)
+endforeach(i ${libtcod_to_copy})
