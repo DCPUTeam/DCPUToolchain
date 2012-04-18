@@ -7,8 +7,18 @@ if(NOT DEFINED IS_ROOT)
   message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
 endif(NOT DEFINED IS_ROOT)
 
+
 # Define the emulator project.
 dt_project(executable)
-dt_needs_prebuilt(libtcod libtcod-VS)
 dt_needs(argtable2)
 dt_needs(libvm)
+
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	dt_needs_prebuilt(libtcod libtcod-VS)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+        find_library(tcod tcod)
+	target_link_libraries(emulator tcod)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
