@@ -22,6 +22,9 @@
 #include "treloc.h"
 #include "textn.h"
 #include "pp.h"
+#include "ldata.h"
+#include "lprov.h"
+#include "objfile.h"
 
 struct aout_byte* start = NULL;
 struct aout_byte* end = NULL;
@@ -84,7 +87,6 @@ struct aout_byte* aout_create_label_replace(char* name)
 	byte->opcode = 0;
 	byte->a = 0;
 	byte->b = 0;
-	byte->label_replace = NULL;
 	byte->next = NULL;
 	byte->prev = NULL;
 	byte->raw_used = true;
@@ -142,6 +144,37 @@ struct aout_byte* aout_create_metadata_origin(uint16_t address)
 	return byte;
 }
 
+struct aout_byte* aout_create_metadata_export(char* name)
+{
+	struct aout_byte* byte = malloc(sizeof(struct aout_byte));
+	byte->type = AOUT_TYPE_METADATA_EXPORT;
+	byte->opcode = 0;
+	byte->a = 0;
+	byte->b = 0;
+	byte->next = NULL;
+	byte->prev = NULL;
+	byte->raw_used = false;
+	byte->raw = 0x0;
+	byte->label = NULL;
+	byte->label_replace = name;
+	return byte;
+}
+
+struct aout_byte* aout_create_metadata_import(char* name)
+{
+	struct aout_byte* byte = malloc(sizeof(struct aout_byte));
+	byte->type = AOUT_TYPE_METADATA_IMPORT;
+	byte->opcode = 0;
+	byte->a = 0;
+	byte->b = 0;
+	byte->next = NULL;
+	byte->prev = NULL;
+	byte->raw_used = false;
+	byte->raw = 0x0;
+	byte->label = name;
+	byte->label_replace = NULL;
+	return byte;
+}
 void aout_emit(struct aout_byte* byte)
 {
 	if (start == NULL && end == NULL)
@@ -161,13 +194,18 @@ void aout_emit(struct aout_byte* byte)
 }
 
 
-void aout_write(FILE* out, bool relocatable)
+void aout_write(FILE* out, bool relocatable, bool intermediate)
 {
 	struct aout_byte* current_outer;
 	struct aout_byte* current_inner;
-	uint32_t mem_index, i, path_i;
+	struct lprov_entry* linker_provided = NULL;
+	struct lprov_entry* linker_required = NULL;
+	struct lprov_entry* linker_adjustment = NULL;
+	struct lprov_entry* linker_temp = NULL;
+	uint32_t mem_index, out_index, i, path_i;
 	uint16_t inst;
 	uint16_t code_offset = 0;
+	uint16_t true_origin = 0;
 	FILE* temp = NULL;
 	char* cname;
 
@@ -180,14 +218,21 @@ void aout_write(FILE* out, bool relocatable)
 
 	// First go through and replace all labels that need to be.
 	current_outer = start;
+	out_index = code_offset;
 	while (current_outer != NULL)
 	{
-		if (current_outer->type != AOUT_TYPE_NORMAL)
+		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
+		{
+			// Adjust memory address.
+			out_index = current_outer->opcode;
+		}
+		else if (current_outer->type != AOUT_TYPE_NORMAL &&
+				 current_outer->type != AOUT_TYPE_METADATA_EXPORT)
 		{
 			current_outer = current_outer->next;
 			continue;
 		}
-
+		
 		if (current_outer->label_replace != NULL)
 		{
 			current_inner = start;
@@ -199,6 +244,27 @@ void aout_write(FILE* out, bool relocatable)
 					// Adjust memory address.
 					mem_index = current_inner->opcode;
 				}
+				else if (current_inner->type == AOUT_TYPE_METADATA_IMPORT)
+				{
+					// An imported label (we don't need to adjust
+					// memory index because the existance of this type
+					// of entry doesn't affect executable size).
+					if (!intermediate)
+						ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
+					if (current_outer->type != AOUT_TYPE_NORMAL)
+						ahalt(ERR_REEXPORT_NOT_PERMITTED, NULL);
+					if (strcmp(current_inner->label, current_outer->label_replace) == 0)
+					{
+						current_outer->raw = 0xFFFF; // We don't actually know our position yet;
+													 // that will be handled by the linker!
+						current_outer->label_replace = NULL;
+						linker_temp = lprov_create(current_inner->label, out_index);
+						linker_temp->next = linker_required;
+						linker_required = linker_temp;
+						fprintf(stderr, "LINK REPLACE 0x%04X -> %s\n", out_index, current_inner->label);
+						break;
+					}
+				}
 				else if (current_inner->type == AOUT_TYPE_NORMAL)
 				{
 					// Replace the label position.
@@ -206,9 +272,34 @@ void aout_write(FILE* out, bool relocatable)
 						mem_index += 1;
 					else if (strcmp(current_inner->label, current_outer->label_replace) == 0)
 					{
-						//current_outer->raw = 0xff88;
-						current_outer->raw = mem_index;
-						current_outer->label_replace = NULL;
+						if (current_outer->type == AOUT_TYPE_NORMAL)
+						{
+							// We're adjusting a label reference in the code
+							// to it's actual value.
+							current_outer->raw = mem_index;
+							current_outer->label_replace = NULL;
+
+							// We also need to add this entry to the adjustment
+							// table for the linker since it also needs to adjust
+							// internal label jumps in files when it concatenates
+							// all of the object code together.
+							linker_temp = lprov_create(NULL, out_index);
+							linker_temp->next = linker_adjustment;
+							linker_adjustment = linker_temp;
+							fprintf(stderr, "LINK ADJUST 0x%04X\n", out_index);
+						}
+						else if (current_outer->type == AOUT_TYPE_METADATA_EXPORT)
+						{
+							// We're exporting the address of this label in the
+							// object table.
+							linker_temp = lprov_create(current_outer->label_replace, mem_index);
+							linker_temp->next = linker_provided;
+							linker_provided = linker_temp;
+							current_outer->label_replace = NULL;
+							fprintf(stderr, "LINK REPLACE %s -> 0x%04X\n", current_inner->label, out_index);
+						}
+						else
+							ahalt(ERR_OPERATION_NOT_DEFINED_FOR_LABEL_RESOLUTION, NULL);
 						break;
 					}
 				}
@@ -219,7 +310,22 @@ void aout_write(FILE* out, bool relocatable)
 			if (current_outer->label_replace != NULL)
 				ahalt(ERR_LABEL_NOT_FOUND, current_outer->label_replace);
 		}
+		if (current_outer->type == AOUT_TYPE_NORMAL && current_outer->label == NULL)
+			out_index += 1;
 		current_outer = current_outer->next;
+	}
+
+	// If intermediate, we need to write out our linker table
+	// as the absolute first thing in the file.
+	if (intermediate)
+	{
+		fwrite(ldata_objfmt, 1, strlen(ldata_objfmt) + 1, out);
+		objfile_save(out, linker_provided, linker_required, linker_adjustment);
+
+		// Adjust the "true origin" for .ORIGIN directivies because
+		// the linker table won't exist in the final result when
+		// linked.
+		true_origin = ftell(out);
 	}
 	
 	// Write out our extension table.
@@ -236,7 +342,7 @@ void aout_write(FILE* out, bool relocatable)
 		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
 		{
 			// Adjust origin.
-			fseek(out, current_outer->opcode * 2 /* double because the number is in words, not bytes */, SEEK_SET);
+			fseek(out, true_origin + current_outer->opcode * 2 /* double because the number is in words, not bytes */, SEEK_SET);
 		}
 		else if (current_outer->type == AOUT_TYPE_METADATA_INCBIN)
 		{

@@ -312,6 +312,20 @@ void process_line(struct ast_node_line* line)
 			aout_emit(aout_create_metadata_origin(line->keyword_data_numeric));
 
 			break;
+		case EXPORT:
+			fprintf(stderr, ".EXPORT %s", line->keyword_data_string);
+			
+			// Emit export metadata.
+			aout_emit(aout_create_metadata_export(line->keyword_data_string));
+
+			break;
+		case IMPORT:
+			fprintf(stderr, ".IMPORT %s", line->keyword_data_string);
+			
+			// Emit export metadata.
+			aout_emit(aout_create_metadata_import(line->keyword_data_string));
+
+			break;
 		default:
 			fprintf(stderr, "\n");
 			ahalt(ERR_UNSUPPORTED_KEYWORD, NULL);

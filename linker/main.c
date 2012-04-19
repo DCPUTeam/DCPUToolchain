@@ -15,50 +15,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <argtable2.h>
-#include "ldata.h"
+#include "objfile.h"
 #include "lprov.h"
-
-const char objfmt[] = "OBJECT-FORMAT-1.0";
-struct lprov_entry* provided = NULL;
-
-void objfile_load(const char* filename, FILE* in)
-{
-	struct ldata_entry* entry = NULL;
-	struct lprov_entry* last = NULL;
-	struct lprov_entry* current = NULL;
-	uint32_t offset = 0;
-	size_t sz;
-
-	// Read <256 byte label content> <mode> <address>
-	// until mode is LABEL_END.
-	//
-	// If address is LABEL_REQUIRED, then it's a label that
-	// needs resolving, otherwise it's a label that is
-	// provided to other object files.
-	entry = ldata_read(in);
-	while (entry->label[0] != 0)
-	{
-		if (entry->mode == LABEL_END)
-			break;
-		else if (entry->mode == LABEL_PROVIDED)
-		{
-			current = lprov_create(entry->label, entry->address + offset);
-			if (last == NULL)
-				provided = current;
-			else
-				last->next = current;
-			last = current;
-		}
-
-		entry = ldata_read(in);
-	}
-
-	// Now read the rest of the file to determine it's total
-	// length so that we can adjust what will be the offset.
-	sz = ftell(in);
-	fseek(in, 0, SEEK_END);
-	offset += ftell(in) - sz;
-}
+#include "ldata.h"
 
 int main(int argc, char* argv[])
 {
@@ -67,10 +26,15 @@ int main(int argc, char* argv[])
 	FILE* out;
 	int nerrors, i;
 	char* test;
+	uint16_t offset, current, store, mem_index;
+	struct lprov_entry* required = NULL;
+	struct lprov_entry* provided = NULL;
+	struct lprov_entry* adjustment = NULL;
+	struct lprov_entry* temp = NULL;
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
-	struct arg_file* input_files = arg_filen(NULL, NULL, "<file>", 1, 0, "The input object files.");
+	struct arg_file* input_files = arg_filen(NULL, NULL, "<file>", 1, 100, "The input object files.");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	struct arg_end *end = arg_end(20);
 	void *argtable[] = { show_help, input_files, output_file, end };
@@ -97,7 +61,9 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	// Loop through each input file.
+	// We initially need to get a list of ALL provided
+	// labels before we can start replacing them.
+	offset = 0;
 	for (i = 0; i < input_files->count; i++)
 	{
 		// Open the input file.
@@ -111,10 +77,11 @@ int main(int argc, char* argv[])
 		}
 		
 		// Is this the object format?
-		test = malloc(strlen(objfmt) + 1);
-		memset(test, 0, strlen(objfmt) + 1);
-		fread(test, 1, strlen(objfmt), in);
-		if (strcmp(test, objfmt) != 0)
+		test = malloc(strlen(ldata_objfmt) + 1);
+		memset(test, 0, strlen(ldata_objfmt) + 1);
+		fread(test, 1, strlen(ldata_objfmt), in);
+		fseek(in, 1, SEEK_CUR);
+		if (strcmp(test, ldata_objfmt) != 0)
 		{
 			// Handle the error.
 			fprintf(stderr, "linker: input file '%s' is not in object format 1.0.\n", input_files->filename[i]);
@@ -124,11 +91,91 @@ int main(int argc, char* argv[])
 		}
 		free(test);
 
-		// Load the object file's entries into memory.
-		objfile_load(input_files->filename[i], in);
+		// Load only the provided label entries into memory.
+		objfile_load(input_files->filename[i], in, &offset, &provided, NULL, NULL);
 
 		// Close the file.
 		fclose(in);
+	}
+	
+	// Now we can start replacing the labels with the provided values
+	// since we have ALL of the provided labels available.
+	offset = 0;
+	for (i = 0; i < input_files->count; i++)
+	{
+		// Open the input file.
+		in = fopen(input_files->filename[i], "rb");
+		if (in == NULL)
+		{
+			// Handle the error.
+			fprintf(stderr, "linker: unable to read input file '%s'.\n", input_files->filename[i]);
+			fclose(out);
+			return 1;
+		}
+		
+		// Skip over the object format label; we already tested
+		// for this in phase 1.
+		fseek(in, strlen(ldata_objfmt) + 1, SEEK_CUR);
+
+		// Load only the required and adjustment entries into memory.
+		current = offset;
+		objfile_load(input_files->filename[i], in, &offset, NULL, &required, &adjustment);
+
+		// Copy all of the input file's data into the output
+		// file, word by word.
+		mem_index = 0;
+		fprintf(stderr, "BEGIN %s\n", input_files->filename[i]);
+		while (!feof(in))
+		{
+			// Read a word.
+			fread(&store, sizeof(uint16_t), 1, in);
+
+			// For some strange reason, the last two bytes get
+			// written twice, as if it's only EOF after you
+			// attempt to read past the end again.  I'm not sure
+			// why the semantics are like this, but checking again
+			// for EOF here prevents us writing double.
+			if (feof(in))
+				break;
+
+			// Check to see if we need to do something with this
+			// word, such as adjusting it.
+			if (lprov_find_by_address(adjustment, mem_index) != NULL)
+			{
+				// We need to adjust this word by the offset.
+				store += current;
+				fprintf(stderr, "ADJUSTED 0x%04X: 0x%04X -> 0x%04X\n", mem_index, store - current, store);
+			}
+
+			// Check to see if we need to resolve this word into
+			// an actual address because it was imported.
+			temp = lprov_find_by_address(required, mem_index);
+			if (temp != NULL)
+			{
+				// Find the position we should change this to.
+				temp = lprov_find_by_label(provided, temp->label);
+
+				// We need to set this word to the proper location.
+				fprintf(stderr, "RESOLVED 0x%04X: 0x%04X -> 0x%04X\n", mem_index, store, temp->address);
+				store = temp->address;
+			}
+
+			// Now write the (potentially modified) word to the
+			// output.
+			fprintf(stderr, " >> WRITE 0x%04X\n", store);
+			fwrite(&store, sizeof(uint16_t), 1, out);
+
+			// Increment memory position.
+			mem_index++;
+		}
+
+		// Close the file.
+		fclose(in);
+
+		// Reset and free the required and adjustment linked list.
+		// FIXME: Actually free the lists!
+		required = NULL;
+		adjustment = NULL;
 	}
 
 	// Close file.

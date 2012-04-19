@@ -24,6 +24,8 @@
 #define AOUT_TYPE_METADATA_EXTENSION 1
 #define AOUT_TYPE_METADATA_INCBIN 2
 #define AOUT_TYPE_METADATA_ORIGIN 3
+#define AOUT_TYPE_METADATA_EXPORT 4
+#define AOUT_TYPE_METADATA_IMPORT 5
 
 struct aout_byte
 {
@@ -49,7 +51,9 @@ struct aout_byte* aout_create_label_replace(char* name);
 struct aout_byte* aout_create_metadata_extension(char* name);
 struct aout_byte* aout_create_metadata_incbin(char* path);
 struct aout_byte* aout_create_metadata_origin(uint16_t address);
+struct aout_byte* aout_create_metadata_export(char* name);
+struct aout_byte* aout_create_metadata_import(char* name);
 void aout_emit(struct aout_byte* byte);
-void aout_write(FILE* out, bool relocatable);
+void aout_write(FILE* out, bool relocatable, bool intermediate);
 
 #endif

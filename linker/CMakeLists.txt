@@ -7,7 +7,8 @@ if(NOT DEFINED IS_ROOT)
   message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
 endif(NOT DEFINED IS_ROOT)
 
-# Define the emulator project.
+# Define the linker project.
 dt_project(executable)
 dt_needs(argtable2)
 dt_needs(libvm)
+dt_needs(libdcc)

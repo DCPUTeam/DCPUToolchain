@@ -53,10 +53,12 @@
      ORIGIN = 269,
      INCLUDE = 270,
      INCBIN = 271,
-     WORD = 272,
-     STRING = 273,
-     CHARACTER = 274,
-     ADDRESS = 275
+     EXPORT = 272,
+     IMPORT = 273,
+     WORD = 274,
+     STRING = 275,
+     CHARACTER = 276,
+     ADDRESS = 277
    };
 #endif
 /* Tokens.  */
@@ -74,10 +76,12 @@
 #define ORIGIN 269
 #define INCLUDE 270
 #define INCBIN 271
-#define WORD 272
-#define STRING 273
-#define CHARACTER 274
-#define ADDRESS 275
+#define EXPORT 272
+#define IMPORT 273
+#define WORD 274
+#define STRING 275
+#define CHARACTER 276
+#define ADDRESS 277
 
 
 
@@ -105,7 +109,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 109 "parser.h"
+#line 113 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

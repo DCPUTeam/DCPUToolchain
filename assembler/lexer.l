@@ -60,6 +60,8 @@ char* trim_and_unescape(char* data, int mode)
 \.[Or][Rr][Ii][Gg][Ii][Nn]					yylval.number = ORIGIN; return KEYWORD;
 \.[Oo][Rr][Gg]								yylval.number = ORIGIN; return KEYWORD;
 \.[Ii][Nn][Cc][Bb][Ii][Nn]					yylval.number = INCBIN; return KEYWORD;
+\.[Ee][Xx][Pp][Oo][Rr][Tt]					yylval.number = EXPORT; return KEYWORD;
+\.[Ii][Mm][Pp][Oo][Rr][Tt]					yylval.number = IMPORT; return KEYWORD;
 
 	/* General stuff */
 

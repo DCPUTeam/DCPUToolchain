@@ -58,10 +58,11 @@ int main(int argc, char* argv[])
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_lit* gen_relocatable = arg_lit0("r", "relocatable", "Generate relocatable code.");
+	struct arg_lit* gen_intermediate = arg_lit0("i", "intermediate", "Generate intermediate code for use with the linker.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	struct arg_end *end = arg_end(20);
-	void *argtable[] = { output_file, gen_relocatable, show_help, input_file, end };
+	void *argtable[] = { output_file, gen_relocatable, gen_intermediate, show_help, input_file, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc,argv,argtable);
@@ -81,7 +82,7 @@ int main(int argc, char* argv[])
 	if (errval != NULL)
 	{
 		// Handle the error.
-		fprintf(stderr, "assembler: internal error occurred.\n");
+		fprintf(stderr, "assembler: error occurred.\n");
 		fprintf(stderr, err_strings[errval->errid], errval->errdata);
 		if (img != NULL)
 			fclose(img);
@@ -139,7 +140,7 @@ int main(int argc, char* argv[])
 	}
 	
 	// Write content.
-	aout_write(img, (gen_relocatable->count > 0));
+	aout_write(img, (gen_relocatable->count > 0), (gen_intermediate->count > 0));
 	fclose(img);
 	fprintf(stderr, "assembler: completed successfully.\n");
 	

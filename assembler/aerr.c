@@ -17,7 +17,7 @@
 #include "aerr.h"
 
 // Error strings
-const char* err_strings[14] = 
+const char* err_strings[17] = 
 {
 	"assembler: generic assembling error.\n",
 	"assembler: label '%s' not found.\n",
@@ -32,7 +32,10 @@ const char* err_strings[14] =
 	"assembler: extension %s is not known to the assembler.\n",
 	"assembler: can not use label '%s' as next value.\n",
 	"assembler: unrecognized opcode '%s' encountered.\n",
-	"assembler: unable to include binary file '%s' inline.\n"
+	"assembler: unable to include binary file '%s' inline.\n",
+	"assembler: the .EXPORT and .IMPORT directives can not be used unless generating intermediate code.\n",
+	"assembler: re-exporting a .IMPORTd label via the .EXPORT directive is not permitted.\n",
+	"assembler: operation not defined for label resolution.\n"
 };
 
 // Error definition
