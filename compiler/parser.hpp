@@ -39,151 +39,155 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     CURVED_OPEN = 258,
-     CURVED_CLOSE = 259,
-     BRACE_OPEN = 260,
-     BRACE_CLOSE = 261,
-     COMMA = 262,
-     STAR = 263,
-     SEMICOLON = 264,
-     DOT = 265,
-     STRUCT = 266,
-     NUMBER = 267,
-     IDENTIFIER = 268,
-     CHARACTER = 269,
-     STRING = 270,
-     ASSIGN_EQUAL = 271,
-     ASSIGN_ADD = 272,
-     ASSIGN_SUBTRACT = 273,
-     ASSIGN_MULTIPLY = 274,
-     ASSIGN_DIVIDE = 275,
-     COMPARE_EQUAL = 276,
-     COMPARE_NOT_EQUAL = 277,
-     COMPARE_LESS_THAN = 278,
-     COMPARE_LESS_THAN_EQUAL = 279,
-     COMPARE_GREATER_THAN = 280,
-     COMPARE_GREATER_THAN_EQUAL = 281,
-     NEGATE = 282,
-     BITWISE_NEGATE = 283,
-     INCREMENT = 284,
-     DECREMENT = 285,
-     ADD = 286,
-     SUBTRACT = 287,
-     SLASH = 288,
-     PERCENT = 289,
-     BOOLEAN_AND = 290,
-     BOOLEAN_OR = 291,
-     BINARY_AND = 292,
-     BINARY_OR = 293,
-     BINARY_XOR = 294,
-     BINARY_LEFT_SHIFT = 295,
-     BINARY_RIGHT_SHIFT = 296,
-     IREF = 297,
-     IDEREF = 298,
-     IADDROF = 299,
-     IUNARYPLUS = 300,
-     IUNARYMINUS = 301,
-     IPREINC = 302,
-     IPREDEC = 303,
-     IPOSTINC = 304,
-     IPOSTDEC = 305,
-     TRUE = 306,
-     FALSE = 307,
-     RETURN = 308,
-     IF = 309,
-     ELSE = 310,
-     WHILE = 311,
-     FOR = 312,
-     DEBUG = 313,
-     SIZEOF = 314,
-     TYPE_VOID = 315,
-     TYPE_CHAR = 316,
-     TYPE_BYTE = 317,
-     TYPE_INT = 318,
-     TYPE_LONG = 319,
-     TYPE_INT8_T = 320,
-     TYPE_INT16_T = 321,
-     TYPE_INT32_T = 322,
-     TYPE_INT64_T = 323,
-     TYPE_UINT8_T = 324,
-     TYPE_UINT16_T = 325,
-     TYPE_UINT32_T = 326,
-     TYPE_UINT64_T = 327,
-     DEREFDOT = 328
+     ERROR = 258,
+     CURVED_OPEN = 259,
+     CURVED_CLOSE = 260,
+     BRACE_OPEN = 261,
+     BRACE_CLOSE = 262,
+     COMMA = 263,
+     STAR = 264,
+     SEMICOLON = 265,
+     DOT = 266,
+     STRUCT = 267,
+     NUMBER = 268,
+     IDENTIFIER = 269,
+     CHARACTER = 270,
+     STRING = 271,
+     ASSEMBLY = 272,
+     ASSIGN_EQUAL = 273,
+     ASSIGN_ADD = 274,
+     ASSIGN_SUBTRACT = 275,
+     ASSIGN_MULTIPLY = 276,
+     ASSIGN_DIVIDE = 277,
+     COMPARE_EQUAL = 278,
+     COMPARE_NOT_EQUAL = 279,
+     COMPARE_LESS_THAN = 280,
+     COMPARE_LESS_THAN_EQUAL = 281,
+     COMPARE_GREATER_THAN = 282,
+     COMPARE_GREATER_THAN_EQUAL = 283,
+     NEGATE = 284,
+     BITWISE_NEGATE = 285,
+     INCREMENT = 286,
+     DECREMENT = 287,
+     ADD = 288,
+     SUBTRACT = 289,
+     SLASH = 290,
+     PERCENT = 291,
+     BOOLEAN_AND = 292,
+     BOOLEAN_OR = 293,
+     BINARY_AND = 294,
+     BINARY_OR = 295,
+     BINARY_XOR = 296,
+     BINARY_LEFT_SHIFT = 297,
+     BINARY_RIGHT_SHIFT = 298,
+     IREF = 299,
+     IDEREF = 300,
+     IADDROF = 301,
+     IUNARYPLUS = 302,
+     IUNARYMINUS = 303,
+     IPREINC = 304,
+     IPREDEC = 305,
+     IPOSTINC = 306,
+     IPOSTDEC = 307,
+     TRUE = 308,
+     FALSE = 309,
+     RETURN = 310,
+     IF = 311,
+     ELSE = 312,
+     WHILE = 313,
+     FOR = 314,
+     DEBUG = 315,
+     SIZEOF = 316,
+     TYPE_VOID = 317,
+     TYPE_CHAR = 318,
+     TYPE_BYTE = 319,
+     TYPE_INT = 320,
+     TYPE_LONG = 321,
+     TYPE_INT8_T = 322,
+     TYPE_INT16_T = 323,
+     TYPE_INT32_T = 324,
+     TYPE_INT64_T = 325,
+     TYPE_UINT8_T = 326,
+     TYPE_UINT16_T = 327,
+     TYPE_UINT32_T = 328,
+     TYPE_UINT64_T = 329,
+     DEREFDOT = 330
    };
 #endif
 /* Tokens.  */
-#define CURVED_OPEN 258
-#define CURVED_CLOSE 259
-#define BRACE_OPEN 260
-#define BRACE_CLOSE 261
-#define COMMA 262
-#define STAR 263
-#define SEMICOLON 264
-#define DOT 265
-#define STRUCT 266
-#define NUMBER 267
-#define IDENTIFIER 268
-#define CHARACTER 269
-#define STRING 270
-#define ASSIGN_EQUAL 271
-#define ASSIGN_ADD 272
-#define ASSIGN_SUBTRACT 273
-#define ASSIGN_MULTIPLY 274
-#define ASSIGN_DIVIDE 275
-#define COMPARE_EQUAL 276
-#define COMPARE_NOT_EQUAL 277
-#define COMPARE_LESS_THAN 278
-#define COMPARE_LESS_THAN_EQUAL 279
-#define COMPARE_GREATER_THAN 280
-#define COMPARE_GREATER_THAN_EQUAL 281
-#define NEGATE 282
-#define BITWISE_NEGATE 283
-#define INCREMENT 284
-#define DECREMENT 285
-#define ADD 286
-#define SUBTRACT 287
-#define SLASH 288
-#define PERCENT 289
-#define BOOLEAN_AND 290
-#define BOOLEAN_OR 291
-#define BINARY_AND 292
-#define BINARY_OR 293
-#define BINARY_XOR 294
-#define BINARY_LEFT_SHIFT 295
-#define BINARY_RIGHT_SHIFT 296
-#define IREF 297
-#define IDEREF 298
-#define IADDROF 299
-#define IUNARYPLUS 300
-#define IUNARYMINUS 301
-#define IPREINC 302
-#define IPREDEC 303
-#define IPOSTINC 304
-#define IPOSTDEC 305
-#define TRUE 306
-#define FALSE 307
-#define RETURN 308
-#define IF 309
-#define ELSE 310
-#define WHILE 311
-#define FOR 312
-#define DEBUG 313
-#define SIZEOF 314
-#define TYPE_VOID 315
-#define TYPE_CHAR 316
-#define TYPE_BYTE 317
-#define TYPE_INT 318
-#define TYPE_LONG 319
-#define TYPE_INT8_T 320
-#define TYPE_INT16_T 321
-#define TYPE_INT32_T 322
-#define TYPE_INT64_T 323
-#define TYPE_UINT8_T 324
-#define TYPE_UINT16_T 325
-#define TYPE_UINT32_T 326
-#define TYPE_UINT64_T 327
-#define DEREFDOT 328
+#define ERROR 258
+#define CURVED_OPEN 259
+#define CURVED_CLOSE 260
+#define BRACE_OPEN 261
+#define BRACE_CLOSE 262
+#define COMMA 263
+#define STAR 264
+#define SEMICOLON 265
+#define DOT 266
+#define STRUCT 267
+#define NUMBER 268
+#define IDENTIFIER 269
+#define CHARACTER 270
+#define STRING 271
+#define ASSEMBLY 272
+#define ASSIGN_EQUAL 273
+#define ASSIGN_ADD 274
+#define ASSIGN_SUBTRACT 275
+#define ASSIGN_MULTIPLY 276
+#define ASSIGN_DIVIDE 277
+#define COMPARE_EQUAL 278
+#define COMPARE_NOT_EQUAL 279
+#define COMPARE_LESS_THAN 280
+#define COMPARE_LESS_THAN_EQUAL 281
+#define COMPARE_GREATER_THAN 282
+#define COMPARE_GREATER_THAN_EQUAL 283
+#define NEGATE 284
+#define BITWISE_NEGATE 285
+#define INCREMENT 286
+#define DECREMENT 287
+#define ADD 288
+#define SUBTRACT 289
+#define SLASH 290
+#define PERCENT 291
+#define BOOLEAN_AND 292
+#define BOOLEAN_OR 293
+#define BINARY_AND 294
+#define BINARY_OR 295
+#define BINARY_XOR 296
+#define BINARY_LEFT_SHIFT 297
+#define BINARY_RIGHT_SHIFT 298
+#define IREF 299
+#define IDEREF 300
+#define IADDROF 301
+#define IUNARYPLUS 302
+#define IUNARYMINUS 303
+#define IPREINC 304
+#define IPREDEC 305
+#define IPOSTINC 306
+#define IPOSTDEC 307
+#define TRUE 308
+#define FALSE 309
+#define RETURN 310
+#define IF 311
+#define ELSE 312
+#define WHILE 313
+#define FOR 314
+#define DEBUG 315
+#define SIZEOF 316
+#define TYPE_VOID 317
+#define TYPE_CHAR 318
+#define TYPE_BYTE 319
+#define TYPE_INT 320
+#define TYPE_LONG 321
+#define TYPE_INT8_T 322
+#define TYPE_INT16_T 323
+#define TYPE_INT32_T 324
+#define TYPE_INT64_T 325
+#define TYPE_UINT8_T 326
+#define TYPE_UINT16_T 327
+#define TYPE_UINT32_T 328
+#define TYPE_UINT64_T 329
+#define DEREFDOT 330
 
 
 
@@ -216,7 +220,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 220 "parser.hpp"
+#line 224 "parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

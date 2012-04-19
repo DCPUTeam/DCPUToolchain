@@ -17,6 +17,7 @@
 
 #include "nodes/Lists.h"
 #include "nodes/NAddressOfOperator.h"
+#include "nodes/NAssemblyStatement.h"
 #include "nodes/NAssignment.h"
 #include "nodes/NBinaryOperator.h"
 #include "nodes/NBlock.h"

@@ -58,11 +58,14 @@ void yyerror(const char* msg)
 	int token;
 }
 
+/* TOKENS: Error token for Flex to throw an error */
+%token <token> ERROR
+
 /* TOKENS: Identifiers, numbers and basic lexical components */
 %token <token> CURVED_OPEN CURVED_CLOSE BRACE_OPEN BRACE_CLOSE COMMA
 %token <token> STAR SEMICOLON DOT STRUCT
 %token <number> NUMBER
-%token <string> IDENTIFIER CHARACTER STRING
+%token <string> IDENTIFIER CHARACTER STRING ASSEMBLY
 
 /* TOKENS: Assignment, equivilance and mathematical operators */
 %token <token> ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE
@@ -95,7 +98,7 @@ void yyerror(const char* msg)
 %type <structure> struct_decl
 %type <variable> var_decl
 %type <block> block stmts block_or_stmt
-%type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug
+%type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm
 %type <token> assignop binaryop
 
 /* OPERATOR PRECEDENCE (LOWEST -> HIGHEST) */
@@ -287,6 +290,7 @@ stmt:
 		stmt_for |
 		stmt_return |
 		stmt_debug |
+		stmt_asm |
 		expr SEMICOLON
 		{
 			$$ = new NExpressionStatement(*$1);
@@ -335,6 +339,13 @@ stmt_for:
 		FOR CURVED_OPEN expr SEMICOLON expr SEMICOLON expr CURVED_CLOSE block_or_stmt
 		{
 			$$ = new NForStatement(*$3, *$5, *$7, *$9);
+		} ;
+
+stmt_asm:
+		ASSEMBLY
+		{
+			$$ = new NAssemblyStatement(*$1);
+			delete $1;
 		} ;
 
 fldref:
