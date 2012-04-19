@@ -41,7 +41,42 @@ If you are using Cygwin, then there are some important notes:
 
 ### Instructions for Linux
 
-_Someone please add these; it has been done!_
+#### Ubuntu 12.0
+
+First install a few required packages with
+
+```
+$ sudo apt-get install bison flex cmake build-essential
+```
+
+Download [libtcod](http://doryen.eptalys.net/libtcod/download/) and copy
+
+```
+$ sudo cp libtcod-gui.so  libtcod.so  libtcodxx.so /usr/local/lib
+$ sudo cp -R include /usr/local/include
+```
+
+If you want to compile libtcod yourself you need libsdl1.2-dev. Next create a directory and clone the repository into the src folder
+
+```
+$ mkdir -p dcputoolchain/build
+dcputoolchain$ cd dcputoolchain
+dcputoolchain$ git clone git@github.com:migerh/DCPUToolchain.git src
+```
+
+Now generate the makefiles and and compile with
+
+```
+dcputoolchain$ cd build
+dcputoolchain/build$ cmake ../src/
+dcputoolchain/build$ make
+```
+
+If everything went well the binaries are in ```dcputoolchain/src/Debug```. You need to copy bootstrap.asm into the Debug folder, otherwise the assembler won't assemble your project
+
+```
+~/dcputoolchain/src/Debug$ cp ../compiler/bootstrap.asm ./
+```
 
 ### Instructions for Mac
 
