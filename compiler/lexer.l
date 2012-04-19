@@ -58,7 +58,7 @@ int string_return = INITIAL;
 
 	/* Inline assembly */
 
-"asm"					{ HANDLE; BEGIN(AT_ASM); }
+"__asm"					{ HANDLE; BEGIN(AT_ASM); }
 <AT_ASM>\{				{ HANDLE; BEGIN(IN_ASM_BLOCK); string_return = AT_ASM; }
 <AT_ASM>\n				{ yylineno++; }
 <AT_ASM>[ \t]+			/* ignore whitespace */;
