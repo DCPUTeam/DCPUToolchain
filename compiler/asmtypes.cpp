@@ -27,8 +27,8 @@ void Assembler::loadAll()
 	if (m_HasLoaded) return; else m_HasLoaded = true;
 
 	// Define assemblers.
-	m_Assemblers.insert(entry("dcpu16tools", new Assembler(true, false, true, true, true)));
-	m_Assemblers.insert(entry("dcpu16studio", new Assembler(false, false, true, false, false)));
+	m_Assemblers.insert(entry("dcpu16tools", new Assembler(true, false, true, true, true, true, true)));
+	m_Assemblers.insert(entry("dcpu16studio", new Assembler(false, false, true, false, false, false, false)));
 }
 
 // Gets a reference to an assembler by it's name.

@@ -136,6 +136,11 @@ void pp_base(FILE* in, FILE* out)
 			// Check to see what the preprocessor directive is.
 			if (strsw(line, "INCLUDE"))
 				pp_include(line, in, out);
+			else
+			{
+				fputc('.', out);
+				fputs(line, out);
+			}
 			fputc('\n', out);
 			
 			// Reset variables.

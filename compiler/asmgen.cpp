@@ -57,6 +57,12 @@ StackFrame* AsmGenerator::generateStackFrame(NFunctionDeclaration* function, boo
 {
 	StackFrame::StackMap map;
 
+	// This function can not be called on functions with no body (because
+	// that means they were an import and hence have no information
+	// about the variables).
+	if (function->block == NULL)
+		throw new CompilerException("Can not generate a stack frame for a function declaration with no body.");
+
 	// Add stack frame data for arguments.
 	for (VariableList::const_iterator i = function->arguments.begin(); i != function->arguments.end(); i++)		
 	{
@@ -67,7 +73,7 @@ StackFrame* AsmGenerator::generateStackFrame(NFunctionDeclaration* function, boo
 	}
 
 	// Add stack frame data for variable declarations.
-	for (StatementList::iterator i = function->block.statements.begin(); i != function->block.statements.end(); i++)
+	for (StatementList::iterator i = function->block->statements.begin(); i != function->block->statements.end(); i++)
 	{
 		if ((*i)->cType == "statement-declaration-variable")
 		{

@@ -52,6 +52,14 @@ public:
 	// memory addresses using the 'a' notation.
 	bool supportsDirectCharacters;
 
+	// Whether the assembler supports intermediate output and
+	// the .IMPORT directive.
+	bool supportsLinkedImportDirective;
+
+	// Whether the assembler supports intermediate output and
+	// the .EXPORT directive.
+	bool supportsLinkedExportDirective;
+
 private:
 	// Things to make the assembler list work.  If you're adding
 	// a new assembler definition, look inside "asmtypes.cpp".
@@ -63,12 +71,16 @@ private:
 		bool supportsDataSections,
 		bool supportsDataInstruction,
 		bool supportsReorderedAddresses,
-		bool supportsDirectCharacters
+		bool supportsDirectCharacters,
+		bool supportsLinkedImportDirective,
+		bool supportsLinkedExportDirective
 		) : supportsSafetyBoundary(supportsSafetyBoundary),
 			supportsDataSections(supportsDataSections),
 			supportsDataInstruction(supportsDataInstruction),
 			supportsReorderedAddresses(supportsReorderedAddresses),
-			supportsDirectCharacters(supportsDirectCharacters) { };
+			supportsDirectCharacters(supportsDirectCharacters),
+			supportsLinkedImportDirective(supportsLinkedImportDirective),
+			supportsLinkedExportDirective(supportsLinkedExportDirective) { };
 };
 
 #endif

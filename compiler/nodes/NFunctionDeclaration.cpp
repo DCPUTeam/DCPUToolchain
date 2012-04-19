@@ -15,7 +15,7 @@
 #include "NFunctionDeclaration.h"
 #include "NFunctionSignature.h"
 
-NFunctionDeclaration::NFunctionDeclaration(const NType& type, const NIdentifier& id, const VariableList& arguments, NBlock& block)
+NFunctionDeclaration::NFunctionDeclaration(const NType& type, const NIdentifier& id, const VariableList& arguments, NBlock* block)
 	: id(id), block(block), pointerType(NULL), NDeclaration("function"), NFunctionSignature(type, arguments)
 {
 	// We need to generate an NFunctionPointerType for when we are resolved
@@ -32,6 +32,17 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
 
+	// If this function does not have a code block, then we assume 
+	// this function will be imported at some stage.
+	if (this->block == NULL)
+	{
+		if (context.getAssembler().supportsLinkedImportDirective)
+			*block <<  ".IMPORT cfunc_" << this->id.name << std::endl;
+		else
+			throw new CompilerException("Can't declare a function with no body without linker support in the target assembler.");
+		return block;
+	}
+
 	// Output a safety boundary if the assembler supports
 	// it and we want to output in debug mode.
 	if (context.isAssemblerDebug())
@@ -41,6 +52,11 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 		else if (context.getAssembler().supportsDataInstruction)
 			*block << "DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0" << std::endl;
 	}
+
+	// If the assembler supports exporting symbols, automatically
+	// export this function.
+	if (context.getAssembler().supportsLinkedExportDirective)
+		*block <<  ".EXPORT cfunc_" << this->id.name << std::endl;
 
 	// Calculate total stack space required.
 	StackFrame* frame = context.generateStackFrame(this, false);
@@ -52,7 +68,7 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 	*block <<  ":cfunc_" << this->id.name << "_actual" << std::endl;
 
 	// Now compile the block.
-	AsmBlock* iblock = this->block.compile(context);
+	AsmBlock* iblock = this->block->compile(context);
 	*block << *iblock;
 	delete iblock;
 

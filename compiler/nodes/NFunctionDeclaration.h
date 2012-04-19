@@ -24,9 +24,9 @@ class NFunctionDeclaration : public NDeclaration, public NFunctionSignature
 {
 public:
 	const NIdentifier& id;
-	NBlock& block;
+	NBlock* block;
 	NFunctionPointerType* pointerType;
-	NFunctionDeclaration(const NType& type, const NIdentifier& id, const VariableList& arguments, NBlock& block);
+	NFunctionDeclaration(const NType& type, const NIdentifier& id, const VariableList& arguments, NBlock* block);
 	~NFunctionDeclaration();
 	virtual AsmBlock* compile(AsmGenerator& context);
 	virtual AsmBlock* reference(AsmGenerator& context);

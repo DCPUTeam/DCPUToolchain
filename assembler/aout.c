@@ -244,15 +244,13 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 					// Adjust memory address.
 					mem_index = current_inner->opcode;
 				}
-				else if (current_inner->type == AOUT_TYPE_METADATA_IMPORT)
+				else if (current_inner->type == AOUT_TYPE_METADATA_IMPORT && current_outer->type == AOUT_TYPE_NORMAL)
 				{
 					// An imported label (we don't need to adjust
 					// memory index because the existance of this type
 					// of entry doesn't affect executable size).
 					if (!intermediate)
 						ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
-					if (current_outer->type != AOUT_TYPE_NORMAL)
-						ahalt(ERR_REEXPORT_NOT_PERMITTED, NULL);
 					if (strcmp(current_inner->label, current_outer->label_replace) == 0)
 					{
 						current_outer->raw = 0xFFFF; // We don't actually know our position yet;
