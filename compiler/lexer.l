@@ -18,7 +18,7 @@
 #include "node.h"
 #include "parser.hpp"
 
-unsigned int yylineno = 1;
+unsigned int yyclineno = 1;
 int yycolumn = 0;
 void count();
 void comment_line();
@@ -26,7 +26,7 @@ void comment();
 extern "C" int yywrap() { return 1; }
 char* trim_and_unescape(char* data, int mode);
 int check_type();
-int string_return = INITIAL;
+extern int string_return;
 
 #define HANDLE count()
 
@@ -60,12 +60,12 @@ int string_return = INITIAL;
 
 "__asm"					{ HANDLE; BEGIN(AT_ASM); }
 <AT_ASM>\{				{ HANDLE; BEGIN(IN_ASM_BLOCK); string_return = AT_ASM; }
-<AT_ASM>\n				{ yylineno++; }
+<AT_ASM>\n				{ yyclineno++; }
 <AT_ASM>[ \t]+			/* ignore whitespace */;
 <AT_ASM>[^\{]			{ HANDLE; return ERROR; }
 <IN_ASM_BLOCK>\}		{ HANDLE; BEGIN(INITIAL); string_return = INITIAL; }
 <IN_ASM_BLOCK>[^\}]*	{ HANDLE; yylval.string = new std::string(yytext); return ASSEMBLY; }
-<IN_ASM_BLOCK>\n		{ yylineno++; }
+<IN_ASM_BLOCK>\n		{ yyclineno++; }
 <IN_ASM_BLOCK>[ \t]+	/* ignore whitespace */;
 
 	/* Type keywords */
@@ -153,12 +153,14 @@ int string_return = INITIAL;
 
 	/* Comments and whitespace */
 
-\n						{ yylineno++; }
+\n						{ yyclineno++; }
 "//"					{ comment_line(); }
 "/*"					{ comment(); }
 [ \t]+                  /* ignore whitespace */;
 
 %%
+
+int string_return = INITIAL;
 
 void comment()
 {

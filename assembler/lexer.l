@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include "parser.h"
 
-unsigned int yylineno = 1;
+unsigned int yyalineno = 1;
 
 char* trim_and_unescape(char* data, int mode)
 {
@@ -76,7 +76,7 @@ L?\"(\\.|[^\\"])*\"			{ yylval.string = trim_and_unescape(strdup(yytext), 0); re
 \:							return COLON;
 \+							return ADD;
 
-\n							yylineno++; return NEWLINE;
+\n							yyalineno++; return NEWLINE;
 \;[^\r\n]*					/* ignore comments */;
 [ \t]+						/* ignore whitespace */;
 

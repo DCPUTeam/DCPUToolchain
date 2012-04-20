@@ -21,9 +21,13 @@
 
 // Boolean stuff.
 #ifndef __cplusplus
+#ifndef __GNUC__
 typedef uint8_t bool;
 #define true 1
 #define false 0
+#else
+#include <stdbool.h>
+#endif
 #endif
 
 // Value definitions

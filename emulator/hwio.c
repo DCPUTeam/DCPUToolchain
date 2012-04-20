@@ -25,6 +25,8 @@ TCOD_image_t char_image;
 int char_width, char_height;
 uint32_t char_addressable_width = 4;
 uint32_t char_addressable_height = 8;
+const TCOD_color_t color_white = { 255, 255, 255 };
+const TCOD_color_t color_black = { 0, 0, 0 };
 
 void vm_hw_io_update(vm_t* vm, uint16_t pos);
 
@@ -116,9 +118,9 @@ void vm_hw_io_update(vm_t* vm, uint16_t pos)
 					{
 						// If bit is true, write to the pixel white.
 						if (((val & (0x1 << (8 - y))) >> (8 - y)) == 0x1)
-							TCOD_image_put_pixel(char_image, (fx + x) * char_width / char_addressable_width + ax, (fy + y) * char_height / char_addressable_height + ay, TCOD_white);
+							TCOD_image_put_pixel(char_image, (fx + x) * char_width / char_addressable_width + ax, (fy + y) * char_height / char_addressable_height + ay, color_white);
 						else
-							TCOD_image_put_pixel(char_image, (fx + x) * char_width / char_addressable_width + ax, (fy + y) * char_height / char_addressable_height + ay, TCOD_black);
+							TCOD_image_put_pixel(char_image, (fx + x) * char_width / char_addressable_width + ax, (fy + y) * char_height / char_addressable_height + ay, color_black);
 					}
 				}
 			}
