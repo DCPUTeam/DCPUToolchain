@@ -80,10 +80,13 @@ class StackFrame
 public:
 	// Work-around for GNU C++; can't just typedef here as we need to provide
 	// an assignment operator so that we can use it inside std::vector.
-	class StackPair : public std::pair<std::string, NType&>
+	class StackPair
 	{
 	public:
-		StackPair(std::string key, NType& value) : std::pair<std::string, NType&>(key, value) { };
+		std::string first;
+		NType& second;
+
+		StackPair(std::string key, NType& value) : first(key), second(value) { };
 		inline StackPair& operator=(const StackPair& other)
 		{
 			throw new std::runtime_error("Attempt to use assignment operator on partial-const class NType (internal error)!");

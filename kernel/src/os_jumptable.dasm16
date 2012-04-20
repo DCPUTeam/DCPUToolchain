@@ -1,3 +1,0 @@
-; 0x42c jumptable
-:os_enterdone dat 0x1002
-:os_input dat 0x1004

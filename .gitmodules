@@ -1,0 +1,3 @@
+[submodule "kernel"]
+	path = kernel
+	url = git://github.com/jdiez17/0x42c.git
