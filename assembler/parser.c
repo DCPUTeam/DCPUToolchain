@@ -68,7 +68,7 @@
 /* Copy the first part of user declarations.  */
 
 /* Line 189 of yacc.c  */
-#line 1 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 1 "parser.y"
 
 	
 /**
@@ -110,7 +110,7 @@ int yywrap()
 
 
 /* Line 189 of yacc.c  */
-#line 114 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.c"
+#line 114 "parser.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -189,7 +189,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 43 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 43 "parser.y"
 
 	int number;
 	char* string;
@@ -207,7 +207,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 211 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.c"
+#line 211 "parser.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -219,7 +219,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 223 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.c"
+#line 223 "parser.c"
 
 #ifdef short
 # undef short
@@ -1452,7 +1452,7 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 84 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 84 "parser.y"
     {
 			ast_root.values = (yyvsp[(1) - (1)].lines);
 		}
@@ -1461,7 +1461,7 @@ yyreduce:
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 90 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 90 "parser.y"
     {
 			(yyval.lines) = malloc(sizeof(struct ast_node_lines));
 			(yyval.lines)->last = (yyvsp[(1) - (1)].line);
@@ -1471,7 +1471,7 @@ yyreduce:
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 95 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 95 "parser.y"
     {
 			if ((yyvsp[(2) - (2)].line) != NULL)
 			{
@@ -1495,7 +1495,7 @@ yyreduce:
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 115 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 115 "parser.y"
     {
 			(yyval.line) = NULL;
 		}
@@ -1504,7 +1504,7 @@ yyreduce:
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 119 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 119 "parser.y"
     {
 			(yyval.line) = NULL;
 		}
@@ -1513,7 +1513,7 @@ yyreduce:
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 123 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 123 "parser.y"
     {
 			(yyval.line) = malloc(sizeof(struct ast_node_line));
 			(yyval.line)->type = type_keyword;
@@ -1529,7 +1529,7 @@ yyreduce:
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 134 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 134 "parser.y"
     {
 			(yyval.line) = malloc(sizeof(struct ast_node_line));
 			(yyval.line)->type = type_keyword;
@@ -1545,7 +1545,7 @@ yyreduce:
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 145 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 145 "parser.y"
     {
 			(yyval.line) = malloc(sizeof(struct ast_node_line));
 			(yyval.line)->type = type_keyword;
@@ -1561,7 +1561,7 @@ yyreduce:
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 156 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 156 "parser.y"
     {
 			(yyval.line) = malloc(sizeof(struct ast_node_line));
 			(yyval.line)->type = type_keyword;
@@ -1577,7 +1577,7 @@ yyreduce:
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 167 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 167 "parser.y"
     {
 			(yyval.line) = malloc(sizeof(struct ast_node_line));
 			(yyval.line)->type = type_instruction;
@@ -1593,7 +1593,7 @@ yyreduce:
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 178 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 178 "parser.y"
     {
 			(yyval.line) = malloc(sizeof(struct ast_node_line));
 			(yyval.line)->type = type_label;
@@ -1609,7 +1609,7 @@ yyreduce:
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 189 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 189 "parser.y"
     {
 			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
 			lnode->type = type_label;
@@ -1634,7 +1634,7 @@ yyreduce:
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 209 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 209 "parser.y"
     {
 			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
 			lnode->type = type_label;
@@ -1659,7 +1659,7 @@ yyreduce:
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 229 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 229 "parser.y"
     {
 			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
 			lnode->type = type_label;
@@ -1684,7 +1684,7 @@ yyreduce:
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 249 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 249 "parser.y"
     {
 			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
 			lnode->type = type_label;
@@ -1709,7 +1709,7 @@ yyreduce:
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 269 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 269 "parser.y"
     {
 			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
 			lnode->type = type_label;
@@ -1734,7 +1734,7 @@ yyreduce:
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 291 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 291 "parser.y"
     {
 			(yyval.label) = malloc(sizeof(struct ast_node_label));
 			(yyval.label)->name = (yyvsp[(2) - (2)].string);
@@ -1744,7 +1744,7 @@ yyreduce:
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 298 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 298 "parser.y"
     {
 			(yyval.instruction) = malloc(sizeof(struct ast_node_instruction));
 			strupper((yyvsp[(1) - (2)].string));
@@ -1756,7 +1756,7 @@ yyreduce:
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 306 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 306 "parser.y"
     {
 			(yyval.parameters) = NULL;
 		}
@@ -1765,7 +1765,7 @@ yyreduce:
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 310 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 310 "parser.y"
     {
 			(yyval.parameters) = malloc(sizeof(struct ast_node_parameters));
 			(yyval.parameters)->last = (yyvsp[(1) - (1)].parameter);
@@ -1775,7 +1775,7 @@ yyreduce:
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 315 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 315 "parser.y"
     {
 			if ((yyvsp[(3) - (3)].parameter) != NULL)
 			{
@@ -1789,7 +1789,7 @@ yyreduce:
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 326 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 326 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_register;
@@ -1803,7 +1803,7 @@ yyreduce:
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 335 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 335 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_register;
@@ -1817,7 +1817,7 @@ yyreduce:
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 344 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 344 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_address;
@@ -1831,7 +1831,7 @@ yyreduce:
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 353 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 353 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_address;
@@ -1845,7 +1845,7 @@ yyreduce:
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 362 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 362 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_address;
@@ -1859,7 +1859,7 @@ yyreduce:
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 371 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 371 "parser.y"
     {
 			(yyval.parameter) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.parameter)->type = type_raw;
@@ -1873,7 +1873,7 @@ yyreduce:
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 382 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 382 "parser.y"
     {
 			(yyval.registr) = malloc(sizeof(struct ast_node_register));
 			(yyval.registr)->value = (yyvsp[(1) - (1)].string);
@@ -1884,7 +1884,7 @@ yyreduce:
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 390 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 390 "parser.y"
     {
 			(yyval.registr) = malloc(sizeof(struct ast_node_register));
 			(yyval.registr)->value = (yyvsp[(2) - (3)].string);
@@ -1895,7 +1895,7 @@ yyreduce:
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 398 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 398 "parser.y"
     {
 			(yyval.address) = malloc(sizeof(struct ast_node_address));
 			(yyval.address)->value = (yyvsp[(1) - (1)].number);
@@ -1908,7 +1908,7 @@ yyreduce:
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 406 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 406 "parser.y"
     {
 			(yyval.address) = malloc(sizeof(struct ast_node_parameter));
 			(yyval.address)->value = (uint16_t)((yyvsp[(1) - (1)].string)[0]);
@@ -1921,7 +1921,7 @@ yyreduce:
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 416 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 416 "parser.y"
     {
 			(yyval.address) = malloc(sizeof(struct ast_node_address));
 			(yyval.address)->value = (yyvsp[(2) - (3)].number);
@@ -1934,7 +1934,7 @@ yyreduce:
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 426 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 426 "parser.y"
     {
 			(yyval.address) = malloc(sizeof(struct ast_node_address));
 			(yyval.address)->value = (yyvsp[(2) - (5)].number);
@@ -1947,7 +1947,7 @@ yyreduce:
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 434 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 434 "parser.y"
     {
 			(yyval.address) = malloc(sizeof(struct ast_node_address));
 			(yyval.address)->value = (yyvsp[(4) - (5)].number);
@@ -1960,7 +1960,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1964 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.c"
+#line 1964 "parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

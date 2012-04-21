@@ -197,7 +197,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 41 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 41 "parser.y"
 
 	NBlock* block;
 	NExpression* expr;
@@ -220,7 +220,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 224 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.hpp"
+#line 224 "parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

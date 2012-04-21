@@ -1,6 +1,6 @@
-#line 2 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.c"
+#line 2 "lexer.c"
 
-#line 4 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.c"
+#line 4 "lexer.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -518,8 +518,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
-#line 2 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 1 "lexer.l"
+#line 2 "lexer.l"
 
 /**
 
@@ -570,7 +570,7 @@ char* trim_and_unescape(char* data, int mode)
 	return result;
 }
 
-#line 574 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.c"
+#line 574 "lexer.c"
 
 #define INITIAL 0
 
@@ -757,12 +757,12 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 54 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 54 "lexer.l"
 
 
 	/* Assembler keywords */
 
-#line 766 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.c"
+#line 766 "lexer.c"
 
 	if ( !(yy_init) )
 		{
@@ -847,114 +847,114 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 58 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 58 "lexer.l"
 yylval.number = BOUNDARY; return KEYWORD;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 59 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 59 "lexer.l"
 yylval.number = EXTENSION; return KEYWORD;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 60 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 60 "lexer.l"
 yylval.number = ORIGIN; return KEYWORD;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 61 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 61 "lexer.l"
 yylval.number = ORIGIN; return KEYWORD;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 62 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 62 "lexer.l"
 yylval.number = INCBIN; return KEYWORD;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 63 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 63 "lexer.l"
 yylval.number = EXPORT; return KEYWORD;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 64 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 64 "lexer.l"
 yylval.number = IMPORT; return KEYWORD;
 	YY_BREAK
 /* General stuff */
 case 8:
 YY_RULE_SETUP
-#line 68 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 68 "lexer.l"
 yylval.string = strdup(yytext); return WORD;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 69 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 69 "lexer.l"
 yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 70 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 70 "lexer.l"
 yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 71 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 71 "lexer.l"
 { yylval.string = trim_and_unescape(strdup(yytext), 1); return CHARACTER; }
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 72 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 72 "lexer.l"
 { yylval.string = trim_and_unescape(strdup(yytext), 0); return STRING; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 73 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 73 "lexer.l"
 return COMMA;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 74 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 74 "lexer.l"
 return BRACKET_OPEN;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 75 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 75 "lexer.l"
 return BRACKET_CLOSE;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 76 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 76 "lexer.l"
 return COLON;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 77 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 77 "lexer.l"
 return ADD;
 	YY_BREAK
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 79 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 79 "lexer.l"
 yyalineno++; return NEWLINE;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 80 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 80 "lexer.l"
 /* ignore comments */;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 81 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 81 "lexer.l"
 /* ignore whitespace */;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 83 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 83 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 958 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.c"
+#line 958 "lexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1952,7 +1952,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 83 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 83 "lexer.l"
 
 
 

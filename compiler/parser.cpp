@@ -68,7 +68,7 @@
 /* Copy the first part of user declarations.  */
 
 /* Line 189 of yacc.c  */
-#line 1 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 1 "parser.y"
 
 	
 /**
@@ -110,7 +110,7 @@ void yyerror(const char* msg)
 
 
 /* Line 189 of yacc.c  */
-#line 114 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.cpp"
+#line 114 "parser.cpp"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -295,7 +295,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 41 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 41 "parser.y"
 
 	NBlock* block;
 	NExpression* expr;
@@ -318,7 +318,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 322 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.cpp"
+#line 322 "parser.cpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -330,7 +330,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 334 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.cpp"
+#line 334 "parser.cpp"
 
 #ifdef short
 # undef short
@@ -1837,7 +1837,7 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 127 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 127 "parser.y"
     {
 			program = (yyvsp[(1) - (1)].decls);
 			(yyval.decls) = (yyvsp[(1) - (1)].decls);
@@ -1847,7 +1847,7 @@ yyreduce:
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 134 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 134 "parser.y"
     {
 			(yyval.decls) = new NDeclarations();
 			(yyval.decls)->definitions.push_back((yyvsp[(1) - (1)].function));
@@ -1857,7 +1857,7 @@ yyreduce:
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 139 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 139 "parser.y"
     {
 			(yyval.decls) = new NDeclarations();
 			(yyval.decls)->definitions.push_back((yyvsp[(1) - (1)].structure));
@@ -1867,7 +1867,7 @@ yyreduce:
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 144 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 144 "parser.y"
     {
 			(yyval.decls) = new NDeclarations();
 			(yyval.decls)->definitions.push_back((yyvsp[(1) - (2)].variable));
@@ -1877,7 +1877,7 @@ yyreduce:
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 149 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 149 "parser.y"
     {
 			(yyvsp[(1) - (2)].decls)->definitions.push_back((yyvsp[(2) - (2)].function));
 		}
@@ -1886,7 +1886,7 @@ yyreduce:
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 153 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 153 "parser.y"
     {
 			(yyvsp[(1) - (2)].decls)->definitions.push_back((yyvsp[(2) - (2)].structure));
 		}
@@ -1895,7 +1895,7 @@ yyreduce:
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 157 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 157 "parser.y"
     {
 			(yyvsp[(1) - (3)].decls)->definitions.push_back((yyvsp[(2) - (3)].variable));
 		}
@@ -1904,7 +1904,7 @@ yyreduce:
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 163 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 163 "parser.y"
     {
 			(yyval.function) = new NFunctionDeclaration(*(yyvsp[(1) - (6)].type), *(yyvsp[(2) - (6)].ident), *(yyvsp[(4) - (6)].varvec), (yyvsp[(6) - (6)].block));
 			//delete $4;
@@ -1914,7 +1914,7 @@ yyreduce:
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 168 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 168 "parser.y"
     {
 			(yyval.function) = new NFunctionDeclaration(*(yyvsp[(1) - (6)].type), *(yyvsp[(2) - (6)].ident), *(yyvsp[(4) - (6)].varvec), NULL);
 			//delete $4;
@@ -1924,7 +1924,7 @@ yyreduce:
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 175 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 175 "parser.y"
     {
 			(yyval.varvec) = new VariableList();
 		}
@@ -1933,7 +1933,7 @@ yyreduce:
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 179 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 179 "parser.y"
     {
 			(yyval.varvec) = new VariableList();
 			(yyval.varvec)->push_back((yyvsp[(1) - (1)].variable));
@@ -1943,7 +1943,7 @@ yyreduce:
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 184 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 184 "parser.y"
     {
 			(yyvsp[(1) - (3)].varvec)->push_back((yyvsp[(3) - (3)].variable));
 		}
@@ -1952,7 +1952,7 @@ yyreduce:
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 190 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 190 "parser.y"
     {
 			(yyval.structure) = new NStructureDeclaration(*(yyvsp[(2) - (7)].ident), *(yyvsp[(4) - (7)].varvec));
 			//delete $4;
@@ -1962,7 +1962,7 @@ yyreduce:
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 195 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 195 "parser.y"
     {
 			(yyval.structure) = new NStructureDeclaration(*(yyvsp[(2) - (5)].ident), *(new VariableList()));
 			//delete $4;
@@ -1972,7 +1972,7 @@ yyreduce:
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 202 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 202 "parser.y"
     {
 			(yyval.varvec) = new VariableList();
 		}
@@ -1981,7 +1981,7 @@ yyreduce:
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 206 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 206 "parser.y"
     {
 			(yyval.varvec) = new VariableList();
 			(yyval.varvec)->push_back((yyvsp[(1) - (1)].variable));
@@ -1991,7 +1991,7 @@ yyreduce:
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 211 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 211 "parser.y"
     {
 			(yyvsp[(1) - (3)].varvec)->push_back((yyvsp[(3) - (3)].variable));
 		}
@@ -2000,7 +2000,7 @@ yyreduce:
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 217 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 217 "parser.y"
     {
 			(yyval.variable) = new NVariableDeclaration(*(yyvsp[(1) - (2)].type), *(yyvsp[(2) - (2)].ident));
 		}
@@ -2009,7 +2009,7 @@ yyreduce:
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 221 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 221 "parser.y"
     {
 			(yyval.variable) = new NVariableDeclaration(*(yyvsp[(1) - (4)].type), *(yyvsp[(2) - (4)].ident), (yyvsp[(4) - (4)].expr));
 		}
@@ -2018,7 +2018,7 @@ yyreduce:
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 225 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 225 "parser.y"
     {
 			(yyval.variable) = new NVariableDeclaration(*(new NFunctionPointerType(*(yyvsp[(1) - (8)].type), *(yyvsp[(7) - (8)].varvec))) /* TODO: free this memory */, *(yyvsp[(4) - (8)].ident));
 		}
@@ -2027,7 +2027,7 @@ yyreduce:
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 229 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 229 "parser.y"
     {
 			(yyval.variable) = new NVariableDeclaration(*(new NFunctionPointerType(*(yyvsp[(1) - (10)].type), *(yyvsp[(7) - (10)].varvec))) /* TODO: free this memory */, *(yyvsp[(4) - (10)].ident), (yyvsp[(10) - (10)].expr));
 		}
@@ -2036,7 +2036,7 @@ yyreduce:
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 235 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 235 "parser.y"
     {
 			(yyval.ident) = new NIdentifier(*(yyvsp[(1) - (1)].string));
 			delete (yyvsp[(1) - (1)].string);
@@ -2046,7 +2046,7 @@ yyreduce:
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 242 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 242 "parser.y"
     {
 			(yyval.type) = new NType((yyvsp[(1) - (1)].type)->name, 0, false);
 			delete (yyvsp[(1) - (1)].ident);
@@ -2056,7 +2056,7 @@ yyreduce:
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 247 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 247 "parser.y"
     {
 			(yyval.type) = new NType((yyvsp[(2) - (2)].type)->name, 0, true);
 			delete (yyvsp[(2) - (2)].ident);
@@ -2066,7 +2066,7 @@ yyreduce:
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 252 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 252 "parser.y"
     {
 			(yyval.type) = new NType((yyvsp[(1) - (2)].type)->name, 1, false);
 			delete (yyvsp[(1) - (2)].ident);
@@ -2076,7 +2076,7 @@ yyreduce:
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 257 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 257 "parser.y"
     {
 			(yyval.type) = new NType((yyvsp[(2) - (3)].type)->name, 1, true);
 			delete (yyvsp[(2) - (3)].ident);
@@ -2086,7 +2086,7 @@ yyreduce:
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 262 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 262 "parser.y"
     {
 			(yyval.type) = new NType((yyvsp[(1) - (2)].type)->name, (yyvsp[(1) - (2)].type)->pointerCount + 1, (yyvsp[(1) - (2)].type)->isStruct);
 			delete (yyvsp[(1) - (2)].type);
@@ -2096,7 +2096,7 @@ yyreduce:
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 269 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 269 "parser.y"
     {
 			(yyval.block) = (yyvsp[(2) - (3)].block);
 		}
@@ -2105,7 +2105,7 @@ yyreduce:
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 273 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 273 "parser.y"
     {
 			(yyval.block) = new NBlock();
 		}
@@ -2114,7 +2114,7 @@ yyreduce:
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 279 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 279 "parser.y"
     {
 			(yyval.block) = new NBlock();
 			(yyval.block)->statements.push_back((yyvsp[(1) - (1)].stmt));
@@ -2124,7 +2124,7 @@ yyreduce:
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 284 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 284 "parser.y"
     {
 			(yyvsp[(1) - (2)].block)->statements.push_back((yyvsp[(2) - (2)].stmt));
 		}
@@ -2133,7 +2133,7 @@ yyreduce:
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 290 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 290 "parser.y"
     {
 			(yyval.stmt) = (yyvsp[(1) - (2)].variable);
 		}
@@ -2142,7 +2142,7 @@ yyreduce:
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 300 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 300 "parser.y"
     {
 			(yyval.stmt) = new NExpressionStatement(*(yyvsp[(1) - (2)].expr));
 		}
@@ -2151,7 +2151,7 @@ yyreduce:
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 306 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 306 "parser.y"
     {
 			(yyval.block) = new NBlock();
 			(yyval.block)->statements.push_back((yyvsp[(1) - (1)].stmt));
@@ -2161,7 +2161,7 @@ yyreduce:
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 311 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 311 "parser.y"
     {
 			(yyval.block) = (yyvsp[(1) - (1)].block);
 		}
@@ -2170,7 +2170,7 @@ yyreduce:
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 317 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 317 "parser.y"
     {
 			(yyval.stmt) = new NIfStatement(*(yyvsp[(3) - (7)].expr), *(yyvsp[(5) - (7)].block), (yyvsp[(7) - (7)].block));
 		}
@@ -2179,7 +2179,7 @@ yyreduce:
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 321 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 321 "parser.y"
     {
 			(yyval.stmt) = new NIfStatement(*(yyvsp[(3) - (5)].expr), *(yyvsp[(5) - (5)].block));
 		}
@@ -2188,7 +2188,7 @@ yyreduce:
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 327 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 327 "parser.y"
     {
 			(yyval.stmt) = new NReturnStatement(*(yyvsp[(2) - (3)].expr));
 		}
@@ -2197,7 +2197,7 @@ yyreduce:
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 333 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 333 "parser.y"
     {
 			(yyval.stmt) = new NDebugStatement(*(yyvsp[(2) - (3)].expr));
 		}
@@ -2206,7 +2206,7 @@ yyreduce:
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 339 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 339 "parser.y"
     {
 			(yyval.stmt) = new NWhileStatement(*(yyvsp[(3) - (5)].expr), *(yyvsp[(5) - (5)].block));
 		}
@@ -2215,7 +2215,7 @@ yyreduce:
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 345 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 345 "parser.y"
     {
 			(yyval.stmt) = new NForStatement(*(yyvsp[(3) - (9)].expr), *(yyvsp[(5) - (9)].expr), *(yyvsp[(7) - (9)].expr), *(yyvsp[(9) - (9)].block));
 		}
@@ -2224,7 +2224,7 @@ yyreduce:
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 351 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 351 "parser.y"
     {
 			(yyval.stmt) = new NAssemblyStatement(*(yyvsp[(1) - (1)].string));
 			delete (yyvsp[(1) - (1)].string);
@@ -2234,7 +2234,7 @@ yyreduce:
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 358 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 358 "parser.y"
     {
 			(yyval.expr) = new NStructureResolutionOperator(*(yyvsp[(1) - (3)].expr), *(yyvsp[(3) - (3)].ident), false);
 		}
@@ -2243,7 +2243,7 @@ yyreduce:
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 362 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 362 "parser.y"
     {
 			if ((yyvsp[(1) - (3)].expr)->cType == "expression-field") // We can't accept NAssignments as the fldref in this case.
 				(yyval.expr) = new NAssignment(*(yyvsp[(1) - (3)].expr), (yyvsp[(2) - (3)].token), *(yyvsp[(3) - (3)].expr));
@@ -2255,7 +2255,7 @@ yyreduce:
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 371 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 371 "parser.y"
     {
 			(yyval.expr) = new NDereferenceOperator(*(yyvsp[(2) - (2)].ident));
 		}
@@ -2264,7 +2264,7 @@ yyreduce:
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 375 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 375 "parser.y"
     {
 			(yyval.expr) = new NDereferenceOperator(*(yyvsp[(2) - (2)].expr));
 		}
@@ -2273,7 +2273,7 @@ yyreduce:
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 379 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 379 "parser.y"
     {
 			(yyval.expr) = new NDereferenceOperator(*(yyvsp[(3) - (4)].expr));
 		}
@@ -2282,7 +2282,7 @@ yyreduce:
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 383 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 383 "parser.y"
     {
 			if ((yyvsp[(1) - (3)].expr)->cType == "expression-dereference") // We can't accept NAssignments as the deref in this case.
 				(yyval.expr) = new NAssignment(*(yyvsp[(1) - (3)].expr), (yyvsp[(2) - (3)].token), *(yyvsp[(3) - (3)].expr));
@@ -2294,7 +2294,7 @@ yyreduce:
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 392 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 392 "parser.y"
     {
 			(yyval.expr) = new NAssignment(*(yyvsp[(1) - (3)].ident), (yyvsp[(2) - (3)].token), *(yyvsp[(3) - (3)].expr));
 		}
@@ -2303,7 +2303,7 @@ yyreduce:
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 396 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 396 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].expr);
 		}
@@ -2312,7 +2312,7 @@ yyreduce:
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 400 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 400 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].expr);
 		}
@@ -2321,7 +2321,7 @@ yyreduce:
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 404 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 404 "parser.y"
     {
 			(yyval.expr) = new NMethodCall(*(yyvsp[(1) - (4)].ident), *(yyvsp[(3) - (4)].exprvec));
 			delete (yyvsp[(3) - (4)].exprvec);
@@ -2331,7 +2331,7 @@ yyreduce:
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 409 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 409 "parser.y"
     {
 			(yyval.ident) = (yyvsp[(1) - (1)].ident);
 		}
@@ -2340,7 +2340,7 @@ yyreduce:
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 413 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 413 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].expr);
 		}
@@ -2349,7 +2349,7 @@ yyreduce:
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 417 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 417 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].expr);
 		}
@@ -2358,7 +2358,7 @@ yyreduce:
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 421 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 421 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].expr);
 		}
@@ -2367,7 +2367,7 @@ yyreduce:
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 429 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 429 "parser.y"
     {
 			(yyval.expr) = new NBinaryOperator(*(yyvsp[(1) - (3)].expr), (yyvsp[(2) - (3)].token), *(yyvsp[(3) - (3)].expr));
 		}
@@ -2376,7 +2376,7 @@ yyreduce:
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 433 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 433 "parser.y"
     {
 			(yyval.expr) = new NAddressOfOperator(*(yyvsp[(2) - (2)].expr));
 		}
@@ -2385,7 +2385,7 @@ yyreduce:
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 437 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 437 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(2) - (3)].expr);
 		}
@@ -2394,7 +2394,7 @@ yyreduce:
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 443 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 443 "parser.y"
     {
 			(yyval.expr) = (yyvsp[(1) - (1)].ident);
 		}
@@ -2403,7 +2403,7 @@ yyreduce:
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 447 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 447 "parser.y"
     {
 			(yyval.expr) = new NStructureResolutionOperator(*(yyvsp[(1) - (3)].expr), *(yyvsp[(3) - (3)].ident), false);
 		}
@@ -2412,7 +2412,7 @@ yyreduce:
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 451 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 451 "parser.y"
     {
 			(yyval.expr) = new NDereferenceOperator(*(yyvsp[(2) - (2)].expr));
 		}
@@ -2421,7 +2421,7 @@ yyreduce:
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 457 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 457 "parser.y"
     {
 			(yyval.expr) = new NInteger((yyvsp[(1) - (1)].number));
 		}
@@ -2430,7 +2430,7 @@ yyreduce:
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 461 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 461 "parser.y"
     {
 			(yyval.expr) = new NInteger(1);
 		}
@@ -2439,7 +2439,7 @@ yyreduce:
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 465 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 465 "parser.y"
     {
 			(yyval.expr) = new NInteger(0);
 		}
@@ -2448,7 +2448,7 @@ yyreduce:
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 469 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 469 "parser.y"
     {
 			(yyval.expr) = new NSizeOfOperator(*(yyvsp[(3) - (4)].type));
 		}
@@ -2457,7 +2457,7 @@ yyreduce:
   case 74:
 
 /* Line 1455 of yacc.c  */
-#line 475 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 475 "parser.y"
     {
 			(yyval.expr) = new NCharacter(*(yyvsp[(1) - (1)].string));
 			delete (yyvsp[(1) - (1)].string);
@@ -2467,7 +2467,7 @@ yyreduce:
   case 75:
 
 /* Line 1455 of yacc.c  */
-#line 482 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 482 "parser.y"
     {
 			(yyval.expr) = new NString(*(yyvsp[(1) - (1)].string));
 			delete (yyvsp[(1) - (1)].string);
@@ -2477,7 +2477,7 @@ yyreduce:
   case 76:
 
 /* Line 1455 of yacc.c  */
-#line 489 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 489 "parser.y"
     {
 			(yyval.exprvec) = new ExpressionList();
 		}
@@ -2486,7 +2486,7 @@ yyreduce:
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 493 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 493 "parser.y"
     {
 			(yyval.exprvec) = new ExpressionList();
 			(yyval.exprvec)->push_back((yyvsp[(1) - (1)].expr));
@@ -2496,7 +2496,7 @@ yyreduce:
   case 78:
 
 /* Line 1455 of yacc.c  */
-#line 498 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 498 "parser.y"
     {
 			(yyvsp[(1) - (3)].exprvec)->push_back((yyvsp[(3) - (3)].expr));
 		}
@@ -2505,7 +2505,7 @@ yyreduce:
   case 102:
 
 /* Line 1455 of yacc.c  */
-#line 531 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 531 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("void");
 		}
@@ -2514,7 +2514,7 @@ yyreduce:
   case 103:
 
 /* Line 1455 of yacc.c  */
-#line 535 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 535 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("char");
 		}
@@ -2523,7 +2523,7 @@ yyreduce:
   case 104:
 
 /* Line 1455 of yacc.c  */
-#line 539 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 539 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("byte");
 		}
@@ -2532,7 +2532,7 @@ yyreduce:
   case 105:
 
 /* Line 1455 of yacc.c  */
-#line 543 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 543 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("int");
 		}
@@ -2541,7 +2541,7 @@ yyreduce:
   case 106:
 
 /* Line 1455 of yacc.c  */
-#line 547 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 547 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("long");
 		}
@@ -2550,7 +2550,7 @@ yyreduce:
   case 107:
 
 /* Line 1455 of yacc.c  */
-#line 551 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 551 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("int8_t");
 		}
@@ -2559,7 +2559,7 @@ yyreduce:
   case 108:
 
 /* Line 1455 of yacc.c  */
-#line 555 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 555 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("int16_t");
 		}
@@ -2568,7 +2568,7 @@ yyreduce:
   case 109:
 
 /* Line 1455 of yacc.c  */
-#line 559 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 559 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("int32_t");
 		}
@@ -2577,7 +2577,7 @@ yyreduce:
   case 110:
 
 /* Line 1455 of yacc.c  */
-#line 563 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 563 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("int64_t");
 		}
@@ -2586,7 +2586,7 @@ yyreduce:
   case 111:
 
 /* Line 1455 of yacc.c  */
-#line 567 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 567 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("uint8_t");
 		}
@@ -2595,7 +2595,7 @@ yyreduce:
   case 112:
 
 /* Line 1455 of yacc.c  */
-#line 571 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 571 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("uint16_t");
 		}
@@ -2604,7 +2604,7 @@ yyreduce:
   case 113:
 
 /* Line 1455 of yacc.c  */
-#line 575 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 575 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("uint32_t");
 		}
@@ -2613,7 +2613,7 @@ yyreduce:
   case 114:
 
 /* Line 1455 of yacc.c  */
-#line 579 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.y"
+#line 579 "parser.y"
     {
 			(yyval.ident) = new NIdentifier("uint64_t");
 		}
@@ -2622,7 +2622,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 2626 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/parser.cpp"
+#line 2626 "parser.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

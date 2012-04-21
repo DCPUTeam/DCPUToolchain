@@ -91,7 +91,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 43 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.y"
+#line 43 "parser.y"
 
 	int number;
 	char* string;
@@ -109,7 +109,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 113 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/parser.h"
+#line 113 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

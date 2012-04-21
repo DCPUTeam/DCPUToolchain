@@ -1,6 +1,6 @@
-#line 2 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.cpp"
+#line 2 "lexer.cpp"
 
-#line 4 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.cpp"
+#line 4 "lexer.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -622,8 +622,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
-#line 2 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 1 "lexer.l"
+#line 2 "lexer.l"
 
 /**
 
@@ -659,7 +659,7 @@ extern int string_return;
 
 
 
-#line 663 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.cpp"
+#line 663 "lexer.cpp"
 
 #define INITIAL 0
 #define IN_CHAR 1
@@ -850,12 +850,12 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 40 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 40 "lexer.l"
 
 
 	/* Constants */
 	
-#line 859 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.cpp"
+#line 859 "lexer.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -940,503 +940,503 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 44 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 44 "lexer.l"
 { HANDLE; return TRUE; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 45 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 45 "lexer.l"
 { HANDLE; return FALSE; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 46 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 46 "lexer.l"
 { HANDLE; return FALSE; }
 	YY_BREAK
 /* Statement keywords */
 case 4:
 YY_RULE_SETUP
-#line 50 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 50 "lexer.l"
 { HANDLE; return RETURN; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 51 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 51 "lexer.l"
 { HANDLE; return IF; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 52 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 52 "lexer.l"
 { HANDLE; return ELSE; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 53 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 53 "lexer.l"
 { HANDLE; return WHILE; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 54 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 54 "lexer.l"
 { HANDLE; return FOR; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 55 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 55 "lexer.l"
 { HANDLE; return DEBUG; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 56 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 56 "lexer.l"
 { HANDLE; return STRUCT; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 57 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 57 "lexer.l"
 { HANDLE; return SIZEOF; }
 	YY_BREAK
 /* Inline assembly */
 case 12:
 YY_RULE_SETUP
-#line 61 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 61 "lexer.l"
 { HANDLE; BEGIN(AT_ASM); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 62 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 62 "lexer.l"
 { HANDLE; BEGIN(IN_ASM_BLOCK); string_return = AT_ASM; }
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-#line 63 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 63 "lexer.l"
 { yyclineno++; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 64 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 64 "lexer.l"
 /* ignore whitespace */;
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
-#line 65 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 65 "lexer.l"
 { HANDLE; return ERROR; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 66 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 66 "lexer.l"
 { HANDLE; BEGIN(INITIAL); string_return = INITIAL; }
 	YY_BREAK
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 67 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 67 "lexer.l"
 { HANDLE; yylval.string = new std::string(yytext); return ASSEMBLY; }
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 68 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 68 "lexer.l"
 { yyclineno++; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 69 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 69 "lexer.l"
 /* ignore whitespace */;
 	YY_BREAK
 /* Type keywords */
 case 21:
 YY_RULE_SETUP
-#line 73 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 73 "lexer.l"
 { HANDLE; return TYPE_VOID; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 74 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 74 "lexer.l"
 { HANDLE; return TYPE_CHAR; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 75 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 75 "lexer.l"
 { HANDLE; return TYPE_BYTE; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 76 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 76 "lexer.l"
 { HANDLE; return TYPE_INT; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 77 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 77 "lexer.l"
 { HANDLE; return TYPE_LONG; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 78 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 78 "lexer.l"
 { HANDLE; return TYPE_INT8_T; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 79 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 79 "lexer.l"
 { HANDLE; return TYPE_INT16_T; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 80 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 80 "lexer.l"
 { HANDLE; return TYPE_INT32_T; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 81 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 81 "lexer.l"
 { HANDLE; return TYPE_INT64_T; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 82 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 82 "lexer.l"
 { HANDLE; return TYPE_UINT8_T; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 83 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 83 "lexer.l"
 { HANDLE; return TYPE_UINT16_T; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 84 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 84 "lexer.l"
 { HANDLE; return TYPE_UINT32_T; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 85 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 85 "lexer.l"
 { HANDLE; return TYPE_UINT64_T; }
 	YY_BREAK
 /* String and character analysis */
 case 34:
 YY_RULE_SETUP
-#line 89 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 89 "lexer.l"
 { HANDLE; yylval.string = new std::string(); BEGIN(IN_CHAR); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 90 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 90 "lexer.l"
 { HANDLE; yylval.string = new std::string(); BEGIN(IN_STRING); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 91 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 91 "lexer.l"
 { HANDLE; BEGIN(string_return); return CHARACTER; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 92 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 92 "lexer.l"
 { HANDLE; BEGIN(string_return); return STRING; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 93 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 93 "lexer.l"
 { HANDLE; *yylval.string += '\a'; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 94 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 94 "lexer.l"
 { HANDLE; *yylval.string += '\b'; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 95 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 95 "lexer.l"
 { HANDLE; *yylval.string += '\f'; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 96 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 96 "lexer.l"
 { HANDLE; *yylval.string += '\n'; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 97 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 97 "lexer.l"
 { HANDLE; *yylval.string += '\r'; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 98 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 98 "lexer.l"
 { HANDLE; *yylval.string += '\t'; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 99 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 99 "lexer.l"
 { HANDLE; *yylval.string += '\v'; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 100 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 100 "lexer.l"
 { HANDLE; *yylval.string += '\''; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 101 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 101 "lexer.l"
 { HANDLE; *yylval.string += '\"'; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 102 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 102 "lexer.l"
 { HANDLE; *yylval.string += '\\'; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 103 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 103 "lexer.l"
 { HANDLE; *yylval.string += '\?'; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 104 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 104 "lexer.l"
 { HANDLE; *yylval.string += strtoul(yytext + 1, NULL, 8); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 105 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 105 "lexer.l"
 { HANDLE; *yylval.string += strtoul(yytext + 2, NULL, 16); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 106 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 106 "lexer.l"
 { HANDLE; return ERROR; }
 	YY_BREAK
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
-#line 107 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 107 "lexer.l"
 { HANDLE; *yylval.string += yytext[1]; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 108 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 108 "lexer.l"
 { HANDLE; *yylval.string += yytext; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 109 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 109 "lexer.l"
 { HANDLE; *yylval.string += yytext; }
 	YY_BREAK
 /* Identifiers, numbers and basic lexical components */
 case 55:
 YY_RULE_SETUP
-#line 113 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 113 "lexer.l"
 { HANDLE; yylval.string = new std::string(yytext); return check_type(); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 114 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 114 "lexer.l"
 { HANDLE; yylval.number = strtoul(yytext, NULL, 16); return NUMBER; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 115 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 115 "lexer.l"
 { HANDLE; yylval.number = strtoul(yytext, NULL, 10); return NUMBER; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 116 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 116 "lexer.l"
 { HANDLE; yylval.number = strtoul(yytext, NULL, 8); return NUMBER; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 117 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 117 "lexer.l"
 { HANDLE; yylval.number = strtoul(yytext, NULL, 2); return NUMBER; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 118 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 118 "lexer.l"
 { HANDLE; return yylval.token = CURVED_OPEN; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 119 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 119 "lexer.l"
 { HANDLE; return yylval.token = CURVED_CLOSE; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 120 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 120 "lexer.l"
 { HANDLE; return yylval.token = BRACE_OPEN; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 121 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 121 "lexer.l"
 { HANDLE; return yylval.token = BRACE_CLOSE; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 122 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 122 "lexer.l"
 { HANDLE; return yylval.token = COMMA; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 123 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 123 "lexer.l"
 { HANDLE; return yylval.token = STAR; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 124 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 124 "lexer.l"
 { HANDLE; return yylval.token = SEMICOLON; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 125 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 125 "lexer.l"
 { HANDLE; return yylval.token = DOT; }
 	YY_BREAK
 /* Assignment, equivilance and mathematical operators */
 case 68:
 YY_RULE_SETUP
-#line 129 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 129 "lexer.l"
 { HANDLE; return yylval.token = ASSIGN_EQUAL; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 130 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 130 "lexer.l"
 { HANDLE; return yylval.token = ASSIGN_ADD; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 131 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 131 "lexer.l"
 { HANDLE; return yylval.token = ASSIGN_SUBTRACT; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 132 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 132 "lexer.l"
 { HANDLE; return yylval.token = ASSIGN_MULTIPLY; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 133 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 133 "lexer.l"
 { HANDLE; return yylval.token = ASSIGN_DIVIDE; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 134 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 134 "lexer.l"
 { HANDLE; return yylval.token = COMPARE_EQUAL; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 135 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 135 "lexer.l"
 { HANDLE; return yylval.token = COMPARE_NOT_EQUAL; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 136 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 136 "lexer.l"
 { HANDLE; return yylval.token = COMPARE_LESS_THAN; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 137 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 137 "lexer.l"
 { HANDLE; return yylval.token = COMPARE_LESS_THAN_EQUAL; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 138 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 138 "lexer.l"
 { HANDLE; return yylval.token = COMPARE_GREATER_THAN; }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 139 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 139 "lexer.l"
 { HANDLE; return yylval.token = COMPARE_GREATER_THAN_EQUAL; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 140 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 140 "lexer.l"
 { HANDLE; return yylval.token = NEGATE; }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 141 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 141 "lexer.l"
 { HANDLE; return yylval.token = INCREMENT; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 142 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 142 "lexer.l"
 { HANDLE; return yylval.token = DECREMENT; }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 143 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 143 "lexer.l"
 { HANDLE; return yylval.token = ADD; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 144 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 144 "lexer.l"
 { HANDLE; return yylval.token = SUBTRACT; }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 145 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 145 "lexer.l"
 { HANDLE; return yylval.token = SLASH; }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 146 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 146 "lexer.l"
 { HANDLE; return yylval.token = PERCENT; }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 147 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 147 "lexer.l"
 { HANDLE; return yylval.token = BOOLEAN_AND; }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 148 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 148 "lexer.l"
 { HANDLE; return yylval.token = BOOLEAN_OR; }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 149 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 149 "lexer.l"
 { HANDLE; return yylval.token = BINARY_AND; }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 150 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 150 "lexer.l"
 { HANDLE; return yylval.token = BINARY_OR; }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 151 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 151 "lexer.l"
 { HANDLE; return yylval.token = BINARY_XOR; }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 152 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 152 "lexer.l"
 { HANDLE; return yylval.token = BINARY_LEFT_SHIFT; }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 153 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 153 "lexer.l"
 { HANDLE; return yylval.token = BINARY_RIGHT_SHIFT; }
 	YY_BREAK
 /* Comments and whitespace */
 case 93:
 /* rule 93 can match eol */
 YY_RULE_SETUP
-#line 157 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 157 "lexer.l"
 { yyclineno++; }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 158 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 158 "lexer.l"
 { comment_line(); }
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 159 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 159 "lexer.l"
 { comment(); }
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 160 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 160 "lexer.l"
 /* ignore whitespace */;
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 162 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 162 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1440 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.cpp"
+#line 1440 "lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(IN_CHAR):
 case YY_STATE_EOF(IN_STRING):
@@ -2438,7 +2438,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 162 "/home/michael/Workspace/dcpu/dcputoolchain/src/compiler/lexer.l"
+#line 162 "lexer.l"
 
 
 
