@@ -68,6 +68,9 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 	case SLASH:
 		*block <<	"	DIV A, B" << std::endl;
 		break;
+	case PERCENT:
+		*block <<	"	MOD A, B" << std::endl;
+		break;
 	case BOOLEAN_AND:
 		*block <<	"	IFN A, 0x0" << std::endl;
 		*block <<	"		SET A, 0x1" << std::endl;

@@ -1,6 +1,6 @@
-#line 2 "lexer.c"
+#line 2 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.c"
 
-#line 4 "lexer.c"
+#line 4 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -54,7 +54,6 @@ typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
-#endif /* ! C99 */
 
 /* Limits of integral types. */
 #ifndef INT8_MIN
@@ -84,6 +83,8 @@ typedef unsigned int flex_uint32_t;
 #ifndef UINT32_MAX
 #define UINT32_MAX             (4294967295U)
 #endif
+
+#endif /* ! C99 */
 
 #endif /* ! FLEXINT_H */
 
@@ -141,7 +142,15 @@ typedef unsigned int flex_uint32_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -509,8 +518,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "lexer.l"
-#line 2 "lexer.l"
+#line 1 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
+#line 2 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 
 /**
 
@@ -561,7 +570,7 @@ char* trim_and_unescape(char* data, int mode)
 	return result;
 }
 
-#line 565 "lexer.c"
+#line 574 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.c"
 
 #define INITIAL 0
 
@@ -642,7 +651,12 @@ static int input (void );
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -650,7 +664,7 @@ static int input (void );
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO fwrite( yytext, yyleng, 1, yyout )
+#define ECHO do { if (fwrite( yytext, yyleng, 1, yyout )) {} } while (0)
 #endif
 
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
@@ -661,7 +675,7 @@ static int input (void );
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
 		int c = '*'; \
-		int n; \
+		size_t n; \
 		for ( n = 0; n < max_size && \
 			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
@@ -743,12 +757,12 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 54 "lexer.l"
+#line 54 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 
 
 	/* Assembler keywords */
 
-#line 752 "lexer.c"
+#line 766 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.c"
 
 	if ( !(yy_init) )
 		{
@@ -833,114 +847,114 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 58 "lexer.l"
+#line 58 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 yylval.number = BOUNDARY; return KEYWORD;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 59 "lexer.l"
+#line 59 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 yylval.number = EXTENSION; return KEYWORD;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 60 "lexer.l"
+#line 60 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 yylval.number = ORIGIN; return KEYWORD;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 61 "lexer.l"
+#line 61 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 yylval.number = ORIGIN; return KEYWORD;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 62 "lexer.l"
+#line 62 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 yylval.number = INCBIN; return KEYWORD;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 63 "lexer.l"
+#line 63 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 yylval.number = EXPORT; return KEYWORD;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 64 "lexer.l"
+#line 64 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 yylval.number = IMPORT; return KEYWORD;
 	YY_BREAK
 /* General stuff */
 case 8:
 YY_RULE_SETUP
-#line 68 "lexer.l"
+#line 68 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 yylval.string = strdup(yytext); return WORD;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 69 "lexer.l"
+#line 69 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 70 "lexer.l"
+#line 70 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 71 "lexer.l"
+#line 71 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 { yylval.string = trim_and_unescape(strdup(yytext), 1); return CHARACTER; }
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 72 "lexer.l"
+#line 72 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 { yylval.string = trim_and_unescape(strdup(yytext), 0); return STRING; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 73 "lexer.l"
+#line 73 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 return COMMA;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 74 "lexer.l"
+#line 74 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 return BRACKET_OPEN;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 75 "lexer.l"
+#line 75 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 return BRACKET_CLOSE;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 76 "lexer.l"
+#line 76 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 return COLON;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 77 "lexer.l"
+#line 77 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 return ADD;
 	YY_BREAK
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 79 "lexer.l"
+#line 79 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 yyalineno++; return NEWLINE;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 80 "lexer.l"
+#line 80 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 /* ignore comments */;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 81 "lexer.l"
+#line 81 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 /* ignore whitespace */;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 83 "lexer.l"
+#line 83 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 ECHO;
 	YY_BREAK
-#line 944 "lexer.c"
+#line 958 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1698,8 +1712,8 @@ YY_BUFFER_STATE yy_scan_string (yyconst char * yystr )
 
 /** Setup the input buffer state to scan the given bytes. The next call to yylex() will
  * scan from a @e copy of @a bytes.
- * @param bytes the byte buffer to scan
- * @param len the number of bytes in the buffer pointed to by @a bytes.
+ * @param yybytes the byte buffer to scan
+ * @param _yybytes_len the number of bytes in the buffer pointed to by @a bytes.
  * 
  * @return the newly allocated buffer state object.
  */
@@ -1938,7 +1952,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 83 "lexer.l"
+#line 83 "/home/michael/Workspace/dcpu/dcputoolchain/src/assembler/lexer.l"
 
 
 

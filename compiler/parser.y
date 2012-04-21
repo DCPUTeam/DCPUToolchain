@@ -523,7 +523,8 @@ binaryop:
 		ADD |
 		SUBTRACT | 
 		STAR |
-		SLASH ;
+		SLASH |
+		PERCENT ;
 
 type_base:
 		TYPE_VOID
