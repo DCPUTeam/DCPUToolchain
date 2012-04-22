@@ -17,6 +17,9 @@ if(MSVC)
 	# directory in this case.
 	set(FLEX_UNISTD_INCLUDE "C:/UNIX/GnuWin32/include")
 endif(MSVC)
+if(NOT DEFINED BUILD_EMULATOR)
+	set(BUILD_EMULATOR true)
+endif(NOT DEFINED BUILD_EMULATOR)
 if(NOT DEFINED FLEX_EXECUTABLE)
 	find_program(FLEX_EXECUTABLE NAMES flex.exe flex)
 endif(NOT DEFINED FLEX_EXECUTABLE)
@@ -188,7 +191,10 @@ add_subdirectory(libdcc)
 
 # Add executable folders.
 add_subdirectory(compiler)
-add_subdirectory(emulator)
 add_subdirectory(assembler)
 add_subdirectory(linker)
+
+if("${BUILD_EMULATOR}" MATCHES true)
+	add_subdirectory(emulator)
+endif("${BUILD_EMULATOR}" MATCHES true)
 
