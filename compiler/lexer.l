@@ -8,6 +8,7 @@
 	Component:		Compiler
 
 	Authors:		James Rhodes
+					Michael Gerhaeuser
 
 	Description:	Defines lexer for the compiler.
 

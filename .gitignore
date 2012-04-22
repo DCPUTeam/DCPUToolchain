@@ -28,6 +28,12 @@ ipch/*
 *.bin
 *parser.output
 
+# Unix make and binary files #
+##############################
+*.a
+Makefile
+
+
 # Other repos #
 ###############
 standards/

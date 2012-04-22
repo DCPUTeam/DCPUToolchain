@@ -6,6 +6,7 @@
 	Component:		Compiler
 
 	Authors:		James Rhodes
+					Michael Gerhaeuser
 
 	Description:	Defines the NBinaryOperator AST class.
 

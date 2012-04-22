@@ -8,6 +8,7 @@
 	Component:		Compiler
 
 	Authors:		James Rhodes
+					Michael Gerhaeuser
 
 	Description:	Defines parser for the compiler.
 
