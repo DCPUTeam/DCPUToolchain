@@ -8,6 +8,7 @@
 	Component:		Compiler
 
 	Authors:		James Rhodes
+					Michael Gerhaeuser
 
 	Description:	Defines parser for the compiler.
 
@@ -523,7 +524,8 @@ binaryop:
 		ADD |
 		SUBTRACT | 
 		STAR |
-		SLASH ;
+		SLASH |
+		PERCENT ;
 
 type_base:
 		TYPE_VOID

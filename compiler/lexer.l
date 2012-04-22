@@ -8,6 +8,7 @@
 	Component:		Compiler
 
 	Authors:		James Rhodes
+					Michael Gerhaeuser
 
 	Description:	Defines lexer for the compiler.
 
@@ -143,6 +144,7 @@ extern int string_return;
 "+"						{ HANDLE; return yylval.token = ADD; }
 "-"						{ HANDLE; return yylval.token = SUBTRACT; }
 "/"						{ HANDLE; return yylval.token = SLASH; }
+"%"						{ HANDLE; return yylval.token = PERCENT; }
 "&&"					{ HANDLE; return yylval.token = BOOLEAN_AND; }
 "||"					{ HANDLE; return yylval.token = BOOLEAN_OR; }
 "&"						{ HANDLE; return yylval.token = BINARY_AND; }

@@ -41,7 +41,7 @@ If you are using Cygwin, then there are some important notes:
 
 ### Instructions for Linux
 
-#### Ubuntu 12.0
+#### Ubuntu 12.04
 
 First install a few required packages with
 
