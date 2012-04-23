@@ -10,6 +10,7 @@ if(MSVC)
 else(MSVC)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT_DIR}/Debug")
 endif(MSVC)
+set(OUTPUT_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 set(FLEX_UNISTD_INCLUDE "")
 if(MSVC)
 	# Windows does not have unistd.h, but GnuWin32's Flex program
@@ -149,6 +150,11 @@ function(dt_needs_prebuilt dependency libname)
 	target_link_libraries(${PROJECT_NAME} "${ROOT_DIR}/third-party/${dependency}/lib/${libname}.lib")
 endfunction(dt_needs_prebuilt dependency)
 
+# Define a dependency on an executable project.
+function(dt_needs_exe dependency)
+	add_dependencies(${PROJECT_NAME} ${dependency})
+endfunction(dt_needs_exe dependency)
+
 # Define a function which compiles Flex and Bison files.
 function(dt_has_parser cxx)
 	if("${cxx}" MATCHES true)
@@ -193,8 +199,7 @@ add_subdirectory(libdcc)
 add_subdirectory(compiler)
 add_subdirectory(assembler)
 add_subdirectory(linker)
-
 if("${BUILD_EMULATOR}" MATCHES true)
 	add_subdirectory(emulator)
 endif("${BUILD_EMULATOR}" MATCHES true)
-
+add_subdirectory(kernel)
