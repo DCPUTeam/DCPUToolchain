@@ -92,14 +92,14 @@
 #include "node.h"
 #include "imap.h"
 
-extern unsigned int yylineno;
+extern unsigned int yyalineno;
 
 // Root node for the AST.
 struct ast_node_root ast_root;
  
 void yyerror(const char *str)
 {
-    fprintf(stderr,"error at line %i: %s\n", yylineno, str);
+    fprintf(stderr,"error at line %i: %s\n", yyalineno, str);
 }
  
 int yywrap()

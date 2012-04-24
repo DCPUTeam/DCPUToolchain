@@ -193,7 +193,7 @@ add_subdirectory(third-party/libtcod)
 add_subdirectory(third-party/argtable2)
 add_subdirectory(libvm)
 add_subdirectory(libdcc)
-#add_subdirectory(libdcc-c)
+add_subdirectory(libdcc-c)
 
 # Add executable folders.
 add_subdirectory(compiler)

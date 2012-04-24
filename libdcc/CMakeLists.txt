@@ -8,5 +8,5 @@ if(NOT DEFINED IS_ROOT)
 endif(NOT DEFINED IS_ROOT)
 
 # Define the libdcc project.
-dt_project(library)
+dt_project(library nodes)
 

@@ -17,8 +17,8 @@
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
-#include "node.h"
-#include "asmgen.h"
+#include <nodes/NDeclarations.h>
+#include <AsmGenerator.h>
 #include "argtable2.h"
 extern "C"
 {
@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Assembler type.
-	const char* asmtype = "dcpu16tools";
+	const char* asmtype = "dcpu16toolchain";
 	if (type_assembler->count > 0)
 		asmtype = type_assembler->sval[0];
 
