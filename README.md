@@ -61,7 +61,7 @@ If you want to compile libtcod yourself you need libsdl1.2-dev. Next create a di
 ```
 $ mkdir -p dcputoolchain/build
 dcputoolchain$ cd dcputoolchain
-dcputoolchain$ git clone git@github.com:migerh/DCPUToolchain.git src
+dcputoolchain$ git clone git@github.com:DCPUTeam/DCPUToolchain.git src
 ```
 
 Now generate the makefiles and and compile with
