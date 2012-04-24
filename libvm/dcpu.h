@@ -96,9 +96,9 @@ typedef uint8_t bool;
 #define AR_MAX 0xffff
 
 // Instruction mechanisms
-#define INSTRUCTION_CREATE(op, a, b) (((b & 0x3f) << 10) + ((a & 0x3f) << 4) + (op & 0xf))
-#define INSTRUCTION_GET_B(inst) ((inst & 0xfc00) >> 10)
-#define INSTRUCTION_GET_A(inst) ((inst & 0x3f0) >> 4)
+#define INSTRUCTION_CREATE(op, a, b) (((a & 0x3f) << 10) + ((b & 0x3f) << 4) + (op & 0xf))
+#define INSTRUCTION_GET_A(inst) ((inst & 0xfc00) >> 10)
+#define INSTRUCTION_GET_B(inst) ((inst & 0x3f0) >> 4)
 #define INSTRUCTION_GET_OP(inst) (inst & 0xf)
 
 typedef struct
