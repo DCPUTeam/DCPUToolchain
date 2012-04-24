@@ -11,7 +11,8 @@ endif(NOT DEFINED IS_ROOT)
 # Define the emulator project.
 dt_project(executable)
 dt_needs(argtable2)
-dt_needs(libvm)
+dt_needs(libdcpu)
+dt_needs(libdcpu-vm)
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	dt_needs_prebuilt(libtcod libtcod-VS)

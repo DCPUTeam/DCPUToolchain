@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project(libvm)
+project(libdcpu)
 
 # Check to ensure that we are running as part of the
 # root CMakeLists.txt file.

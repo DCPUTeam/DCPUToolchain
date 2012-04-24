@@ -10,5 +10,5 @@ endif(NOT DEFINED IS_ROOT)
 # Define the linker project.
 dt_project(executable)
 dt_needs(argtable2)
-dt_needs(libvm)
-dt_needs(libdcc)
+dt_needs(libdcpu)
+dt_needs(libdcpu-ci-objfmt)

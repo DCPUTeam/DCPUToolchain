@@ -191,9 +191,12 @@ message("-- Defining projects")
 # Add library folders.
 add_subdirectory(third-party/libtcod)
 add_subdirectory(third-party/argtable2)
-add_subdirectory(libvm)
-add_subdirectory(libdcc)
-add_subdirectory(libdcc-c)
+add_subdirectory(libdcpu)
+add_subdirectory(libdcpu-vm)
+add_subdirectory(libdcpu-pp)
+add_subdirectory(libdcpu-ci-objfmt)
+add_subdirectory(libdcpu-ci-lang)
+add_subdirectory(libdcpu-ci-lang-c)
 
 # Add executable folders.
 add_subdirectory(compiler)
