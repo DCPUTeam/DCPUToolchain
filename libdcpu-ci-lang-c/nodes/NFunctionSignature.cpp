@@ -11,7 +11,7 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
 #include "NFunctionSignature.h"
 #include "Lists.h"
 

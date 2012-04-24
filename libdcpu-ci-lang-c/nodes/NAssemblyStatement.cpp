@@ -12,7 +12,8 @@
 **/
 
 #include <iostream>
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NAssemblyStatement.h"
 
 AsmBlock* NAssemblyStatement::compile(AsmGenerator& context)

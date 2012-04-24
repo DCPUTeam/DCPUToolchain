@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NBlock.h"
 
 AsmBlock* NBlock::compile(AsmGenerator& context)

@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NForStatement.h"
 
 AsmBlock* NForStatement::compile(AsmGenerator& context)

@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NReturnStatement.h"
 
 AsmBlock* NReturnStatement::compile(AsmGenerator& context)

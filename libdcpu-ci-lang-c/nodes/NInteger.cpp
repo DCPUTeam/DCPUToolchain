@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NInteger.h"
 
 NType internal_CharType("char", 0, false);

@@ -14,6 +14,7 @@
 #ifndef __DCPU_LIBDCC_ASSEMBLER_H
 #define __DCPU_LIBDCC_ASSEMBLER_H
 
+#include <string>
 #include <map>
 
 class Assembler

@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NStructureDeclaration.h"
 
 AsmBlock* NStructureDeclaration::compile(AsmGenerator& context)

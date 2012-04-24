@@ -18,7 +18,8 @@
 #include <vector>
 #include <exception>
 #include <stdexcept>
-#include "nodes/IType.h"
+
+class IType;
 
 // Work-around for GNU C++; can't just typedef here as we need to provide
 // an assignment operator so that we can use it inside std::vector.

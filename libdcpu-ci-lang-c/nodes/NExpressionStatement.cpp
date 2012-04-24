@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NExpressionStatement.h"
 
 AsmBlock* NExpressionStatement::compile(AsmGenerator& context)

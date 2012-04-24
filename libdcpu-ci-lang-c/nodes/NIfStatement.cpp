@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NIfStatement.h"
 
 AsmBlock* NIfStatement::compile(AsmGenerator& context)

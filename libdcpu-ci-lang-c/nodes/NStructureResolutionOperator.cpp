@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NStructureResolutionOperator.h"
 
 AsmBlock* NStructureResolutionOperator::compile(AsmGenerator& context)

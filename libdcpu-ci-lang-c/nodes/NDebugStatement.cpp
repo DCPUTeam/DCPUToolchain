@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NDebugStatement.h"
 
 AsmBlock* NDebugStatement::compile(AsmGenerator& context)

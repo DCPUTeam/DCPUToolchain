@@ -18,8 +18,8 @@ class AsmGenerator;
 
 #include <string>
 #include "AsmGenerator.h"
-#include "TypePosition.h"
 #include "StackMap.h"
+#include "TypePosition.h"
 #include "nodes/IType.h"
 
 class StackFrame

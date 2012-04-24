@@ -17,7 +17,8 @@
 #define YYSTYPE int
 
 #include "NInteger.h"
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "../parser.hpp"
 #include "NBinaryOperator.h"
 

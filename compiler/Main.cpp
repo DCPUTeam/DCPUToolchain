@@ -18,8 +18,10 @@
 #include <cstring>
 #include <algorithm>
 #include <nodes/NDeclarations.h>
+#include <StackMap.h>
 #include <AsmGenerator.h>
-#include "argtable2.h"
+#include <CompilerException.h>
+#include <argtable2.h>
 extern "C"
 {
 	#include "pp.h"

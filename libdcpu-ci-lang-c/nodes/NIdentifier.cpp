@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NIdentifier.h"
 
 AsmBlock* NIdentifier::compile(AsmGenerator& context)

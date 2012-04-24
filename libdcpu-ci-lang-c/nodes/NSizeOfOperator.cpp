@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NSizeOfOperator.h"
 
 AsmBlock* NSizeOfOperator::compile(AsmGenerator& context)

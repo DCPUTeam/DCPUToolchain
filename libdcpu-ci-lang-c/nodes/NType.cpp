@@ -13,7 +13,8 @@
 
 #include <stdexcept>
 #include <cmath>
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NType.h"
 #include "NDeclarations.h"
 #include "NStructureDeclaration.h"

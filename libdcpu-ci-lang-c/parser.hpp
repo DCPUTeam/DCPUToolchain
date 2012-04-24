@@ -197,7 +197,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 62 "parser.y"
+#line 63 "parser.y"
 
 	NBlock* block;
 	NExpression* expr;

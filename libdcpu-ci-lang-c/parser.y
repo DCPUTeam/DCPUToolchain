@@ -18,7 +18,8 @@ class NAssignmentExpression;
 class NInteger;
 
 #include <vector>
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "nodes/NBlock.h"
 #include "nodes/NDeclarations.h"
 #include "nodes/NFunctionDeclaration.h"

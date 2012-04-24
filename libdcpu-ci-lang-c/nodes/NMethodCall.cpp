@@ -11,7 +11,8 @@
 
 **/
 
-#include <asmgen.h>
+#include <AsmGenerator.h>
+#include <CompilerException.h>
 #include "NMethodCall.h"
 #include "NFunctionDeclaration.h"
 #include "NFunctionSignature.h"
