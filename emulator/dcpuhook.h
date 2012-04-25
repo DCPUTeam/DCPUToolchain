@@ -1,6 +1,6 @@
 /**
 
-	File:			dcpuscrn.h
+	File:			dcpuhook.h
 
 	Project:		DCPU-16 Tools
 	Component:		Emulator

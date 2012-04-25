@@ -138,6 +138,19 @@ typedef struct
 	uint8_t debug;
 } vm_t;
 
+typedef void (*hw_interrupt)(vm_t* vm);
+
+typedef struct
+{
+	uint16_t id_1;
+	uint16_t id_2;
+	uint16_t c;
+	uint16_t x;
+	uint16_t y;
+	uint16_t* memory_addrs;
+	hw_interrupt handler;
+} hw_t;
+
 vm_t* vm_create();
 void vm_flash(vm_t* vm, uint16_t memory[0x10000]);
 void vm_execute(vm_t* vm);

@@ -20,6 +20,7 @@
 #include "dcpubase.h"
 #include "hwio.h"
 #include "hwtimer.h"
+#include "hw.h"
 
 vm_t* vm_create()
 {
@@ -46,6 +47,10 @@ vm_t* vm_create()
 	vm_hw_io_init(new_vm, 0);
 	vm_hw_timer_init(new_vm);
 
+	vm_hw_register_lem1802(new_vm);
+	vm_hw_register_lem1802(new_vm);
+	vm_hw_register_lem1802(new_vm);
+	
 	// Return.
 	return new_vm;
 }
