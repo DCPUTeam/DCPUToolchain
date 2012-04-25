@@ -218,8 +218,8 @@ void vm_lem1802_init(vm_t* vm, uint16_t pos)
 {
 	hw_t screen;
 	
-	screen.id_1 = 0xDEAD;
-	screen.id_2 = 0xBEEF;
+	screen.id_1 = 0x7349;
+	screen.id_2 = 0xf615;
 	screen.c = 0xFACE;
 	screen.x = 0x1234;
 	screen.y = 0x1337;

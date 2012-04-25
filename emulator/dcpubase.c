@@ -35,8 +35,8 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
 {
 	if (vm->ia == 0)
 		return;
-	vm->ram[vm->sp++] = vm->pc;
-	vm->ram[vm->sp++] = vm->registers[REG_A];
+	vm->ram[vm->sp--] = vm->pc;
+	vm->ram[vm->sp--] = vm->registers[REG_A];
 	vm->pc = vm->ia;
 	vm->registers[REG_A] = msgid;
 }
