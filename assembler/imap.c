@@ -57,12 +57,12 @@ struct register_mapping register_name_map[] =
 	REGISTER(Z),
 	REGISTER(I),
 	REGISTER(J),
-	{ "POP", POP },
+	{ "POP", PUSH_POP },
+	{ "PUSH", PUSH_POP },
 	{ "PEEK", PEEK },
-	{ "PUSH", PUSH },
 	{ "SP", SP },
 	{ "PC", PC },
-	{ "O", O },
+	{ "EX", EX },
 	NULL
 };
 
@@ -81,7 +81,7 @@ struct register_mapping register_value_name_map[] =
 	{ "PUSH", BRACKETS_UNSUPPORTED },
 	{ "SP", PEEK },
 	{ "PC", BRACKETS_UNSUPPORTED },
-	{ "O", BRACKETS_UNSUPPORTED },
+	{ "EX", BRACKETS_UNSUPPORTED },
 	NULL
 };
 
@@ -98,9 +98,9 @@ struct register_mapping register_value_next_map[] =
 	{ "POP", VALUE_NEXT_UNSUPPORTED },
 	{ "PEEK", VALUE_NEXT_UNSUPPORTED },
 	{ "PUSH", VALUE_NEXT_UNSUPPORTED },
-	{ "SP", VALUE_NEXT_UNSUPPORTED },
+	{ "SP", PICK },
 	{ "PC", VALUE_NEXT_UNSUPPORTED },
-	{ "O", VALUE_NEXT_UNSUPPORTED },
+	{ "EX", VALUE_NEXT_UNSUPPORTED },
 	NULL
 };
 

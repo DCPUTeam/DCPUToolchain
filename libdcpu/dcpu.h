@@ -31,22 +31,22 @@ typedef uint8_t bool;
 #endif
 
 // Value definitions
-#define REG_A 0x00
-#define REG_B 0x01
-#define REG_C 0x02
-#define REG_X 0x03
-#define REG_Y 0x04
-#define REG_Z 0x05
-#define REG_I 0x06
-#define REG_J 0x07
-#define VAL_A 0x08
-#define VAL_B 0x09
-#define VAL_C 0x0A
-#define VAL_X 0x0B
-#define VAL_Y 0x0C
-#define VAL_Z 0x0D
-#define VAL_I 0x0E
-#define VAL_J 0x0F
+#define REG_A     0x00
+#define REG_B     0x01
+#define REG_C     0x02
+#define REG_X     0x03
+#define REG_Y     0x04
+#define REG_Z     0x05
+#define REG_I     0x06
+#define REG_J     0x07
+#define VAL_A     0x08
+#define VAL_B     0x09
+#define VAL_C     0x0A
+#define VAL_X     0x0B
+#define VAL_Y     0x0C
+#define VAL_Z     0x0D
+#define VAL_I     0x0E
+#define VAL_J     0x0F
 #define NXT_VAL_A 0x10
 #define NXT_VAL_B 0x11
 #define NXT_VAL_C 0x12
@@ -55,16 +55,21 @@ typedef uint8_t bool;
 #define NXT_VAL_Z 0x15
 #define NXT_VAL_I 0x16
 #define NXT_VAL_J 0x17
-#define POP  0x18
-#define PEEK 0x19
-#define PUSH 0x1A
-#define SP   0x1B
-#define PC   0x1C
-#define EX   0x1D
-#define NXT  0x1E
-#define NXT_LIT 0x1F
+#define PUSH_POP  0x18
+#define PEEK      0x19
+#define PICK      0x1A
+#define SP        0x1B
+#define PC        0x1C
+#define EX        0x1D
+#define NXT       0x1E
+#define NXT_LIT   0x1F
 // 0x20 -> 0x3f are all literal values.
-#define IA   0xFF /* not a valid value, but is used to pass IA around internally */
+#define IA        0xFF /* not a valid value, but is used to pass IA around internally */
+
+// Position information
+#define POS__     0x0
+#define POS_A     0x1
+#define POS_B     0x2
 
 // Opcodes
 #define OP_NONBASIC 0x0
@@ -94,21 +99,21 @@ typedef uint8_t bool;
 // Non-basic opcodes
 #define NBOP_RESERVED   0x00
 #define NBOP_JSR        0x01
-#define NBOP_INT		0x08
-#define NBOP_ING		0x09
-#define NBOP_INS		0x0a
-#define NBOP_HWN		0x10
-#define NBOP_HWQ		0x11
-#define NBOP_HWI		0x12
+#define NBOP_INT        0x08
+#define NBOP_ING        0x09
+#define NBOP_INS        0x0a
+#define NBOP_HWN        0x10
+#define NBOP_HWQ        0x11
+#define NBOP_HWI        0x12
 
 // Arithmetic constants
-#define AR_NOFLOW 0x0000
-#define AR_OVERFLOW 0x0001
-#define AR_UNDERFLOW 0xffff
-#define AR_MAX 0xffff
+#define AR_NOFLOW       0x0000
+#define AR_OVERFLOW     0x0001
+#define AR_UNDERFLOW    0xffff
+#define AR_MAX          0xffff
 
 // Interrupt messages
-#define INT_TIMER 0
+#define INT_TIMER       0x0
 
 // Instruction mechanisms
 #define INSTRUCTION_CREATE(op, b, a) (((a & 0x3f) << 10) + ((b & 0x1f) << 5) + (op & 0x1f))

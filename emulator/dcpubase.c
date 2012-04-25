@@ -48,7 +48,7 @@ uint16_t vm_consume_word(vm_t* vm)
 	return v;
 }
 
-uint16_t vm_resolve_value(vm_t* vm, uint16_t val)
+uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
 {
 	uint16_t t;
 	switch (val)
@@ -70,7 +70,7 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val)
 	case VAL_Z:
 	case VAL_I:
 	case VAL_J:
-		return vm->ram[(uint16_t)vm->registers[val - VAL_A]];
+		return vm->ram[vm->registers[val - VAL_A]];
 	case NXT_VAL_A:
 	case NXT_VAL_B:
 	case NXT_VAL_C:
@@ -80,17 +80,23 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val)
 	case NXT_VAL_I:
 	case NXT_VAL_J:
 		return vm->ram[(uint16_t)(vm->registers[val - NXT_VAL_A] + vm_consume_word(vm))];
-	case POP:
-		if(vm->skip) return vm->dummy;
-		t = vm->sp++;
+	case PUSH_POP:
+		if (vm->skip) return vm->dummy;
+		if (pos == POS_A)
+			t = vm->sp++;
+		else if (pos == POS_B)
+			t = --vm->sp;
+		else
+			// Probably should handle if pos is neither
+			// A nor B to catch internal errors.
+			t = vm->sp;
 		return vm->ram[t];
 	case PEEK:
 		t = vm->sp;
 		return vm->ram[t];
-	case PUSH:
-		if(vm->skip) return vm->dummy;
-		t = --vm->sp;
-		return vm->ram[t];
+	case PICK:
+		t = vm->sp;
+		return vm->ram[(uint16_t)(t + vm_consume_word(vm))];
 	case IA:
 		return vm->ia;
 	case SP:
@@ -100,7 +106,7 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val)
 	case EX:
 		return vm->ex;
 	case NXT:
-		return vm->ram[(uint16_t)vm_consume_word(vm)];
+		return vm->ram[vm_consume_word(vm)];
 	case NXT_LIT:
 		return vm_consume_word(vm);
 	default:
