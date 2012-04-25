@@ -57,7 +57,7 @@ int yywrap()
 
 // Define our lexical token names.
 %token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT ADD
-%token <token> KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE
+%token <token> KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL
 %token <string> WORD STRING CHARACTER
 %token <number> ADDRESS
 
@@ -150,6 +150,18 @@ line:
 			$$->prev = lnode;
 			$$->keyword_data_string = NULL;
 			$$->keyword_data_numeric = 0;
+		} |
+		FILL ADDRESS ADDRESS NEWLINE
+		{
+			$$ = malloc(sizeof(struct ast_node_line));
+			$$->type = type_keyword;
+			$$->keyword = $1;
+			$$->instruction = NULL;
+			$$->label = NULL;
+			$$->prev = NULL;
+			$$->keyword_data_string = NULL;
+			$$->keyword_data_numeric = $2;
+			$$->keyword_data_numeric_2 = $3;
 		} |
 		KEYWORD WORD NEWLINE
 		{

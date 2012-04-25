@@ -291,6 +291,14 @@ void process_line(struct ast_node_line* line)
 				aout_emit(aout_create_raw(0));
 
 			break;
+		case FILL:
+			fprintf(stderr, ".FILL");
+			
+			// Emit N words with value X
+			for(i = 0; i < line->keyword_data_numeric; i++) 
+				aout_emit(aout_create_raw(line->keyword_data_numeric_2));
+			
+			break;
 		case EXTENSION:
 			fprintf(stderr, ".EXTENSION %s", line->keyword_data_string);
 

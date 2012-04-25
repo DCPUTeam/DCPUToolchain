@@ -85,6 +85,7 @@ struct ast_node_line
 	struct ast_node_line* prev;
 	char* keyword_data_string;
 	uint16_t keyword_data_numeric;
+	uint16_t keyword_data_numeric_2;
 };
 
 // Lines
