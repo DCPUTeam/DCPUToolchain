@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include "dcpubase.h"
 #include "hw.h"
+#include "lem1802.h"
 
 #define HW_MAX 10
 
@@ -34,7 +35,7 @@ uint16_t vm_hw_register(vm_t* vm, hw_t hardware)
 		return;
 	}
 
-	printf("%04X %04X\n", hardware.id_1, hardware.id_2);
+	hardware.handler(vm);
 
 	vm_hw_connected[id] = 1;
 	vm_hw_list[id] = hardware;
@@ -49,8 +50,9 @@ void vm_hw_unregister(vm_t* vm, uint16_t id)
 
 void vm_hw_interrupt(vm_t* vm, uint16_t index)
 {
-	printf("Interrupting 0x%04X\n", index);
-	vm_hw_list[index].handler(vm);
+	hw_t device = vm_hw_list[index-1];
+	if(vm->debug) printf("\nInterrupting device 0x%04X (0x%04X%04X): %d\n", index, device.id_1, device.id_2, device.handler);
+	device.handler(vm);
 }
 
 uint16_t vm_hw_count(vm_t* vm)
@@ -64,22 +66,4 @@ uint16_t vm_hw_count(vm_t* vm)
 
 hw_t vm_hw_get_device(vm_t* vm, uint16_t index) {
 	return vm_hw_list[index];
-}
-
-void lem1802_interrupt(vm_t* vm) {
-	printf("Hello from the interrupt!\n");
-}
-
-void vm_hw_register_lem1802(vm_t* vm) 
-{
-	hw_t screen;
-	
-	screen.id_1 = 0xDEAD;
-	screen.id_2 = 0xBEEF;
-	screen.c = 0xFACE;
-	screen.x = 0x1234;
-	screen.y = 0x1337;
-	screen.handler = &lem1802_interrupt;
-
-	vm_hw_register(vm, screen);
 }
