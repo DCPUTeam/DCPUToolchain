@@ -53,6 +53,9 @@ char* trim_and_unescape(char* data, int mode)
 %}
 
 %x IN_OPCODE
+%x IN_REG
+%x IN_VAL
+%x IN_NXT
 
 %%
 
@@ -69,7 +72,7 @@ char* trim_and_unescape(char* data, int mode)
 	/* Opcodes as numbers support */
 
 \{							BEGIN(IN_OPCODE);
-<IN_OPCODE>\}				BEGIN(INITIAL);
+<IN_OPCODE,IN_REG,IN_VAL,IN_NXT>\} BEGIN(INITIAL);
 <IN_OPCODE>[Ss][Ee][Tt]		yylval.number = OP_SET; return ADDRESS;
 <IN_OPCODE>[Aa][Dd][Dd]		yylval.number = OP_ADD; return ADDRESS;
 <IN_OPCODE>[Ss][Uu][Bb]		yylval.number = OP_SUB; return ADDRESS;
@@ -102,7 +105,47 @@ char* trim_and_unescape(char* data, int mode)
 <IN_OPCODE>[Hh][Ww][Nn]		yylval.number = NBOP_HWN; return ADDRESS;
 <IN_OPCODE>[Hh][Ww][Qq]		yylval.number = NBOP_HWQ; return ADDRESS;
 <IN_OPCODE>[Hh][Ww][Ii]		yylval.number = NBOP_HWI; return ADDRESS;
-<IN_OPCODE>[^ \n\t]+		return ERROR;
+
+<IN_OPCODE>[Rr][Ee][Gg]\:	BEGIN(IN_REG);
+<IN_REG>[Aa]				yylval.number = REG_A; return ADDRESS;
+<IN_REG>[Bb]				yylval.number = REG_B; return ADDRESS;
+<IN_REG>[Cc]				yylval.number = REG_C; return ADDRESS;
+<IN_REG>[Xx]				yylval.number = REG_X; return ADDRESS;
+<IN_REG>[Yy]				yylval.number = REG_Y; return ADDRESS;
+<IN_REG>[Zz]				yylval.number = REG_Z; return ADDRESS;
+<IN_REG>[Ii]				yylval.number = REG_I; return ADDRESS;
+<IN_REG>[Jj]				yylval.number = REG_J; return ADDRESS;
+
+<IN_OPCODE>[Vv][Aa][Ll]\:	BEGIN(IN_VAL);
+<IN_VAL>[Aa]				yylval.number = VAL_A; return ADDRESS;
+<IN_VAL>[Bb]				yylval.number = VAL_B; return ADDRESS;
+<IN_VAL>[Cc]				yylval.number = VAL_C; return ADDRESS;
+<IN_VAL>[Xx]				yylval.number = VAL_X; return ADDRESS;
+<IN_VAL>[Yy]				yylval.number = VAL_Y; return ADDRESS;
+<IN_VAL>[Zz]				yylval.number = VAL_Z; return ADDRESS;
+<IN_VAL>[Ii]				yylval.number = VAL_I; return ADDRESS;
+<IN_VAL>[Jj]				yylval.number = VAL_J; return ADDRESS;
+
+<IN_OPCODE>[Nn][Xx][Tt]\:	BEGIN(IN_NXT);
+<IN_NXT>[Aa]				yylval.number = NXT_VAL_A; return ADDRESS;
+<IN_NXT>[Bb]				yylval.number = NXT_VAL_B; return ADDRESS;
+<IN_NXT>[Cc]				yylval.number = NXT_VAL_C; return ADDRESS;
+<IN_NXT>[Xx]				yylval.number = NXT_VAL_X; return ADDRESS;
+<IN_NXT>[Yy]				yylval.number = NXT_VAL_Y; return ADDRESS;
+<IN_NXT>[Zz]				yylval.number = NXT_VAL_Z; return ADDRESS;
+<IN_NXT>[Ii]				yylval.number = NXT_VAL_I; return ADDRESS;
+<IN_NXT>[Jj]				yylval.number = NXT_VAL_J; return ADDRESS;
+<IN_NXT>[Ll][Ii][Tt]		yylval.number = NXT_LIT; return ADDRESS;
+
+<IN_OPCODE>[Pp][Oo][Pp]		yylval.number = PUSH_POP; return ADDRESS;
+<IN_OPCODE>[Pp][Uu][Ss][Hh]	yylval.number = PUSH_POP; return ADDRESS;
+<IN_OPCODE>[Pp][Ee][Ee][Kk]	yylval.number = PEEK; return ADDRESS;
+<IN_OPCODE>[Pp][Ii][Cc][Kk]	yylval.number = PICK; return ADDRESS;
+<IN_OPCODE>[Ss][Pp]			yylval.number = SP; return ADDRESS;
+<IN_OPCODE>[Pp][Cc]			yylval.number = PC; return ADDRESS;
+<IN_OPCODE>[Ee][Xx]			yylval.number = EX; return ADDRESS;
+<IN_OPCODE>[Ii][Aa]			yylval.number = IA; return ADDRESS;
+<IN_OPCODE>[Nn][Xx][Tt]		yylval.number = NXT; return ADDRESS;
 
 	/* General stuff */
 
