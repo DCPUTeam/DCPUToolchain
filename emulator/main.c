@@ -14,12 +14,31 @@
 #ifdef _WIN32
 #include <io.h>
 #include <fcntl.h>
+#else
+#include <libgen.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <argtable2.h>
 #include "dcpu.h"
+
+char* path;
+
+#ifdef _WIN32
+char* dirname(char* path)
+{
+	// FIXME: This assumes the resulting path will always
+	// be shorter than the original (which it should be
+	// given that we're only returning a component of it, right?)
+	char drive[_MAX_DRIVE];
+	char dir[_MAX_DIR];
+	_splitpath(path, drive, dir, NULL, NULL);
+	strcpy(path, drive);
+	strcpy(path + strlen(path), dir);
+	return path;
+}
+#endif
 
 int main(int argc, char* argv[])
 {
@@ -31,6 +50,9 @@ int main(int argc, char* argv[])
 	bool uread = true;
 	vm_t* vm;
 	int nerrors;
+
+	path = strdup(argv[0]);
+	path = dirname(path);
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");

@@ -13,9 +13,12 @@
 **/
 
 #include <stdio.h>
+#include <string.h>
 #include "hwio.h"
 #include "hwioascii.h"
 #include "dcpuhook.h"
+
+extern char* path;
 
 uint32_t screen_tick = 0;
 uint32_t screen_width = 32;
@@ -193,6 +196,9 @@ void vm_hw_io_cycle(vm_t* vm, uint16_t pos)
 
 void vm_hw_io_init(vm_t* vm, uint16_t pos)
 {
+	strcat(path, "/terminal.png");
+
+	TCOD_console_set_custom_font(path, TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);
 	// Load TCOD.
 #if TCOD_HEXVERSION > 0x010500
 	TCOD_console_init_root(screen_width + 2, screen_height + 2, "DCPU-16 Tools Emulator", false, TCOD_RENDERER_SDL);
@@ -201,7 +207,7 @@ void vm_hw_io_init(vm_t* vm, uint16_t pos)
 #endif
 	TCOD_console_set_keyboard_repeat(200, 10);
 	TCOD_sys_set_fps(10000);
-	char_image = TCOD_image_load("terminal.png");
+	char_image = TCOD_image_load(path);
 	TCOD_sys_get_char_size(&char_width, &char_height);
 
 	// Initialize input buffer.
