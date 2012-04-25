@@ -10,7 +10,7 @@ if(MSVC)
 else(MSVC)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT_DIR}/Debug")
 endif(MSVC)
-set(OUTPUT_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+set(OUTPUT_DIR "${ROOT_DIR}/Debug")
 set(FLEX_UNISTD_INCLUDE "")
 if(MSVC)
 	# Windows does not have unistd.h, but GnuWin32's Flex program

@@ -58,3 +58,9 @@ CMakeFiles/*
 */*/CMakeFiles/*
 *.rule
 */*.dir/*
+*/lexer.c
+*/parser.c
+*/parser.h
+*/lexer.cpp
+*/parser.cpp
+*/parser.hpp

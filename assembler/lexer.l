@@ -68,6 +68,9 @@ char* trim_and_unescape(char* data, int mode)
 \.[Ii][Nn][Cc][Bb][Ii][Nn]					yylval.number = INCBIN; return KEYWORD;
 \.[Ee][Xx][Pp][Oo][Rr][Tt]					yylval.number = EXPORT; return KEYWORD;
 \.[Ii][Mm][Pp][Oo][Rr][Tt]					yylval.number = IMPORT; return KEYWORD;
+\.[Ee][Qq][Uu][Aa][Tt][Ee]					return EQUATE;
+\.[Ee][Qq][Uu]								return EQUATE;
+\.[Dd][Ee][Ff][Ii][Nn][Ee]					return EQUATE;
 
 	/* Opcodes as numbers support */
 

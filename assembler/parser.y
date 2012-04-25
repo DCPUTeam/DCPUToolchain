@@ -57,7 +57,7 @@ int yywrap()
 
 // Define our lexical token names.
 %token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT ADD
-%token <token> KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR
+%token <token> KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE
 %token <string> WORD STRING CHARACTER
 %token <number> ADDRESS
 
@@ -118,6 +118,38 @@ line:
 		NEWLINE
 		{
 			$$ = NULL;
+		} |
+		EQUATE WORD parameters NEWLINE
+		{
+			// Ugh, this is such an ugly hack and really needs to be better.
+			struct ast_node_instruction* linst = malloc(sizeof(struct ast_node_instruction));
+			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
+			struct ast_node_label* lbl = malloc(sizeof(struct ast_node_label));
+
+			// Initialize DAT instruction.
+			linst->instruction = "DAT";
+			linst->parameters = $3;
+
+			// Initialize label.
+			lbl->name = $2;
+
+			// Initialize instruction.
+			lnode->type = type_label;
+			lnode->keyword = 0;
+			lnode->instruction = NULL;
+			lnode->label = lbl;
+			lnode->prev = NULL;
+			lnode->keyword_data_string = NULL;
+			lnode->keyword_data_numeric = 0;
+
+			$$ = malloc(sizeof(struct ast_node_line));
+			$$->type = type_instruction;
+			$$->keyword = 0;
+			$$->instruction = linst;
+			$$->label = NULL;
+			$$->prev = lnode;
+			$$->keyword_data_string = NULL;
+			$$->keyword_data_numeric = 0;
 		} |
 		KEYWORD WORD NEWLINE
 		{
