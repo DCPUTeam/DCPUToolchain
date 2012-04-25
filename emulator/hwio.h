@@ -18,7 +18,7 @@
 #include <libtcod.h>
 #include "dcpu.h"
 
-void vm_hw_io_init(vm_t* vm);
+void vm_hw_io_init(vm_t* vm, uint16_t pos);
 void vm_hw_io_free(vm_t* vm);
 
 #endif
