@@ -36,8 +36,9 @@ int main(int argc, char* argv[])
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file, or - to read from standard input.");
 	struct arg_lit* debug_mode = arg_lit0("d", "debug", "Show each executed instruction.");
+	struct arg_lit* terminate_mode = arg_lit0("t", "show-on-terminate", "Show state of machine when program is terminated.");
 	struct arg_end *end = arg_end(20);
-	void *argtable[] = { input_file, debug_mode, end };
+	void *argtable[] = { input_file, debug_mode, terminate_mode, end };
 	
 	// Parse arguments.
 	nerrors = arg_parse(argc,argv,argtable);
@@ -98,6 +99,20 @@ int main(int argc, char* argv[])
 	vm->debug = (debug_mode->count > 0);
 	vm_flash(vm, flash);
 	vm_execute(vm);
+	if (terminate_mode->count > 0)
+	{
+		fprintf(stderr, "\n");
+		fprintf(stderr, "A:   0x%04X     [A]:   0x%04X\n", vm->registers[REG_A], vm->ram[vm->registers[REG_A]]);
+		fprintf(stderr, "B:   0x%04X     [B]:   0x%04X\n", vm->registers[REG_B], vm->ram[vm->registers[REG_B]]);
+		fprintf(stderr, "C:   0x%04X     [C]:   0x%04X\n", vm->registers[REG_C], vm->ram[vm->registers[REG_C]]);
+		fprintf(stderr, "X:   0x%04X     [X]:   0x%04X\n", vm->registers[REG_X], vm->ram[vm->registers[REG_X]]);
+		fprintf(stderr, "Y:   0x%04X     [Y]:   0x%04X\n", vm->registers[REG_Y], vm->ram[vm->registers[REG_Y]]);
+		fprintf(stderr, "Z:   0x%04X     [Z]:   0x%04X\n", vm->registers[REG_Z], vm->ram[vm->registers[REG_Z]]);
+		fprintf(stderr, "I:   0x%04X     [I]:   0x%04X\n", vm->registers[REG_I], vm->ram[vm->registers[REG_I]]);
+		fprintf(stderr, "J:   0x%04X     [J]:   0x%04X\n", vm->registers[REG_J], vm->ram[vm->registers[REG_J]]);
+		fprintf(stderr, "PC:  0x%04X     SP:    0x%04X\n", vm->pc, vm->sp);
+		fprintf(stderr, "EX:  0x%04X     IA:    0x%04X\n", vm->ex, vm->ia);
+	}
 	vm_free(vm);
 
 	return 0;

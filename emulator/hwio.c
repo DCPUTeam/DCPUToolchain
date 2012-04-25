@@ -27,23 +27,7 @@ uint32_t char_addressable_width = 4;
 uint32_t char_addressable_height = 8;
 const TCOD_color_t color_white = { 255, 255, 255 };
 const TCOD_color_t color_black = { 0, 0, 0 };
-
-void vm_hw_io_update(vm_t* vm, uint16_t pos);
-
-void vm_hw_io_init(vm_t* vm)
-{
-#if TCOD_HEXVERSION > 0x010500
-	TCOD_console_init_root(screen_width + 2, screen_height + 2, "DCPU-16 Tools Emulator", false, TCOD_RENDERER_SDL);
-#else
-	TCOD_console_init_root(screen_width + 2, screen_height + 2, "DCPU-16 Tools Emulator", false);
-#endif
-	TCOD_console_set_keyboard_repeat(200, 10);
-	TCOD_sys_set_fps(10000);
-	vm_hook_register(vm, &vm_hw_io_update, 0);
-	char_image = TCOD_image_load("terminal.png");
-	TCOD_sys_get_char_size(&char_width, &char_height);
-	vm->ram[0x9010] = 0x9000 + input_index;
-}
+uint16_t vm_write_update, vm_cycle_update;
 
 void vm_hw_io_update(vm_t* vm, uint16_t pos)
 {
@@ -164,7 +148,7 @@ void vm_hw_io_update(vm_t* vm, uint16_t pos)
 	}
 }
 
-void vm_hw_io_cycle(vm_t* vm)
+void vm_hw_io_cycle(vm_t* vm, uint16_t pos)
 {
 	TCOD_key_t key;
 	uint16_t ascii;
@@ -207,8 +191,34 @@ void vm_hw_io_cycle(vm_t* vm)
 	TCOD_console_flush();
 }
 
+void vm_hw_io_init(vm_t* vm, uint16_t pos)
+{
+	// Load TCOD.
+#if TCOD_HEXVERSION > 0x010500
+	TCOD_console_init_root(screen_width + 2, screen_height + 2, "DCPU-16 Tools Emulator", false, TCOD_RENDERER_SDL);
+#else
+	TCOD_console_init_root(screen_width + 2, screen_height + 2, "DCPU-16 Tools Emulator", false);
+#endif
+	TCOD_console_set_keyboard_repeat(200, 10);
+	TCOD_sys_set_fps(10000);
+	char_image = TCOD_image_load("terminal.png");
+	TCOD_sys_get_char_size(&char_width, &char_height);
+
+	// Initialize input buffer.
+	vm->ram[0x9010] = 0x9000 + input_index;
+
+	// Register hooks.
+	vm_write_update = vm_hook_register(vm, &vm_hw_io_update, HOOK_ON_WRITE);
+	vm_cycle_update = vm_hook_register(vm, &vm_hw_io_cycle, HOOK_ON_CYCLE);
+}
+
 void vm_hw_io_free(vm_t* vm)
 {
+	// Unregister hooks.
+	vm_hook_unregister(vm, vm_write_update);
+	vm_hook_unregister(vm, vm_cycle_update);
+
+	// Free TCOD memory.
 	TCOD_image_delete(char_image);
 	TCOD_console_delete(NULL);
 }

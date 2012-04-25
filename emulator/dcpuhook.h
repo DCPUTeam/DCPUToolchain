@@ -17,14 +17,18 @@
 
 #include "dcpu.h"
 
+#define HOOK_ON_NONE	0
+#define HOOK_ON_WRITE	1
+#define HOOK_ON_CYCLE	2
+
 #ifdef PRIVATE_VM_ACCESS
-void vm_hook_fire(vm_t* vm, uint16_t pos);
+void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode);
 #endif
 
 typedef void (*vm_hook)(vm_t*, uint16_t pos);
 
-// Pass 0 to mode as it is currently unused and hooks only fire on VM RAM write
+// Mode should be either HOOK_ON_WRITE or HOOK_ON_CYCLE.
 uint16_t vm_hook_register(vm_t* vm, vm_hook hook, uint16_t mode);
-void vm_hook_unregister(vm_t* vm, uint16_t id, uint16_t mode);
+void vm_hook_unregister(vm_t* vm, uint16_t id);
 
 #endif

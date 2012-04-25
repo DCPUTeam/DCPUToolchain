@@ -19,6 +19,7 @@
 #include "dcpu.h"
 #include "dcpubase.h"
 #include "hwio.h"
+#include "hwtimer.h"
 
 vm_t* vm_create()
 {
@@ -32,7 +33,8 @@ vm_t* vm_create()
 		new_vm->registers[i] = 0x0;
 	new_vm->pc = 0x0;
 	new_vm->sp = 0x0;
-	new_vm->o = 0x0;
+	new_vm->ex = 0x0;
+	new_vm->ia = 0x0;
 	for (i = 0; i < 0x10000; i++)
 		new_vm->ram[i] = 0x0;
 	new_vm->dummy = 0x0;
@@ -42,6 +44,7 @@ vm_t* vm_create()
 	
 	// Initialize DCPU-16 components.
 	vm_hw_io_init(new_vm);
+	vm_hw_timer_init(new_vm);
 
 	// Return.
 	return new_vm;
@@ -51,6 +54,7 @@ void vm_free(vm_t* vm)
 {
 	// Shutdown components.
 	vm_hw_io_free(vm);
+	vm_hw_timer_free(vm);
 
 	// Free the memory.
 	free(vm);
@@ -64,7 +68,8 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 		vm->registers[i] = 0x0;
 	vm->pc = 0x0;
 	vm->sp = 0x0;
-	vm->o = 0x0;
+	vm->ex = 0x0;
+	vm->ia = 0x0;
 	for (i = 0; i < 0x10000; i++)
 		vm->ram[i] = memory[i];
 	vm->dummy = 0x0;
@@ -76,8 +81,5 @@ void vm_execute(vm_t* vm)
 {
 	// Execute the memory using DCPU-16 specifications.
 	while (!vm->halted)
-	{
 		vm_cycle(vm);
-		vm_hw_io_cycle(vm);
-	}
 }

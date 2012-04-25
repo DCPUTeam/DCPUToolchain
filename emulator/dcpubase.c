@@ -31,6 +31,16 @@ void vm_halt(vm_t* vm, const char* message, ...)
 	return;
 }
 
+void vm_interrupt(vm_t* vm, uint16_t msgid)
+{
+	if (vm->ia == 0)
+		return;
+	vm->ram[vm->sp++] = vm->pc;
+	vm->ram[vm->sp++] = vm->registers[REG_A];
+	vm->pc = vm->ia;
+	vm->registers[REG_A] = msgid;
+}
+
 uint16_t vm_consume_word(vm_t* vm)
 {
 	uint16_t v = vm->ram[vm->pc];
@@ -81,12 +91,14 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val)
 		if(vm->skip) return vm->dummy;
 		t = --vm->sp;
 		return vm->ram[t];
+	case IA:
+		return vm->ia;
 	case SP:
 		return vm->sp;
 	case PC:
 		return vm->pc;
-	case O:
-		return vm->o;
+	case EX:
+		return vm->ex;
 	case NXT:
 		return vm->ram[(uint16_t)vm_consume_word(vm)];
 	case NXT_LIT:
@@ -120,83 +132,104 @@ void vm_cycle(vm_t* vm)
 {
 	uint16_t instruction = vm_consume_word(vm);
 	uint16_t op = INSTRUCTION_GET_OP(instruction);
-	uint16_t a = INSTRUCTION_GET_A(instruction);
 	uint16_t b = INSTRUCTION_GET_B(instruction);
-	uint16_t t;
+	uint16_t a = INSTRUCTION_GET_A(instruction);
 
 	switch (op)
 	{
 	case OP_SET:
-		vm_print_op("SET", vm, a, b);
-		vm_op_set(vm, a, b);
+		vm_print_op("SET", vm, b, a);
+		vm_op_set(vm, b, a);
 		break;
 	case OP_ADD:
-		vm_print_op("ADD", vm, a, b);
-		vm_op_add(vm, a, b);
+		vm_print_op("ADD", vm, b, a);
+		vm_op_add(vm, b, a);
 		break;
 	case OP_SUB:
-		vm_print_op("SUB", vm, a, b);
-		vm_op_sub(vm, a, b);
+		vm_print_op("SUB", vm, b, a);
+		vm_op_sub(vm, b, a);
 		break;
 	case OP_MUL:
-		vm_print_op("MUL", vm, a, b);
-		vm_op_mul(vm, a, b);
+		vm_print_op("MUL", vm, b, a);
+		vm_op_mul(vm, b, a);
 		break;
 	case OP_DIV:
 		vm_print_op("DIV", vm, a, b);
-		vm_op_div(vm, a, b);
+		vm_op_div(vm, b, a);
 		break;
 	case OP_MOD:
-		vm_print_op("MOD", vm, a, b);
-		vm_op_mod(vm, a, b);
+		vm_print_op("MOD", vm, b, a);
+		vm_op_mod(vm, b, a);
 		break;
 	case OP_SHL:
-		vm_print_op("SHL", vm, a, b);
-		vm_op_shl(vm, a, b);
+		vm_print_op("SHL", vm, b, a);
+		vm_op_shl(vm, b, a);
 		break;
 	case OP_SHR:
-		vm_print_op("SHR", vm, a, b);
-		vm_op_shr(vm, a, b);
+		vm_print_op("SHR", vm, b, a);
+		vm_op_shr(vm, b, a);
 		break;
 	case OP_AND:
-		vm_print_op("AND", vm, a, b);
-		vm_op_and(vm, a, b);
+		vm_print_op("AND", vm, b, a);
+		vm_op_and(vm, b, a);
 		break;
 	case OP_BOR:
-		vm_print_op("BOR", vm, a, b);
-		vm_op_bor(vm, a, b);
+		vm_print_op("BOR", vm, b, a);
+		vm_op_bor(vm, b, a);
 		break;
 	case OP_XOR:
-		vm_print_op("XOR", vm, a, b);
-		vm_op_xor(vm, a, b);
+		vm_print_op("XOR", vm, b, a);
+		vm_op_xor(vm, b, a);
 		break;
 	case OP_IFE:
-		vm_print_op("IFE", vm, a, b);
-		vm_op_ife(vm, a, b);
+		vm_print_op("IFE", vm, b, a);
+		vm_op_ife(vm, b, a);
 		break;
 	case OP_IFN:
-		vm_print_op("IFN", vm, a, b);
-		vm_op_ifn(vm, a, b);
+		vm_print_op("IFN", vm, b, a);
+		vm_op_ifn(vm, b, a);
 		break;
 	case OP_IFG:
-		vm_print_op("IFG", vm, a, b);
-		vm_op_ifg(vm, a, b);
+		vm_print_op("IFG", vm, b, a);
+		vm_op_ifg(vm, b, a);
 		break;
 	case OP_IFB:
-		vm_print_op("IFB", vm, a, b);
-		vm_op_ifb(vm, a, b);
+		vm_print_op("IFB", vm, b, a);
+		vm_op_ifb(vm, b, a);
 		break;
 	case OP_NONBASIC:
-		t = a;
-		a = b;
-		switch (t)
+		switch (b)
 		{
 		case NBOP_JSR:
 			vm_print_op_nonbasic("JSR", vm, a);
 			vm_op_jsr(vm, a);
 			break;
+		case NBOP_INT:
+			vm_print_op_nonbasic("INT", vm, a);
+			vm_op_int(vm, a);
+			break;
+		case NBOP_ING:
+			vm_print_op_nonbasic("ING", vm, a);
+			vm_op_ing(vm, a);
+			break;
+		case NBOP_INS:
+			vm_print_op_nonbasic("INS", vm, a);
+			vm_op_ins(vm, a);
+			break;
+		case NBOP_HWN:
+			vm_print_op_nonbasic("HWN", vm, a);
+			vm_op_hwn(vm, a);
+			break;
+		case NBOP_HWQ:
+			vm_print_op_nonbasic("HWQ", vm, a);
+			vm_op_hwq(vm, a);
+			break;
+		case NBOP_HWI:
+			vm_print_op_nonbasic("HWI", vm, a);
+			vm_op_hwi(vm, a);
+			break;
 		default:
-			vm_halt(vm, "Invalid non-basic opcode %u.", t);
+			vm_halt(vm, "Invalid non-basic opcode %u.", b);
 			break;
 		}
 		break;
@@ -206,4 +239,5 @@ void vm_cycle(vm_t* vm)
 	}
 	if (vm->debug)
 		printf("\n");
+	vm_hook_fire(vm, 0, HOOK_ON_CYCLE);
 }

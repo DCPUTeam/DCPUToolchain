@@ -55,5 +55,6 @@ Release/*
 CMakeCache.txt
 CMakeFiles/*
 */CMakeFiles/*
+*/*/CMakeFiles/*
 *.rule
 */*.dir/*

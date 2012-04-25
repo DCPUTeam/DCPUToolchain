@@ -19,7 +19,6 @@
 #include "dcpu.h"
 
 void vm_hw_io_init(vm_t* vm);
-void vm_hw_io_cycle(vm_t* vm);
 void vm_hw_io_free(vm_t* vm);
 
 #endif

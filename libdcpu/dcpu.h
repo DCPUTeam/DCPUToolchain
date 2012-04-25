@@ -60,10 +60,11 @@ typedef uint8_t bool;
 #define PUSH 0x1A
 #define SP   0x1B
 #define PC   0x1C
-#define O    0x1D
+#define EX   0x1D
 #define NXT  0x1E
 #define NXT_LIT 0x1F
 // 0x20 -> 0x3f are all literal values.
+#define IA   0xFF /* not a valid value, but is used to pass IA around internally */
 
 // Opcodes
 #define OP_NONBASIC 0x0
@@ -90,33 +91,30 @@ typedef uint8_t bool;
 #define OP_IFL      0x16
 #define OP_IFU      0x17
 
-
-
-
 // Non-basic opcodes
 #define NBOP_RESERVED   0x00
 #define NBOP_JSR        0x01
-#define NBOP_INT	0x08
-#define NBOP_ING	0x09
-#define NBOP_INS	0x0a
-#define NBOP_HWN	0x10
-#define NBOP_HWQ	0x11
-#define NBOP_HWI	0x12
+#define NBOP_INT		0x08
+#define NBOP_ING		0x09
+#define NBOP_INS		0x0a
+#define NBOP_HWN		0x10
+#define NBOP_HWQ		0x11
+#define NBOP_HWI		0x12
 
-// 0x02 -> 0x3f are all reserved
-#define NBOP_EXT_PRINT  0x02 // Custom extension.
-
-// Other
+// Arithmetic constants
 #define AR_NOFLOW 0x0000
 #define AR_OVERFLOW 0x0001
 #define AR_UNDERFLOW 0xffff
 #define AR_MAX 0xffff
 
+// Interrupt messages
+#define INT_TIMER 0
+
 // Instruction mechanisms
-#define INSTRUCTION_CREATE(op, a, b) (((a & 0x3f) << 10) + ((b & 0x3f) << 4) + (op & 0xf))
+#define INSTRUCTION_CREATE(op, b, a) (((a & 0x3f) << 10) + ((b & 0x1f) << 5) + (op & 0x1f))
 #define INSTRUCTION_GET_A(inst) ((inst & 0xfc00) >> 10)
-#define INSTRUCTION_GET_B(inst) ((inst & 0x3f0) >> 4)
-#define INSTRUCTION_GET_OP(inst) (inst & 0xf)
+#define INSTRUCTION_GET_B(inst) ((inst & 0x3e0) >> 5)
+#define INSTRUCTION_GET_OP(inst) (inst & 0x1f)
 
 typedef struct
 {
@@ -124,7 +122,7 @@ typedef struct
 	uint16_t pc;
 	uint16_t sp;
 	uint16_t ia;
-	uint16_t o;
+	uint16_t ex;
 	uint16_t ram[0x10000];
 	uint16_t dummy; // Dummy position for assignments that silently fail.
 	uint8_t halted;
