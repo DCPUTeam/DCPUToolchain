@@ -108,7 +108,9 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
 	case NXT:
 		return vm->ram[vm_consume_word(vm)];
 	case NXT_LIT:
-		return vm_consume_word(vm);
+		t = vm_consume_word(vm);
+		if(vm->debug) printf(" (0x%04X) ", t);
+		return t;
 	default:
 		return val - 0x20;
 	}
@@ -119,9 +121,9 @@ void vm_print_op(const char* opname, vm_t* vm, uint16_t a, uint16_t b)
 	if (!vm->debug)
 		return;
 	if (vm->skip)
-		printf("(skipped) %s 0x%04X 0x%04X", opname, a, b);
+		printf("0x%04X: (skipped) %s 0x%04X 0x%04X", vm->pc, opname, a, b);
 	else
-		printf("%s 0x%04X 0x%04X", opname, a, b);
+		printf("0x%04X: %s 0x%04X 0x%04X", vm->pc, opname, a, b);
 }
 
 void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
@@ -129,9 +131,9 @@ void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
 	if (!vm->debug)
 		return;
 	if (vm->skip)
-		printf("(skipped) %s 0x%04X", opname, a);
+		printf("0x%04X: (skipped) %s 0x%04X", vm->pc, opname, a);
 	else
-		printf("%s 0x%04X", opname, a);
+		printf("0x%04X: %s 0x%04X", vm->pc, opname, a);
 }
 
 void vm_cycle(vm_t* vm)
@@ -275,7 +277,7 @@ void vm_cycle(vm_t* vm)
 			vm_op_hwi(vm, a);
 			break;
 		default:
-			vm_halt(vm, "Invalid non-basic opcode %u.", b);
+			vm_halt(vm, "Invalid non-basic opcode %u. (0x%04X at 0x%04X)", b, instruction, vm->pc -1);
 			break;
 		}
 		break;
