@@ -27,6 +27,14 @@
 	else \
 		vm->ex = AR_NOFLOW;
 
+#define VM_CHECK_ARITHMETIC_FLOW_EX(op, val_a, val_b, val_ex) \
+	if ((int32_t)val_a op (int32_t)val_b + (int32_t)val_ex < (int32_t)0) \
+		vm->ex = AR_UNDERFLOW; \
+	else if ((int32_t)val_a op (int32_t)val_b + (int32_t)val_ex > (int32_t)AR_MAX) \
+		vm->ex = AR_OVERFLOW; \
+	else \
+		vm->ex = AR_NOFLOW;
+
 #define VM_SKIP_RESET if(vm->skip) {vm->skip = false; return;}
 
 #define VM_HOOK_FIRE(var) \
@@ -295,6 +303,18 @@ void vm_op_shl(vm_t* vm, uint16_t b, uint16_t a)
 	VM_HOOK_FIRE(store_b);
 }
 
+void vm_op_mvi(vm_t* vm, uint16_t b, uint16_t a)
+{
+	uint16_t val_a;
+	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	val_a = vm_resolve_value(vm, a, POS_A);
+	*store_b = val_a;
+	vm->registers[REG_I]++;
+	vm->registers[REG_J]++;
+	VM_HOOK_FIRE(store_b);
+	vm->skip = false;
+}
+
 void vm_op_ifb(vm_t* vm, uint16_t b, uint16_t a)
 {
 	uint16_t val_b, val_a;
@@ -367,6 +387,32 @@ void vm_op_ifu(vm_t* vm, uint16_t b, uint16_t a)
 	vm->skip = !(val_b < val_a);
 }
 
+void vm_op_adx(vm_t* vm, uint16_t b, uint16_t a)
+{
+	uint16_t val_b, val_a, val_ex;
+	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = vm_resolve_value_once(vm, b, POS_B);
+	val_a = vm_resolve_value(vm, a, POS_A);
+	val_ex = vm->ex;
+	VM_SKIP_RESET;
+	*store_b = val_b + val_a + val_ex;
+	VM_CHECK_ARITHMETIC_FLOW_EX(+, val_b, val_a, val_ex);
+	VM_HOOK_FIRE(store_b);
+}
+
+void vm_op_sux(vm_t* vm, uint16_t b, uint16_t a)
+{
+	uint16_t val_b, val_a, val_ex;
+	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = vm_resolve_value_once(vm, b, POS_B);
+	val_a = vm_resolve_value(vm, a, POS_A);
+	val_ex = vm->ex;
+	VM_SKIP_RESET;
+	*store_b = val_b - val_a + val_ex;
+	VM_CHECK_ARITHMETIC_FLOW_EX(-, val_b, val_a, val_ex);
+	VM_HOOK_FIRE(store_b);
+}
+
 void vm_op_jsr(vm_t* vm, uint16_t a)
 {
 	uint16_t new_pc = vm_resolve_value(vm, a, POS_A);
@@ -382,12 +428,12 @@ void vm_op_int(vm_t* vm, uint16_t a)
 	vm_interrupt(vm, a);
 }
 
-void vm_op_ing(vm_t* vm, uint16_t a)
+void vm_op_iag(vm_t* vm, uint16_t a)
 {
 	vm_op_set(vm, a, IA);
 }
 
-void vm_op_ins(vm_t* vm, uint16_t a)
+void vm_op_ias(vm_t* vm, uint16_t a)
 {
 	vm_op_set(vm, IA, a);
 }

@@ -55,10 +55,11 @@
      INCBIN = 271,
      EXPORT = 272,
      IMPORT = 273,
-     WORD = 274,
-     STRING = 275,
-     CHARACTER = 276,
-     ADDRESS = 277
+     ERROR = 274,
+     WORD = 275,
+     STRING = 276,
+     CHARACTER = 277,
+     ADDRESS = 278
    };
 #endif
 /* Tokens.  */
@@ -78,10 +79,11 @@
 #define INCBIN 271
 #define EXPORT 272
 #define IMPORT 273
-#define WORD 274
-#define STRING 275
-#define CHARACTER 276
-#define ADDRESS 277
+#define ERROR 274
+#define WORD 275
+#define STRING 276
+#define CHARACTER 277
+#define ADDRESS 278
 
 
 
@@ -109,7 +111,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 113 "parser.h"
+#line 115 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

@@ -17,6 +17,7 @@
 class NAssignmentExpression;
 class NInteger;
 
+#include <cstdio>
 #include <vector>
 #include <AsmGenerator.h>
 #include <CompilerException.h>

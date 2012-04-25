@@ -199,6 +199,10 @@ void vm_cycle(vm_t* vm)
 		vm_print_op("SHL", vm, b, a);
 		vm_op_shl(vm, b, a);
 		break;
+	case OP_MVI:
+		vm_print_op("MVI", vm, b, a);
+		vm_op_mvi(vm, b, a);
+		break;
 	case OP_IFB:
 		vm_print_op("IFB", vm, b, a);
 		vm_op_ifb(vm, b, a);
@@ -231,6 +235,14 @@ void vm_cycle(vm_t* vm)
 		vm_print_op("IFU", vm, b, a);
 		vm_op_ifu(vm, b, a);
 		break;
+	case OP_ADX:
+		vm_print_op("ADX", vm, b, a);
+		vm_op_adx(vm, b, a);
+		break;
+	case OP_SUX:
+		vm_print_op("SUX", vm, b, a);
+		vm_op_sux(vm, b, a);
+		break;
 	case OP_NONBASIC:
 		switch (b)
 		{
@@ -242,13 +254,13 @@ void vm_cycle(vm_t* vm)
 			vm_print_op_nonbasic("INT", vm, a);
 			vm_op_int(vm, a);
 			break;
-		case NBOP_ING:
-			vm_print_op_nonbasic("ING", vm, a);
-			vm_op_ing(vm, a);
+		case NBOP_IAG:
+			vm_print_op_nonbasic("IAG", vm, a);
+			vm_op_iag(vm, a);
 			break;
-		case NBOP_INS:
-			vm_print_op_nonbasic("INS", vm, a);
-			vm_op_ins(vm, a);
+		case NBOP_IAS:
+			vm_print_op_nonbasic("IAS", vm, a);
+			vm_op_ias(vm, a);
 			break;
 		case NBOP_HWN:
 			vm_print_op_nonbasic("HWN", vm, a);
