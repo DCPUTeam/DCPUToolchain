@@ -71,21 +71,38 @@ typedef uint8_t bool;
 #define OP_ADD      0x2
 #define OP_SUB      0x3
 #define OP_MUL      0x4
-#define OP_DIV      0x5
-#define OP_MOD      0x6
-#define OP_SHL      0x7
-#define OP_SHR      0x8
+#define OP_MLI      0x5
+#define OP_DIV      0x6
+#define OP_DVI      0x7
+#define OP_MOD      0x8
 #define OP_AND      0x9
 #define OP_BOR      0xA
 #define OP_XOR      0xB
-#define OP_IFE      0xC
-#define OP_IFN      0xD
-#define OP_IFG      0xE
-#define OP_IFB      0xF
+#define OP_SHR      0xC
+#define OP_ASR      0xD
+#define OP_SHL      0xE
+#define OP_IFB      0x10
+#define OP_IFC      0x11
+#define OP_IFE      0x12
+#define OP_IFN      0x13
+#define OP_IFG      0x14
+#define OP_IFA      0x15
+#define OP_IFL      0x16
+#define OP_IFU      0x17
+
+
+
 
 // Non-basic opcodes
 #define NBOP_RESERVED   0x00
 #define NBOP_JSR        0x01
+#define NBOP_INT	0x08
+#define NBOP_ING	0x09
+#define NBOP_INS	0x0a
+#define NBOP_HWN	0x10
+#define NBOP_HWQ	0x11
+#define NBOP_HWI	0x12
+
 // 0x02 -> 0x3f are all reserved
 #define NBOP_EXT_PRINT  0x02 // Custom extension.
 
@@ -96,9 +113,9 @@ typedef uint8_t bool;
 #define AR_MAX 0xffff
 
 // Instruction mechanisms
-#define INSTRUCTION_CREATE(op, a, b) (((b & 0x3f) << 10) + ((a & 0x3f) << 4) + (op & 0xf))
-#define INSTRUCTION_GET_B(inst) ((inst & 0xfc00) >> 10)
-#define INSTRUCTION_GET_A(inst) ((inst & 0x3f0) >> 4)
+#define INSTRUCTION_CREATE(op, a, b) (((a & 0x3f) << 10) + ((b & 0x3f) << 4) + (op & 0xf))
+#define INSTRUCTION_GET_A(inst) ((inst & 0xfc00) >> 10)
+#define INSTRUCTION_GET_B(inst) ((inst & 0x3f0) >> 4)
 #define INSTRUCTION_GET_OP(inst) (inst & 0xf)
 
 typedef struct
@@ -106,6 +123,7 @@ typedef struct
 	uint16_t registers[8];
 	uint16_t pc;
 	uint16_t sp;
+	uint16_t ia;
 	uint16_t o;
 	uint16_t ram[0x10000];
 	uint16_t dummy; // Dummy position for assignments that silently fail.
