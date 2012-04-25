@@ -201,9 +201,9 @@ void vm_hw_io_init(vm_t* vm, uint16_t pos)
 	TCOD_console_set_custom_font(path, TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);
 	// Load TCOD.
 #if TCOD_HEXVERSION > 0x010500
-	TCOD_console_init_root(screen_width + 2, screen_height + 2, "DCPU-16 Tools Emulator", false, TCOD_RENDERER_SDL);
+	TCOD_console_init_root(screen_width + 2, screen_height + 2, "Toolchain Emulator", false, TCOD_RENDERER_SDL);
 #else
-	TCOD_console_init_root(screen_width + 2, screen_height + 2, "DCPU-16 Tools Emulator", false);
+	TCOD_console_init_root(screen_width + 2, screen_height + 2, "Toolchain Emulator", false);
 #endif
 	TCOD_console_set_keyboard_repeat(200, 10);
 	TCOD_sys_set_fps(10000);
