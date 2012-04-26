@@ -21,7 +21,7 @@
 
 #define HW_MAX 0x1000
 
-int vm_hw_connected[HW_MAX] = calloc(HW_MAX, sizeof(int));
+int vm_hw_connected[HW_MAX];
 hw_t vm_hw_list[HW_MAX];
 
 uint16_t vm_hw_register(vm_t* vm, hw_t hardware)
