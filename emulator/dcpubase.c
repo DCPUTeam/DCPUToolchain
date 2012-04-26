@@ -138,11 +138,11 @@ void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
 
 void vm_cycle(vm_t* vm)
 {
-        if(vm->sleep_cycles > 0)
-        {
-            vm->sleep_cycles--;
-            return;
-        }
+	if(vm->sleep_cycles > 0)
+	{
+		vm->sleep_cycles--;
+		return;
+	}
 
 	uint16_t instruction = vm_consume_word(vm);
 	uint16_t op = INSTRUCTION_GET_OP(instruction);
