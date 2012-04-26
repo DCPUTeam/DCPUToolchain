@@ -199,10 +199,17 @@ add_subdirectory(libdcpu-ci-lang)
 add_subdirectory(libdcpu-ci-lang-c)
 
 # Add executable folders.
+add_subdirectory(preprocessor)
 add_subdirectory(compiler)
 add_subdirectory(assembler)
 add_subdirectory(linker)
 if("${BUILD_EMULATOR}" MATCHES true)
 	add_subdirectory(emulator)
 endif("${BUILD_EMULATOR}" MATCHES true)
-add_subdirectory(kernel)
+
+# Add kernel, using the multi-threading version if available.
+if(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
+	add_subdirectory(kernel.mt)
+else(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
+	add_subdirectory(kernel)
+endif(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")

@@ -51,9 +51,6 @@ int main(int argc, char* argv[])
 	vm_t* vm;
 	int nerrors;
 
-	path = strdup(argv[0]);
-	path = dirname(path);
-
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file, or - to read from standard input.");
@@ -69,11 +66,15 @@ int main(int argc, char* argv[])
 		if (show_help->count != 0)
 			arg_print_errors(stdout, end, "emulator");
 		printf("syntax:\n    emulator");
-		arg_print_syntax(stdout, argtable, "\n");
+		arg_print_syntax(stderr, argtable, "\n");
 		printf("options:\n");
-		arg_print_glossary(stdout, argtable, "    %-25s %s\n");
+		arg_print_glossary(stderr, argtable, "    %-25s %s\n");
 		exit(1);
 	}
+
+	// Set global path variable.
+	path = strdup(argv[0]);
+	path = dirname(path);
 
 	// Zero out the flash space.
 	for (i = 0; i < 0x10000; i++)
