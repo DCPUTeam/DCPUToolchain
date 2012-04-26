@@ -462,6 +462,7 @@ void vm_op_std(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_jsr(vm_t* vm, uint16_t a)
 {
+	OP_NUM_CYCLES(3);
 	uint16_t new_pc = vm_resolve_value(vm, a, POS_A);
 	uint16_t t;
 	VM_SKIP_RESET;
@@ -472,11 +473,13 @@ void vm_op_jsr(vm_t* vm, uint16_t a)
 
 void vm_op_hcf(vm_t* vm, uint16_t a)
 {
+	OP_NUM_CYCLES(9);
 	vm->halted = true; // TODO: make it do crazy shit
 }
 
 void vm_op_int(vm_t* vm, uint16_t a)
 {
+	OP_NUM_CYCLES(4);
 	if(vm->queue_interrupts == 1) {
 		irqs++;
 		vm->irq[irqs] = a;
@@ -497,6 +500,7 @@ void vm_op_ias(vm_t* vm, uint16_t a)
 
 void vm_op_iap(vm_t* vm, uint16_t a)
 {
+	OP_NUM_CYCLES(3);
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	
 	if(val_a != 0) {
@@ -508,6 +512,7 @@ void vm_op_iap(vm_t* vm, uint16_t a)
 
 void vm_op_iaq(vm_t* vm, uint16_t a)
 {
+	OP_NUM_CYCLES(2);
 	uint16_t i = 0x0;
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	
@@ -523,6 +528,7 @@ void vm_op_iaq(vm_t* vm, uint16_t a)
 
 void vm_op_hwn(vm_t* vm, uint16_t a)
 {
+	OP_NUM_CYCLES(2);
 	uint16_t* store_a = vm_internal_get_store(vm, a, POS_A);
 	*store_a = vm_hw_count(vm);
 	if(vm->debug) printf("\nhwn: %d devices", *store_a);
@@ -532,6 +538,7 @@ void vm_op_hwn(vm_t* vm, uint16_t a)
 
 void vm_op_hwq(vm_t* vm, uint16_t a)
 {
+	OP_NUM_CYCLES(4);
 	uint16_t* store_a = vm_internal_get_store(vm, REG_A, POS__);
 	uint16_t* store_b = vm_internal_get_store(vm, REG_B, POS__);
 	uint16_t* store_c = vm_internal_get_store(vm, REG_C, POS__);
@@ -558,6 +565,7 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 
 void vm_op_hwi(vm_t* vm, uint16_t a)
 {
+	OP_NUM_CYCLES(4);
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	vm_hw_interrupt(vm, val_a);
 }
