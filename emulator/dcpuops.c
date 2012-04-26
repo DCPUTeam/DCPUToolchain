@@ -42,6 +42,8 @@
 	if (var >= (uint16_t*)&vm->ram && var < (uint16_t*)&vm->ram + 0x10000) \
 		vm_hook_fire(vm, (uint16_t)(var - (uint16_t*)&vm->ram), HOOK_ON_WRITE);
 
+uint16_t irqs = 0x0;
+
 uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos)
 {
 	uint16_t t;
@@ -456,7 +458,12 @@ void vm_op_hcf(vm_t* vm, uint16_t a)
 
 void vm_op_int(vm_t* vm, uint16_t a)
 {
-	vm_interrupt(vm, a);
+	if(vm->queue_interrupts == 1) {
+		irqs++;
+		vm->irq[irqs] = a;
+	} else {
+		vm_interrupt(vm, a);
+	}
 }
 
 void vm_op_iag(vm_t* vm, uint16_t a)
@@ -471,12 +478,28 @@ void vm_op_ias(vm_t* vm, uint16_t a)
 
 void vm_op_iap(vm_t* vm, uint16_t a)
 {
-	// not implemented
+	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+	
+	if(val_a != 0) {
+		vm->sp--;
+		vm->ram[vm->sp] = vm->ia;
+		vm->ia = 0;
+	}
 }
 
 void vm_op_iaq(vm_t* vm, uint16_t a)
 {
-	// not implemented
+	uint16_t i = 0x0;
+	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+	
+	if(val_a == 0) {
+		for(i = 0; i < irqs; i++) {
+			vm_interrupt(vm, vm->irq[i]);
+		}
+		vm->queue_interrupts = 0;
+	} else {
+		vm->queue_interrupts = 1;
+	}
 }
 
 void vm_op_hwn(vm_t* vm, uint16_t a)
