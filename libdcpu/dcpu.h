@@ -141,6 +141,8 @@ typedef struct
 	uint16_t ex;
 	uint16_t ram[0x10000];
 	uint16_t dummy; // Dummy position for assignments that silently fail.
+	uint16_t irq[0x10000];
+	uint8_t queue_interrupts;
 	uint8_t halted;
 	uint8_t skip;
 	uint8_t debug;
