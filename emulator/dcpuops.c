@@ -499,11 +499,13 @@ void vm_op_int(vm_t* vm, uint16_t a)
 
 void vm_op_iag(vm_t* vm, uint16_t a)
 {
+	OP_NUM_CYCLES(1);
 	vm_op_set(vm, a, IA);
 }
 
 void vm_op_ias(vm_t* vm, uint16_t a)
 {
+	OP_NUM_CYCLES(1);
 	vm_op_set(vm, IA, a);
 }
 
