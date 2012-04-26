@@ -400,14 +400,15 @@ void process_line(struct ast_node_line* line)
 				aout_emit(aout_create_opcode(insttype->opcode, insttype->nbopcode, ppresults.a));
 		
 			// If the parameter is a label or requires an extra word, output them.
-			if (ppresults.a_label != NULL)
-				aout_emit(aout_create_label_replace(ppresults.a_label));
-			else if (ppresults.a_extra_used)
-				aout_emit(aout_create_raw(ppresults.a_extra));
 			if (ppresults.b_label != NULL)
 				aout_emit(aout_create_label_replace(ppresults.b_label));
 			else if (ppresults.b_extra_used)
 				aout_emit(aout_create_raw(ppresults.b_extra));
+			if (ppresults.a_label != NULL)
+				aout_emit(aout_create_label_replace(ppresults.a_label));
+			else if (ppresults.a_extra_used)
+				aout_emit(aout_create_raw(ppresults.a_extra));
+			
 		}
 		fprintf(stderr, "\n");
 		break;

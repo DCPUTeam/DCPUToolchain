@@ -107,7 +107,9 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
 	case EX:
 		return vm->ex;
 	case NXT:
-		return vm->ram[vm_consume_word(vm)];
+		t = vm->ram[vm_consume_word(vm)];
+		if(vm->debug) printf(" (0x%04X) ", t);
+		return t;
 	case NXT_LIT:
 		t = vm_consume_word(vm);
 		if(vm->debug) printf(" (0x%04X) ", t);
