@@ -42,6 +42,8 @@
 	if (var >= (uint16_t*)&vm->ram && var < (uint16_t*)&vm->ram + 0x10000) \
 		vm_hook_fire(vm, (uint16_t)(var - (uint16_t*)&vm->ram), HOOK_ON_WRITE);
 
+#define OP_NUM_CYCLES(count) vm->sleep_cycles += (count - 1);
+
 uint16_t irqs = 0x0;
 
 uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos)
