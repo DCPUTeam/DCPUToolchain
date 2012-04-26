@@ -19,9 +19,9 @@
 #include "hw.h"
 #include "lem1802.h"
 
-#define HW_MAX 10
+#define HW_MAX 0x1000
 
-int vm_hw_connected[HW_MAX] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int vm_hw_connected[HW_MAX] = calloc(HW_MAX, sizeof(int));
 hw_t vm_hw_list[HW_MAX];
 
 uint16_t vm_hw_register(vm_t* vm, hw_t hardware)

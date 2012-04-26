@@ -530,11 +530,9 @@ void vm_op_iaq(vm_t* vm, uint16_t a)
 	VM_SKIP_RESET;
 	
 	if(val_a == 0) {
-		printf("dequeuing %d interrupts\n", irqs);
 		for(i = 0; i < irqs; i++) {
 			vm_interrupt(vm, vm->irq[i]);
 		}
-		printf("finished dequeuing\n");
 		irqs = 0;
 		vm->queue_interrupts = 0;
 	} else {
