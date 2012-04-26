@@ -10,4 +10,5 @@ endif(NOT DEFINED IS_ROOT)
 # Define the assembler project.
 dt_project(executable)
 dt_needs(argtable2)
+dt_needs(bstring)
 dt_needs(libdcpu-pp)

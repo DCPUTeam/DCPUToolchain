@@ -12,6 +12,7 @@
 **/
 
 #include <stdio.h>
+#include <bstrlib.h>
 #include "parser.h"
 
 extern int yydebug;

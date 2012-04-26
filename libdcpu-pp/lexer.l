@@ -16,6 +16,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <bstrlib.h>
 #include "parser.h"
 
 #define HANDLE ECHO

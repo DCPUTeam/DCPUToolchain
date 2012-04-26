@@ -191,6 +191,8 @@ message("-- Defining projects")
 # Add library folders.
 add_subdirectory(third-party/libtcod)
 add_subdirectory(third-party/argtable2)
+add_subdirectory(third-party/bstring)
+add_subdirectory(third-party/simclist)
 add_subdirectory(libdcpu)
 add_subdirectory(libdcpu-vm)
 add_subdirectory(libdcpu-pp)

@@ -72,6 +72,7 @@ char* trim_and_unescape(char* data, int mode)
 \.[Ee][Qq][Uu][Aa][Tt][Ee]					return EQUATE;
 \.[Ee][Qq][Uu]								return EQUATE;
 \.[Dd][Ee][Ff][Ii][Nn][Ee]					return EQUATE;
+
 	/* Opcodes as numbers support */
 
 \{							BEGIN(IN_OPCODE);
