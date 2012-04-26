@@ -458,12 +458,12 @@ void vm_op_hcf(vm_t* vm, uint16_t a)
 
 void vm_op_int(vm_t* vm, uint16_t a)
 {
-	/*if(vm->queue_interrupts == 1) {
+	if(vm->queue_interrupts == 1) {
 		irqs++;
 		vm->irq[irqs] = a;
-	} else {*/
+	} else {
 		vm_interrupt(vm, a);
-	//}
+	}
 }
 
 void vm_op_iag(vm_t* vm, uint16_t a)
@@ -479,6 +479,7 @@ void vm_op_ias(vm_t* vm, uint16_t a)
 void vm_op_iap(vm_t* vm, uint16_t a)
 {
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+	VM_SKIP_RESET;
 	
 	if(val_a != 0) {
 		vm->sp--;
@@ -491,11 +492,15 @@ void vm_op_iaq(vm_t* vm, uint16_t a)
 {
 	uint16_t i = 0x0;
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+	VM_SKIP_RESET;
 	
 	if(val_a == 0) {
+		printf("dequeuing %d interrupts\n", irqs);
 		for(i = 0; i < irqs; i++) {
 			vm_interrupt(vm, vm->irq[i]);
 		}
+		printf("finished dequeuing\n");
+		irqs = 0;
 		vm->queue_interrupts = 0;
 	} else {
 		vm->queue_interrupts = 1;
@@ -505,6 +510,8 @@ void vm_op_iaq(vm_t* vm, uint16_t a)
 void vm_op_hwn(vm_t* vm, uint16_t a)
 {
 	uint16_t* store_a = vm_internal_get_store(vm, a, POS_A);
+	VM_SKIP_RESET;
+	
 	*store_a = vm_hw_count(vm);
 	if(vm->debug) printf("\nhwn: %d devices", *store_a);
 	VM_HOOK_FIRE(store_a);
@@ -520,7 +527,8 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 	uint16_t* store_y = vm_internal_get_store(vm, REG_Y, POS__);
 
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
-
+	VM_SKIP_RESET;
+	
 	hw_t queried_device = vm_hw_get_device(vm, val_a);
 	if(vm->debug) printf("\nhwq: index %d %04X%0X", val_a, queried_device.id_1, queried_device.id_2);
 	*store_a = queried_device.id_1;
@@ -540,5 +548,6 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 void vm_op_hwi(vm_t* vm, uint16_t a)
 {
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+	VM_SKIP_RESET;
 	vm_hw_interrupt(vm, val_a);
 }

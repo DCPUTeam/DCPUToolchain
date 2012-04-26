@@ -32,7 +32,7 @@ void vm_hw_timer_cycle(vm_t* vm, uint16_t pos)
 		{
 			if(message > 0x0)
 			{
-				vm_interrupt(vm, message);
+				vm_op_int(vm, message);
 			}
 			timer_tick = 0;
 		}

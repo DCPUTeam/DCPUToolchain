@@ -37,6 +37,7 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
 		return;
 	vm->ram[--vm->sp] = vm->pc;
 	vm->ram[--vm->sp] = vm->registers[REG_A];
+	//printf("\nINTERRUPT! Message: %04X, PC: %04x, A: %04x, IA: %04x\n", msgid, vm->pc, vm->registers[REG_A], vm->ia);
 	vm->pc = vm->ia;
 	vm->registers[REG_A] = msgid;
 	
