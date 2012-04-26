@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "posix.h"
+/*#include "posix.h"*/
 #include "pp.h"
 #include "dcpu.h"
 

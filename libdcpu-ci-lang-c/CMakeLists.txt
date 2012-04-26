@@ -10,3 +10,4 @@ endif(NOT DEFINED IS_ROOT)
 # Define the libdcc-c project.
 dt_project(library nodes)
 dt_needs(libdcpu-ci-lang)
+dt_has_parser(true)

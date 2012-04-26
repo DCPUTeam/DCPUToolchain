@@ -443,6 +443,7 @@ void vm_op_hwn(vm_t* vm, uint16_t a)
 {
 	uint16_t* store_a = vm_internal_get_store(vm, a, POS_A);
 	*store_a = vm_hw_count(vm);
+	if(vm->debug) printf("\nhwn: %d devices", *store_a);
 	VM_HOOK_FIRE(store_a);
 	vm->skip = false;
 }
@@ -458,6 +459,7 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 
 	hw_t queried_device = vm_hw_get_device(vm, val_a);
+	if(vm->debug) printf("\nhwq: index %d %04X%0X", val_a, queried_device.id_1, queried_device.id_2);
 	*store_a = queried_device.id_1;
 	*store_b = queried_device.id_2;
 	*store_c = queried_device.c;

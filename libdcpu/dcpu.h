@@ -147,7 +147,6 @@ typedef struct
 	uint16_t c;
 	uint16_t x;
 	uint16_t y;
-	uint16_t* memory_addrs;
 	hw_interrupt handler;
 } hw_t;
 

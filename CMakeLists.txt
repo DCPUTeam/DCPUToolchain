@@ -196,11 +196,11 @@ add_subdirectory(libdcpu-vm)
 add_subdirectory(libdcpu-pp)
 add_subdirectory(libdcpu-ci-objfmt)
 add_subdirectory(libdcpu-ci-lang)
-add_subdirectory(libdcpu-ci-lang-c)
+#add_subdirectory(libdcpu-ci-lang-c)
 
 # Add executable folders.
 add_subdirectory(preprocessor)
-add_subdirectory(compiler)
+#add_subdirectory(compiler)
 add_subdirectory(assembler)
 add_subdirectory(linker)
 if("${BUILD_EMULATOR}" MATCHES true)

@@ -39,14 +39,17 @@ vm_t* vm_create()
 	for (i = 0; i < 0x10000; i++)
 		new_vm->ram[i] = 0x0;
 	new_vm->dummy = 0x0;
-	new_vm->halted = false;
-	new_vm->skip = false;
-	new_vm->debug = false;
 	
 	// Initialize DCPU-16 components.
 	vm_hw_io_init(new_vm, 0);
 	vm_lem1802_init(new_vm, 0);
 	vm_hw_timer_init(new_vm);
+	
+	
+	new_vm->halted = false;
+	new_vm->skip = false;
+	new_vm->debug = false;
+	
 	
 	// Return.
 	return new_vm;

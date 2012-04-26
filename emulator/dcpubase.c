@@ -112,7 +112,7 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
 		if(vm->debug) printf(" (0x%04X) ", t);
 		return t;
 	default:
-		return val - 0x20;
+		return val - 0x21;
 	}
 }
 
