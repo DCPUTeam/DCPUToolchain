@@ -18,6 +18,7 @@
 #include "dcpubase.h"
 #include "dcpuops.h"
 #include "dcpuhook.h"
+#include "hw.h"
 
 #define VM_CHECK_ARITHMETIC_FLOW(op, val_a, val_b) \
 	if ((int32_t)val_a op (int32_t)val_b < (int32_t)0) \
@@ -441,7 +442,7 @@ void vm_op_ias(vm_t* vm, uint16_t a)
 void vm_op_hwn(vm_t* vm, uint16_t a)
 {
 	uint16_t* store_a = vm_internal_get_store(vm, a, POS_A);
-	*store_a = 0 /* no hardware connected */;
+	*store_a = vm_hw_count(vm);
 	VM_HOOK_FIRE(store_a);
 	vm->skip = false;
 }
@@ -454,12 +455,14 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 	uint16_t* store_x = vm_internal_get_store(vm, REG_X, POS__);
 	uint16_t* store_y = vm_internal_get_store(vm, REG_Y, POS__);
 
-	/* there are no hardware devices connected, so zero out */
-	*store_a = 0;
-	*store_b = 0;
-	*store_c = 0;
-	*store_x = 0;
-	*store_y = 0;
+	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+
+	hw_t queried_device = vm_hw_get_device(vm, val_a);
+	*store_a = queried_device.id_1;
+	*store_b = queried_device.id_2;
+	*store_c = queried_device.c;
+	*store_x = queried_device.x;
+	*store_y = queried_device.y;
 
 	VM_HOOK_FIRE(store_a);
 	VM_HOOK_FIRE(store_b);
@@ -471,6 +474,6 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 
 void vm_op_hwi(vm_t* vm, uint16_t a)
 {
-	// Interrupts are not sent to hardware yet (as there
-	// is no hardware defined).
+	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+	vm_hw_interrupt(vm, val_a);
 }
