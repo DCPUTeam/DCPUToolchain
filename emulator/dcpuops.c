@@ -458,12 +458,12 @@ void vm_op_hcf(vm_t* vm, uint16_t a)
 
 void vm_op_int(vm_t* vm, uint16_t a)
 {
-	if(vm->queue_interrupts == 1) {
+	/*if(vm->queue_interrupts == 1) {
 		irqs++;
 		vm->irq[irqs] = a;
-	} else {
+	} else {*/
 		vm_interrupt(vm, a);
-	}
+	//}
 }
 
 void vm_op_iag(vm_t* vm, uint16_t a)
