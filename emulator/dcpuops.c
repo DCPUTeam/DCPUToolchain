@@ -65,7 +65,10 @@ uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos)
 	else if (loc >= VAL_A && loc <= VAL_J)
 		return &vm->ram[vm->registers[loc - VAL_A]];
 	else if (loc >= NXT_VAL_A && loc <= NXT_VAL_J)
+	{
+		vm->sleep_cycles += 1; // Resolving this costs an additional cycle
 		return &vm->ram[(uint16_t)(vm->registers[loc - NXT_VAL_A] + vm_consume_word(vm))];
+	}
 	else if (loc == PUSH_POP)
 	{
 		if (pos == POS_A)
@@ -79,7 +82,10 @@ uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos)
 	else if (loc == PEEK)
 		return &vm->ram[vm->sp];
 	else if (loc == PICK)
+	{
+		vm->sleep_cycles += 1; // Resolving this costs an additional cycle
 		return &vm->ram[(uint16_t)(vm->sp + vm_consume_word(vm))];
+	}
 	else if (loc == IA)
 		return &vm->ia;
 	else if (loc == SP)
@@ -89,7 +95,10 @@ uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos)
 	else if (loc == EX)
 		return &vm->ex;
 	else if (loc == NXT)
+	{
+		vm->sleep_cycles += 1; //Resolving this costs an additional cycle
 		return &vm->ram[vm_consume_word(vm)];
+	}
 	else
 		return &vm->dummy; // Dummy position for assignments that silently fail.
 }
