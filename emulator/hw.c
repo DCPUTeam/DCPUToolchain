@@ -19,9 +19,9 @@
 #include "hw.h"
 #include "lem1802.h"
 
-#define HW_MAX 10
+#define HW_MAX 0x1000
 
-int vm_hw_connected[HW_MAX] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int vm_hw_connected[HW_MAX];
 hw_t vm_hw_list[HW_MAX];
 
 uint16_t vm_hw_register(vm_t* vm, hw_t hardware)
@@ -35,8 +35,7 @@ uint16_t vm_hw_register(vm_t* vm, hw_t hardware)
 		return;
 	}
 
-	hardware.handler(vm);
-
+	printf("assigned id %d: %04X %04X\n", id, hardware.id_2, hardware.id_1);
 	vm_hw_connected[id] = 1;
 	vm_hw_list[id] = hardware;
 	
@@ -50,8 +49,8 @@ void vm_hw_unregister(vm_t* vm, uint16_t id)
 
 void vm_hw_interrupt(vm_t* vm, uint16_t index)
 {
-	hw_t device = vm_hw_list[index-1];
-	if(vm->debug) printf("\nInterrupting device 0x%04X (0x%04X%04X): %d\n", index, device.id_1, device.id_2, device.handler);
+	hw_t device = vm_hw_list[index];
+	if(vm->debug) printf("\nInterrupting device 0x%04X (0x%04X %04X): %d\n", index, device.id_2, device.id_1, device.handler);
 	device.handler(vm);
 }
 
@@ -65,5 +64,6 @@ uint16_t vm_hw_count(vm_t* vm)
 }
 
 hw_t vm_hw_get_device(vm_t* vm, uint16_t index) {
-	return vm_hw_list[index];
+	hw_t device = vm_hw_list[index];
+	return device;
 }

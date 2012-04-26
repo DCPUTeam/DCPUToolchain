@@ -185,6 +185,7 @@ void vm_lem1802_interrupt(vm_t* vm)
 	
 	switch(requested_action) {
 		case MEM_MAP_SCREEN:
+			printf("Mem_map_screen for val_b %04X\n", val_b);
 			if(val_b == 0)
 			{
 				vm->halted = true; // TODO: actually turn the screen off instead of halting the whole thing
@@ -218,8 +219,8 @@ void vm_lem1802_init(vm_t* vm, uint16_t pos)
 {
 	hw_t screen;
 	
-	screen.id_1 = 0x7349;
-	screen.id_2 = 0xf615;
+	screen.id_1 = 0xf615;
+	screen.id_2 = 0x7349;
 	screen.c = 0xFACE;
 	screen.x = 0x1234;
 	screen.y = 0x1337;

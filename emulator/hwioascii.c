@@ -20,9 +20,9 @@ uint16_t vm_hw_io_ascii_get_map(TCOD_key_t key)
 	switch (key.vk)
 	{
 	case TCODK_ESCAPE:		ascii = 0x1B;	break;
-	case TCODK_BACKSPACE:		ascii = 0x08;	break;
+	case TCODK_BACKSPACE:		ascii = 0x10;	break;
 	case TCODK_TAB:			ascii = 0x09;	break;
-	case TCODK_ENTER:		ascii = 0x0A;	break;
+	case TCODK_ENTER:		ascii = 0x11;	break;
 	case TCODK_SHIFT:				break;
 	case TCODK_CONTROL:				break;
 	case TCODK_ALT:					break;
@@ -32,10 +32,10 @@ uint16_t vm_hw_io_ascii_get_map(TCOD_key_t key)
 	case TCODK_PAGEDOWN:				break;
 	case TCODK_END:					break;
 	case TCODK_HOME:				break;
-	case TCODK_UP:			ascii = 0x26;	break;
-	case TCODK_LEFT:		ascii = 0x25;	break;
-	case TCODK_RIGHT:		ascii = 0x27;	break;
-	case TCODK_DOWN:		ascii = 0x28;	break;
+	case TCODK_UP:			ascii = 0x80;	break;
+	case TCODK_LEFT:		ascii = 0x81;	break;
+	case TCODK_RIGHT:		ascii = 0x82;	break;
+	case TCODK_DOWN:		ascii = 0x83;	break;
 	case TCODK_PRINTSCREEN:				break;
 	case TCODK_INSERT:				break;
 	case TCODK_DELETE:				break;

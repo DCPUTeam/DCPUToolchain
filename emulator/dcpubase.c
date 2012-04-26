@@ -35,10 +35,11 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
 {
 	if (vm->ia == 0)
 		return;
-	vm->ram[vm->sp--] = vm->pc;
-	vm->ram[vm->sp--] = vm->registers[REG_A];
+	vm->ram[--vm->sp] = vm->pc;
+	vm->ram[--vm->sp] = vm->registers[REG_A];
 	vm->pc = vm->ia;
 	vm->registers[REG_A] = msgid;
+	
 }
 
 uint16_t vm_consume_word(vm_t* vm)
@@ -106,13 +107,15 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
 	case EX:
 		return vm->ex;
 	case NXT:
-		return vm->ram[vm_consume_word(vm)];
+		t = vm->ram[vm_consume_word(vm)];
+		if(vm->debug) printf(" (0x%04X) ", t);
+		return t;
 	case NXT_LIT:
 		t = vm_consume_word(vm);
 		if(vm->debug) printf(" (0x%04X) ", t);
 		return t;
 	default:
-		return val - 0x20;
+		return val - 0x21;
 	}
 }
 
@@ -138,11 +141,18 @@ void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
 
 void vm_cycle(vm_t* vm)
 {
+	if(vm->sleep_cycles > 0)
+	{
+		vm->sleep_cycles--;
+		return;
+	}
+
 	uint16_t instruction = vm_consume_word(vm);
 	uint16_t op = INSTRUCTION_GET_OP(instruction);
 	uint16_t b = INSTRUCTION_GET_B(instruction);
 	uint16_t a = INSTRUCTION_GET_A(instruction);
 
+	if(vm->debug) printf("Instruction: %04X\n", instruction);
 	switch (op)
 	{
 	case OP_SET:
@@ -177,6 +187,10 @@ void vm_cycle(vm_t* vm)
 		vm_print_op("MOD", vm, b, a);
 		vm_op_mod(vm, b, a);
 		break;
+	case OP_MDI:
+		vm_print_op("MDI", vm, b, a);
+		vm_op_mdi(vm, b, a);
+		break;
 	case OP_AND:
 		vm_print_op("AND", vm, b, a);
 		vm_op_and(vm, b, a);
@@ -200,10 +214,6 @@ void vm_cycle(vm_t* vm)
 	case OP_SHL:
 		vm_print_op("SHL", vm, b, a);
 		vm_op_shl(vm, b, a);
-		break;
-	case OP_MVI:
-		vm_print_op("MVI", vm, b, a);
-		vm_op_mvi(vm, b, a);
 		break;
 	case OP_IFB:
 		vm_print_op("IFB", vm, b, a);
@@ -241,9 +251,17 @@ void vm_cycle(vm_t* vm)
 		vm_print_op("ADX", vm, b, a);
 		vm_op_adx(vm, b, a);
 		break;
-	case OP_SUX:
-		vm_print_op("SUX", vm, b, a);
-		vm_op_sux(vm, b, a);
+	case OP_SBX:
+		vm_print_op("SBX", vm, b, a);
+		vm_op_sbx(vm, b, a);
+		break;
+	case OP_STI:
+		vm_print_op("STI", vm, b, a);
+		vm_op_sti(vm, b, a);
+		break;
+	case OP_STD:
+		vm_print_op("STD", vm, b, a);
+		vm_op_std(vm, b, a);
 		break;
 	case OP_NONBASIC:
 		switch (b)
@@ -251,6 +269,10 @@ void vm_cycle(vm_t* vm)
 		case NBOP_JSR:
 			vm_print_op_nonbasic("JSR", vm, a);
 			vm_op_jsr(vm, a);
+			break;
+		case NBOP_HCF:
+			vm_print_op_nonbasic("HCF", vm, a);
+			vm_op_hcf(vm, a);
 			break;
 		case NBOP_INT:
 			vm_print_op_nonbasic("INT", vm, a);
@@ -263,6 +285,14 @@ void vm_cycle(vm_t* vm)
 		case NBOP_IAS:
 			vm_print_op_nonbasic("IAS", vm, a);
 			vm_op_ias(vm, a);
+			break;
+		case NBOP_IAP:
+			vm_print_op_nonbasic("IAP", vm, a);
+			vm_op_iap(vm, a);
+			break;
+		case NBOP_IAQ:
+			vm_print_op_nonbasic("IAQ", vm, a);
+			vm_op_iaq(vm, a);
 			break;
 		case NBOP_HWN:
 			vm_print_op_nonbasic("HWN", vm, a);
@@ -277,12 +307,12 @@ void vm_cycle(vm_t* vm)
 			vm_op_hwi(vm, a);
 			break;
 		default:
-			vm_halt(vm, "Invalid non-basic opcode %u. (0x%04X at 0x%04X)", b, instruction, vm->pc -1);
+			vm_halt(vm, "Invalid non-basic opcode %u. (0x%04X at 0x%04X)", b, instruction, vm->pc);
 			break;
 		}
 		break;
 	default:
-		vm_halt(vm, "Invalid opcode %u.", op);
+		vm_halt(vm, "Invalid opcode %u. (0x%04X at 0x%04X)", op, instruction, vm->pc);
 		break;
 	}
 	if (vm->debug)
