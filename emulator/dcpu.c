@@ -41,9 +41,11 @@ vm_t* vm_create()
 	new_vm->dummy = 0x0;
 	
 	// Initialize DCPU-16 components.
-	vm_hw_io_init(new_vm, 0);
 	vm_lem1802_init(new_vm, 0);
+	vm_hw_io_init(new_vm, 0);
 	vm_hw_timer_init(new_vm);
+	
+	
 	
 	
 	new_vm->halted = false;

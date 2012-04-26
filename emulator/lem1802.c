@@ -182,7 +182,6 @@ void vm_lem1802_interrupt(vm_t* vm)
 {
 	uint16_t requested_action = vm_resolve_value(vm, REG_A, 0);
 	uint16_t val_b = vm_resolve_value(vm, REG_B, 0);
-	printf("I'm an interrupt! %04X %04X\n", requested_action, val_b);
 	
 	switch(requested_action) {
 		case MEM_MAP_SCREEN:

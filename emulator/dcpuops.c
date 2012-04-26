@@ -217,6 +217,20 @@ void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a)
 	VM_HOOK_FIRE(store_b);
 }
 
+void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
+{
+	int16_t val_b, val_a;
+	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = vm_resolve_value_once(vm, b, POS_B);
+	val_a = vm_resolve_value(vm, a, POS_A);
+	VM_SKIP_RESET;
+	if (val_a != 0)
+		*store_b = val_b % val_a;
+	else
+		*store_b = 0;
+	VM_HOOK_FIRE(store_b);
+}
+
 void vm_op_mod(vm_t* vm, uint16_t b, uint16_t a)
 {
 	uint16_t val_b, val_a;
@@ -230,6 +244,7 @@ void vm_op_mod(vm_t* vm, uint16_t b, uint16_t a)
 		*store_b = 0;
 	VM_HOOK_FIRE(store_b);
 }
+
 
 void vm_op_and(vm_t* vm, uint16_t b, uint16_t a)
 {
@@ -302,18 +317,6 @@ void vm_op_shl(vm_t* vm, uint16_t b, uint16_t a)
 	*store_b = val_b << val_a;
 	vm->ex = ((val_b << val_a) >> 16) & 0xffff;
 	VM_HOOK_FIRE(store_b);
-}
-
-void vm_op_mvi(vm_t* vm, uint16_t b, uint16_t a)
-{
-	uint16_t val_a;
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
-	val_a = vm_resolve_value(vm, a, POS_A);
-	*store_b = val_a;
-	vm->registers[REG_I]++;
-	vm->registers[REG_J]++;
-	VM_HOOK_FIRE(store_b);
-	vm->skip = false;
 }
 
 void vm_op_ifb(vm_t* vm, uint16_t b, uint16_t a)
@@ -401,7 +404,7 @@ void vm_op_adx(vm_t* vm, uint16_t b, uint16_t a)
 	VM_HOOK_FIRE(store_b);
 }
 
-void vm_op_sux(vm_t* vm, uint16_t b, uint16_t a)
+void vm_op_sbx(vm_t* vm, uint16_t b, uint16_t a)
 {
 	uint16_t val_b, val_a, val_ex;
 	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
@@ -414,6 +417,28 @@ void vm_op_sux(vm_t* vm, uint16_t b, uint16_t a)
 	VM_HOOK_FIRE(store_b);
 }
 
+void vm_op_sti(vm_t* vm, uint16_t b, uint16_t a)
+{
+	uint16_t val_a;
+	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	val_a = vm_resolve_value(vm, a, POS_A);
+	*store_b = val_a;
+	VM_HOOK_FIRE(store_b);
+	vm->registers[REG_I]++;
+	vm->registers[REG_J]++;
+}
+
+void vm_op_std(vm_t* vm, uint16_t b, uint16_t a)
+{
+	uint16_t val_a;
+	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	val_a = vm_resolve_value(vm, a, POS_A);
+	*store_b = val_a;
+	VM_HOOK_FIRE(store_b);
+	vm->registers[REG_I]--;
+	vm->registers[REG_J]--;
+}
+
 void vm_op_jsr(vm_t* vm, uint16_t a)
 {
 	uint16_t new_pc = vm_resolve_value(vm, a, POS_A);
@@ -422,6 +447,11 @@ void vm_op_jsr(vm_t* vm, uint16_t a)
 	t = --vm->sp;
 	vm->ram[t] = vm->pc;
 	vm->pc = new_pc;
+}
+
+void vm_op_hcf(vm_t* vm, uint16_t a)
+{
+	vm->halted = true; // TODO: make it do crazy shit
 }
 
 void vm_op_int(vm_t* vm, uint16_t a)
@@ -437,6 +467,16 @@ void vm_op_iag(vm_t* vm, uint16_t a)
 void vm_op_ias(vm_t* vm, uint16_t a)
 {
 	vm_op_set(vm, IA, a);
+}
+
+void vm_op_iap(vm_t* vm, uint16_t a)
+{
+	// not implemented
+}
+
+void vm_op_iaq(vm_t* vm, uint16_t a)
+{
+	// not implemented
 }
 
 void vm_op_hwn(vm_t* vm, uint16_t a)

@@ -81,13 +81,14 @@ typedef uint8_t bool;
 #define OP_DIV      0x06
 #define OP_DVI      0x07
 #define OP_MOD      0x08
-#define OP_AND      0x09
-#define OP_BOR      0x0A
-#define OP_XOR      0x0B
-#define OP_SHR      0x0C
-#define OP_ASR      0x0D
-#define OP_SHL      0x0E
-#define OP_MVI      0x0F
+#define OP_MDI      0x09
+#define OP_AND		0x0A
+#define OP_BOR      0x0B
+#define OP_XOR      0x0C
+#define OP_SHR      0x0D
+#define OP_ASR      0x0E
+#define OP_SHL      0x0F
+
 #define OP_IFB      0x10
 #define OP_IFC      0x11
 #define OP_IFE      0x12
@@ -96,15 +97,22 @@ typedef uint8_t bool;
 #define OP_IFA      0x15
 #define OP_IFL      0x16
 #define OP_IFU      0x17
+
 #define OP_ADX      0x1A
-#define OP_SUX      0x1B
+#define OP_SBX      0x1B
+
+#define OP_STI		0x1e
+#define OP_STD		0x1f
 
 // Non-basic opcodes
 #define NBOP_RESERVED   0x00
 #define NBOP_JSR        0x01
+#define NBOP_HCF		0x07
 #define NBOP_INT        0x08
 #define NBOP_IAG        0x09
-#define NBOP_IAS        0x0a
+#define NBOP_IAS        0x0A
+#define NBOP_IAP		0x0B
+#define NBOP_IAQ		0xC
 #define NBOP_HWN        0x10
 #define NBOP_HWQ        0x11
 #define NBOP_HWI        0x12

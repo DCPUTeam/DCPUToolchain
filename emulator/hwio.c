@@ -25,6 +25,8 @@ uint16_t vm_write_update, vm_cycle_update;
 uint32_t kb_tick = 0;
 uint32_t input_index = 0;
 
+uint16_t last_key = 0x0;
+
 void vm_hw_io_cycle(vm_t* vm, uint16_t pos)
 {
 	TCOD_key_t key;
@@ -55,12 +57,7 @@ void vm_hw_io_cycle(vm_t* vm, uint16_t pos)
 		ascii = vm_hw_io_ascii_get_map(key);
 		if (ascii != 0)
 		{
-			if (vm->ram[(uint16_t)(0x9000 + input_index)] == 0x0)
-			{
-				vm->ram[0x9010] = 0x9000 + input_index;
-				vm->ram[(uint16_t)(0x9000 + input_index++)] = ascii;
-				if (input_index > 0xf) input_index = 0x0;
-			}
+			last_key = ascii;
 		}
 	}
 
@@ -68,12 +65,35 @@ void vm_hw_io_cycle(vm_t* vm, uint16_t pos)
 	TCOD_console_flush();
 }
 
+void vm_hwio_interrupt(vm_t* vm)
+{
+	uint16_t requested_action = vm_resolve_value(vm, REG_A, 0);
+	uint16_t val_b = vm_resolve_value(vm, REG_B, 0);
+	uint16_t* store_c = vm_internal_get_store(vm, REG_C, POS__);
+	
+	switch(requested_action)
+	{
+		case KB_STORE_IN_REG:
+			*store_c = last_key;
+			last_key = 0x0;
+			break;
+	}
+}
+
 void vm_hw_io_init(vm_t* vm, uint16_t pos)
 {
-	// Initialize input buffer.
-	vm->ram[0x9010] = 0x9000 + input_index;
+	hw_t keyboard;
+	
+	keyboard.id_1 = 0x7406;
+	keyboard.id_2 = 0x30cf;
+	keyboard.c = 0xFACE;
+	keyboard.x = 0x1234;
+	keyboard.y = 0x1337;
+	keyboard.handler = &vm_hwio_interrupt;
+
 	// Register hooks.
 	vm_cycle_update = vm_hook_register(vm, &vm_hw_io_cycle, HOOK_ON_CYCLE);
+	vm_hw_register(vm, keyboard);
 }
 
 void vm_hw_io_free(vm_t* vm)
