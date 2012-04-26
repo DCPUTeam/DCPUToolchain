@@ -9,6 +9,10 @@
 *.vcxproj.filters
 ipch/*
 
+# Vim files #
+#############
+*.swp
+
 # Binary files #
 ################
 *.exe

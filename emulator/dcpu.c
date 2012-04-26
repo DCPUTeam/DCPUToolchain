@@ -46,6 +46,7 @@ vm_t* vm_create()
 	vm_hw_timer_init(new_vm);
 	
 	
+	new_vm->sleep_cycles = 0;
 	
 	
 	new_vm->halted = false;
@@ -79,6 +80,7 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 	vm->ia = 0x0;
 	for (i = 0; i < 0x10000; i++)
 		vm->ram[i] = memory[i];
+	vm->sleep_cycles = 0;
 	vm->dummy = 0x0;
 	vm->halted = false;
 	vm->skip = false;
