@@ -56,6 +56,7 @@ void vm_op_hcf(vm_t* vm, uint16_t a);
 void vm_op_int(vm_t* vm, uint16_t a);
 void vm_op_iag(vm_t* vm, uint16_t a);
 void vm_op_ias(vm_t* vm, uint16_t a);
+void vm_op_rfi(vm_t* vm, uint16_t a);
 void vm_op_iap(vm_t* vm, uint16_t a);
 void vm_op_iaq(vm_t* vm, uint16_t a);
 void vm_op_hwn(vm_t* vm, uint16_t a);

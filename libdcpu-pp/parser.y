@@ -27,6 +27,7 @@
 #include "ppfind.h"
 #include "dcpu.h"
 list_t equates;
+list_t scopes;
 void pp_discard_buffer();
 void yyerror(void* scanner, const char *str);
 void handle_output(bstring output, void* scanner);
@@ -37,6 +38,11 @@ struct equate_entry
 {
 	bstring name;
 	bstring replace;
+};
+
+struct scope_entry
+{
+	bool active;
 };
 
 size_t equate_entry_meter(const void* el)
@@ -51,6 +57,8 @@ int equate_entry_seeker(const void* el, const void* key)
 	return 0;
 }
 
+struct scope_entry* active_scope = NULL;
+
 %}
 
 // Defines a union for storing all of our data types.
@@ -63,7 +71,7 @@ int equate_entry_seeker(const void* el, const void* key)
 }
 
 // Define our lexical token names.
-%token <token> INCLUDE EQUATE
+%token <token> INCLUDE EQUATE IF IFDEF IFNDEF ELSE ENDIF
 %token <string> STRING WORD
 %token <any> ANY_CHAR
 %token <number> NUMBER
@@ -83,8 +91,11 @@ int equate_entry_seeker(const void* el, const void* key)
 	if (!is_globally_initialized)
 	{
 		list_init(&equates);
+		list_init(&scopes);
 		list_attributes_copy(&equates, equate_entry_meter, 1);
 		list_attributes_seeker(&equates, equate_entry_seeker);
+		active_scope = malloc(sizeof(struct scope_entry));
+		active_scope->active = true;
 		is_globally_initialized = true;
 	}
 };
@@ -135,6 +146,52 @@ preprocessor:
 			entry->name = $2;
 			entry->replace = $3;
 			list_append(&equates, entry);
+		} |
+		IFDEF WORD
+		{
+			unsigned int i;
+			struct equate_entry* e;
+
+			// First push our existing scope onto the list and create
+			// a new scope.
+			list_append(&scopes, active_scope);
+			active_scope = malloc(sizeof(struct scope_entry));
+			active_scope->active = false;
+
+			// Check to see whether the specified equate exists.
+			for (i = 0; i < list_size(&equates); i++)
+			{
+				e = (struct equate_entry*)list_get_at(&equates, i);
+				if (biseq(e->name, $2))
+				{
+					// Equate found.
+					active_scope->active = true;
+					break;
+				}
+			}
+		} |
+		ELSE
+		{
+			// Switch the current silencing mode.
+			active_scope->active = !active_scope->active;
+		} |
+		ENDIF
+		{
+			struct scope_entry* result;
+
+			// Check to make sure we have an outer-scope.
+			if (list_size(&scopes) > 0)
+			{
+				// Exit this scope.
+				free(active_scope);
+				result = list_extract_at(&scopes, list_size(&scopes) - 1);
+				active_scope = result;
+			}
+			else
+			{
+				// TODO: Throw an error here because we encountered
+				// one more .ENDIF than we should have.
+			}
 		} ;
 
 text:
@@ -162,7 +219,8 @@ void yyerror(void* scanner, const char *str)
 
 void handle_output(bstring output, void* scanner)
 {
-	fprintf(pp_yyget_out(scanner), "%s", output->data);
+	if (active_scope->active)
+		fprintf(pp_yyget_out(scanner), "%s", output->data);
 }
 
 void handle_include(bstring fname, void* current)

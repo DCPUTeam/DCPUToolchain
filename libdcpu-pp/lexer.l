@@ -64,6 +64,11 @@ char* pp_trim_and_unescape(char* data)
 <INITIAL>[\.\#][Ee][Qq][Uu][Aa][Tt][Ee]					BEGIN(PREPROCESSING); return EQUATE;
 <INITIAL>[\.\#][Ee][Qq][Uu]								BEGIN(PREPROCESSING); return EQUATE;
 <INITIAL>[\.\#][Dd][Ee][Ff][Ii][Nn][Ee]					BEGIN(PREPROCESSING); return EQUATE;
+<INITIAL>[\.\#][Ii][Ff][Dd][Ee][Ff]						BEGIN(PREPROCESSING); return IFDEF;
+<INITIAL>[\.\#][Ii][Ff][Nn][Dd][Ee][Ff]					BEGIN(PREPROCESSING); return IFNDEF;
+<INITIAL>[\.\#][Ii][Ff]									BEGIN(PREPROCESSING); return IF;
+<INITIAL>[\.\#][Ee][Ll][Ss][Ee]							BEGIN(PREPROCESSING); return ELSE;
+<INITIAL>[\.\#][Ee][Nn][Dd][Ii][Ff]						BEGIN(PREPROCESSING); return ENDIF;
 
 	/* String and character analysis */
 
