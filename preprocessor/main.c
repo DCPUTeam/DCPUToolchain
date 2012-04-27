@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <bstrlib.h>
+#include <simclist.h>
 #include <parser.h>
 #include <lexer.h>
 #include <assert.h>
