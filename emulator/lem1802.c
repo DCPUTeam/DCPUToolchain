@@ -7,6 +7,7 @@
 
 	Authors:		James Rhodes
 					José Manuel Díez
+					Tyrel Haveman
 
 	Description:	
 
@@ -217,6 +218,7 @@ void vm_lem1802_interrupt(vm_t* vm)
 
 void vm_lem1802_init(vm_t* vm, uint16_t pos)
 {
+	char imagePath[512] = {0};
 	hw_t screen;
 	
 	screen.id_1 = 0xf615;
@@ -226,9 +228,10 @@ void vm_lem1802_init(vm_t* vm, uint16_t pos)
 	screen.y = 0x1337;
 	screen.handler = &vm_lem1802_interrupt;
 
-	strcat(path, "/terminal.png");
+	strcpy(imagePath, path);
+	strcat(imagePath, "/terminal.png");
 
-	TCOD_console_set_custom_font(path, TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);
+	TCOD_console_set_custom_font(imagePath, TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);
 	// Load TCOD.
 #if TCOD_HEXVERSION > 0x010500
 	TCOD_console_init_root(screen_width + 2, screen_height + 2, "Toolchain Emulator", false, TCOD_RENDERER_SDL);
