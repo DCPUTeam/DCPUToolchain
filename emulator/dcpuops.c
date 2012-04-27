@@ -502,6 +502,8 @@ void vm_op_sti(vm_t* vm, uint16_t b, uint16_t a)
 	VM_HOOK_FIRE(store_b);
 	vm->registers[REG_I]++;
 	vm->registers[REG_J]++;
+	VM_HOOK_FIRE(&vm->registers[REG_I]);
+	VM_HOOK_FIRE(&vm->registers[REG_J]);
 }
 
 void vm_op_std(vm_t* vm, uint16_t b, uint16_t a)
@@ -516,6 +518,8 @@ void vm_op_std(vm_t* vm, uint16_t b, uint16_t a)
 	VM_HOOK_FIRE(store_b);
 	vm->registers[REG_I]--;
 	vm->registers[REG_J]--;
+	VM_HOOK_FIRE(&vm->registers[REG_I]);
+	VM_HOOK_FIRE(&vm->registers[REG_J]);
 }
 
 void vm_op_jsr(vm_t* vm, uint16_t a)
@@ -575,6 +579,7 @@ void vm_op_rfi(vm_t* vm, uint16_t a)
 	vm->queue_interrupts = 0;
 	vm->registers[REG_A] = vm->ram[++vm->sp];
 	vm->registers[PC] = vm->ram[++vm->sp];
+	VM_HOOK_FIRE(&vm->registers[REG_A]);
 }
 
 void vm_op_iaq(vm_t* vm, uint16_t a)
