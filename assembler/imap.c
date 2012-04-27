@@ -60,7 +60,7 @@ struct instruction_mapping instruction_name_map[] =
 	NBOPCODE(INT),
 	NBOPCODE(IAG),
 	NBOPCODE(IAS),
-	NBOPCODE(IAP),
+	NBOPCODE(RFI),
 	NBOPCODE(IAQ),
 	NBOPCODE(HWN),
 	NBOPCODE(HWQ),

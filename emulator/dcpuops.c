@@ -336,7 +336,7 @@ void vm_op_shr(vm_t* vm, uint16_t a, uint16_t b)
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
-	OP_NUM_CYCLES(2);
+	OP_NUM_CYCLES(1);
 	
 	VM_SKIP_RESET;
 	*store_b = val_b >> val_a;
@@ -355,7 +355,7 @@ void vm_op_asr(vm_t* vm, uint16_t a, uint16_t b)
 	val_a = (int16_t)vm_resolve_value(vm, a, POS_A);
 	val_b = (int16_t)vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
-	OP_NUM_CYCLES(2);
+	OP_NUM_CYCLES(1);
 	
 	VM_SKIP_RESET;
 	*store_b = val_b >> val_a;
@@ -370,7 +370,7 @@ void vm_op_shl(vm_t* vm, uint16_t b, uint16_t a)
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
-	OP_NUM_CYCLES(2);
+	OP_NUM_CYCLES(1);
 	
 	VM_SKIP_RESET;
 	*store_b = val_b << val_a;
@@ -550,27 +550,31 @@ void vm_op_int(vm_t* vm, uint16_t a)
 void vm_op_iag(vm_t* vm, uint16_t a)
 {
 	OP_NUM_CYCLES(1);
+	
+	VM_SKIP_RESET;
 	vm_op_set(vm, a, IA);
 }
 
 void vm_op_ias(vm_t* vm, uint16_t a)
 {
 	OP_NUM_CYCLES(1);
+	
+	VM_SKIP_RESET;
+	if(a != 0) 
+		vm->queue_interrupts = 1;
+		
 	vm_op_set(vm, IA, a);
 }
 
-void vm_op_iap(vm_t* vm, uint16_t a)
+void vm_op_rfi(vm_t* vm, uint16_t a)
 {
-	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	OP_NUM_CYCLES(3);
 
 	VM_SKIP_RESET;
 	
-	if(val_a != 0) {
-		vm->sp--;
-		vm->ram[vm->sp] = vm->ia;
-		vm->ia = 0;
-	}
+	vm->queue_interrupts = 0;
+	vm->registers[REG_A] = vm->ram[++vm->sp];
+	vm->registers[PC] = vm->ram[++vm->sp];
 }
 
 void vm_op_iaq(vm_t* vm, uint16_t a)
