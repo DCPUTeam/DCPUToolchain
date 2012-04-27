@@ -44,7 +44,7 @@ elseif(APPLE)
 else(MSVC)
 	# Assume GNU since there doesn't appear to be
 	# a better way of detecting this.
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wdeclaration-after-statement")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wdeclaration-after-statement -Wno-int-to-pointer-cast")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # TODO: Fix code to allow -Werror here.
 endif(MSVC)
 
@@ -228,7 +228,7 @@ endif("${BUILD_EMULATOR}" MATCHES true)
 
 # Add kernel, using the multi-threading version if available.
 if(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
-	add_subdirectory(kernel.mt)
+#	add_subdirectory(kernel.mt)
 else(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
-	add_subdirectory(kernel)
+#	add_subdirectory(kernel)
 endif(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")

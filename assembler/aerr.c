@@ -47,5 +47,5 @@ void ahalt(int errid, const char* errdata)
 	struct errinfo* err = malloc(sizeof(struct errinfo));
 	err->errid = errid;
 	err->errdata = errdata;
-	longjmp(errjmp, (int)err);
+	longjmp(errjmp, (long)err);
 }
