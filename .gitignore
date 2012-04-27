@@ -63,8 +63,10 @@ CMakeFiles/*
 *.rule
 */*.dir/*
 */lexer.c
+*/lexer.h
 */parser.c
 */parser.h
 */lexer.cpp
+*/lexer.hpp
 */parser.cpp
 */parser.hpp
