@@ -157,7 +157,7 @@ line:
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = (int)$1;
+			$$->keyword = (long)$1;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
@@ -169,7 +169,7 @@ line:
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = (int)$1;
+			$$->keyword = (long)$1;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
@@ -180,7 +180,7 @@ line:
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = (int)$1;
+			$$->keyword = (long)$1;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
@@ -191,7 +191,7 @@ line:
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = (int)$1;
+			$$->keyword = (long)$1;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
@@ -202,7 +202,7 @@ line:
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = (int)$1;
+			$$->keyword = (long)$1;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
@@ -264,7 +264,7 @@ line:
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = (int)$2;
+			$$->keyword = (long)$2;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = lnode;
@@ -284,7 +284,7 @@ line:
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = (int)$2;
+			$$->keyword = (long)$2;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = lnode;
@@ -304,7 +304,7 @@ line:
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = (int)$2;
+			$$->keyword = (long)$2;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = lnode;
@@ -324,7 +324,7 @@ line:
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = (int)$2;
+			$$->keyword = (long)$2;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = lnode;

@@ -103,4 +103,4 @@ struct ast_node_root
 // External root reference.
 extern struct ast_node_root ast_root;
 
-#endif __DCPU_AST_NODE_H
+#endif
