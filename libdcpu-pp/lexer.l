@@ -44,10 +44,17 @@ char* trim_and_unescape(char* data)
 	return result;
 }
 
+void pp_discard_buffer()
+{
+	
+}
+
 %}
 
 %option noyywrap
 %option yylineno
+%option reentrant
+%option bison-bridge
 
 %x PREPROCESSING
 
@@ -62,18 +69,18 @@ char* trim_and_unescape(char* data)
 
 	/* String and character analysis */
 
-<PREPROCESSING>[A-Za-z_-]+[A-Za-z0-9_-]*				yylval.string = strdup(yytext); return WORD;
-<PREPROCESSING>0x[0-9A-Fa-f]+							yylval.number = strtoul(yytext, NULL, 16); return NUMBER;
-<PREPROCESSING>[0-9]+									yylval.number = strtoul(yytext, NULL, 10); return NUMBER;
-<PREPROCESSING>0[0-7]+									yylval.number = strtoul(yytext, NULL, 8); return NUMBER;
-<PREPROCESSING>L?\"(\\.|[^\\"])*\"						{ yylval.string = trim_and_unescape(strdup(yytext)); return STRING; }
+<PREPROCESSING>[A-Za-z_-]+[A-Za-z0-9_-]*				yylval->string = bfromcstr(yytext); return WORD;
+<PREPROCESSING>0x[0-9A-Fa-f]+							yylval->number = strtoul(yytext, NULL, 16); return NUMBER;
+<PREPROCESSING>[0-9]+									yylval->number = strtoul(yytext, NULL, 10); return NUMBER;
+<PREPROCESSING>0[0-7]+									yylval->number = strtoul(yytext, NULL, 8); return NUMBER;
+<PREPROCESSING>L?\"(\\.|[^\\"])*\"						{ yylval->string = bfromcstr(trim_and_unescape((char*)strdup(yytext))); return STRING; }
 
 	/* Miscellanous */
 
-<PREPROCESSING>\n										yylval.any = '\n'; BEGIN(INITIAL); return ANY_CHAR;
-<PREPROCESSING>[^ \t\n]									yylval.any = yytext[0]; return ANY_CHAR;
+<PREPROCESSING>\n										yylval->any = '\n'; BEGIN(INITIAL); return ANY_CHAR;
+<PREPROCESSING>[^ \t\n]									yylval->any = yytext[0]; return ANY_CHAR;
 <PREPROCESSING>[ \t]+									/* ignore whitespace */;
-<INITIAL>\n												yylval.any = '\n'; return ANY_CHAR;
-<INITIAL>[^\n]											yylval.any = yytext[0]; return ANY_CHAR;
+<INITIAL>\n												yylval->any = '\n'; return ANY_CHAR;
+<INITIAL>[^\n]											yylval->any = yytext[0]; return ANY_CHAR;
 
 %%

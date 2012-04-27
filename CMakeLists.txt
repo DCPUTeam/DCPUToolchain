@@ -12,6 +12,7 @@ else(MSVC)
 endif(MSVC)
 set(OUTPUT_DIR "${ROOT_DIR}/Debug")
 set(FLEX_UNISTD_INCLUDE "")
+set(CMAKE_BUILD_TYPE Debug)
 if(MSVC)
 	# Windows does not have unistd.h, but GnuWin32's Flex program
 	# provides it for us, so we need to add that as an include
@@ -32,6 +33,19 @@ if(NOT DEFINED M4_EXECUTABLE)
 endif(NOT DEFINED M4_EXECUTABLE)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "cmake")
 
+# Set compiler options.
+if(MSVC)
+	# TODO: Set warnings as errors on MSVC.
+elseif(APPLE)
+	# TODO: Set warnings as errors under Mac / XCode.
+else(MSVC)
+	# Assume GNU since there doesn't appear to be
+	# a better way of detecting this.
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wdeclaration-after-statement")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # TODO: Fix code to allow -Werror here.
+endif(MSVC)
+
+# Show configuration.
 message("-- Showing configuration")
 message("  >> m4 is at: ${M4_EXECUTABLE}")
 message("  >> flex is at: ${FLEX_EXECUTABLE}")

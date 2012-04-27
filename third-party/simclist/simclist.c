@@ -19,8 +19,6 @@
  * SimCList library. See http://mij.oltrelinux.com/devel/simclist
  */
 
-#define SIMCLIST_NO_DUMPRESTORE
-
 /* SimCList implementation, version 1.6 */
 
 #include <stdlib.h>

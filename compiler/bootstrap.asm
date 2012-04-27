@@ -96,7 +96,8 @@ DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	SET I, 0
 	SET J, 0
 	SET SP, 0
-	SET O, 0
+	SET EX, 0
+	SET IA, 0
 	SET PC, _halt
 
 ; Safety boundary

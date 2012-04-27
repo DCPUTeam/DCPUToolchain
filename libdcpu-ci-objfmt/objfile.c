@@ -13,6 +13,7 @@
 **/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "ldata.h"
 #include "lprov.h"
@@ -120,7 +121,7 @@ void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* r
 	// Now write out the NULL entry.
 	entry = malloc(sizeof(struct ldata_entry));
 	entry->mode = LABEL_END;
-	entry->address = NULL;
+	entry->address = 0;
 	memset(entry->label, 0, 256);
 	ldata_write(out, entry);
 }

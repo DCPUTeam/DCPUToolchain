@@ -20,11 +20,14 @@
 #include <bstrlib.h>
 #include <bstraux.h>
 #include <simclist.h>
+extern FILE* yyin;
 FILE* yyout;
 extern int yylineno;
 list_t equates;
 
-void yyerror(const char *str)
+void pp_discard_buffer();
+
+void yyerror(void* scanner, const char *str)
 {
     fprintf(stderr,"error at line %i: %s\n", yylineno, str);
 }
@@ -76,8 +79,13 @@ int equate_entry_seeker(const void* el, const void* key)
 {
 	list_init(&equates);
 	list_attributes_copy(&equates, equate_entry_meter, 1);
-    list_attributes_seeker(&equates, equate_entry_seeker);
+	list_attributes_seeker(&equates, equate_entry_seeker);
 };
+
+// We need a reentrant parser to do #include.
+%pure-parser
+%lex-param {void* scanner}
+%parse-param {void* scanner}
 
 %%
 
@@ -109,12 +117,30 @@ line:
 preprocessor:
 		INCLUDE STRING
 		{
+			/* We must recursively invoke the preprocessor on the new
+			   input, sending to standard output. */
+			FILE* yyold;
+			fprintf(stderr, "Found .INCLUDE.");
+			yyold = yyin;
+			yyin = fopen($2->data, "r");
+			fprintf(stderr, "Switched yyin.");
+			pp_discard_buffer(); /* Discard current lexer buffer. */
+			fprintf(stderr, "Discarded buffer.");
+			fprintf(stderr, "Starting parsing...");
+			yyparse(0);
+			fprintf(stderr, "Finished parsing.");
+			fclose(yyin);
+			fprintf(stderr, "Closed file.");
+			yyin = yyold;
+			fprintf(stderr, "Set yyin back again.");
+			pp_discard_buffer(); /* Discard current lexer buffer again. */
+			fprintf(stderr, "Discarded buffer again.");
 		} |
 		EQUATE WORD STRING
 		{
 			struct equate_entry* entry = malloc(sizeof(struct equate_entry));
-			entry->name = bfromcstr($2);
-			entry->replace = bfromcstr($3);
+			entry->name = $2;
+			entry->replace = $3;
 			list_append(&equates, entry);
 		} ;
 

@@ -13,3 +13,7 @@ dt_needs(argtable2)
 dt_needs(libdcpu)
 dt_needs(libdcpu-ci-lang)
 dt_needs(libdcpu-ci-lang-c)
+
+# Copy required data files.
+file(COPY ./bootstrap.asm DESTINATION "${ROOT_DIR}/Debug" USE_SOURCE_PERMISSIONS)
+

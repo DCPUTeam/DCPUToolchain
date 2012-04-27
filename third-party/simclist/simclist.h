@@ -23,8 +23,6 @@
 #ifndef SIMCLIST_H
 #define SIMCLIST_H
 
-#define SIMCLIST_NO_DUMPRESTORE
-
 #ifdef __cplusplus
 extern "C" {
 #endif

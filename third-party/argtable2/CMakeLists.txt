@@ -10,3 +10,4 @@ endif(NOT DEFINED IS_ROOT)
 # Define the argtable2 project.
 dt_project(library)
 dt_folder("third-party")
+add_definitions("-DSTDC_HEADERS -DHAVE_STDLIB_H -DHAVE_STRING_H")
