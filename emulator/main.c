@@ -77,6 +77,12 @@ int main(int argc, char* argv[])
 	path = strdup(argv[0]);
 	path = dirname(path);
 
+	// If the path wasn't passed on the command line, we don't know what it is.
+	if (strlen(path) == 0)
+	{
+		path = ".";
+	}
+
 	// Zero out the flash space.
 	for (i = 0; i < 0x10000; i++)
 		flash[i] = 0x0;
