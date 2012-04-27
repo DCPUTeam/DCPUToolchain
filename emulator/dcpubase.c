@@ -291,9 +291,9 @@ void vm_cycle(vm_t* vm)
 			vm_print_op_nonbasic("IAS", vm, a);
 			vm_op_ias(vm, a);
 			break;
-		case NBOP_IAP:
-			vm_print_op_nonbasic("IAP", vm, a);
-			vm_op_iap(vm, a);
+		case NBOP_RFI:
+			vm_print_op_nonbasic("RFI", vm, a);
+			vm_op_rfi(vm, a);
 			break;
 		case NBOP_IAQ:
 			vm_print_op_nonbasic("IAQ", vm, a);

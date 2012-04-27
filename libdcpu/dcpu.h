@@ -111,11 +111,11 @@ typedef uint8_t bool;
 // Non-basic opcodes
 #define NBOP_RESERVED   0x00
 #define NBOP_JSR        0x01
-#define NBOP_HCF		0x07
+#define NBOP_HCF		0xFFFF /* secret! */
 #define NBOP_INT        0x08
 #define NBOP_IAG        0x09
 #define NBOP_IAS        0x0A
-#define NBOP_IAP		0x0B
+#define NBOP_RFI		0x0B
 #define NBOP_IAQ		0xC
 #define NBOP_HWN        0x10
 #define NBOP_HWQ        0x11
