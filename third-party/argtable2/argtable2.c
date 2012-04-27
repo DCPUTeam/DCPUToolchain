@@ -1124,7 +1124,7 @@ void arg_free(void **argtable)
 void arg_freetable(void **argtable, size_t n)
     {
     struct arg_hdr **table=(struct arg_hdr**)argtable;
-    int tabindex=0;
+    size_t tabindex=0;
     /*printf("arg_freetable(%p)\n",argtable);*/
     for (tabindex=0; tabindex<n; tabindex++)
         {

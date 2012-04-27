@@ -74,7 +74,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 	// length so that we can adjust what will be the offset.
 	sz = ftell(in);
 	fseek(in, 0, SEEK_END);
-	*offset += (ftell(in) - sz) / 2; // Divide by two since these values are in bytes and we need the offset in words.
+	*offset += (uint16_t)((ftell(in) - sz) / 2); // Divide by two since these values are in bytes and we need the offset in words.
 	fseek(in, sz, SEEK_SET);
 }
 

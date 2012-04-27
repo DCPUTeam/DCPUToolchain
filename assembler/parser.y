@@ -26,6 +26,8 @@ extern unsigned int yyalineno;
 // Root node for the AST.
 struct ast_node_root ast_root;
  
+int yylex();
+
 void yyerror(const char *str)
 {
     fprintf(stderr,"error at line %i: %s\n", yyalineno, str);
@@ -155,7 +157,7 @@ line:
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = $1;
+			$$->keyword = (int)$1;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
@@ -167,7 +169,7 @@ line:
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = $1;
+			$$->keyword = (int)$1;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
@@ -178,7 +180,7 @@ line:
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = $1;
+			$$->keyword = (int)$1;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
@@ -189,7 +191,7 @@ line:
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = $1;
+			$$->keyword = (int)$1;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
@@ -200,7 +202,7 @@ line:
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = $1;
+			$$->keyword = (int)$1;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
@@ -262,7 +264,7 @@ line:
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = $2;
+			$$->keyword = (int)$2;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = lnode;
@@ -282,7 +284,7 @@ line:
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = $2;
+			$$->keyword = (int)$2;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = lnode;
@@ -302,7 +304,7 @@ line:
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = $2;
+			$$->keyword = (int)$2;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = lnode;
@@ -322,7 +324,7 @@ line:
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
-			$$->keyword = $2;
+			$$->keyword = (int)$2;
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = lnode;

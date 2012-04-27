@@ -22,7 +22,7 @@
 #define HOOK_MAX 10
 
 vm_hook vm_hook_list[HOOK_MAX] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-uint16_t vm_hook_mode[HOOK_MAX] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+uint16_t vm_hook_mode[HOOK_MAX] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode)
 {
@@ -40,7 +40,7 @@ uint16_t vm_hook_register(vm_t* vm, vm_hook hook, uint16_t mode)
 	if (id >= HOOK_MAX)
 	{
 		vm_halt(vm, "unable to register hook, maximum reached!");
-		return;
+		return 0;
 	}
 
 	vm_hook_list[id] = hook;

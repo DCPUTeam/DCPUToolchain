@@ -3,24 +3,21 @@
 	File:			pp.h
 
 	Project:		DCPU-16 Tools
-	Component:		Assembler
+	Component:		LibDCPU-PP
 
 	Authors:		James Rhodes
 
-	Description:	Declares the functions used by the
-					assembler for preprocessing.
+	Description:	Declares the public API for using the preprocessor
+					inline in programs.
 
 **/
 
-#ifndef __DCPU_ASM_PREPROCESSOR_H
-#define __DCPU_ASM_PREPROCESSOR_H
+#ifndef __DCPU_LIBDCPU_PP_H
+#define __DCPU_LIBDCPU_PP_H
 
-#define PATH_COUNT_MAX 100
-extern int pp_path_count;
-extern const char* pp_path_names[PATH_COUNT_MAX];
+#include <bstrlib.h>
 
-void pp_add_search_path(const char* path);
-FILE* pp_do(const char* input);
-void pp_cleanup();
+bstring pp_do(bstring path);
+void pp_cleanup(bstring path);
 
 #endif

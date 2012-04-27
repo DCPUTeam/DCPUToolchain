@@ -11,21 +11,19 @@
 
 **/
 
-#ifdef _WIN32
-#include <io.h>
-#include <fcntl.h>
-#else
-#include <libgen.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
 #include <argtable2.h>
+#include <bstrlib.h>
+#include <osutil.h>
+#include <pp.h>
+#include <ppfind.h>
 #include "assem.h"
 #include "node.h"
 #include "aerr.h"
-#include "pp.h"
+#include "aout.h"
 
 extern int yyparse();
 extern FILE *yyin, *yyout;
@@ -33,26 +31,11 @@ char* fileloc = NULL;
 
 #define EMU_CMD_SIZE 80
 
-#ifdef _WIN32
-char* dirname(char* path)
-{
-	// FIXME: This assumes the resulting path will always
-	// be shorter than the original (which it should be
-	// given that we're only returning a component of it, right?)
-	char drive[_MAX_DRIVE];
-	char dir[_MAX_DIR];
-	_splitpath(path, drive, dir, NULL, NULL);
-	strcpy(path, drive);
-	strcpy(path + strlen(path), dir);
-	return path;
-}
-#endif
-
 int main(int argc, char* argv[])
 {
 	FILE* img = NULL;
-	char emucmd[EMU_CMD_SIZE];
-	int nerrors, emures;
+	int nerrors;
+	bstring pp_result_name;
 	struct errinfo* errval;
 
 	// Define arguments.
@@ -90,16 +73,19 @@ int main(int argc, char* argv[])
 	}
 
 	// Run the preprocessor.
-	fileloc = malloc(strlen(input_file->filename[0]) + 1);
-	memcpy(fileloc, input_file->filename[0], strlen(input_file->filename[0]) + 1);
-	dirname(fileloc);
-	pp_add_search_path(".");
-	pp_add_search_path(fileloc);
+	ppfind_add_autopath(bfromcstr(input_file->filename[0]));
+	pp_result_name = pp_do(bfromcstr(input_file->filename[0]));
+	if (pp_result_name == NULL)
+	{
+		fprintf(stderr, "assembler: invalid result returned from preprocessor.\n");
+		pp_cleanup(pp_result_name);
+		return 1;
+	}
 	yyout = stderr;
-	yyin = pp_do(input_file->filename[0]);
+	yyin = fopen((const char*)(pp_result_name->data), "r");
 	if (yyin == NULL)
 	{
-		pp_cleanup();
+		pp_cleanup(pp_result_name);
 		return 1;
 	}
 
@@ -107,7 +93,7 @@ int main(int argc, char* argv[])
 	yyparse();
 	if (yyin != stdin)
 		fclose(yyin);
-	pp_cleanup();
+	pp_cleanup(pp_result_name);
 	if (&ast_root == NULL || ast_root.values == NULL)
 	{
 		fprintf(stderr, "assembler: syntax error, see above.\n");
@@ -131,9 +117,7 @@ int main(int argc, char* argv[])
 	else
 	{
 		// Windows needs stdout in binary mode.
-#ifdef _WIN32
-		_setmode( _fileno( stdout ), _O_BINARY );
-#endif
+		osutil_makebinary(stdout);
 
 		// Set img to stdout.
 		img = stdout;

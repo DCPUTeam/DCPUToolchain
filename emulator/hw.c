@@ -14,7 +14,9 @@
 
 #define PRIVATE_VM_ACCESS
 
+#include <libtcod.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "dcpubase.h"
 #include "hw.h"
 #include "lem1802.h"
@@ -32,7 +34,7 @@ uint16_t vm_hw_register(vm_t* vm, hw_t hardware)
 	if (id >= HW_MAX)
 	{
 		vm_halt(vm, "unable to register hardware, maximum reached!");
-		return;
+		return 0;
 	}
 
 	printf("assigned id %d: %04X %04X\n", id, hardware.id_2, hardware.id_1);
@@ -61,6 +63,7 @@ uint16_t vm_hw_count(vm_t* vm)
 		if(vm_hw_connected[i] == 0) 
 			return i;
 	}
+	return HW_MAX;
 }
 
 hw_t vm_hw_get_device(vm_t* vm, uint16_t index) {

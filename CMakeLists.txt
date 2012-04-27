@@ -17,7 +17,7 @@ if(MSVC)
 	# Windows does not have unistd.h, but GnuWin32's Flex program
 	# provides it for us, so we need to add that as an include
 	# directory in this case.
-	set(FLEX_UNISTD_INCLUDE "C:/UNIX/GnuWin32/include")
+	set(FLEX_UNISTD_INCLUDE "${ROOT_DIR}/third-party/flex")
 endif(MSVC)
 if(NOT DEFINED BUILD_EMULATOR)
 	set(BUILD_EMULATOR true)
@@ -36,6 +36,8 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "cmake")
 # Set compiler options.
 if(MSVC)
 	# TODO: Set warnings as errors on MSVC.
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX /W3 /wd4273 /wd4065 /wd4996 /wd4005 /D_CRT_SECURE_NO_WARNINGS /DSIMCLIST_NO_DUMPRESTORE")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /W3 /wd4273 /wd4065 /wd4996 /wd4005 /D_CRT_SECURE_NO_WARNINGS /DSIMCLIST_NO_DUMPRESTORE")
 elseif(APPLE)
 	# TODO: Set warnings as errors under Mac / XCode.
 else(MSVC)

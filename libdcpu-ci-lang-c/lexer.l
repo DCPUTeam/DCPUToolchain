@@ -13,7 +13,8 @@
 	Description:	Defines lexer for the compiler.
 
 **/
-
+	
+#include <lexfix.h>
 #include <string>
 #include <cstdio>
 #include "nodes/NBlock.h"
@@ -112,8 +113,8 @@ extern int string_return;
 <IN_STRING,IN_CHAR>\\\"							{ HANDLE; *yylval.string += '\"'; }
 <IN_STRING,IN_CHAR>\\\\							{ HANDLE; *yylval.string += '\\'; }
 <IN_STRING,IN_CHAR>\\\?							{ HANDLE; *yylval.string += '\?'; }
-<IN_STRING,IN_CHAR>\\[0-7]{1,3}					{ HANDLE; *yylval.string += strtoul(yytext + 1, NULL, 8); }
-<IN_STRING,IN_CHAR>\\x[a-fA-F0-9]{2}			{ HANDLE; *yylval.string += strtoul(yytext + 2, NULL, 16); }
+<IN_STRING,IN_CHAR>\\[0-7]{1,3}					{ HANDLE; *yylval.string += (char)strtoul(yytext + 1, NULL, 8); }
+<IN_STRING,IN_CHAR>\\x[a-fA-F0-9]{2}			{ HANDLE; *yylval.string += (char)strtoul(yytext + 2, NULL, 16); }
 <IN_STRING,IN_CHAR>\\[0-9]+						{ HANDLE; return ERROR; }
 <IN_STRING,IN_CHAR>\\(.|\n)						{ HANDLE; *yylval.string += yytext[1]; }
 <IN_STRING>[^\\\n\"]+							{ HANDLE; *yylval.string += yytext; }

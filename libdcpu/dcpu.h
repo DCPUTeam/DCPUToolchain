@@ -23,8 +23,12 @@
 #ifndef __cplusplus
 #ifndef __GNUC__
 typedef uint8_t bool;
+#ifndef true
 #define true 1
+#endif
+#ifndef false
 #define false 0
+#endif
 #else
 #include <stdbool.h>
 #endif

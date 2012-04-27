@@ -16,12 +16,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
+#include <bstrlib.h>
+#include <pp.h>
+#include <ppfind.h>
 #include "aout.h"
 #include "aerr.h"
 #include "dcpu.h"
 #include "treloc.h"
 #include "textn.h"
-#include "pp.h"
 #include "ldata.h"
 #include "lprov.h"
 #include "objfile.h"
@@ -202,12 +204,12 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 	struct lprov_entry* linker_required = NULL;
 	struct lprov_entry* linker_adjustment = NULL;
 	struct lprov_entry* linker_temp = NULL;
-	uint32_t mem_index, out_index, i, path_i;
+	uint32_t mem_index, out_index;
 	uint16_t inst;
 	uint16_t code_offset = 0;
 	uint16_t true_origin = 0;
 	FILE* temp = NULL;
-	char* cname;
+	bstring bname;
 
 	// Initialize out our extension table.
 	code_offset += textn_init(start);
@@ -323,7 +325,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 		// Adjust the "true origin" for .ORIGIN directivies because
 		// the linker table won't exist in the final result when
 		// linked.
-		true_origin = ftell(out);
+		true_origin = (uint16_t)ftell(out);
 	}
 	
 	// Write out our extension table.
@@ -345,22 +347,10 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 		else if (current_outer->type == AOUT_TYPE_METADATA_INCBIN)
 		{
 			// Include binary file.
-			temp = NULL;
-			path_i = 0;
-			while (temp == NULL && path_i < pp_path_count)
-			{
-				// Calculate path.
-				cname = malloc(strlen(pp_path_names[path_i]) + 1 + strlen(current_outer->label) + 1);
-				memset(cname, 0, strlen(pp_path_names[path_i]) + 1 + strlen(current_outer->label) + 1);
-				memcpy(cname, pp_path_names[path_i], strlen(pp_path_names[path_i]));
-				memcpy(cname + strlen(pp_path_names[path_i]), "/", 1);
-				memcpy(cname + strlen(pp_path_names[path_i]) + 1, current_outer->label, strlen(current_outer->label));
-
-				// Attempt open.
-				temp = fopen(cname, "rb");
-				if (temp == NULL)
-					path_i++;
-			}
+			bname = ppfind_locate(bfromcstr(current_outer->label));
+			if (bname == NULL)
+				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
+			temp = fopen((const char*)(bname->data), "rb");
 			if (temp == NULL)
 				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
 
@@ -374,7 +364,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 
 			// Finalize.
 			fclose(temp);
-			free(cname);
+			bdestroy(bname);
 		}
 		else if (current_outer->type == AOUT_TYPE_NORMAL)
 		{

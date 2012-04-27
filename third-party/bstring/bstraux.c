@@ -1,7 +1,3 @@
-#ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 /*
  * This source file is part of the bstring string library.  This code was
  * written by Paul Hsieh in 2002-2010, and is covered by either the 3-clause 

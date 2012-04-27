@@ -13,10 +13,12 @@
 **/
 
 #include <stdio.h>
+#include "hw.h"
 #include "hwtimer.h"
 #include "dcpu.h"
 #include "dcpubase.h"
 #include "dcpuhook.h"
+#include "dcpuops.h"
 
 uint32_t timer_tick = 0;
 uint32_t base_frequency = 0;

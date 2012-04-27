@@ -15,6 +15,8 @@
 
 #define PRIVATE_VM_ACCESS
 
+#include <libtcod.h>
+#include <stdio.h>
 #include "dcpubase.h"
 #include "dcpuops.h"
 #include "dcpuhook.h"

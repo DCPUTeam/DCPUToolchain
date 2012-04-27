@@ -13,17 +13,25 @@
 
 #include <stdio.h>
 #include <bstrlib.h>
-#include "parser.h"
+#include <parser.h>
+#include <lexer.h>
+#include <assert.h>
+#include <ppfind.h>
 
-extern int yydebug;
-extern int yyparse();
-extern FILE *yyin, *yyout;
+extern int pp_yyparse(void* scanner);
 
 int main(int argc, char* argv[])
 {
-	//yydebug = 1;
-	yyout = stdout;
-	yyin = fopen(argv[1], "rb");
-	yyparse();
+	yyscan_t scanner;
+	FILE* file;
+
+	file = fopen(argv[1], "r");
+	assert(file != NULL);
+	ppfind_add_autopath(bfromcstr(argv[1]));
+	pp_yylex_init(&scanner);
+	pp_yyset_out(stdout, scanner);
+	pp_yyset_in(file, scanner);
+	pp_yyparse(scanner);
+	pp_yylex_destroy(scanner);
 	return 0;
 }

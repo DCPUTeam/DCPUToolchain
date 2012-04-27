@@ -23,8 +23,8 @@
 
 int pp_included_count = 0;
 char* pp_included_names[INCLUDE_MAX];
-int pp_path_count = 0;
-const char* pp_path_names[PATH_COUNT_MAX];
+uint32_t pp_path_count = 0;
+char* pp_path_names[PATH_COUNT_MAX];
 void pp_base(FILE* in, FILE* out);
 
 bool strsw(char* src, char* check)
@@ -67,7 +67,7 @@ void pp_include(char* line, FILE* in, FILE* out)
 	char* pos_b = strchr(line, '>');
 	char* fname;
 	char* cname;
-	int path_i = 0;
+	uint32_t path_i = 0;
 
 	// Check to make sure the syntax is correct.
 	if (pos_a == NULL || pos_b == NULL)

@@ -10,6 +10,7 @@ endif(NOT DEFINED IS_ROOT)
 # Define the assembler project.
 dt_project(executable)
 dt_needs(argtable2)
+dt_needs(bstring)
 dt_needs(libdcpu)
 dt_needs(libdcpu-pp)
 dt_needs(libdcpu-ci-objfmt)

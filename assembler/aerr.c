@@ -13,6 +13,7 @@
 
 **/
 
+#include <stdlib.h>
 #include <setjmp.h>
 #include "aerr.h"
 

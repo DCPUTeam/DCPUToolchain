@@ -41,7 +41,7 @@ uint16_t base_border = 0x8280;
 void vm_lem1802_update(vm_t* vm, uint16_t pos)
 {
 	unsigned int i = 0, x = 0, y = 0, fx = 0, fy = 0, ax = 0, ay = 0;
-	uint16_t val, fore, back, brgt, chr;
+	uint16_t val, fore, back, chr;
 	TCOD_color_t foreclr, backclr;
 
 	// Are we updating a general cell?
@@ -126,13 +126,13 @@ void vm_lem1802_update(vm_t* vm, uint16_t pos)
 
 void lem1802_set_border(uint16_t val) {
 	unsigned int i = 0, x = 0, y = 0, fx = 0, fy = 0, ax = 0, ay = 0;
-	uint16_t val2, fore, back, brgt, chr;
+	uint16_t fore, back, chr;
 	TCOD_color_t foreclr, backclr;
 
 	// Get foreground, background and character components.
-	fore = (val2 & 0xF000) >> 12;
-	back = (val2 & 0x0F00) >> 8;
-	chr =  (val2 & 0x00FF);
+	fore = (val & 0xF000) >> 12;
+	back = (val & 0x0F00) >> 8;
+	chr =  (val & 0x00FF);
 
 	// Create TCOD colours.
 	foreclr.r = 255 * ((fore & 0x4) >> 2) / ((1 - ((fore & 0x8) >> 3)) + 1);

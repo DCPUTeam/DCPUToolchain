@@ -13,6 +13,7 @@
 
 **/
 	
+#include <lexfix.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -21,7 +22,7 @@
 
 #define HANDLE ECHO
 
-char* trim_and_unescape(char* data)
+char* pp_trim_and_unescape(char* data)
 {
 	unsigned int i = 0, a = 0;
 	char* result = malloc(strlen(data) - 1);
@@ -44,17 +45,14 @@ char* trim_and_unescape(char* data)
 	return result;
 }
 
-void pp_discard_buffer()
-{
-	
-}
-
 %}
 
 %option noyywrap
 %option yylineno
 %option reentrant
 %option bison-bridge
+%option header-file="lexer.h"
+%option prefix="pp_yy"
 
 %x PREPROCESSING
 
@@ -73,7 +71,7 @@ void pp_discard_buffer()
 <PREPROCESSING>0x[0-9A-Fa-f]+							yylval->number = strtoul(yytext, NULL, 16); return NUMBER;
 <PREPROCESSING>[0-9]+									yylval->number = strtoul(yytext, NULL, 10); return NUMBER;
 <PREPROCESSING>0[0-7]+									yylval->number = strtoul(yytext, NULL, 8); return NUMBER;
-<PREPROCESSING>L?\"(\\.|[^\\"])*\"						{ yylval->string = bfromcstr(trim_and_unescape((char*)strdup(yytext))); return STRING; }
+<PREPROCESSING>L?\"(\\.|[^\\"])*\"						yylval->string = bfromcstr(pp_trim_and_unescape((char*)strdup(yytext))); return STRING;
 
 	/* Miscellanous */
 

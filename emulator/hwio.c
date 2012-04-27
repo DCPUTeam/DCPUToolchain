@@ -12,11 +12,16 @@
 
 **/
 
+#define PRIVATE_VM_ACCESS
+
 #include <stdio.h>
 #include <string.h>
+#include "hw.h"
 #include "hwio.h"
 #include "hwioascii.h"
 #include "dcpuhook.h"
+#include "dcpubase.h"
+#include "dcpuops.h"
 
 extern char* path;
 

@@ -16,21 +16,22 @@
 #define YYDEBUG 1
 #define YYERROR_VERBOSE
 
+#include <lexfix.h>
+#include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <bstrlib.h>
 #include <bstraux.h>
 #include <simclist.h>
-extern FILE* yyin;
-FILE* yyout;
-extern int yylineno;
+#include <osutil.h>
+#include "ppfind.h"
+#include "dcpu.h"
 list_t equates;
-
 void pp_discard_buffer();
-
-void yyerror(void* scanner, const char *str)
-{
-    fprintf(stderr,"error at line %i: %s\n", yylineno, str);
-}
+void yyerror(void* scanner, const char *str);
+void handle_output(bstring output, void* scanner);
+void handle_include(bstring fname, void* current);
+bool is_globally_initialized = false;
 
 struct equate_entry
 {
@@ -77,13 +78,20 @@ int equate_entry_seeker(const void* el, const void* key)
 // Initialize everything.
 %initial-action
 {
-	list_init(&equates);
-	list_attributes_copy(&equates, equate_entry_meter, 1);
-	list_attributes_seeker(&equates, equate_entry_seeker);
+	// We don't want to reinitialize our equates
+	// list when entering new files (via includes).
+	if (!is_globally_initialized)
+	{
+		list_init(&equates);
+		list_attributes_copy(&equates, equate_entry_meter, 1);
+		list_attributes_seeker(&equates, equate_entry_seeker);
+		is_globally_initialized = true;
+	}
 };
 
 // We need a reentrant parser to do #include.
 %pure-parser
+%name-prefix="pp_yy"
 %lex-param {void* scanner}
 %parse-param {void* scanner}
 
@@ -110,7 +118,7 @@ line:
 				bfindreplace($1, e->name, e->replace, 0);
 			}
 			
-			fprintf(yyout, "%s", $1->data);
+			handle_output($1, scanner);
 			bdestroy($1);
 		} ;
 
@@ -119,22 +127,7 @@ preprocessor:
 		{
 			/* We must recursively invoke the preprocessor on the new
 			   input, sending to standard output. */
-			FILE* yyold;
-			fprintf(stderr, "Found .INCLUDE.");
-			yyold = yyin;
-			yyin = fopen($2->data, "r");
-			fprintf(stderr, "Switched yyin.");
-			pp_discard_buffer(); /* Discard current lexer buffer. */
-			fprintf(stderr, "Discarded buffer.");
-			fprintf(stderr, "Starting parsing...");
-			yyparse(0);
-			fprintf(stderr, "Finished parsing.");
-			fclose(yyin);
-			fprintf(stderr, "Closed file.");
-			yyin = yyold;
-			fprintf(stderr, "Set yyin back again.");
-			pp_discard_buffer(); /* Discard current lexer buffer again. */
-			fprintf(stderr, "Discarded buffer again.");
+			handle_include($2, scanner);
 		} |
 		EQUATE WORD STRING
 		{
@@ -157,3 +150,56 @@ text:
 			bconcat($$, s);
 			bdestroy(s);
 		} ;
+
+%%
+
+#include "lexer.h"
+
+void yyerror(void* scanner, const char *str)
+{
+    fprintf(stderr,"error at line %i: %s\n", pp_yyget_lineno(scanner), str);
+}
+
+void handle_output(bstring output, void* scanner)
+{
+	fprintf(pp_yyget_out(scanner), "%s", output->data);
+}
+
+void handle_include(bstring fname, void* current)
+{
+	yyscan_t scanner;
+	FILE* ffnew;
+	bstring dir;
+
+	// Search for the file using ppfind.
+	bstring path = ppfind_locate(fname);
+	if (path == NULL)
+	{
+		// TODO: We need error handling the preprocessor
+		//       so we can pass errors back like 'include not found'.
+		//       Maybe we can model this off the ahalt() mechanism
+		//       in the assembler.
+		fprintf(stderr, "can't include '%s'.", fname->data);
+		return;
+	}
+	
+	// Calculate the directory that the include
+	// file is located in and add that directory
+	// to the include path.
+	dir = osutil_dirname(path);
+	ppfind_add_path(dir);
+
+	// Include the file.
+	ffnew = fopen((const char*)(path->data), "r");
+	assert(ffnew != NULL);
+	pp_yylex_init(&scanner);
+	pp_yyset_in(ffnew, scanner);
+	pp_yyset_out(pp_yyget_out(current), scanner);
+	pp_yyparse(scanner);
+	fclose(ffnew);
+	pp_yylex_destroy(scanner);
+	bdestroy(path);
+
+	// Remove the include path again.
+	ppfind_remove_path(dir);
+}
