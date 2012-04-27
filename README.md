@@ -7,12 +7,15 @@ You can download binaries for Windows from the main http://dcputoolcha.in/ websi
 
 ### Instructions for Windows
 
-You need to install Bison and Flex.  You can do this by downloading the GnuWin32 versions from these links:
+**IMPORTANT NOTICE:** GnuWin32 no longer works as it is too out-of-date to support the reentrant lexer and parser used in the preprocesser system.  If you used the old instructions, you must now uninstall the GnuWin32 versions, remove GnuWin32 from your PATH and then follow the instructions below.
 
-* http://gnuwin32.sourceforge.net/packages/flex.htm
-* http://gnuwin32.sourceforge.net/packages/bison.htm
+You need to install Cygwin.  You can do this by downloading Cygwin from this link:
 
-Install these packages into a location that does not contain spaces in the path, such as C:\UNIX\GnuWin32.  Once installed, you must then add "C:\UNIX\GnuWin32\bin" to your system PATH environment variable (Google has the answer if you don't know how to do this).
+* http://cygwin.com/install.html
+
+Ensure that during the setup process you select the Flex and Bison packages during installation.  Do **not** install CMake under Cygwin.  You should install Cygwin into a path without spaces (it will inform you to do this).
+
+Once installed, you must then add the Cygwin bin/ folder (located under where-ever you installed Cygwin) to your system PATH environment variable (Google has the answer if you don't know how to do this).  For example, I install Cygwin in C:\UNIX, thus the path for me to add would be C:\UNIX\bin.
 
 You must then install CMake; you can download CMake from:
 
@@ -31,11 +34,9 @@ Otherwise, this should work correctly and produce a Visual Studio 2010 solution 
 
 #### Cygwin Notice
 
-If you are using Cygwin, then there are some important notes:
+When using Cygwin, then there are some important notes:
 
-* You must use the GnuWin32 versions of Flex and Bison.
-* You must use the Windows version of CMake.
-* You can't have any of these tools installed as part of Cygwin.
+* You must use the Windows version of CMake.  You can't have this installed as part of Cygwin.
 * **and most importantly** you must initially run `cmake -G "Visual Studio 10"` from the command prompt.  Cygwin's case sensitivity causes the initial configuration and detection of the C compiler to screw up _badly_ and the only way to fix it is to _restart your computer_. You will get errors like "unable to set key 'TMP', key 'Tmp' already exists" which will also affect Visual Studio until you restart if you don't adhere to this!
 * Once you have done the initial configuration, you may then run cmake from Cygwin to update project files; it's just the initial configuration that can't be done in Cygwin.
 
