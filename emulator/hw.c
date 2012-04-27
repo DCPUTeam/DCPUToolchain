@@ -52,7 +52,7 @@ void vm_hw_unregister(vm_t* vm, uint16_t id)
 void vm_hw_interrupt(vm_t* vm, uint16_t index)
 {
 	hw_t device = vm_hw_list[index];
-	if(vm->debug) printf("\nInterrupting device 0x%04X (0x%04X %04X): %d\n", index, device.id_2, device.id_1, device.handler);
+	if(vm->debug) printf("\nInterrupting device 0x%04X (0x%04X %04X): %p\n", index, device.id_2, device.id_1, device.handler);
 	device.handler(vm);
 }
 
