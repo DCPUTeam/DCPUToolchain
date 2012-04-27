@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.5)
 project(libtcod)
 
 # Check to ensure that we are running as part of the
