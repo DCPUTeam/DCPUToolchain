@@ -222,6 +222,8 @@ add_subdirectory(preprocessor)
 add_subdirectory(compiler)
 add_subdirectory(assembler)
 add_subdirectory(linker)
+add_subdirectory(ddbg)
+
 if("${BUILD_EMULATOR}" MATCHES true)
 	add_subdirectory(emulator)
 endif("${BUILD_EMULATOR}" MATCHES true)

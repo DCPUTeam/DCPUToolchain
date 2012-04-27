@@ -11,3 +11,15 @@ endif(NOT DEFINED IS_ROOT)
 dt_project(library)
 dt_needs(libdcpu)
 
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	dt_needs_prebuilt(libtcod libtcod-VS)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    find_library(tcod tcod)
+	target_link_libraries(libdcpu-vm tcod)
+	# if library is not installed
+	#dt_needs_prebuilt(libtcod libtcod-VS)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
