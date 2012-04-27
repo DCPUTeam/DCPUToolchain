@@ -134,10 +134,11 @@ uint16_t vm_resolve_value_once(vm_t* vm, uint16_t val, uint8_t pos)
 
 void vm_op_set(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(1);
 	uint16_t val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(1);
 	
 	VM_SKIP_RESET;
 	*store_b = val_a;
@@ -147,11 +148,12 @@ void vm_op_set(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_add(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(2);
 	uint16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(2);
 	
 	VM_SKIP_RESET;
 	*store_b = *store_b + val_a;
@@ -161,11 +163,12 @@ void vm_op_add(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_sub(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(2);
 	uint16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(2);
 	
 	VM_SKIP_RESET;
 	*store_b = val_b - val_a;
@@ -175,11 +178,12 @@ void vm_op_sub(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_mul(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(2);
 	uint16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(2);
 	
 	VM_SKIP_RESET;
 	*store_b = val_b * val_a;
@@ -189,11 +193,12 @@ void vm_op_mul(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_mli(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(2);
 	int16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = (int16_t)vm_resolve_value(vm, a, POS_A);
 	val_b = (int16_t)vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(2);
 	
 	VM_SKIP_RESET;
 	*store_b = (uint16_t)(val_b * val_a);
@@ -203,11 +208,12 @@ void vm_op_mli(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_div(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(3);
 	uint16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(3);
 	
 	VM_SKIP_RESET;
 	if (val_a != 0)
@@ -225,11 +231,12 @@ void vm_op_div(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(3);
 	int16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = (int16_t)vm_resolve_value(vm, a, POS_A);
 	val_b = (int16_t)vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(3);
 		
 	VM_SKIP_RESET;
 	if (val_a != 0)
@@ -247,11 +254,12 @@ void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(3);
 	int16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(3);
 	
 	VM_SKIP_RESET;
 	if (val_a != 0)
@@ -263,11 +271,12 @@ void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_mod(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(3);
 	uint16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(3);
 	
 	VM_SKIP_RESET;
 	if (val_a != 0)
@@ -280,11 +289,12 @@ void vm_op_mod(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_and(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(1);
 	uint16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(1);
 	
 	VM_SKIP_RESET;
 	*store_b = val_b & val_a;
@@ -293,11 +303,12 @@ void vm_op_and(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_bor(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(1);
 	uint16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);	
+	store_b = vm_internal_get_store(vm, b, POS_B);	
+	OP_NUM_CYCLES(1);
 	
 	VM_SKIP_RESET;
 	*store_b = val_b | val_a;
@@ -306,11 +317,12 @@ void vm_op_bor(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_xor(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(1);
 	uint16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);	
+	store_b = vm_internal_get_store(vm, b, POS_B);	
+	OP_NUM_CYCLES(1);
 	
 	VM_SKIP_RESET;
 	*store_b = val_b ^ val_a;
@@ -319,11 +331,12 @@ void vm_op_xor(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_shr(vm_t* vm, uint16_t a, uint16_t b)
 {
-	OP_NUM_CYCLES(2);
 	uint16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(2);
 	
 	VM_SKIP_RESET;
 	*store_b = val_b >> val_a;
@@ -337,11 +350,12 @@ void vm_op_asr(vm_t* vm, uint16_t a, uint16_t b)
 	// arithmetic shifts if the left-hand value is
 	// signed, however, we still need to make sure that the
 	// excess register is completely compliant.
-	OP_NUM_CYCLES(2);
 	int16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = (int16_t)vm_resolve_value(vm, a, POS_A);
 	val_b = (int16_t)vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(2);
 	
 	VM_SKIP_RESET;
 	*store_b = val_b >> val_a;
@@ -351,11 +365,12 @@ void vm_op_asr(vm_t* vm, uint16_t a, uint16_t b)
 
 void vm_op_shl(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(2);
 	uint16_t val_b, val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(2);
 	
 	VM_SKIP_RESET;
 	*store_b = val_b << val_a;
@@ -445,11 +460,12 @@ void vm_op_ifu(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_adx(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(3);
 	uint16_t val_b, val_a, val_ex;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(3);
 	
 	val_ex = vm->ex;
 	VM_SKIP_RESET;
@@ -460,11 +476,12 @@ void vm_op_adx(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_sbx(vm_t* vm, uint16_t b, uint16_t a)
 {
-	OP_NUM_CYCLES(3);
 	uint16_t val_b, val_a, val_ex;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
+	OP_NUM_CYCLES(3);
 
 	val_ex = vm->ex;
 	VM_SKIP_RESET;
@@ -476,8 +493,9 @@ void vm_op_sbx(vm_t* vm, uint16_t b, uint16_t a)
 void vm_op_sti(vm_t* vm, uint16_t b, uint16_t a)
 {
 	uint16_t val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
 	
 	VM_SKIP_RESET;
 	*store_b = val_a;
@@ -489,8 +507,9 @@ void vm_op_sti(vm_t* vm, uint16_t b, uint16_t a)
 void vm_op_std(vm_t* vm, uint16_t b, uint16_t a)
 {
 	uint16_t val_a;
+	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	uint16_t* store_b = vm_internal_get_store(vm, b, POS_B);
+	store_b = vm_internal_get_store(vm, b, POS_B);
 	
 	VM_SKIP_RESET;
 	*store_b = val_a;
@@ -501,9 +520,10 @@ void vm_op_std(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_jsr(vm_t* vm, uint16_t a)
 {
-	OP_NUM_CYCLES(3);
 	uint16_t new_pc = vm_resolve_value(vm, a, POS_A);
 	uint16_t t;
+	OP_NUM_CYCLES(3);
+
 	VM_SKIP_RESET;
 	t = --vm->sp;
 	vm->ram[t] = vm->pc;
@@ -541,8 +561,9 @@ void vm_op_ias(vm_t* vm, uint16_t a)
 
 void vm_op_iap(vm_t* vm, uint16_t a)
 {
-	OP_NUM_CYCLES(3);
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+	OP_NUM_CYCLES(3);
+
 	VM_SKIP_RESET;
 	
 	if(val_a != 0) {
@@ -554,9 +575,10 @@ void vm_op_iap(vm_t* vm, uint16_t a)
 
 void vm_op_iaq(vm_t* vm, uint16_t a)
 {
-	OP_NUM_CYCLES(2);
 	uint16_t i = 0x0;
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+	OP_NUM_CYCLES(2);
+
 	VM_SKIP_RESET;
 	
 	if(val_a == 0) {
@@ -572,8 +594,9 @@ void vm_op_iaq(vm_t* vm, uint16_t a)
 
 void vm_op_hwn(vm_t* vm, uint16_t a)
 {
-	OP_NUM_CYCLES(2);
 	uint16_t* store_a = vm_internal_get_store(vm, a, POS_A);
+	OP_NUM_CYCLES(2);
+
 	VM_SKIP_RESET;
 	
 	*store_a = vm_hw_count(vm);
@@ -584,7 +607,7 @@ void vm_op_hwn(vm_t* vm, uint16_t a)
 
 void vm_op_hwq(vm_t* vm, uint16_t a)
 {
-	OP_NUM_CYCLES(4);
+	hw_t queried_device;
 	uint16_t* store_a = vm_internal_get_store(vm, REG_A, POS__);
 	uint16_t* store_b = vm_internal_get_store(vm, REG_B, POS__);
 	uint16_t* store_c = vm_internal_get_store(vm, REG_C, POS__);
@@ -592,9 +615,11 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 	uint16_t* store_y = vm_internal_get_store(vm, REG_Y, POS__);
 
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+	OP_NUM_CYCLES(4);
+
 	VM_SKIP_RESET;
 	
-	hw_t queried_device = vm_hw_get_device(vm, val_a);
+	queried_device = vm_hw_get_device(vm, val_a);
 	if(vm->debug) printf("\nhwq: index %d %04X%0X", val_a, queried_device.id_1, queried_device.id_2);
 	*store_a = queried_device.id_1;
 	*store_b = queried_device.id_2;
@@ -612,8 +637,9 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 
 void vm_op_hwi(vm_t* vm, uint16_t a)
 {
-	OP_NUM_CYCLES(4);
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+	OP_NUM_CYCLES(4);
+
 	VM_SKIP_RESET;
 	vm_hw_interrupt(vm, val_a);
 }

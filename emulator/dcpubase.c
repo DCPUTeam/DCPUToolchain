@@ -141,16 +141,21 @@ void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
 
 void vm_cycle(vm_t* vm)
 {
+	uint16_t instruction;
+	uint16_t op;
+	uint16_t b;
+	uint16_t a;
+
 	if(vm->sleep_cycles > 0)
 	{
 		vm->sleep_cycles--;
 		return;
 	}
 
-	uint16_t instruction = vm_consume_word(vm);
-	uint16_t op = INSTRUCTION_GET_OP(instruction);
-	uint16_t b = INSTRUCTION_GET_B(instruction);
-	uint16_t a = INSTRUCTION_GET_A(instruction);
+	instruction = vm_consume_word(vm);
+	op = INSTRUCTION_GET_OP(instruction);
+	b = INSTRUCTION_GET_B(instruction);
+	a = INSTRUCTION_GET_A(instruction);
 
 	if(vm->debug) printf("Instruction: %04X\n", instruction);
 	switch (op)
