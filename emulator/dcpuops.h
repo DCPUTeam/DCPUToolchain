@@ -6,6 +6,7 @@
 	Component:		Emulator
 
 	Authors:		James Rhodes
+					Tyrel Haveman
 
 	Description:	Declares functions that handle individual
 					opcodes in the virtual machine.
@@ -25,6 +26,7 @@ void vm_op_mli(vm_t* vm, uint16_t b, uint16_t a);
 void vm_op_div(vm_t* vm, uint16_t b, uint16_t a);
 void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a);
 void vm_op_mod(vm_t* vm, uint16_t b, uint16_t a);
+void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a);
 void vm_op_and(vm_t* vm, uint16_t b, uint16_t a);
 void vm_op_bor(vm_t* vm, uint16_t b, uint16_t a);
 void vm_op_xor(vm_t* vm, uint16_t b, uint16_t a);
@@ -41,12 +43,17 @@ void vm_op_ifa(vm_t* vm, uint16_t b, uint16_t a);
 void vm_op_ifl(vm_t* vm, uint16_t b, uint16_t a);
 void vm_op_ifu(vm_t* vm, uint16_t b, uint16_t a);
 void vm_op_adx(vm_t* vm, uint16_t b, uint16_t a);
-void vm_op_sux(vm_t* vm, uint16_t b, uint16_t a);
+void vm_op_sbx(vm_t* vm, uint16_t b, uint16_t a);
+void vm_op_sti(vm_t* vm, uint16_t b, uint16_t a);
+void vm_op_std(vm_t* vm, uint16_t b, uint16_t a);
 
 void vm_op_jsr(vm_t* vm, uint16_t a);
+void vm_op_hcf(vm_t* vm, uint16_t a);
 void vm_op_int(vm_t* vm, uint16_t a);
 void vm_op_iag(vm_t* vm, uint16_t a);
 void vm_op_ias(vm_t* vm, uint16_t a);
+void vm_op_iap(vm_t* vm, uint16_t a);
+void vm_op_iaq(vm_t* vm, uint16_t a);
 void vm_op_hwn(vm_t* vm, uint16_t a);
 void vm_op_hwq(vm_t* vm, uint16_t a);
 void vm_op_hwi(vm_t* vm, uint16_t a);

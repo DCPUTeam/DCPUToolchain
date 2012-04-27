@@ -6,6 +6,7 @@
 	Component:		Emulator
 
 	Authors:		James Rhodes
+					Tyrel Haveman
 
 	Description:	Main entry point.
 
@@ -26,17 +27,17 @@
 char* path;
 
 #ifdef _WIN32
-char* dirname(char* path)
+char* dirname(char* fixpath)
 {
 	// FIXME: This assumes the resulting path will always
 	// be shorter than the original (which it should be
 	// given that we're only returning a component of it, right?)
 	char drive[_MAX_DRIVE];
 	char dir[_MAX_DIR];
-	_splitpath(path, drive, dir, NULL, NULL);
-	strcpy(path, drive);
-	strcpy(path + strlen(path), dir);
-	return path;
+	_splitpath(fixpath, drive, dir, NULL, NULL);
+	strcpy(fixpath, drive);
+	strcpy(fixpath + strlen(fixpath), dir);
+	return fixpath;
 }
 #endif
 
@@ -75,6 +76,12 @@ int main(int argc, char* argv[])
 	// Set global path variable.
 	path = strdup(argv[0]);
 	path = dirname(path);
+
+	// If the path wasn't passed on the command line, we don't know what it is.
+	if (strlen(path) == 0)
+	{
+		path = ".";
+	}
 
 	// Zero out the flash space.
 	for (i = 0; i < 0x10000; i++)
