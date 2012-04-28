@@ -149,10 +149,11 @@ void lem1802_set_border(uint16_t val) {
 	for (y = 1; y < screen_height + 1; y++) TCOD_console_set_char_background(NULL, 0, y, foreclr, TCOD_BKGND_SET);
 	for (y = 1; y < screen_height + 1; y++) TCOD_console_set_char_background(NULL, screen_width + 1, y, foreclr, TCOD_BKGND_SET);
 #else
-	for (x = 0; x < screen_width + 2; x++)  TCOD_console_set_back(NULL, x, 0, foreclr, TCOD_BKGND_SET);
+/*	for (x = 0; x < screen_width + 2; x++)  TCOD_console_set_back(NULL, x, 0, foreclr, TCOD_BKGND_SET);
 	for (x = 0; x < screen_width + 2; x++)  TCOD_console_set_back(NULL, x, screen_height + 1, foreclr, TCOD_BKGND_SET);
 	for (y = 1; y < screen_height + 1; y++) TCOD_console_set_back(NULL, 0, y, foreclr, TCOD_BKGND_SET);
 	for (y = 1; y < screen_height + 1; y++) TCOD_console_set_back(NULL, screen_width + 1, y, foreclr, TCOD_BKGND_SET);
+	*/
 #endif
 }
 

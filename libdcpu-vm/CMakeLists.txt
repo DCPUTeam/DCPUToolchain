@@ -18,5 +18,6 @@ ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	dt_needs_prebuilt(libtcod libtcod-VS)
 	find_library(tcod tcod)
+	target_link_libraries(libdcpu-vm tcod)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
