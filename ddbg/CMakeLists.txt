@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.5)
-project(dcpudebugger)
+project(ddbg)
 
 # Check to ensure that we are running as part of the
 # root CMakeLists.txt file.

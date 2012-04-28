@@ -27,6 +27,11 @@
 
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <pthread.h>
+
+#include <signal.h>
+
+#include "sdp.h"
 
 #define MAX_ARGUMENTS 10
 #define MAX_ARGUMENT_LENGTH 50
@@ -37,6 +42,7 @@ uint16_t flash[0x10000];
 uint16_t breakpoints[MAX_BREAKPOINTS];
 uint16_t breakpoints_num;
 vm_t* vm;
+pthread_t sdp_thread;
 
 #ifdef _WIN32
 char* dirname(char* fixpath)
@@ -52,6 +58,11 @@ char* dirname(char* fixpath)
 	return fixpath;
 }
 #endif
+
+void ddbg_sigint(int signal) {
+	pthread_cancel(sdp_thread);
+	exit(1);
+}
 
 void ddbg_cycle_hook(vm_t* vm, uint16_t pos)
 {
@@ -188,6 +199,8 @@ int main(int argc, char** argv) {
 	char* tmp;
 	unsigned int num_args = 0;
 	unsigned int i = 0;
+	int child = 0;
+	
 	
 	args = malloc(sizeof(char*) * MAX_ARGUMENTS);
 	for(i = 0; i < MAX_ARGUMENTS; i++) args[i] = malloc(sizeof(char) * MAX_ARGUMENT_LENGTH);
@@ -196,6 +209,9 @@ int main(int argc, char** argv) {
 	path = strdup(argv[0]);
 	path = (char*) dirname(path);
 	
+	signal(SIGINT, ddbg_sigint);
+	
+	pthread_create(&sdp_thread, NULL, (void*)ddbg_sdp_thread, vm);
 	printf("Welcome to the DCPU Toolchain Debugger, the best debugger in the multiverse.\n");
 	
 	for(;;) {
@@ -242,7 +258,7 @@ int main(int argc, char** argv) {
 				ddbg_breakpoints_list();
 			} else if(strcmp(buf, "state") == 0) {
 				ddbg_dump_state();
-			}
+			} 
 		}
 	}
 	

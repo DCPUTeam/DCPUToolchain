@@ -128,6 +128,10 @@ int main(int argc, char* argv[])
 	vm = vm_create();
 	vm->debug = (debug_mode->count > 0);
 	vm_flash(vm, flash);
+	vm_lem1802_init(new_vm, 0);
+	vm_hw_io_init(new_vm, 0);
+	vm_hw_timer_init(new_vm);
+	
 	vm_execute(vm);
 	if (terminate_mode->count > 0)
 	{
