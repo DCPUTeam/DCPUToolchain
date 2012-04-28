@@ -110,7 +110,7 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 		break;
 	case COMPARE_EQUAL:
 		*block <<	"	SUB A, B" << std::endl;
-		*block <<	"	IFN O, 0x0" << std::endl;
+		*block <<	"	IFN EX, 0x0" << std::endl;
 		*block <<	"		SET A, 0x1" << std::endl;
 		*block <<	"	IFN A, 0x0" << std::endl;
 		*block <<	"		SET A, 0x1" << std::endl;
