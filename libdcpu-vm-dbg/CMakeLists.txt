@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.5)
-project(libdcpu-vm)
+project(libdcpu-vm-dbg)
 
 # Check to ensure that we are running as part of the
 # root CMakeLists.txt file.
@@ -9,14 +9,5 @@ endif(NOT DEFINED IS_ROOT)
 
 # Define the libvm project.
 dt_project(library)
+dt_needs(bstring)
 dt_needs(libdcpu)
-
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	dt_needs_prebuilt(libtcod libtcod-VS)
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	dt_needs_prebuilt(libtcod libtcod-VS)
-	find_library(tcod tcod)
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-

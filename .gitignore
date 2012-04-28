@@ -9,9 +9,14 @@
 *.vcxproj.filters
 ipch/*
 
-# Vim files #
-#############
+# KDevelop4 files #
+###################
+*.kdev4
+
+# Vim and backup files #
+########################
 *.swp
+*~
 
 # Binary files #
 ################
