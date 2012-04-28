@@ -12,3 +12,5 @@ endif(NOT DEFINED IS_ROOT)
 dt_project(executable)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
+
+target_link_libraries(ddbg readline pthread)
