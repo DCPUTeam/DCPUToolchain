@@ -179,9 +179,9 @@ function(dt_has_parser cxx)
 	if("${cxx}" MATCHES true)
 		add_custom_command(
 			SOURCE ${${PROJECT_NAME}_SOURCE_DIR}/lexer.l
-			COMMAND ${FLEX_EXECUTABLE} -o${${PROJECT_NAME}_SOURCE_DIR}/lexer.cpp ${${PROJECT_NAME}_SOURCE_DIR}/lexer.l
+			COMMAND ${FLEX_EXECUTABLE} -o${${PROJECT_NAME}_SOURCE_DIR}/lexer.cpp --header-file=${${PROJECT_NAME}_SOURCE_DIR}/lexer.hpp ${${PROJECT_NAME}_SOURCE_DIR}/lexer.l
 			TARGET ${PROJECT_NAME}
-			OUTPUTS ${${PROJECT_NAME}_SOURCE_DIR}/lexer.cpp)
+			OUTPUTS ${${PROJECT_NAME}_SOURCE_DIR}/lexer.cpp ${${PROJECT_NAME}_SOURCE_DIR}/lexer.hpp)
 		add_custom_command(
 			SOURCE ${${PROJECT_NAME}_SOURCE_DIR}/parser.y
 			COMMAND ${BISON_EXECUTABLE} -d -y -o${${PROJECT_NAME}_SOURCE_DIR}/parser.cpp ${${PROJECT_NAME}_SOURCE_DIR}/parser.y
@@ -192,9 +192,9 @@ function(dt_has_parser cxx)
 	else("${cxx}" MATCHES true)
 		add_custom_command(
 			SOURCE ${${PROJECT_NAME}_SOURCE_DIR}/lexer.l
-			COMMAND ${FLEX_EXECUTABLE} -o${${PROJECT_NAME}_SOURCE_DIR}/lexer.c ${${PROJECT_NAME}_SOURCE_DIR}/lexer.l
+			COMMAND ${FLEX_EXECUTABLE} -o${${PROJECT_NAME}_SOURCE_DIR}/lexer.c --header-file=${${PROJECT_NAME}_SOURCE_DIR}/lexer.h ${${PROJECT_NAME}_SOURCE_DIR}/lexer.l
 			TARGET ${PROJECT_NAME}
-			OUTPUTS ${${PROJECT_NAME}_SOURCE_DIR}/lexer.c)
+			OUTPUTS ${${PROJECT_NAME}_SOURCE_DIR}/lexer.c ${${PROJECT_NAME}_SOURCE_DIR}/lexer.h)
 		add_custom_command(
 			SOURCE ${${PROJECT_NAME}_SOURCE_DIR}/parser.y
 			COMMAND ${BISON_EXECUTABLE} -d -y -o${${PROJECT_NAME}_SOURCE_DIR}/parser.c ${${PROJECT_NAME}_SOURCE_DIR}/parser.y

@@ -52,7 +52,6 @@ char* pp_trim_and_unescape(char* data)
 %option yylineno
 %option reentrant
 %option bison-bridge
-%option header-file="lexer.h"
 %option prefix="pp_yy"
 
 %x PREPROCESSING
