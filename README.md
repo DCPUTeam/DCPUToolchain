@@ -47,7 +47,7 @@ When using Cygwin, then there are some important notes:
 First install a few required packages with
 
 ```
-$ sudo apt-get install bison flex cmake build-essential
+$ sudo apt-get install bison flex cmake build-essential libreadline-dev
 ```
 
 Download [libtcod](http://doryen.eptalys.net/libtcod/download/) and copy
