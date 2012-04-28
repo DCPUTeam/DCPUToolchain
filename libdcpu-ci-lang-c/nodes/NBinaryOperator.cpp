@@ -118,14 +118,14 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 		break;
 	case COMPARE_NOT_EQUAL:
 		*block <<	"	SUB A, B" << std::endl;
-		*block <<	"	IFN O, 0x0" << std::endl;
+		*block <<	"	IFN EX, 0x0" << std::endl;
 		*block <<	"		SET A, 0x1" << std::endl;
 		*block <<	"	IFN A, 0x0" << std::endl;
 		*block <<	"		SET A, 0x1" << std::endl;
 		break;
 	case COMPARE_LESS_THAN:
 		*block <<	"	SUB B, A" << std::endl;
-		*block <<	"	IFE O, 0x1" << std::endl;
+		*block <<	"	IFE EX, 0x1" << std::endl;
 		*block <<	"		SET B, 0x0" << std::endl;
 		*block <<	"	IFN B, 0x0" << std::endl;
 		*block <<	"		SET B, 0x1" << std::endl;
@@ -133,24 +133,24 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 		break;
 	case COMPARE_LESS_THAN_EQUAL:
 		*block <<	"	SUB B, A" << std::endl;
-		*block <<	"	IFE O, 0x1" << std::endl;
+		*block <<	"	IFE EX, 0x1" << std::endl;
 		*block <<	"		SET B, 0x0" << std::endl;
-		*block <<	"	IFE O, 0x0" << std::endl;
+		*block <<	"	IFE EX, 0x0" << std::endl;
 		*block <<	"		SET B, 0x1" << std::endl;
 		break;
 		*block <<	"	SET A, B" << std::endl;
 	case COMPARE_GREATER_THAN:
 		*block <<	"	SUB A, B" << std::endl;
-		*block <<	"	IFE O, 0x1" << std::endl;
+		*block <<	"	IFE EX, 0x1" << std::endl;
 		*block <<	"		SET A, 0x0" << std::endl;
 		*block <<	"	IFN A, 0x0" << std::endl;
 		*block <<	"		SET A, 0x1" << std::endl;
 		break;
 	case COMPARE_GREATER_THAN_EQUAL:
 		*block <<	"	SUB A, B" << std::endl;
-		*block <<	"	IFE O, 0x1" << std::endl;
+		*block <<	"	IFE EX, 0x1" << std::endl;
 		*block <<	"		SET A, 0x0" << std::endl;
-		*block <<	"	IFE O, 0x0" << std::endl;
+		*block <<	"	IFE EX, 0x0" << std::endl;
 		*block <<	"		SET A, 0x1" << std::endl;
 		break;
 	default:
