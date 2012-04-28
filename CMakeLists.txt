@@ -161,10 +161,12 @@ endfunction(dt_needs)
 # Define a function which specifies a **pre-built**
 # dependency on the project.
 function(dt_needs_prebuilt dependency libname)
-	message("    .. adding '${dependency}' library at third-party/${dependency}/lib/${libname}.lib")
 	message("    .. adding '${dependency}' include at third-party/${dependency}/include")
 	include_directories("${ROOT_DIR}/third-party/${dependency}/include")
-	target_link_libraries(${PROJECT_NAME} "${ROOT_DIR}/third-party/${dependency}/lib/${libname}.lib")
+	if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+		message("    .. adding '${dependency}' library at third-party/${dependency}/lib/${libname}.lib")
+		target_link_libraries(${PROJECT_NAME} "${ROOT_DIR}/third-party/${dependency}/lib/${libname}.lib")
+	endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endfunction(dt_needs_prebuilt dependency)
 
 # Define a dependency on an executable project.

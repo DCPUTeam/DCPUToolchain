@@ -15,11 +15,8 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	dt_needs_prebuilt(libtcod libtcod-VS)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
-
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    find_library(tcod tcod)
-	target_link_libraries(libdcpu-vm tcod)
-	# if library is not installed
-	#dt_needs_prebuilt(libtcod libtcod-VS)
+	dt_needs_prebuilt(libtcod libtcod-VS)
+	find_library(tcod tcod)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
