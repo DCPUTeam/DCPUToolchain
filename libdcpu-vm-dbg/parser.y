@@ -76,7 +76,7 @@ general_command:
 		} |
 		ID_CONTINUE
 		{
-			// Continue execution of paused program.
+			ddbg_run_vm();
 		} |
 		ID_STOP
 		{
@@ -95,7 +95,7 @@ breakpoint_command:
 		breakpoint_delete_command ;
 
 breakpoint_add_command:
-		ID_BREAKPOINT ID_ADD ID_MEMORY COLON ADDRESS
+		ID_BREAKPOINT ADDRESS
 		{
 			// Add a breakpoint in memory
 			// at the specified RAM address.
@@ -133,15 +133,21 @@ breakpoint_list_command:
 		} ;
 		
 breakpoint_delete_command:
+		ID_BREAKPOINT ID_DELETE ADDRESS
+		{
+			ddbg_delete_breakpoint(bfromcstr("memory"), $5);
+		} |
 		ID_BREAKPOINT ID_DELETE PATH COLON ADDRESS
 		{
 			// Delete a breakpoint in the specified file ($3)
 			// at the specified line number ($5).
+			ddbg_delete_breakpoint($3, $5);
 		} |
 		ID_DELETE ID_BREAKPOINT PATH COLON ADDRESS
 		{
 			// Delete a breakpoint in the specified file ($3)
 			// at the specified line number ($5).
+			ddbg_delete_breakpoint($3, $5);
 		} ;
 
 hardware_command:
