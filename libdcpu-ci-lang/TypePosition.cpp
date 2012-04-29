@@ -6,6 +6,7 @@
 	Component:		LibDCC
 
 	Authors:		James Rhodes
+					Patrick Flick
 
 	Description:	Defines the TypePosition class.
 
@@ -54,10 +55,18 @@ std::string TypePosition::pushAddress(char registr)
 		sstr << "	SET " << registr << ", cfunc_" << this->m_FunctionName << std::endl;
 	else if (this->m_Global)
 		sstr << "	SET " << registr << ", _DATA" << std::endl;
+		
+	// TODO rename the member m_StackStartAtC, it now works differently
 	else if (this->m_StackStartAtC)
-	{
+	{	/*
 		sstr << "	SET " << registr << ", C" << std::endl;
 		sstr << "	ADD " << registr << ", 1" << std::endl;
+		*/
+		// there is one stack-frame allready in lower memory
+		// thus get the address of the next stack via Y (iterate one position down)
+		sstr << "	SET " << registr << ", Y" << std::endl;
+		sstr << "	SUB " << registr << ", 1" << std::endl;
+		sstr << "	SET " << registr << ", [" << registr << "]" << std::endl;
 	}
 	else
 		sstr << "	SET " << registr << ", Y" << std::endl;

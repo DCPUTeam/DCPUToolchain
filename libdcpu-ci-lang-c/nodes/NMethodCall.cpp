@@ -6,6 +6,7 @@
 	Component:		Compiler
 
 	Authors:		James Rhodes
+					Patrick Flick
 
 	Description:	Defines the NMethodCall AST class.
 
@@ -125,8 +126,10 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		*block <<  "	ADD SP, 1" << std::endl;
 	}
 
-	// Adjust Y frame by C amount.
-	*block <<  "	ADD Y, " << (a - 1) << std::endl;
+	// TODO this has become unnessecary with the new bootstrap stack handleing
+	// TODO  maybe we can get rid of the C register alltogether?? (not sure)
+	// Adjust Y frame by C amount
+	//*block <<  "	ADD Y, " << (a - 1) << std::endl;
 
 	// Clean up frame.
 	context.finishStackFrame(frame);
