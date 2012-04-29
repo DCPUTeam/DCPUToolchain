@@ -20,12 +20,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-extern unsigned int yylineno;
+
+#include "aux.h"
+
+//extern unsigned int yylineno;
 int yylex();
 
 void yyerror(const char *str)
 {
-    fprintf(stderr,"error at line %i: %s\n", yylineno, str);
+    fprintf(stderr,"error: %s\n", str);
 }
  
 int yywrap()
@@ -39,7 +42,8 @@ int yywrap()
 %union
 {
 	int number;
-	bstring string;
+	//bstring string;
+	char* string;
 	int* token;
 }
 
@@ -64,9 +68,11 @@ general_command:
 		ID_LOAD PATH
 		{
 			// Path is in $2.
+			printf("load!\n");
 		} |
 		ID_RUN
 		{
+			printf("run!\n");
 			// Run currently loaded program from
 			// beginning.  Prompt / warn if the program
 			// has already partially started.

@@ -10,7 +10,8 @@ endif(NOT DEFINED IS_ROOT)
 
 # Define the emulator project.
 dt_project(executable)
+dt_needs(libdcpu-vm-dbg)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
 
-target_link_libraries(ddbg readline pthread)
+target_link_libraries(ddbg readline pthread fl)
