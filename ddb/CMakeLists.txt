@@ -10,15 +10,22 @@ endif(NOT DEFINED IS_ROOT)
 
 # Define the emulator project.
 dt_project(executable)
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 dt_needs_prebuilt(readline readline readline)
-#dt_needs_prebuilt(pthread pthreadVC2 pthread)
+dt_needs_prebuilt(pthread pthreadVC2 pthread)  	
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+find_library(readline readline readline)
+find_library(pthread pthreadVC2 pthread)
+target_link_libraries(ddb readline)
+target_link_libraries(ddb pthread)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
 dt_needs(bstring)
 dt_needs(libdcpu-vm-dbg)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
 
-target_link_libraries(ddb pthread)
-
 if(DEFINED EXPERIMENTAL)
-	ADD_DEFINITIONS(-DFEATURE_SDP)
+	add_definitions(FEATURE_SDP)
 endif(DEFINED EXPERIMENTAL)
