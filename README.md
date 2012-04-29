@@ -47,37 +47,32 @@ When using Cygwin, then there are some important notes:
 First install a few required packages with
 
 ```
-$ sudo apt-get install bison flex cmake build-essential libreadline-dev
+$ sudo apt-get install bison flex cmake build-essential libreadline-dev libsdl1.2-dev
 ```
 
 Download [libtcod](http://doryen.eptalys.net/libtcod/download/) and copy
 
 ```
-$ sudo cp libtcod-gui.so  libtcod.so  libtcodxx.so /usr/local/lib
-$ sudo cp -R include /usr/local/include
+$ sudo cp libtcod*.so /usr/lib
+$ sudo cp -r include /usr/include/libtcod
 ```
 
-If you want to compile libtcod yourself you need libsdl1.2-dev. Next create a directory and clone the repository into the src folder
+Next clone the repository into a new folder
 
 ```
-$ mkdir -p dcputoolchain/build
-dcputoolchain$ cd dcputoolchain
-dcputoolchain$ git clone git@github.com:DCPUTeam/DCPUToolchain.git src
+$ git clone git://github.com/DCPUTeam/DCPUToolchain.git dcputoolchain
+$ cd dcputoolchain
 ```
 
 Now generate the makefiles and and compile with
 
 ```
 dcputoolchain$ cd build
-dcputoolchain/build$ cmake ../src/
+dcputoolchain/build$ cmake ..
 dcputoolchain/build$ make
 ```
 
-If everything went well the binaries are in ```dcputoolchain/src/Debug```. You need to copy bootstrap.asm into the Debug folder, otherwise the assembler won't assemble your project
-
-```
-~/dcputoolchain/src/Debug$ cp ../compiler/bootstrap.asm ./
-```
+If everything went well the binaries are in ```dcputoolchain/Debug```
 
 ### Instructions for Mac
 
