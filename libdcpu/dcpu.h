@@ -1,14 +1,14 @@
 /**
 
-	File:			dcpu.h
+	File:           dcpu.h
 
-	Project:		DCPU-16 Tools
-	Component:		LibVM
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares common macros and functions
-					use in all DCPU-16 Tools components.
+	Description:    Declares common macros and functions
+	                use in all DCPU-16 Tools components.
 
 **/
 
@@ -43,6 +43,7 @@ typedef uint8_t bool;
 #define REG_Z     0x05
 #define REG_I     0x06
 #define REG_J     0x07
+
 #define VAL_A     0x08
 #define VAL_B     0x09
 #define VAL_C     0x0A
@@ -51,6 +52,7 @@ typedef uint8_t bool;
 #define VAL_Z     0x0D
 #define VAL_I     0x0E
 #define VAL_J     0x0F
+
 #define NXT_VAL_A 0x10
 #define NXT_VAL_B 0x11
 #define NXT_VAL_C 0x12
@@ -59,6 +61,7 @@ typedef uint8_t bool;
 #define NXT_VAL_Z 0x15
 #define NXT_VAL_I 0x16
 #define NXT_VAL_J 0x17
+
 #define PUSH_POP  0x18
 #define PEEK      0x19
 #define PICK      0x1A
@@ -78,6 +81,7 @@ typedef uint8_t bool;
 // Opcodes
 #define OP_NONBASIC 0x00
 #define OP_SET      0x01
+
 #define OP_ADD      0x02
 #define OP_SUB      0x03
 #define OP_MUL      0x04
@@ -86,9 +90,11 @@ typedef uint8_t bool;
 #define OP_DVI      0x07
 #define OP_MOD      0x08
 #define OP_MDI      0x09
-#define OP_AND		0x0A
+
+#define OP_AND      0x0A
 #define OP_BOR      0x0B
 #define OP_XOR      0x0C
+
 #define OP_SHR      0x0D
 #define OP_ASR      0x0E
 #define OP_SHL      0x0F
@@ -105,18 +111,19 @@ typedef uint8_t bool;
 #define OP_ADX      0x1A
 #define OP_SBX      0x1B
 
-#define OP_STI		0x1e
-#define OP_STD		0x1f
+#define OP_STI      0x1e
+#define OP_STD      0x1f
 
 // Non-basic opcodes
 #define NBOP_RESERVED   0x00
 #define NBOP_JSR        0x01
-#define NBOP_HCF		0xFFFF /* secret! */
+#define NBOP_HCF        0xFFFF /* secret! */
 #define NBOP_INT        0x08
 #define NBOP_IAG        0x09
 #define NBOP_IAS        0x0A
-#define NBOP_RFI		0x0B
-#define NBOP_IAQ		0x0C
+#define NBOP_RFI        0x0B
+#define NBOP_IAQ        0x0C
+
 #define NBOP_HWN        0x10
 #define NBOP_HWQ        0x11
 #define NBOP_HWI        0x12
