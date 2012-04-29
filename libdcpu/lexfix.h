@@ -1,13 +1,13 @@
 /**
 
-	File:			lexfix.h
+	File:           lexfix.h
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCPU
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines fixes for the lexer / parser system
+	Description:    Defines fixes for the lexer / parser system
 	                that are required to run under a system where
 	                warnings cause errors.
 
