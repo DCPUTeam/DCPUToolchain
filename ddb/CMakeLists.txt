@@ -20,5 +20,5 @@ dt_needs(libdcpu)
 target_link_libraries(ddb pthread)
 
 if(DEFINED EXPERIMENTAL)
-	add_definitions(FEATURE_SDP)
+	ADD_DEFINITIONS(-DFEATURE_SDP)
 endif(DEFINED EXPERIMENTAL)
