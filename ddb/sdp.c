@@ -222,7 +222,7 @@ void handle (int sock)
 					memcpy(out->payload, &tmp, sizeof(uint16_t));
 					out->payload += sizeof(uint16_t);
 					
-					tmp = htons(100 * 1000); // kHz
+					tmp = htons(100); // kHz
 					memcpy(out->payload, &tmp, sizeof(uint16_t));
 					out->payload += sizeof(uint16_t);
 					

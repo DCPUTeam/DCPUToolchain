@@ -30,6 +30,7 @@ char* dbg_trim_and_unescape(char* data, int mode);
 %option noyywrap
 %option reentrant
 %option bison-bridge
+%option prefix="dbg_yy"
 
 
 %%
@@ -52,8 +53,8 @@ char* dbg_trim_and_unescape(char* data, int mode);
 
 	/* General stuff */
 
-[A-Za-z_-]+[A-Za-z0-9_-]*			yylval->string = yytext; return PARAM;
 [\.\/A-Za-z0-9-]+				yylval->string = yytext; return PATH;
+[A-Za-z_-]+[A-Za-z0-9_-]*			yylval->string = yytext; return PARAM;
 0x[0-9A-Fa-f]+					yylval->number = strtoul(yytext, NULL, 16); return ADDRESS;
 [0-9]+						yylval->number = strtoul(yytext, NULL, 10); return ADDRESS;
 L?'(\\.|[^\\'])+'				yylval->string = dbg_trim_and_unescape(strdup(yytext), 1); return CHARACTER;

@@ -45,8 +45,7 @@ char* path;
 extern vm_t* vm;
 pthread_t sdp_thread;
 
-extern int yyparse(void* scanner);
-typedef void* yyscan_t;
+extern int dbg_yyparse(void* scanner);
 
 #ifdef _WIN32
 char* dirname(char* fixpath)
@@ -83,7 +82,6 @@ int main(int argc, char** argv) {
 	unsigned int i = 0;
 	int child = 0;
 	yyscan_t scanner;
-	YY_BUFFER_STATE buffer;
 	
 	args = malloc(sizeof(char*) * MAX_ARGUMENTS);
 	for(i = 0; i < MAX_ARGUMENTS; i++) args[i] = malloc(sizeof(char) * MAX_ARGUMENT_LENGTH);
@@ -94,9 +92,9 @@ int main(int argc, char** argv) {
 	
 	signal(SIGINT, ddbg_sigint);
 	
-	ddbg_quickstart("qt.o");
-	ddbg_run_vm();
-	ddbg_dump_state();
+	//ddbg_quickstart("qt.o");
+	//ddbg_run_vm();
+	//ddbg_dump_state();
 	
 	pthread_create(&sdp_thread, NULL, (void*)ddbg_sdp_thread, vm);
 	printf("Welcome to the DCPU Toolchain Debugger, the best debugger in the multiverse.\n");
@@ -105,6 +103,10 @@ int main(int argc, char** argv) {
 		buf = readline("> ");
 		add_history (buf);
 		
+		dbg_yylex_init(&scanner);
+		dbg_yy_scan_string(buf, scanner);
+		dbg_yyparse(scanner);
+		dbg_yylex_destroy(scanner);
 		/*yylex_init(&scanner);
 		buffer = yy_scan_buffer(buf, strlen(buf)+2, scanner);
 		yy_switch_to_buffer(buffer, scanner);

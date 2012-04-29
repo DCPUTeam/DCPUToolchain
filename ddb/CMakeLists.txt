@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.5)
-project(ddbg)
+project(ddb)
 
 # Check to ensure that we are running as part of the
 # root CMakeLists.txt file.
@@ -14,4 +14,4 @@ dt_needs(libdcpu-vm-dbg)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
 
-target_link_libraries(ddbg readline pthread fl)
+target_link_libraries(ddb readline pthread)
