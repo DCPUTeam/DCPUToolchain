@@ -43,8 +43,8 @@ p_string* pstring_from_cstring(char* string) {
 	
 	res->length = strlen(string);
 	printf("length: %d", res->length);
-	res->string = malloc(res->length);
-	memcpy(res->string, string, res->length);
+	res->string = malloc(res->length + 1);
+	memcpy(res->string, string, res->length + 1);
 	printf(", string: %s\n", res->string);
 	return res;
 }

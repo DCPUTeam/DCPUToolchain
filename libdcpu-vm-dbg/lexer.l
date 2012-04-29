@@ -50,15 +50,17 @@ char* dbg_trim_and_unescape(char* data, int mode);
 "hardware"					return ID_HARDWARE;
 "cpu"						return ID_CPU;
 "detach"					return ID_DETACH;
+"list"						return ID_LIST;
+"memory"					return ID_MEMORY;
 
 	/* General stuff */
 
-[\.\/A-Za-z0-9-]+				yylval->string = yytext; return PATH;
-[A-Za-z_-]+[A-Za-z0-9_-]*			yylval->string = yytext; return PARAM;
 0x[0-9A-Fa-f]+					yylval->number = strtoul(yytext, NULL, 16); return ADDRESS;
 [0-9]+						yylval->number = strtoul(yytext, NULL, 10); return ADDRESS;
-L?'(\\.|[^\\'])+'				yylval->string = dbg_trim_and_unescape(strdup(yytext), 1); return CHARACTER;
-L?\"(\\.|[^\\"])*\"				yylval->string = dbg_trim_and_unescape(strdup(yytext), 0); return STRING;
+[\.\/A-Za-z0-9-]+				yylval->string = bfromcstr(strdup(yytext)); return PATH;
+[A-Za-z_-]+[A-Za-z0-9_-]*			yylval->string = bfromcstr(strdup(yytext)); return PARAM;
+L?'(\\.|[^\\'])+'				yylval->string = bfromcstr(dbg_trim_and_unescape(strdup(yytext), 1)); return CHARACTER;
+L?\"(\\.|[^\\"])*\"				yylval->string = bfromcstr(dbg_trim_and_unescape(strdup(yytext), 0)); return STRING;
 \:						return COLON;
 
 [ \t]+						/* ignore whitespace */;

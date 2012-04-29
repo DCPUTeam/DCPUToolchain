@@ -7,7 +7,7 @@
 
 	Authors:		José Manuel Díez
 
-	Description:	Main entry point.
+	Description:		Main entry point.
 
 **/
 
@@ -18,6 +18,7 @@
 #include <libgen.h>
 #endif
 
+#include <bstrlib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -95,6 +96,7 @@ int main(int argc, char** argv) {
 	//ddbg_quickstart("qt.o");
 	//ddbg_run_vm();
 	//ddbg_dump_state();
+	ddbg_create_vm();
 	
 	pthread_create(&sdp_thread, NULL, (void*)ddbg_sdp_thread, vm);
 	printf("Welcome to the DCPU Toolchain Debugger, the best debugger in the multiverse.\n");
