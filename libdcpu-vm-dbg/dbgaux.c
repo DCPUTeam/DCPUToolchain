@@ -27,7 +27,7 @@
 uint16_t flash[0x10000];
 uint16_t breakpoints[MAX_BREAKPOINTS];
 uint16_t breakpoints_num;
-vm_t* vm;
+extern vm_t* vm;
 
 void ddbg_cycle_hook(vm_t* vm, uint16_t pos)
 {
@@ -97,9 +97,9 @@ void ddbg_attach(bstring hw)
 {
 	if (biseq(hw, bfromcstr("lem1802")))
 		vm_lem1802_init(vm, 0);
-	else if (biseq(hw, bfromcstr("generic_keyboard")))
+	else if (biseq(hw, bfromcstr("keyboard")))
 		vm_hw_io_init(vm, 0);
-	else if (biseq(hw, bfromcstr("generic_clock")))
+	else if (biseq(hw, bfromcstr("clock")))
 		vm_hw_timer_init(vm);
 	else
 		printf("Unrecognized hardware.\n");

@@ -39,6 +39,8 @@
 #include <dcpuhook.h>
 
 
+
+
 #include "sdp.h"
 
 #define MAX_ARGUMENTS 10
@@ -46,7 +48,7 @@
 
 
 char* path;
-extern vm_t* vm;
+vm_t* vm;
 pthread_t sdp_thread;
 
 extern int dbg_yyparse(void* scanner);

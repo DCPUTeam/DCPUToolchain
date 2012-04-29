@@ -150,10 +150,11 @@ hardware_command:
 		hardware_inspect_command ;
 
 hardware_attach_command:
-		ID_HARDWARE ID_ATTACH PARAM
+		ID_HARDWARE ID_ATTACH PATH
 		{
 			// Attach a specified piece of hardware to
 			// the DCPU.
+			ddbg_attach($3);
 		} |
 		ID_ATTACH ID_HARDWARE PARAM
 		{
