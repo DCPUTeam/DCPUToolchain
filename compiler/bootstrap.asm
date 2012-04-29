@@ -63,7 +63,8 @@ DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	SET J, Y												; J -> address of stack frame
 	ADD J, X												; J -> address of stack frame + stack size (excluding return value)
 	:_stack_return_loop
-		SET POP, 0											; First iteration pops return value, then pops through the stack
+		SET PEEK, 0
+		ADD SP, 1											; First iteration pops return value, then pops through the stack
 		IFN SP, J											; Is the return value + stack frame cleared? (remember that the + size
 															; means it's the address beyond end-of-stack).
 			SET PC, _stack_return_loop						; If not, repeat until it is.

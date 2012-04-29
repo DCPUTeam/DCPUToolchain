@@ -48,9 +48,11 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 		// Put the values into A and B and clear the
 		// stack positions as we do so.
 		*block <<	"	SET B, PEEK" << std::endl;
-		*block <<	"	SET POP, 0" << std::endl;
+		*block <<	"	SET PEEK, 0" << std::endl;
+		*block <<	"	ADD SP, 1" << std::endl;
 		*block <<	"	SET A, PEEK" << std::endl;
-		*block <<	"	SET POP, 0" << std::endl;
+		*block <<	"	SET PEEK, 0" << std::endl;
+		*block <<	"	ADD SP, 1" << std::endl;
 	}
 	else
 	{
@@ -110,7 +112,7 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 		break;
 	case COMPARE_EQUAL:
 		*block <<	"	SUB A, B" << std::endl;
-		*block <<	"	IFN O, 0x0" << std::endl;
+		*block <<	"	IFN EX, 0x0" << std::endl;
 		*block <<	"		SET A, 0x1" << std::endl;
 		*block <<	"	IFN A, 0x0" << std::endl;
 		*block <<	"		SET A, 0x1" << std::endl;
