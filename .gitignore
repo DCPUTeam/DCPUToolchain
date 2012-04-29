@@ -72,5 +72,6 @@ CMakeFiles/*
 */parser.c
 */parser.h
 */lexer.cpp
+*/lexer.hpp
 */parser.cpp
 */parser.hpp
