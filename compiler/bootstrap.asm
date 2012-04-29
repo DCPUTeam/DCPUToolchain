@@ -53,11 +53,14 @@ DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	SET PUSH, Z
 	SET Y, SP
 	ADD Y, 2
+	IFE X, 0
+		SET PC, _stack_init_loop_end
 	:_stack_init_loop
 		SET [Y], 0
 		ADD Y, 1
 		IFN Y, J
 			SET PC, _stack_init_loop
+	:_stack_init_loop_end
 	SET PEEK, Z
 	SET Y, SP
 	ADD Y, 2
