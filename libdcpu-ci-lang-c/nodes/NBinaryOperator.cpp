@@ -48,9 +48,11 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 		// Put the values into A and B and clear the
 		// stack positions as we do so.
 		*block <<	"	SET B, PEEK" << std::endl;
-		*block <<	"	SET POP, 0" << std::endl;
+		*block <<	"	SET PEEK, 0" << std::endl;
+		*block <<	"	ADD SP, 1" << std::endl;
 		*block <<	"	SET A, PEEK" << std::endl;
-		*block <<	"	SET POP, 0" << std::endl;
+		*block <<	"	SET PEEK, 0" << std::endl;
+		*block <<	"	ADD SP, 1" << std::endl;
 	}
 	else
 	{
