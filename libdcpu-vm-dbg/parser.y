@@ -20,18 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-extern unsigned int yylineno;
-int yylex();
-
-void yyerror(const char *str)
-{
-    fprintf(stderr,"error at line %i: %s\n", yylineno, str);
-}
- 
-int yywrap()
-{
-    return 1;
-}
+void yyerror(void* scanner, const char *str);
 
 %}
 
@@ -39,7 +28,8 @@ int yywrap()
 %union
 {
 	int number;
-	bstring string;
+	//bstring string;
+	char* string;
 	int* token;
 }
 
@@ -52,6 +42,13 @@ int yywrap()
 // Start at the root node.
 %start command
 
+// We need to pass in a scanner object
+// so that we can scan via strings.
+%pure-parser
+%name-prefix="dbg_yy"
+%lex-param {void* scanner}
+%parse-param {void* scanner}
+
 %%
 
 command:
@@ -59,14 +56,16 @@ command:
 		breakpoint_command |
 		hardware_command |
 		cpu_command ;
-
+		
 general_command:
 		ID_LOAD PATH
 		{
 			// Path is in $2.
+			printf("load!\n");
 		} |
 		ID_RUN
 		{
+			printf("run!\n");
 			// Run currently loaded program from
 			// beginning.  Prompt / warn if the program
 			// has already partially started.
@@ -166,3 +165,12 @@ cpu_inspect_command:
 		{
 			// Inspect the state of DCPU.
 		} ;
+
+%%
+
+#include "lexer.h"
+
+void yyerror(void* scanner, const char *str)
+{
+    fprintf(stderr,"error at line %i: %s\n", dbg_yyget_lineno(scanner), str);
+}

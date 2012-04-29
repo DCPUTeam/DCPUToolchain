@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.5)
-project(ddbg)
+project(ddb)
 
 # Check to ensure that we are running as part of the
 # root CMakeLists.txt file.
@@ -10,7 +10,8 @@ endif(NOT DEFINED IS_ROOT)
 
 # Define the emulator project.
 dt_project(executable)
+dt_needs(libdcpu-vm-dbg)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
 
-target_link_libraries(ddbg readline pthread)
+target_link_libraries(ddb readline pthread)
