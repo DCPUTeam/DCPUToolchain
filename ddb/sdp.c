@@ -170,7 +170,7 @@ void handle (int sock)
 					out->payload += sizeof(uint16_t);
 					
 					tmp32 = htonl(1337);
-					memcpy(out->payload, &tmp, sizeof(uint32_t));
+					memcpy(out->payload, &tmp32, sizeof(uint32_t));
 					out->payload += sizeof(uint32_t);
 					
 					tmp8 = 0xFF;
