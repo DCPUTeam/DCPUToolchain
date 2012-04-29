@@ -32,6 +32,8 @@
 
 #include <bstrlib.h>
 
+#include <dbgaux.h>
+#include <lexfix.h>
 #include <parser.h>
 #include <lexer.h>
 #include <dcpuhook.h>
@@ -78,15 +80,7 @@ void get_command(char* command_buffer, int max) {
 
 int main(int argc, char** argv) {
 	char* buf;
-	char** args;
-	char* tmp;
-	unsigned int num_args = 0;
-	unsigned int i = 0;
-	int child = 0;
 	yyscan_t scanner;
-	
-	args = malloc(sizeof(char*) * MAX_ARGUMENTS);
-	for(i = 0; i < MAX_ARGUMENTS; i++) args[i] = malloc(sizeof(char) * MAX_ARGUMENT_LENGTH);
 	
 	// Set global path variable.
 	path = strdup(argv[0]);
@@ -95,7 +89,9 @@ int main(int argc, char** argv) {
 	signal(SIGINT, ddbg_sigint);
 	ddbg_create_vm();
 	
+#ifdef FEATURE_SDP
 	pthread_create(&sdp_thread, NULL, (void*)ddbg_sdp_thread, vm);
+#endif
 	printf("Welcome to the DCPU Toolchain Debugger, the best debugger in the multiverse.\n");
 	
 	for(;;) {

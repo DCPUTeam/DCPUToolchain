@@ -10,9 +10,13 @@ endif(NOT DEFINED IS_ROOT)
 
 # Define the emulator project.
 dt_project(executable)
+dt_needs_prebuilt(readline readline readline)
+dt_needs_prebuilt(pthread pthreadVC2 pthread)
 dt_needs(bstring)
 dt_needs(libdcpu-vm-dbg)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
 
-target_link_libraries(ddb readline pthread)
+if(DEFINED EXPERIMENTAL)
+	add_definitions(FEATURE_SDP)
+endif(DEFINED EXPERIMENTAL)

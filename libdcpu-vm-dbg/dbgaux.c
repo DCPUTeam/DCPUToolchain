@@ -18,6 +18,9 @@
 #include <bstrlib.h>
 #include <dcpu.h>
 #include <dcpuhook.h>
+#include <hwio.h>
+#include <lem1802.h>
+#include <hwtimer.h>
 
 #define MAX_BREAKPOINTS 100
 

@@ -10,15 +10,8 @@ endif(NOT DEFINED IS_ROOT)
 
 # Define the emulator project.
 dt_project(executable)
+dt_needs_prebuilt(libtcod libtcod-VS tcod)
 dt_needs(argtable2)
 dt_needs(libdcpu)
 dt_needs(libdcpu-vm)
 
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	dt_needs_prebuilt(libtcod libtcod-VS)
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	dt_needs_prebuilt(libtcod libtcod-VS)
-	find_library(tcod tcod)
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")

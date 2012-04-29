@@ -11,6 +11,8 @@
 	
 **/
 
+#ifdef FEATURE_SDP
+
 #ifndef __SDP_H
 #define __SDP_H
 
@@ -44,5 +46,7 @@ typedef struct {
 } p_string;
 
 void* ddbg_sdp_thread(vm_t* vm);
+
+#endif
 
 #endif

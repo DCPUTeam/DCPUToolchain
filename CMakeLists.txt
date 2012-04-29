@@ -55,6 +55,10 @@ message("  >> flex is at: ${FLEX_EXECUTABLE}")
 message("  >> flex unistd is at: ${FLEX_UNISTD_INCLUDE}")
 message("  >> bison is at: ${BISON_EXECUTABLE}")
 message("   (must be GnuWin32 versions on Windows; Cygwin does not work)")
+if(NOT "${EXPERIMENTAL}" STREQUAL "")
+message("  >> experimental features are enabled!")
+set(EXPERIMENTAL true)
+endif(NOT "${EXPERIMENTAL}" STREQUAL "")
 
 # Define a function that automatically includes
 # all of the .h and .c files in the project folder.
@@ -160,12 +164,16 @@ endfunction(dt_needs)
 
 # Define a function which specifies a **pre-built**
 # dependency on the project.
-function(dt_needs_prebuilt dependency libname)
+function(dt_needs_prebuilt dependency winlibname unixlibname)
 	message("    .. adding '${dependency}' include at third-party/${dependency}/include")
 	include_directories("${ROOT_DIR}/third-party/${dependency}/include")
 	if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-		message("    .. adding '${dependency}' library at third-party/${dependency}/lib/${libname}.lib")
-		target_link_libraries(${PROJECT_NAME} "${ROOT_DIR}/third-party/${dependency}/lib/${libname}.lib")
+		message("    .. adding '${dependency}' library at third-party/${dependency}/lib/${winlibname}.lib")
+		target_link_libraries(${PROJECT_NAME} "${ROOT_DIR}/third-party/${dependency}/lib/${winlibname}.lib")
+	else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+		message("    .. adding '${dependency}' library")
+		find_library(${unixlibname} ${unixlibname})
+		target_link_libraries(${PROJECT_NAME} ${unixlibname})
 	endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endfunction(dt_needs_prebuilt dependency)
 
@@ -209,6 +217,8 @@ message("-- Defining projects")
 
 # Add library folders.
 add_subdirectory(third-party/libtcod)
+add_subdirectory(third-party/pthread)
+add_subdirectory(third-party/readline)
 add_subdirectory(third-party/argtable2)
 add_subdirectory(third-party/bstring)
 add_subdirectory(third-party/simclist)

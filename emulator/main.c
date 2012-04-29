@@ -23,6 +23,9 @@
 #include <string.h>
 #include <argtable2.h>
 #include "dcpu.h"
+#include <lem1802.h>
+#include <hwio.h>
+#include <hwtimer.h>
 
 char* path;
 

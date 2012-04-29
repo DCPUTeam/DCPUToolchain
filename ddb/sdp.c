@@ -11,13 +11,15 @@
 
 **/
 
+#ifdef FEATURE_SDP
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
-#include <netdb.h>
 #include <sys/types.h> 
+#include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -72,8 +74,6 @@ void handle (int sock)
 	uint32_t tmp32;
 	uint8_t tmp8;
 	
-	
-	p_string* test;
 	sdp_packet* in = malloc(sizeof(sdp_packet));
 	sdp_packet* out = malloc(sizeof(sdp_packet));
 	
@@ -312,3 +312,5 @@ void* ddbg_sdp_thread(vm_t* vm) {
 	signal(SIGTERM, ddbg_handle_sigterm);
 	tcp_server();
 }
+
+#endif

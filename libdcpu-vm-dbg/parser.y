@@ -15,11 +15,12 @@
 
 #define YYERROR_VERBOSE
 
+#include <lexfix.h>
 #include <bstrlib.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "aux.h"
+#include "dbgaux.h"
 
 void yyerror(void* scanner, const char *str);
 

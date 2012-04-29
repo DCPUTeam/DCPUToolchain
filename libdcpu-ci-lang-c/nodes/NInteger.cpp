@@ -47,7 +47,7 @@ AsmBlock* NInteger::compile(AsmGenerator& context)
 	AsmBlock* block = new AsmBlock();
 
 	// Load the numeric value in register A.
-	*block <<	"	SET A, " << this->value << std::endl;
+	*block <<	"	SET A, " << (const size_t)this->value << std::endl;
 
 	return block;
 }

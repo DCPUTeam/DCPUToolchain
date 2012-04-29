@@ -11,6 +11,8 @@
 	
 **/
 
+#ifdef FEATURE_SDP
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -82,3 +84,4 @@ unsigned char* serialize_pstring(p_string* string) {
 	return buffer;
 }
 
+#endif
