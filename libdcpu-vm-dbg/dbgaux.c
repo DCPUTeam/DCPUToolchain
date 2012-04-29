@@ -31,11 +31,10 @@ extern vm_t* vm;
 
 void ddbg_cycle_hook(vm_t* vm, uint16_t pos)
 {
-	int i = 0;
-	
+	int i = 0;	
 	for(i = 0; i < breakpoints_num; i++)
 	{
-		if(vm->pc == breakpoints[i])
+		if(vm->pc == breakpoints[i] && vm->pc != 0xFFFF)
 		{
 			vm->halted = true;
 			printf("Breakpoint hit at 0x%04X.\n", breakpoints[i]);
@@ -123,6 +122,39 @@ void ddbg_add_breakpoint(bstring file, int index)
 	printf("Breakpoint added at 0x%04X.\n", index);
 }
 
+void ddbg_delete_breakpoint(bstring file, int index) 
+{
+	int i = 0;
+	bool found = false;
+
+	if (!biseq(file, bfromcstr("memory")))
+	{
+		printf("Only memory breakpoints can be set at this time (use memory:address).\n");
+		return;
+	}
+	
+	if (index < 0)
+	{
+		printf("Index must be greater than 0.\n");
+		return;
+	}
+	
+	for(i = 0; i < breakpoints_num; i++)
+	{
+		if(breakpoints[i] == index)
+		{
+			breakpoints[i] = 0xFFFF;
+			found = true;
+		}
+	}
+	
+	if(found == true) {
+		printf("Breakpoint at %s:%d removed.\n", bstr2cstr(file, 0), index);
+	} else {
+		printf("There was no breakpoint at %s:%d.\n", bstr2cstr(file, 0), index);
+	}
+}
+
 void ddbg_breakpoints_list()
 {
 	int i = 0;
@@ -144,6 +176,8 @@ void ddbg_dump_state()
 	fprintf(stderr, "PC:  0x%04X     SP:    0x%04X\n", vm->pc, vm->sp);
 	fprintf(stderr, "EX:  0x%04X     IA:    0x%04X\n", vm->ex, vm->ia);
 }
+
+
 
 void ddbg_dump_ram(int start, int difference)
 {
@@ -172,4 +206,3 @@ void ddbg_dump_ram(int start, int difference)
 	
 	printf("\n");
 }
-
