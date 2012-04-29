@@ -31,6 +31,7 @@
 
 #include "sdp.h"
 #include "packets.h"
+#include <dcpuhook.h>
 
 uint8_t protocol_version;
 p_string* emulator_name;
@@ -64,6 +65,11 @@ int pstr_length(p_string* string) {
 	return string->length + 2;
 }
 
+void sdp_on_cycle(vm_t* vm, uint16_t pos)
+{
+	printf("hook.on.cycle\n");
+}
+
 void handle (int sock)
 {
 	
@@ -77,7 +83,7 @@ void handle (int sock)
 	sdp_packet* in = malloc(sizeof(sdp_packet));
 	sdp_packet* out = malloc(sizeof(sdp_packet));
 	
-	protocol_version = 1;
+	protocol_version = 2;
 	
 	for(;;) {
 		bzero(buffer, BUFSIZE);
@@ -109,72 +115,26 @@ void handle (int sock)
 					break;
 				case SDP_MACHINE_STATE:
 					out->identifier = SDP_MACHINE_STATE;
-					out->length = sizeof(uint8_t) + sizeof(uint16_t) * 13 + sizeof(uint32_t) + sizeof(uint8_t);
+					out->length = sizeof(uint8_t) + sizeof(uint16_t) * 12 + sizeof(uint32_t) * 2 + sizeof(uint8_t);
 					out->payload = malloc(out->length);
 					payload_orig = out->payload;
 					
-					tmp8 = vm->halted;
-					memcpy(out->payload, &tmp8, sizeof(uint8_t));
-					out->payload += sizeof(uint8_t);
-					
-					tmp = htons(vm->registers[REG_A]);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(vm->registers[REG_B]);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(vm->registers[REG_C]);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(vm->registers[REG_X]);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(vm->registers[REG_Y]);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(vm->registers[REG_Z]);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(vm->registers[REG_I]);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(vm->registers[REG_J]);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(vm->pc);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(vm->sp);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(vm->ex);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(vm->ia);
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp = htons(100); // kHz
-					memcpy(out->payload, &tmp, sizeof(uint16_t));
-					out->payload += sizeof(uint16_t);
-					
-					tmp32 = htonl(1337);
-					memcpy(out->payload, &tmp32, sizeof(uint32_t));
-					out->payload += sizeof(uint32_t);
-					
-					tmp8 = 0xFF;
-					memcpy(out->payload, &tmp8, sizeof(uint8_t));
+					if(vm->halted == true) write_uint8(out, 1); else write_uint8(out, 0);
+					write_uint16(out, vm->registers[REG_A]);
+					write_uint16(out, vm->registers[REG_B]);
+					write_uint16(out, vm->registers[REG_C]);
+					write_uint16(out, vm->registers[REG_X]);
+					write_uint16(out, vm->registers[REG_Y]);
+					write_uint16(out, vm->registers[REG_Z]);
+					write_uint16(out, vm->registers[REG_I]);
+					write_uint16(out, vm->registers[REG_J]);					
+					write_uint16(out, vm->pc);
+					write_uint16(out, vm->sp);
+					write_uint16(out, vm->ex);
+					write_uint16(out, vm->ia);
+					write_uint32(out, 100 * 1000);
+					write_uint32(out, 1337);
+					write_uint8(out, 0xFF);
 					
 					out->payload = payload_orig;
 					send_sdp_packet(sock, out);
@@ -182,66 +142,36 @@ void handle (int sock)
 					break;
 					
 				case SDP_MACHINE_SET_STATE:
-					memcpy(&tmp8, in->payload, sizeof(tmp8));
-					in->payload += sizeof(tmp8);
-					vm->halted = tmp8;
+					printf("machine_State\n");
+					if(read_uint8(in) == 1) {
+						vm->halted = false;
+						//vm_execute(vm);
+					}
+					printf("machine_state\n");
 					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->registers[REG_A] = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->registers[REG_B] = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->registers[REG_C] = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->registers[REG_X] = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->registers[REG_Y] = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->registers[REG_Z] = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->registers[REG_I] = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->registers[REG_J] = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->pc = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->sp = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->ex = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
-					vm->ia = ntohs(tmp);
-					
-					memcpy(&tmp, in->payload, sizeof(tmp));
-					in->payload += sizeof(tmp);
+					vm->registers[REG_A] = read_uint16(in);
+					vm->registers[REG_B] = read_uint16(in);
+					vm->registers[REG_C] = read_uint16(in);
+					vm->registers[REG_X] = read_uint16(in);
+					vm->registers[REG_Y] = read_uint16(in);
+					vm->registers[REG_Z] = read_uint16(in);
+					vm->registers[REG_I] = read_uint16(in);
+					vm->registers[REG_J] = read_uint16(in);
+					vm->pc = read_uint16(in);
+					vm->sp = read_uint16(in);
+					vm->ex = read_uint16(in);
+					vm->ia = read_uint16(in);
+					read_uint8(in);
 					
 					out->identifier = SDP_REQUEST_CONFIRMATION;
 					out->length = 0;
 					send_sdp_packet(sock, out);
 					break;
-					
+				
+				case SDP_CLIENT_DISCONNECT:
+					close(sock);
+					exit(0);
+					break;
    			}
 		} else {
 			close(sock);
@@ -273,7 +203,7 @@ void tcp_server() {
 	int clientlen, optval;
 	struct sockaddr_in serveraddr, clientaddr;
 	struct hostent *hostp;
-
+	
 	parentfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (parentfd < 0) 
 		error("ERROR opening socket");
@@ -285,15 +215,14 @@ void tcp_server() {
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serveraddr.sin_port = htons((unsigned short) PORT);
-
 	bind(parentfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)); 
 	listen(parentfd, 5);
 
 	clientlen = sizeof(clientaddr);
 	while (1) {
-		pthread_testcancel();
+		printf("ohai\n");
 		childfd = accept(parentfd, (struct sockaddr *) &clientaddr, &clientlen);
-    
+		printf("got child\n");
 		if(fork() == 0) {
 			handle(childfd);
 			close(childfd);
@@ -301,12 +230,16 @@ void tcp_server() {
 		} else {
 			close(childfd);
 		}
+		pthread_testcancel();
     }
 }
 
-void* ddbg_sdp_thread(vm_t* vm) {
+void* ddbg_sdp_thread(vm_t* vm_import) {
+	vm = vm_import;
 	emulator_name = pstring_from_cstring("DCPU Toolchain Emu");
 	emulator_version = pstring_from_cstring("v13.37");
+	
+	//vm_hook_register(vm, &sdp_on_cycle, HOOK_ON_CYCLE);
 	
 	signal(SIGCHLD, ddbg_handle_disconnection);
 	signal(SIGTERM, ddbg_handle_sigterm);

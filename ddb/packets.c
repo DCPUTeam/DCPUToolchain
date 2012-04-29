@@ -38,8 +38,6 @@ unsigned char* serialize_sdp_packet(unsigned char* buffer, sdp_packet* out) {
 }
 
 void deserialize_sdp_packet(sdp_packet* in, char* buffer, int n) {
-	int difference;
-
 	printf("read %d bytes\n", n);
 
 	memcpy(&in->identifier, buffer, sizeof(in->identifier));
@@ -47,11 +45,10 @@ void deserialize_sdp_packet(sdp_packet* in, char* buffer, int n) {
 	
 	memcpy(&in->length, buffer, sizeof(in->length));
 	buffer += sizeof(in->length);
-	in->length = ntohs(in->length);
+	in->length = ntohl(in->length);
 	
-	difference = (n - in->length) + 2;
-	in->payload = malloc(difference);
-	memcpy(in->payload, buffer, difference);
+	in->payload = malloc(in->length + 1);
+	memcpy(in->payload, buffer, in->length + 1);
 }
 
 void send_sdp_packet(int sock, sdp_packet* out)
@@ -84,4 +81,50 @@ unsigned char* serialize_pstring(p_string* string) {
 	return buffer;
 }
 
+void write_uint32(sdp_packet* out, int32_t value)
+{
+	value = htonl(value);
+	memcpy(out->payload, &value, sizeof(value));
+	out->payload += sizeof(value);
+}
+
+void write_uint16(sdp_packet* out, uint16_t value)
+{
+	value = htons(value);
+	memcpy(out->payload, &value, sizeof(value));
+	out->payload += sizeof(value);
+}
+
+void write_uint8(sdp_packet* out, uint8_t value)
+{
+	memcpy(out->payload, &value, sizeof(value));
+	out->payload += sizeof(value);
+}
+
+uint8_t read_uint8(sdp_packet* in)
+{
+	uint8_t tmp8;
+	memcpy(&tmp8, in->payload, sizeof(tmp8));
+	in->payload += sizeof(tmp8);
+
+	return tmp8;
+}
+
+uint16_t read_uint16(sdp_packet* in)
+{
+	uint16_t tmp16;
+	memcpy(&tmp16, in->payload, sizeof(tmp16));
+	in->payload += sizeof(tmp16);
+
+	return ntohs(tmp16);
+}
+
+uint32_t read_uint32(sdp_packet* in)
+{
+	uint32_t tmp32;
+	memcpy(&tmp32, in->payload, sizeof(tmp32));
+	in->payload += sizeof(tmp32);
+
+	return ntohl(tmp32);
+}
 #endif
