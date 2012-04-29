@@ -11,8 +11,17 @@
 	
 **/
 
+#ifndef __SDP_H
+#define __SDP_H
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+
+#include <dcpu.h>
+
+#define BUFSIZE 1024
+#define PORT 22348
 
 #define SDP_EMULATOR_INFORMATION 	0x0
 #define SDP_MACHINE_STATE 			0x1
@@ -35,3 +44,5 @@ typedef struct {
 } p_string;
 
 void* ddbg_sdp_thread(vm_t* vm);
+
+#endif
