@@ -27,5 +27,5 @@ dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
 
 if(DEFINED EXPERIMENTAL)
-	add_definitions(FEATURE_SDP)
+	add_definitions(-DFEATURE_SDP)
 endif(DEFINED EXPERIMENTAL)

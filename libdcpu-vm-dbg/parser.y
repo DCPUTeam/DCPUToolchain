@@ -99,7 +99,7 @@ breakpoint_add_command:
 		{
 			// Add a breakpoint in memory
 			// at the specified RAM address.
-			ddbg_add_breakpoint(bfromcstr("memory"), $5);
+			ddbg_add_breakpoint(bfromcstr("memory"), $2);
 		} |
 		ID_ADD ID_BREAKPOINT ID_MEMORY COLON ADDRESS
 		{
@@ -135,7 +135,7 @@ breakpoint_list_command:
 breakpoint_delete_command:
 		ID_BREAKPOINT ID_DELETE ADDRESS
 		{
-			ddbg_delete_breakpoint(bfromcstr("memory"), $5);
+			ddbg_delete_breakpoint(bfromcstr("memory"), $3);
 		} |
 		ID_BREAKPOINT ID_DELETE PATH COLON ADDRESS
 		{
