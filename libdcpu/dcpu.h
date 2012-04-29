@@ -116,7 +116,7 @@ typedef uint8_t bool;
 #define NBOP_IAG        0x09
 #define NBOP_IAS        0x0A
 #define NBOP_RFI		0x0B
-#define NBOP_IAQ		0xC
+#define NBOP_IAQ		0x0C
 #define NBOP_HWN        0x10
 #define NBOP_HWQ        0x11
 #define NBOP_HWI        0x12
