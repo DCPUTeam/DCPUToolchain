@@ -7,7 +7,7 @@
 
 	Authors:		José Manuel Díez
 
-	Description:		Main entry point.
+	Description:	Main entry point.
 
 **/
 
@@ -18,7 +18,6 @@
 #include <libgen.h>
 #endif
 
-#include <bstrlib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +29,8 @@
 #include <pthread.h>
 
 #include <signal.h>
+
+#include <bstrlib.h>
 
 #include <parser.h>
 #include <lexer.h>
@@ -92,10 +93,6 @@ int main(int argc, char** argv) {
 	path = (char*) dirname(path);
 	
 	signal(SIGINT, ddbg_sigint);
-	
-	//ddbg_quickstart("qt.o");
-	//ddbg_run_vm();
-	//ddbg_dump_state();
 	ddbg_create_vm();
 	
 	pthread_create(&sdp_thread, NULL, (void*)ddbg_sdp_thread, vm);
@@ -109,12 +106,6 @@ int main(int argc, char** argv) {
 		dbg_yy_scan_string(buf, scanner);
 		dbg_yyparse(scanner);
 		dbg_yylex_destroy(scanner);
-		/*yylex_init(&scanner);
-		buffer = yy_scan_buffer(buf, strlen(buf)+2, scanner);
-		yy_switch_to_buffer(buffer, scanner);
-		yyparse(scanner);
-		/*yy_delete_buffer(buffer, scanner);
-		yylex_destroy(&scanner);*/
 	}
 	
     free(buf);
