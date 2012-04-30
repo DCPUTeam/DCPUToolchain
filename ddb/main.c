@@ -46,8 +46,7 @@
 #define MAX_ARGUMENTS 10
 #define MAX_ARGUMENT_LENGTH 50
 
-
-char* path;
+bstring path;
 vm_t* vm;
 pthread_t sdp_thread;
 
@@ -70,8 +69,8 @@ int main(int argc, char** argv) {
 	yyscan_t scanner;
 	
 	// Set global path variable.
-	path = strdup(argv[0]);
-	path = (char*) osutil_dirname(path);
+
+	path = (bstring) osutil_dirname(bfromcstr(argv[0]));
 	
 	signal(SIGINT, ddbg_sigint);
 	ddbg_create_vm();

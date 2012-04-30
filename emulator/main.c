@@ -21,13 +21,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <bstring.h>
 #include <argtable2.h>
 #include "dcpu.h"
 #include <lem1802.h>
 #include <hwio.h>
 #include <hwtimer.h>
 
-char* path;
+bstring path;
 
 int main(int argc, char* argv[])
 {
@@ -62,14 +63,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Set global path variable.
-	path = strdup(argv[0]);
-	path = osutil_dirname(path);
-
-	// If the path wasn't passed on the command line, we don't know what it is.
-	if (strlen(path) == 0)
-	{
-		path = ".";
-	}
+	path = (bstring) osutil_dirname(bfromcstr(argv[0]));
 
 	// Zero out the flash space.
 	for (i = 0; i < 0x10000; i++)
