@@ -1,14 +1,14 @@
 /**
 
-	File:			dcpu.c
+	File:           dcpu.c
 
-	Project:		DCPU-16 Tools
-	Component:		Emulator
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-vm
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Handles high-level operations performed
-					on the virtual machine (such as creation).
+	Description:    Handles high-level operations performed
+	                on the virtual machine (such as creation).
 
 **/
 

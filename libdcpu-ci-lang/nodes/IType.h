@@ -1,13 +1,13 @@
 /**
 
-	File:			IType.h
+	File:           IType.h
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the IType AST interface.
+	Description:    Declares the IType AST interface.
 
 **/
 

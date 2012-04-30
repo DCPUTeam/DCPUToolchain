@@ -1,14 +1,14 @@
 /**
 
-	File:			ppfind.c
+	File:           ppfind.c
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCPU-PP
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-pp
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines the functions used to automatically
-					locate files based on a set of inclusion paths.
+	Description:    Defines the functions used to automatically
+	                locate files based on a set of inclusion paths.
 
 **/
 

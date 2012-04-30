@@ -1,13 +1,13 @@
 /**
 
-	File:			StackMap.h
+	File:           StackMap.h
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCC
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the StackMap typedef.
+	Description:    Declares the StackMap typedef.
 
 **/
 

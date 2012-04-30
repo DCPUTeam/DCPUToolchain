@@ -1,14 +1,14 @@
 /**
 
-	File:			lprov.h
+	File:           lprov.h
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCC
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-objfmt
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares structures and functions for the
-					provided labels linked-list.
+	Description:    Declares structures and functions for the
+	                provided labels linked-list.
 
 **/
 

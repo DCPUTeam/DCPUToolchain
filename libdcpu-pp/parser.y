@@ -1,15 +1,15 @@
 %{
-	
+
 /**
 
-	File:			parser.y
+	File:           parser.y
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCPU-PP
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-pp
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines parser for the preprocessor.
+	Description:    Defines parser for the preprocessor.
 
 **/
 

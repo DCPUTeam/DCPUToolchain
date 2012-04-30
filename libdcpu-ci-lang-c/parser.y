@@ -1,16 +1,16 @@
 %{
-	
+
 /**
 
-	File:			parser.y
+	File:           parser.y
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
-					Michael Gerhaeuser
+	Authors:        James Rhodes
+	                Michael Gerhaeuser
 
-	Description:	Defines parser for the compiler.
+	Description:    Defines parser for the compiler.
 
 **/
 

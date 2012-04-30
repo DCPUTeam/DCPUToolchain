@@ -1,14 +1,14 @@
 /**
 
-	File:			ldata.c
+	File:           ldata.c
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCC
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-objfmt
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines functions used to retrieve the
-					linker table from an object file.
+	Description:    Defines functions used to retrieve the
+	                linker table from an object file.
 
 **/
 

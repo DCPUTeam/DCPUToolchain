@@ -2,15 +2,15 @@
 
 /**
 
-	File:			lexer.y
+	File:           lexer.y
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
-					Michael Gerhaeuser
+	Authors:        James Rhodes
+	                Michael Gerhaeuser
 
-	Description:	Defines lexer for the compiler.
+	Description:    Defines lexer for the compiler.
 
 **/
 	
@@ -73,12 +73,12 @@ extern int string_return;
 "__asm"					{ HANDLE; BEGIN(AT_ASM); }
 <AT_ASM>\{				{ HANDLE; BEGIN(IN_ASM_BLOCK); string_return = AT_ASM; }
 <AT_ASM>\n				{ yyclineno++; }
-<AT_ASM>[ \t]+			/* ignore whitespace */;
-<AT_ASM>[^\{]			{ HANDLE; return ERROR; }
-<IN_ASM_BLOCK>\}		{ HANDLE; BEGIN(INITIAL); string_return = INITIAL; }
-<IN_ASM_BLOCK>[^\}]*	{ HANDLE; yylval.string = new std::string(yytext); return ASSEMBLY; }
-<IN_ASM_BLOCK>\n		{ yyclineno++; }
-<IN_ASM_BLOCK>[ \t]+	/* ignore whitespace */;
+<AT_ASM>[ \t]+				/* ignore whitespace */;
+<AT_ASM>[^\{]				{ HANDLE; return ERROR; }
+<IN_ASM_BLOCK>\}			{ HANDLE; BEGIN(INITIAL); string_return = INITIAL; }
+<IN_ASM_BLOCK>[^\}]*			{ HANDLE; yylval.string = new std::string(yytext); return ASSEMBLY; }
+<IN_ASM_BLOCK>\n			{ yyclineno++; }
+<IN_ASM_BLOCK>[ \t]+			/* ignore whitespace */;
 
 	/* Type keywords */
 
@@ -98,78 +98,78 @@ extern int string_return;
 
 	/* String and character analysis */
 
-\'												{ HANDLE; yylval.string = new std::string(); BEGIN(IN_CHAR); }
-\"												{ HANDLE; yylval.string = new std::string(); BEGIN(IN_STRING); }
-<IN_CHAR>\'										{ HANDLE; BEGIN(string_return); return CHARACTER; }
-<IN_STRING>\"									{ HANDLE; BEGIN(string_return); return STRING; }
-<IN_STRING,IN_CHAR>\\a							{ HANDLE; *yylval.string += '\a'; }
-<IN_STRING,IN_CHAR>\\b							{ HANDLE; *yylval.string += '\b'; }
-<IN_STRING,IN_CHAR>\\f							{ HANDLE; *yylval.string += '\f'; }
-<IN_STRING,IN_CHAR>\\n							{ HANDLE; *yylval.string += '\n'; }
-<IN_STRING,IN_CHAR>\\r							{ HANDLE; *yylval.string += '\r'; }
-<IN_STRING,IN_CHAR>\\t							{ HANDLE; *yylval.string += '\t'; }
-<IN_STRING,IN_CHAR>\\v							{ HANDLE; *yylval.string += '\v'; }
-<IN_STRING,IN_CHAR>\\\'							{ HANDLE; *yylval.string += '\''; }
-<IN_STRING,IN_CHAR>\\\"							{ HANDLE; *yylval.string += '\"'; }
-<IN_STRING,IN_CHAR>\\\\							{ HANDLE; *yylval.string += '\\'; }
-<IN_STRING,IN_CHAR>\\\?							{ HANDLE; *yylval.string += '\?'; }
-<IN_STRING,IN_CHAR>\\[0-7]{1,3}					{ HANDLE; *yylval.string += (char)strtoul(yytext + 1, NULL, 8); }
-<IN_STRING,IN_CHAR>\\x[a-fA-F0-9]{2}			{ HANDLE; *yylval.string += (char)strtoul(yytext + 2, NULL, 16); }
-<IN_STRING,IN_CHAR>\\[0-9]+						{ HANDLE; return ERROR; }
-<IN_STRING,IN_CHAR>\\(.|\n)						{ HANDLE; *yylval.string += yytext[1]; }
-<IN_STRING>[^\\\n\"]+							{ HANDLE; *yylval.string += yytext; }
-<IN_CHAR>[^\\\n\']+								{ HANDLE; *yylval.string += yytext; }
+\'					{ HANDLE; yylval.string = new std::string(); BEGIN(IN_CHAR); }
+\"					{ HANDLE; yylval.string = new std::string(); BEGIN(IN_STRING); }
+<IN_CHAR>\'				{ HANDLE; BEGIN(string_return); return CHARACTER; }
+<IN_STRING>\"				{ HANDLE; BEGIN(string_return); return STRING; }
+<IN_STRING,IN_CHAR>\\a			{ HANDLE; *yylval.string += '\a'; }
+<IN_STRING,IN_CHAR>\\b			{ HANDLE; *yylval.string += '\b'; }
+<IN_STRING,IN_CHAR>\\f			{ HANDLE; *yylval.string += '\f'; }
+<IN_STRING,IN_CHAR>\\n			{ HANDLE; *yylval.string += '\n'; }
+<IN_STRING,IN_CHAR>\\r			{ HANDLE; *yylval.string += '\r'; }
+<IN_STRING,IN_CHAR>\\t			{ HANDLE; *yylval.string += '\t'; }
+<IN_STRING,IN_CHAR>\\v			{ HANDLE; *yylval.string += '\v'; }
+<IN_STRING,IN_CHAR>\\\'			{ HANDLE; *yylval.string += '\''; }
+<IN_STRING,IN_CHAR>\\\"			{ HANDLE; *yylval.string += '\"'; }
+<IN_STRING,IN_CHAR>\\\\			{ HANDLE; *yylval.string += '\\'; }
+<IN_STRING,IN_CHAR>\\\?			{ HANDLE; *yylval.string += '\?'; }
+<IN_STRING,IN_CHAR>\\[0-7]{1,3}		{ HANDLE; *yylval.string += (char)strtoul(yytext + 1, NULL, 8); }
+<IN_STRING,IN_CHAR>\\x[a-fA-F0-9]{2}	{ HANDLE; *yylval.string += (char)strtoul(yytext + 2, NULL, 16); }
+<IN_STRING,IN_CHAR>\\[0-9]+		{ HANDLE; return ERROR; }
+<IN_STRING,IN_CHAR>\\(.|\n)		{ HANDLE; *yylval.string += yytext[1]; }
+<IN_STRING>[^\\\n\"]+			{ HANDLE; *yylval.string += yytext; }
+<IN_CHAR>[^\\\n\']+			{ HANDLE; *yylval.string += yytext; }
 
 	/* Identifiers, numbers and basic lexical components */
 
-[A-Za-z_][A-Za-z0-9_]*	{ HANDLE; yylval.string = new std::string(yytext); return check_type(); }
-0x[0-9A-Fa-f]+			{ HANDLE; yylval.number = strtoul(yytext, NULL, 16); return NUMBER; }
-[1-9]+[0-9]*			{ HANDLE; yylval.number = strtoul(yytext, NULL, 10); return NUMBER; }
+[A-Za-z_][A-Za-z0-9_]*			{ HANDLE; yylval.string = new std::string(yytext); return check_type(); }
+0x[0-9A-Fa-f]+				{ HANDLE; yylval.number = strtoul(yytext, NULL, 16); return NUMBER; }
+[1-9]+[0-9]*				{ HANDLE; yylval.number = strtoul(yytext, NULL, 10); return NUMBER; }
 0[0-7]*					{ HANDLE; yylval.number = strtoul(yytext, NULL, 8); return NUMBER; }
 0b[0-1]+				{ HANDLE; yylval.number = strtoul(yytext, NULL, 2); return NUMBER; }
-"("						{ HANDLE; return yylval.token = CURVED_OPEN; }
-")"						{ HANDLE; return yylval.token = CURVED_CLOSE; }
-"{"						{ HANDLE; return yylval.token = BRACE_OPEN; }
-"}"						{ HANDLE; return yylval.token = BRACE_CLOSE; }
-","						{ HANDLE; return yylval.token = COMMA; }
-"*"						{ HANDLE; return yylval.token = STAR; }
-";"						{ HANDLE; return yylval.token = SEMICOLON; }
-"."						{ HANDLE; return yylval.token = DOT; }
+"("					{ HANDLE; return yylval.token = CURVED_OPEN; }
+")"					{ HANDLE; return yylval.token = CURVED_CLOSE; }
+"{"					{ HANDLE; return yylval.token = BRACE_OPEN; }
+"}"					{ HANDLE; return yylval.token = BRACE_CLOSE; }
+","					{ HANDLE; return yylval.token = COMMA; }
+"*"					{ HANDLE; return yylval.token = STAR; }
+";"					{ HANDLE; return yylval.token = SEMICOLON; }
+"."					{ HANDLE; return yylval.token = DOT; }
 
 	/* Assignment, equivilance and mathematical operators */
 
-"="						{ HANDLE; return yylval.token = ASSIGN_EQUAL; }
+"="					{ HANDLE; return yylval.token = ASSIGN_EQUAL; }
 "+="					{ HANDLE; return yylval.token = ASSIGN_ADD; }
 "-="					{ HANDLE; return yylval.token = ASSIGN_SUBTRACT; }
 "*="					{ HANDLE; return yylval.token = ASSIGN_MULTIPLY; }
 "/="					{ HANDLE; return yylval.token = ASSIGN_DIVIDE; }
 "=="					{ HANDLE; return yylval.token = COMPARE_EQUAL; }
 "!="					{ HANDLE; return yylval.token = COMPARE_NOT_EQUAL; }
-"<"						{ HANDLE; return yylval.token = COMPARE_LESS_THAN; }
+"<"					{ HANDLE; return yylval.token = COMPARE_LESS_THAN; }
 "<="					{ HANDLE; return yylval.token = COMPARE_LESS_THAN_EQUAL; }
-">"						{ HANDLE; return yylval.token = COMPARE_GREATER_THAN; }
+">"					{ HANDLE; return yylval.token = COMPARE_GREATER_THAN; }
 ">="					{ HANDLE; return yylval.token = COMPARE_GREATER_THAN_EQUAL; }
-"!"						{ HANDLE; return yylval.token = NEGATE; }
+"!"					{ HANDLE; return yylval.token = NEGATE; }
 "++"					{ HANDLE; return yylval.token = INCREMENT; }
 "--"					{ HANDLE; return yylval.token = DECREMENT; }
-"+"						{ HANDLE; return yylval.token = ADD; }
-"-"						{ HANDLE; return yylval.token = SUBTRACT; }
-"/"						{ HANDLE; return yylval.token = SLASH; }
-"%"						{ HANDLE; return yylval.token = PERCENT; }
+"+"					{ HANDLE; return yylval.token = ADD; }
+"-"					{ HANDLE; return yylval.token = SUBTRACT; }
+"/"					{ HANDLE; return yylval.token = SLASH; }
+"%"					{ HANDLE; return yylval.token = PERCENT; }
 "&&"					{ HANDLE; return yylval.token = BOOLEAN_AND; }
 "||"					{ HANDLE; return yylval.token = BOOLEAN_OR; }
-"&"						{ HANDLE; return yylval.token = BINARY_AND; }
-"|"						{ HANDLE; return yylval.token = BINARY_OR; }
-"^"						{ HANDLE; return yylval.token = BINARY_XOR; }
+"&"					{ HANDLE; return yylval.token = BINARY_AND; }
+"|"					{ HANDLE; return yylval.token = BINARY_OR; }
+"^"					{ HANDLE; return yylval.token = BINARY_XOR; }
 "<<"					{ HANDLE; return yylval.token = BINARY_LEFT_SHIFT; }
 ">>"					{ HANDLE; return yylval.token = BINARY_RIGHT_SHIFT; }
 
 	/* Comments and whitespace */
 
-\n						{ yyclineno++; }
+\n					{ yyclineno++; }
 "//"					{ comment_line(); }
 "/*"					{ comment(); }
-[ \t]+                  /* ignore whitespace */;
+[ \t]+					/* ignore whitespace */;
 
 %%
 
@@ -214,16 +214,16 @@ int check_type()
 	// matches a type name, and return a type token if it
 	// does.
 	std::string data = yytext;
-	if (data == "void")				return TYPE_VOID;
-	else if (data == "char")		return TYPE_CHAR;
-	else if (data == "byte")		return TYPE_BYTE;
-	else if (data == "int")			return TYPE_INT;
-	else if (data == "long")		return TYPE_LONG;
-	else if (data == "int8_t")		return TYPE_INT8_T;
-	else if (data == "int16_t")		return TYPE_INT16_T;
-	else if (data == "int32_t")		return TYPE_INT32_T;
-	else if (data == "int64_t")		return TYPE_INT64_T;
-	else if (data == "uint8_t")		return TYPE_UINT8_T;
+	if (data == "void")		return TYPE_VOID;
+	else if (data == "char")	return TYPE_CHAR;
+	else if (data == "byte")	return TYPE_BYTE;
+	else if (data == "int")		return TYPE_INT;
+	else if (data == "long")	return TYPE_LONG;
+	else if (data == "int8_t")	return TYPE_INT8_T;
+	else if (data == "int16_t")	return TYPE_INT16_T;
+	else if (data == "int32_t")	return TYPE_INT32_T;
+	else if (data == "int64_t")	return TYPE_INT64_T;
+	else if (data == "uint8_t")	return TYPE_UINT8_T;
 	else if (data == "uint16_t")	return TYPE_UINT16_T;
 	else if (data == "uint32_t")	return TYPE_UINT32_T;
 	else if (data == "uint64_t")	return TYPE_UINT64_T;

@@ -1,13 +1,13 @@
 /**
 
-	File:			NDereferenceOperator.h
+	File:           NDereferenceOperator.h
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the NDereferenceOperator AST class.
+	Description:    Declares the NDereferenceOperator AST class.
 
 **/
 

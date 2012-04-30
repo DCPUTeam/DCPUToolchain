@@ -1,13 +1,13 @@
 /**
 
-	File:			main.c
+	File:           main.c
 
-	Project:		DCPU-16 Tools
-	Component:		Debugger
+	Project:        DCPU-16 Tools
+	Component:      Debugger
 
-	Authors:		José Manuel Díez
+	Authors:        José Manuel Díez
 
-	Description:	Main entry point.
+	Description:    Main entry point.
 
 **/
 
@@ -61,7 +61,7 @@ void ddbg_sigint(int signal) {
 void get_command(char* command_buffer, int max) {
 	printf("> ");
 	fgets(command_buffer, max, stdin);
-}	
+}
 
 
 int main(int argc, char** argv) {
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
 		dbg_yylex_destroy(scanner);
 	}
 	
-    free(buf);
+	free(buf);
 	
 	return 0;
 }
