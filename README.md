@@ -83,9 +83,9 @@ Next, you'll need to install a few other things, I'll be using homebrew for this
 You will need to install git, hg and cmake.
 
 ```
-brew install cmake
-brew install git
-brew install hg
+$ brew install cmake
+$ brew install git
+$ brew install hg
 ```
 
 Once all of these are installed, you're first going to want to clone the libtcod source from [here](https://bitbucket.org/jice/libtcod).  The reason we are building it from scratch, is because the downloads only has a i386 built dylib, and most likely your going to be building with x64_86, so we'll just build manually.
@@ -93,36 +93,37 @@ Once all of these are installed, you're first going to want to clone the libtcod
 Clone the repo to a folder on your computer, and then enter the directory.
 
 ```
-hg clone https://bitbucket.org/jice/libtcod
-cd libtcod
+$ hg clone https://bitbucket.org/jice/libtcod
+$ cd libtcod
 ```
 
 Now we can build libtcod with cmake and make.
 
 ```
-cmake .
-make
+$ cmake .
+$ make
 ```
 
 You may see a few warnings, as long as it says 100% at the end, you should be just fine.  In order to create the dylib you need, you'll need to use make install, and then copy it to your lib folder, I use /usr/local/lib, but you can use /usr/lib if that's what you use/prefer.
 
 ```
-make install
-sudo cp /usr/local/lib
+$ make install
+$ sudo cp libtcod.dylib /usr/local/lib
+$ sudo cp -r include /usr/include/libtcod
 ```
 
 Now that you've copied the dylib for libtcod, you should be able to clone DCPUToolchain if you haven't already.
 
 ```
-git clone https://github.com/DCPUTeam/DCPUToolchain.git
-cd DCPUToolchain
+$ git clone https://github.com/DCPUTeam/DCPUToolchain.git
+$ cd DCPUToolchain
 ```
 
 Now we can build it.
 
 ```
-cmake .
-make
+$ cmake .
+$ make
 ```
 
 If everything looks like it didn't crash and burn, then you should find everything you need in ```dcputoolchain/Debug```
