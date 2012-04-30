@@ -12,7 +12,7 @@
 
 **/
 
-// This is correct as of version 1.1 of the DCPU.
+// This is correct as of version 1.7 of the DCPU.
 
 #ifndef __DCPU_H
 #define __DCPU_H

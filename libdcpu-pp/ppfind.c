@@ -28,25 +28,29 @@ void ppfind_init()
 	list_init(&ppfind_include_paths);
 	ppfind_include_depth = 0;
 	ppfind_initialized = true;
-	ppfind_add_path(bfromcstr("."));
+	ppfind_add_path(bautofree(bfromcstr(".")));
 }
 
-void ppfind_add_path(bstring path)
+void ppfind_add_path(freed_bstring path)
 {
 	// Initialize if needed.
 	if (!ppfind_initialized)
 		ppfind_init();
 	
 	// Add path to list.
-	list_append(&ppfind_include_paths, path);
+	list_append(&ppfind_include_paths, path.ref);
+
+	// Free memory.
+	bautodestroy(path);
 }
 
-void ppfind_add_autopath(bstring file)
+void ppfind_add_autopath(freed_bstring file)
 {
-	ppfind_add_path(osutil_dirname(file));
+	ppfind_add_path(bautofree(osutil_dirname(file.ref)));
+	bautodestroy(file);
 }
 
-void ppfind_remove_path(bstring path)
+void ppfind_remove_path(freed_bstring path)
 {
 	unsigned int i;
 
@@ -59,16 +63,19 @@ void ppfind_remove_path(bstring path)
 	for (i = 0; i < list_size(&ppfind_include_paths); i++)
 	{
 		bstring data = (bstring)list_get_at(&ppfind_include_paths, i);
-		if (biseq(data, path))
+		if (biseq(data, path.ref))
 		{
 			list_delete(&ppfind_include_paths, data);
 			bdestroy(data);
 			return;
 		}
 	}
+
+	// Free memory.
+	bautodestroy(path);
 }
 
-bstring ppfind_locate(bstring path)
+bstring ppfind_locate(freed_bstring path)
 {
 	unsigned int i;
 	FILE* test;
@@ -90,7 +97,7 @@ bstring ppfind_locate(bstring path)
 			bdestroy(result);
 			continue;
 		}
-		if (bconcat(result, path) == BSTR_ERR)
+		if (bconcat(result, path.ref) == BSTR_ERR)
 		{
 			bdestroy(result);
 			continue;
@@ -104,9 +111,11 @@ bstring ppfind_locate(bstring path)
 		// File was found, close it and return this
 		// path as the result.
 		fclose(test);
+		bautodestroy(path);
 		return result;
 	}
 
 	// No such file was found.
+	bautodestroy(path);
 	return NULL;
 }

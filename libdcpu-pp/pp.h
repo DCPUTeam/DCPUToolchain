@@ -15,9 +15,9 @@
 #ifndef __DCPU_LIBDCPU_PP_H
 #define __DCPU_LIBDCPU_PP_H
 
-#include <bstrlib.h>
+#include <bstring.h>
 
-bstring pp_do(bstring path);
-void pp_cleanup(bstring path);
+bstring pp_do(freed_bstring path);
+void pp_cleanup(freed_bstring path);
 
 #endif

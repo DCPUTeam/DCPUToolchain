@@ -21,7 +21,7 @@
 
 extern int pp_yyparse(void* scanner);
 
-bstring pp_do(bstring path)
+bstring pp_do(freed_bstring path)
 {
 	FILE* in;
 	FILE* out;
@@ -30,10 +30,10 @@ bstring pp_do(bstring path)
 
 	// Open and set up the temporary output areas.
 	temp = bfromcstr(tempnam(".", "pp."));
-	if (biseq(path, bfromcstr("-")))
+	if (biseq(path.ref, bfromcstr("-")))
 		in = stdin;
 	else
-		in = fopen((const char*)(path->data), "r");
+		in = fopen((const char*)(path.ref->data), "r");
 	if (in == NULL)
 	{
 		fprintf(stderr, "preprocessor: unable to read from input file.\n");
@@ -42,7 +42,7 @@ bstring pp_do(bstring path)
 	out = fopen((const char*)(temp->data), "w");
 	if (out == NULL)
 	{
-		if (!biseq(path, bfromcstr("-")))
+		if (!biseq(path.ref, bfromcstr("-")))
 			fclose(in);
 		fprintf(stderr, "preprocessor: unable to write to temporary output file '%s'.\n", temp->data);
 		return NULL;
@@ -56,16 +56,20 @@ bstring pp_do(bstring path)
 	pp_yylex_destroy(scanner);
 
 	// Now do some cleanup.
-	if (!biseq(path, bfromcstr("-")))
+	if (!biseq(path.ref, bfromcstr("-")))
 		fclose(in);
 	fseek(out, 0, SEEK_SET);
+
+	// Free bstring.
+	bautodestroy(path);
 
 	// Return the filename.
 	return temp;
 }
 
-void pp_cleanup(bstring path)
+void pp_cleanup(freed_bstring path)
 {
-	if (path == NULL) return;
-	remove((const char*)(path->data));
+	if (path.ref == NULL) return;
+	remove((const char*)(path.ref->data));
+	bautodestroy(path);
 }

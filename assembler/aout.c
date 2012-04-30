@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
-#include <bstrlib.h>
+#include <bstring.h>
 #include <pp.h>
 #include <ppfind.h>
 #include "aout.h"
@@ -347,7 +347,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 		else if (current_outer->type == AOUT_TYPE_METADATA_INCBIN)
 		{
 			// Include binary file.
-			bname = ppfind_locate(bfromcstr(current_outer->label));
+			bname = ppfind_locate(bautofree(bfromcstr(current_outer->label)));
 			if (bname == NULL)
 				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
 			temp = fopen((const char*)(bname->data), "rb");

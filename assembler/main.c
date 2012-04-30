@@ -16,7 +16,7 @@
 #include <string.h>
 #include <setjmp.h>
 #include <argtable2.h>
-#include <bstrlib.h>
+#include <bstring.h>
 #include <osutil.h>
 #include <pp.h>
 #include <ppfind.h>
@@ -73,19 +73,19 @@ int main(int argc, char* argv[])
 	}
 
 	// Run the preprocessor.
-	ppfind_add_autopath(bfromcstr(input_file->filename[0]));
-	pp_result_name = pp_do(bfromcstr(input_file->filename[0]));
+	ppfind_add_autopath(bautofree(bfromcstr(input_file->filename[0])));
+	pp_result_name = pp_do(bautofree(bfromcstr(input_file->filename[0])));
 	if (pp_result_name == NULL)
 	{
 		fprintf(stderr, "assembler: invalid result returned from preprocessor.\n");
-		pp_cleanup(pp_result_name);
+		pp_cleanup(bautofree(pp_result_name));
 		return 1;
 	}
 	yyout = stderr;
 	yyin = fopen((const char*)(pp_result_name->data), "r");
 	if (yyin == NULL)
 	{
-		pp_cleanup(pp_result_name);
+		pp_cleanup(bautofree(pp_result_name));
 		return 1;
 	}
 
@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
 	yyparse();
 	if (yyin != stdin)
 		fclose(yyin);
-	pp_cleanup(pp_result_name);
+	pp_cleanup(bautofree(pp_result_name));
 	if (&ast_root == NULL || ast_root.values == NULL)
 	{
 		fprintf(stderr, "assembler: syntax error, see above.\n");

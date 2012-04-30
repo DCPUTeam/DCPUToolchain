@@ -12,7 +12,7 @@
 **/
 
 #include <stdio.h>
-#include <bstrlib.h>
+#include <bstring.h>
 #include <simclist.h>
 #include <parser.h>
 #include <lexer.h>
@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
 	file = fopen(argv[1], "r");
 	assert(file != NULL);
-	ppfind_add_autopath(bfromcstr(argv[1]));
+	ppfind_add_autopath(bautofree(bfromcstr(argv[1])));
 	pp_yylex_init(&scanner);
 	pp_yyset_out(stdout, scanner);
 	pp_yyset_in(file, scanner);

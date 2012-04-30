@@ -15,11 +15,11 @@
 #ifndef __DCPU_LIBDCPU_PP_PPFIND_H
 #define __DCPU_LIBDCPU_PP_PPFIND_H
 
-#include <bstrlib.h>
+#include <bstring.h>
 
-void ppfind_add_path(bstring path);
-void ppfind_add_autopath(bstring file);
-void ppfind_remove_path(bstring path);
-bstring ppfind_locate(bstring path);
+void ppfind_add_path(freed_bstring path);
+void ppfind_add_autopath(freed_bstring file);
+void ppfind_remove_path(freed_bstring path);
+bstring ppfind_locate(freed_bstring path);
 
 #endif

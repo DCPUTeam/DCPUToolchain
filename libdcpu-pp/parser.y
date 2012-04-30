@@ -469,7 +469,7 @@ void handle_include(bstring fname, void* current)
 
 	// Search for the file using ppfind.
 	if (fname->data[0] != '/' && fname->data[1] != ':')
-		path = ppfind_locate(fname);
+		path = ppfind_locate(bautocpy(fname));
 	else
 		path = bstrcpy(fname);
 	if (path == NULL)
@@ -486,7 +486,7 @@ void handle_include(bstring fname, void* current)
 	// file is located in and add that directory
 	// to the include path.
 	dir = osutil_dirname(path);
-	ppfind_add_path(dir);
+	ppfind_add_path(bautocpy(dir));
 
 	// Include the file.
 	ffnew = fopen((const char*)(path->data), "r");
@@ -500,5 +500,5 @@ void handle_include(bstring fname, void* current)
 	bdestroy(path);
 
 	// Remove the include path again.
-	ppfind_remove_path(dir);
+	ppfind_remove_path(bautocpy(dir));
 }
