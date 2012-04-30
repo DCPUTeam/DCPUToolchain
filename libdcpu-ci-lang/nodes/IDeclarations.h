@@ -1,13 +1,13 @@
 /**
 
-	File:			IDeclarations.h
+	File:           IDeclarations.h
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the IDeclarations AST interface.
+	Description:    Declares the IDeclarations AST interface.
 
 **/
 

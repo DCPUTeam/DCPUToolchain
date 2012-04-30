@@ -1,14 +1,14 @@
 /**
 
-	File:			textn.h
+	File:           textn.h
 
-	Project:		DCPU-16 Tools
-	Component:		Assembler
+	Project:        DCPU-16 Tools
+	Component:      Assembler
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares public functions for writing out
-					extension tables.
+	Description:    Declares public functions for writing out
+	                extension tables.
 
 **/
 

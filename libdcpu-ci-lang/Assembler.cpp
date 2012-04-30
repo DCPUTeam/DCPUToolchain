@@ -1,14 +1,14 @@
 /**
 
-	File:			Assembler.cpp
+	File:           Assembler.cpp
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines what feature support different
-					assemblers have.
+	Description:    Defines what feature support different
+	                assemblers have.
 
 **/
 

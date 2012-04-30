@@ -1,14 +1,14 @@
 /**
 
-	File:			pp.c
+	File:           pp.c
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCPU-PP
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-pp
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines the public API for using the preprocessor
-					inline in programs.
+	Description:    Defines the public API for using the preprocessor
+	                inline in programs.
 
 **/
 

@@ -2,17 +2,17 @@
 
 /**
 
-	File:			lexer.y
+	File:           lexer.y
 
-	Project:		DCPU-16 Tools
-	Component:		Assembler
+	Project:        DCPU-16 Tools
+	Component:      Assembler
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines lexer for the assembler.
+	Description:    Defines lexer for the assembler.
 
 **/
-	
+
 #include <lexfix.h>
 #include <string.h>
 #include <stdlib.h>
@@ -62,17 +62,17 @@ char* trim_and_unescape(char* data, int mode)
 
 	/* Assembler keywords */
 
-\.[Bb][Oo][Uu][Nn][Dd][Aa][Rr][Yy]			yylval.number = BOUNDARY; return KEYWORD;
+\.[Bb][Oo][Uu][Nn][Dd][Aa][Rr][Yy]		yylval.number = BOUNDARY; return KEYWORD;
 \.[Ee][Xx][Tt][Ee][Nn][Ss][Ii][Oo][Nn]		yylval.number = EXTENSION; return KEYWORD;
-\.[Or][Rr][Ii][Gg][Ii][Nn]					yylval.number = ORIGIN; return KEYWORD;
-\.[Oo][Rr][Gg]								yylval.number = ORIGIN; return KEYWORD;
-\.[Ii][Nn][Cc][Bb][Ii][Nn]					yylval.number = INCBIN; return KEYWORD;
-\.[Ee][Xx][Pp][Oo][Rr][Tt]					yylval.number = EXPORT; return KEYWORD;
-\.[Ii][Mm][Pp][Oo][Rr][Tt]					yylval.number = IMPORT; return KEYWORD;
-\.[Ff][Ii][Ll][Ll]							yylval.number = FILL; return FILL;
-\.[Ee][Qq][Uu][Aa][Tt][Ee]					return EQUATE;
-\.[Ee][Qq][Uu]								return EQUATE;
-\.[Dd][Ee][Ff][Ii][Nn][Ee]					return EQUATE;
+\.[Or][Rr][Ii][Gg][Ii][Nn]			yylval.number = ORIGIN; return KEYWORD;
+\.[Oo][Rr][Gg]					yylval.number = ORIGIN; return KEYWORD;
+\.[Ii][Nn][Cc][Bb][Ii][Nn]			yylval.number = INCBIN; return KEYWORD;
+\.[Ee][Xx][Pp][Oo][Rr][Tt]			yylval.number = EXPORT; return KEYWORD;
+\.[Ii][Mm][Pp][Oo][Rr][Tt]			yylval.number = IMPORT; return KEYWORD;
+\.[Ff][Ii][Ll][Ll]				yylval.number = FILL; return FILL;
+\.[Ee][Qq][Uu][Aa][Tt][Ee]			return EQUATE;
+\.[Ee][Qq][Uu]					return EQUATE;
+\.[Dd][Ee][Ff][Ii][Nn][Ee]			return EQUATE;
 
 	/* Opcodes as numbers support */
 
@@ -117,61 +117,61 @@ char* trim_and_unescape(char* data, int mode)
 <IN_OPCODE>[Hh][Ww][Ii]		yylval.number = NBOP_HWI; return ADDRESS;
 
 <IN_OPCODE>[Rr][Ee][Gg]\:	BEGIN(IN_REG);
-<IN_REG>[Aa]				yylval.number = REG_A; return ADDRESS;
-<IN_REG>[Bb]				yylval.number = REG_B; return ADDRESS;
-<IN_REG>[Cc]				yylval.number = REG_C; return ADDRESS;
-<IN_REG>[Xx]				yylval.number = REG_X; return ADDRESS;
-<IN_REG>[Yy]				yylval.number = REG_Y; return ADDRESS;
-<IN_REG>[Zz]				yylval.number = REG_Z; return ADDRESS;
-<IN_REG>[Ii]				yylval.number = REG_I; return ADDRESS;
-<IN_REG>[Jj]				yylval.number = REG_J; return ADDRESS;
+<IN_REG>[Aa]			yylval.number = REG_A; return ADDRESS;
+<IN_REG>[Bb]			yylval.number = REG_B; return ADDRESS;
+<IN_REG>[Cc]			yylval.number = REG_C; return ADDRESS;
+<IN_REG>[Xx]			yylval.number = REG_X; return ADDRESS;
+<IN_REG>[Yy]			yylval.number = REG_Y; return ADDRESS;
+<IN_REG>[Zz]			yylval.number = REG_Z; return ADDRESS;
+<IN_REG>[Ii]			yylval.number = REG_I; return ADDRESS;
+<IN_REG>[Jj]			yylval.number = REG_J; return ADDRESS;
 
 <IN_OPCODE>[Vv][Aa][Ll]\:	BEGIN(IN_VAL);
-<IN_VAL>[Aa]				yylval.number = VAL_A; return ADDRESS;
-<IN_VAL>[Bb]				yylval.number = VAL_B; return ADDRESS;
-<IN_VAL>[Cc]				yylval.number = VAL_C; return ADDRESS;
-<IN_VAL>[Xx]				yylval.number = VAL_X; return ADDRESS;
-<IN_VAL>[Yy]				yylval.number = VAL_Y; return ADDRESS;
-<IN_VAL>[Zz]				yylval.number = VAL_Z; return ADDRESS;
-<IN_VAL>[Ii]				yylval.number = VAL_I; return ADDRESS;
-<IN_VAL>[Jj]				yylval.number = VAL_J; return ADDRESS;
+<IN_VAL>[Aa]			yylval.number = VAL_A; return ADDRESS;
+<IN_VAL>[Bb]			yylval.number = VAL_B; return ADDRESS;
+<IN_VAL>[Cc]			yylval.number = VAL_C; return ADDRESS;
+<IN_VAL>[Xx]			yylval.number = VAL_X; return ADDRESS;
+<IN_VAL>[Yy]			yylval.number = VAL_Y; return ADDRESS;
+<IN_VAL>[Zz]			yylval.number = VAL_Z; return ADDRESS;
+<IN_VAL>[Ii]			yylval.number = VAL_I; return ADDRESS;
+<IN_VAL>[Jj]			yylval.number = VAL_J; return ADDRESS;
 
 <IN_OPCODE>[Nn][Xx][Tt]\:	BEGIN(IN_NXT);
-<IN_NXT>[Aa]				yylval.number = NXT_VAL_A; return ADDRESS;
-<IN_NXT>[Bb]				yylval.number = NXT_VAL_B; return ADDRESS;
-<IN_NXT>[Cc]				yylval.number = NXT_VAL_C; return ADDRESS;
-<IN_NXT>[Xx]				yylval.number = NXT_VAL_X; return ADDRESS;
-<IN_NXT>[Yy]				yylval.number = NXT_VAL_Y; return ADDRESS;
-<IN_NXT>[Zz]				yylval.number = NXT_VAL_Z; return ADDRESS;
-<IN_NXT>[Ii]				yylval.number = NXT_VAL_I; return ADDRESS;
-<IN_NXT>[Jj]				yylval.number = NXT_VAL_J; return ADDRESS;
+<IN_NXT>[Aa]			yylval.number = NXT_VAL_A; return ADDRESS;
+<IN_NXT>[Bb]			yylval.number = NXT_VAL_B; return ADDRESS;
+<IN_NXT>[Cc]			yylval.number = NXT_VAL_C; return ADDRESS;
+<IN_NXT>[Xx]			yylval.number = NXT_VAL_X; return ADDRESS;
+<IN_NXT>[Yy]			yylval.number = NXT_VAL_Y; return ADDRESS;
+<IN_NXT>[Zz]			yylval.number = NXT_VAL_Z; return ADDRESS;
+<IN_NXT>[Ii]			yylval.number = NXT_VAL_I; return ADDRESS;
+<IN_NXT>[Jj]			yylval.number = NXT_VAL_J; return ADDRESS;
 <IN_NXT>[Ll][Ii][Tt]		yylval.number = NXT_LIT; return ADDRESS;
 
 <IN_OPCODE>[Pp][Oo][Pp]		yylval.number = PUSH_POP; return ADDRESS;
 <IN_OPCODE>[Pp][Uu][Ss][Hh]	yylval.number = PUSH_POP; return ADDRESS;
 <IN_OPCODE>[Pp][Ee][Ee][Kk]	yylval.number = PEEK; return ADDRESS;
 <IN_OPCODE>[Pp][Ii][Cc][Kk]	yylval.number = PICK; return ADDRESS;
-<IN_OPCODE>[Ss][Pp]			yylval.number = SP; return ADDRESS;
-<IN_OPCODE>[Pp][Cc]			yylval.number = PC; return ADDRESS;
-<IN_OPCODE>[Ee][Xx]			yylval.number = EX; return ADDRESS;
-<IN_OPCODE>[Ii][Aa]			yylval.number = IA; return ADDRESS;
+<IN_OPCODE>[Ss][Pp]		yylval.number = SP; return ADDRESS;
+<IN_OPCODE>[Pp][Cc]		yylval.number = PC; return ADDRESS;
+<IN_OPCODE>[Ee][Xx]		yylval.number = EX; return ADDRESS;
+<IN_OPCODE>[Ii][Aa]		yylval.number = IA; return ADDRESS;
 <IN_OPCODE>[Nn][Xx][Tt]		yylval.number = NXT; return ADDRESS;
 
 	/* General stuff */
 
 [A-Za-z_-]+[A-Za-z0-9_-]*	yylval.string = strdup(yytext); return WORD;
-0x[0-9A-Fa-f]+				yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
-[0-9]+						yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
-L?'(\\.|[^\\'])+'			{ yylval.string = trim_and_unescape(strdup(yytext), 1); return CHARACTER; }
-L?\"(\\.|[^\\"])*\"			{ yylval.string = trim_and_unescape(strdup(yytext), 0); return STRING; }
-,							return COMMA;
-\[							return BRACKET_OPEN;
-\]							return BRACKET_CLOSE;
-\:							return COLON;
-\+							return ADD;
+0x[0-9A-Fa-f]+			yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
+[0-9]+				yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
+L?'(\\.|[^\\'])+'		{ yylval.string = trim_and_unescape(strdup(yytext), 1); return CHARACTER; }
+L?\"(\\.|[^\\"])*\"		{ yylval.string = trim_and_unescape(strdup(yytext), 0); return STRING; }
+,				return COMMA;
+\[				return BRACKET_OPEN;
+\]				return BRACKET_CLOSE;
+\:				return COLON;
+\+				return ADD;
 
-\n							yyalineno++; return NEWLINE;
-\;[^\r\n]*					/* ignore comments */;
-[ \t]+						/* ignore whitespace */;
+\n				yyalineno++; return NEWLINE;
+\;[^\r\n]*			/* ignore comments */;
+[ \t]+				/* ignore whitespace */;
 
 %%

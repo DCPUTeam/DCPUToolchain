@@ -1,14 +1,14 @@
 /**
 
-	File:			dcpuhook.h
+	File:           dcpuhook.h
 
-	Project:		DCPU-16 Tools
-	Component:		Emulator
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-vm
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the hooking mechanism for observing
-					when the VM's RAM changes.
+	Description:    Declares the hooking mechanism for observing
+	                when the VM's RAM changes.
 
 **/
 

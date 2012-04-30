@@ -1,15 +1,15 @@
 /**
 
-	File:			imap.c
+	File:           imap.c
 
-	Project:		DCPU-16 Tools
-	Component:		Assembler
+	Project:        DCPU-16 Tools
+	Component:      Assembler
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines instruction and register maps so that
-					the assembler can turn character values into
-					their internal representations.
+	Description:    Defines instruction and register maps so that
+	                the assembler can turn character values into
+	                their internal representations.
 
 **/
 

@@ -1,14 +1,14 @@
 /**
 
-	File:			aout.h
+	File:           aout.h
 
-	Project:		DCPU-16 Tools
-	Component:		Assembler
+	Project:        DCPU-16 Tools
+	Component:      Assembler
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares functions and structures for the instruction
-					and register maps.
+	Description:    Declares functions and structures for the instruction
+	                and register maps.
 
 **/
 

@@ -1,14 +1,14 @@
 /**
 
-	File:			hw.h
+	File:           hw.h
 
-	Project:		DCPU-16 Tools
-	Component:		Emulator
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-vm
 
-	Authors:		José Manuel Díez
+	Authors:        José Manuel Díez
 
-	Description:	Defines the type which holds a hardware device,
-					provides a mechanism to call interrupts on them
+	Description:    Defines the type which holds a hardware device,
+	                provides a mechanism to call interrupts on them
 
 **/
 
@@ -25,4 +25,4 @@ uint16_t vm_hw_count(vm_t* vm);
 hw_t vm_hw_get_device(vm_t* vm, uint16_t index);
 void vm_hw_interrupt(vm_t* vm, uint16_t index);
 
-#endif		
+#endif

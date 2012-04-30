@@ -1,14 +1,14 @@
 /**
 
-	File:			aout.c
+	File:           aout.c
 
-	Project:		DCPU-16 Tools
-	Component:		Assembler
+	Project:        DCPU-16 Tools
+	Component:      Assembler
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Implements outputting emitted opcodes and raw
-					values into RAM images.
+	Description:    Implements outputting emitted opcodes and raw
+	                values into RAM images.
 
 **/
 
@@ -228,8 +228,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 			// Adjust memory address.
 			out_index = current_outer->opcode;
 		}
-		else if (current_outer->type != AOUT_TYPE_NORMAL &&
-				 current_outer->type != AOUT_TYPE_METADATA_EXPORT)
+		else if (current_outer->type != AOUT_TYPE_NORMAL && current_outer->type != AOUT_TYPE_METADATA_EXPORT)
 		{
 			current_outer = current_outer->next;
 			continue;
@@ -255,8 +254,9 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 						ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
 					if (strcmp(current_inner->label, current_outer->label_replace) == 0)
 					{
-						current_outer->raw = 0xFFFF; // We don't actually know our position yet;
-													 // that will be handled by the linker!
+						current_outer->raw = 0xFFFF;
+						// We don't actually know our position yet;
+						// that will be handled by the linker!
 						current_outer->label_replace = NULL;
 						linker_temp = lprov_create(current_inner->label, out_index);
 						linker_temp->next = linker_required;

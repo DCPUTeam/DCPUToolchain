@@ -1,13 +1,13 @@
 /**
 
-	File:			AsmBlock.h
+	File:           AsmBlock.h
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCC
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the AsmBlock class.
+	Description:    Declares the AsmBlock class.
 
 **/
 

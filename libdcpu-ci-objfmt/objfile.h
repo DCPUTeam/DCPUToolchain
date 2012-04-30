@@ -1,14 +1,14 @@
 /**
 
-	File:			objfile.h
+	File:           objfile.h
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCC
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-objfmt
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares functions for parsing, reading and writing
-					to and from object files.
+	Description:    Declares functions for parsing, reading and writing
+	                to and from object files.
 
 **/
 

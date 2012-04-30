@@ -1,14 +1,14 @@
 /**
 
-	File:			main.c
+	File:           main.c
 
-	Project:		DCPU-16 Tools
-	Component:		Emulator
+	Project:        DCPU-16 Tools
+	Component:      Emulator
 
-	Authors:		James Rhodes
-					Tyrel Haveman
+	Authors:        James Rhodes
+	                Tyrel Haveman
 
-	Description:	Main entry point.
+	Description:    Main entry point.
 
 **/
 

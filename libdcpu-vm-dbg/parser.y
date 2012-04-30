@@ -1,15 +1,15 @@
 %{
-	
+
 /**
 
-	File:			parser.y
+	File:           parser.y
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCPU-VM-DBG
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-vm-dbg
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:		Defines parser for the debugger.
+	Description:    Defines parser for the debugger.
 
 **/
 

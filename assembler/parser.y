@@ -1,15 +1,15 @@
 %{
-	
+
 /**
 
-	File:			parser.y
+	File:           parser.y
 
-	Project:		DCPU-16 Tools
-	Component:		Assembler
+	Project:        DCPU-16 Tools
+	Component:      Assembler
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines parser for the assembler.
+	Description:    Defines parser for the assembler.
 
 **/
 
@@ -25,14 +25,14 @@ extern unsigned int yyalineno;
 
 // Root node for the AST.
 struct ast_node_root ast_root;
- 
+
 int yylex();
 
 void yyerror(const char *str)
 {
     fprintf(stderr,"error at line %i: %s\n", yyalineno, str);
 }
- 
+
 int yywrap()
 {
     return 1;

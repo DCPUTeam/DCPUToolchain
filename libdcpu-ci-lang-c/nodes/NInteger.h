@@ -1,13 +1,13 @@
 /**
 
-	File:			NInteger.h
+	File:           NInteger.h
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the NInteger AST class.
+	Description:    Declares the NInteger AST class.
 
 **/
 

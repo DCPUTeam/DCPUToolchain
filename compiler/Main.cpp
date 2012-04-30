@@ -1,13 +1,13 @@
 /**
 
-	File:			main.cpp
+	File:           main.cpp
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      Compiler
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Main entry point.
+	Description:    Main entry point.
 
 **/
 
@@ -22,28 +22,31 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include <argtable2.h>
+
 extern "C"
 {
 	#include "pp.h"
 }
+
 extern int yyparse();
 extern FILE *yyin, *yyout;
 extern NDeclarations* program;
 
 // Utility directory name function (TODO: Move this into it's own file).
 template<typename string_t>
+
 string_t dirname(string_t source)
 {
-    if (source.size() <= 1) //Make sure it's possible to check the last character.
-    {
-        return source;
-    }
-    if (*(source.rbegin() + 1) == '/') //Remove trailing slash if it exists.
-    {
+	if (source.size() <= 1) //Make sure it's possible to check the last character.
+	{
+		return source;
+	}
+	if (*(source.rbegin() + 1) == '/') //Remove trailing slash if it exists.
+	{
 		source = source.substr(0, source.size() - 1);
-    }
-    source.erase(std::find(source.rbegin(), source.rend(), '/').base(), source.end());
-    return source;
+	}
+	source.erase(std::find(source.rbegin(), source.rend(), '/').base(), source.end());
+	return source;
 }
 
 int main(int argc, char* argv[])
@@ -126,6 +129,6 @@ int main(int argc, char* argv[])
 		std::cerr << msg << std::endl;
 		return 1;
 	}
-	
+
 	return 0;
 }

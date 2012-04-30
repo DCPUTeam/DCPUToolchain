@@ -1,13 +1,13 @@
 /**
 
-	File:			NCharacter.cpp
+	File:           NCharacter.cpp
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines the NCharacter AST class.
+	Description:    Defines the NCharacter AST class.
 
 **/
 
@@ -21,7 +21,7 @@ AsmBlock* NCharacter::compile(AsmGenerator& context)
 	AsmBlock* block = new AsmBlock();
 
 	// Load the numeric value in register A.
-	*block <<	"	SET A, " << (uint8_t)((char)this->value[0]) << "" << std::endl;
+	*block << "	SET A, " << (uint8_t)((char)this->value[0]) << "" << std::endl;
 
 	return block;
 }

@@ -1,13 +1,13 @@
 /**
 
-	File:			AsmBlock.cpp
+	File:           AsmBlock.cpp
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCC
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines the AsmBlock class.
+	Description:    Defines the AsmBlock class.
 
 **/
 
@@ -40,8 +40,7 @@ AsmBlock& operator<< (AsmBlock& block, const char input[])
 
 AsmBlock& operator<< (AsmBlock& block, std::ifstream& input)
 {
-	std::string data((std::istreambuf_iterator<char>(input)),
-					  std::istreambuf_iterator<char>());
+	std::string data((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
 	block.m_Assembly += data;
 	return block;
 }

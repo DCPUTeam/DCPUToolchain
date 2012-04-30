@@ -1,15 +1,15 @@
 /**
 
-	File:			assem.c
+	File:           assem.c
 
-	Project:		DCPU-16 Tools
-	Component:		Assembler
+	Project:        DCPU-16 Tools
+	Component:      Assembler
 
-	Authors:		James Rhodes
-					Aaron Miller
+	Authors:        James Rhodes
+	                Aaron Miller
 
-	Description:	Implements functions for traversing the AST
-					and emitting bytecode instructions.
+	Description:    Implements functions for traversing the AST
+	                and emitting bytecode instructions.
 
 **/
 
@@ -295,7 +295,7 @@ void process_line(struct ast_node_line* line)
 			fprintf(stderr, ".FILL");
 			
 			// Emit N words with value X
-			for(i = 0; i < line->keyword_data_numeric; i++) 
+			for(i = 0; i < line->keyword_data_numeric; i++)
 				aout_emit(aout_create_raw(line->keyword_data_numeric_2));
 			
 			break;

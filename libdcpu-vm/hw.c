@@ -1,14 +1,14 @@
 /**
 
-	File:			hw.c
+	File:           hw.c
 
-	Project:		DCPU-16 Tools
-	Component:		Emulator
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-vm
 
-	Authors:		José Manuel Díez
+	Authors:        José Manuel Díez
 
-	Description:	Handles opcode instructions in the
-					virtual machine.
+	Description:    Handles opcode instructions in the
+	                virtual machine.
 
 **/
 
@@ -60,7 +60,7 @@ uint16_t vm_hw_count(vm_t* vm)
 {
 	uint16_t i = 0;
 	for(i = 0; i < HW_MAX; i++) {
-		if(vm_hw_connected[i] == 0) 
+		if(vm_hw_connected[i] == 0)
 			return i;
 	}
 	return HW_MAX;

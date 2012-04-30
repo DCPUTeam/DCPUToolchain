@@ -116,13 +116,13 @@ Now that you've copied the dylib for libtcod, you should be able to clone DCPUTo
 
 ```
 $ git clone https://github.com/DCPUTeam/DCPUToolchain.git
-$ cd DCPUToolchain
+$ cd DCPUToolchain/build
 ```
 
 Now we can build it.
 
 ```
-$ cmake .
+$ cmake ..
 $ make
 ```
 

@@ -1,13 +1,13 @@
 /**
 
-	File:			NString.cpp
+	File:           NString.cpp
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines the NString AST class.
+	Description:    Defines the NString AST class.
 
 **/
 

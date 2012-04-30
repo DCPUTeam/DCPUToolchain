@@ -1,14 +1,14 @@
 /**
 
-	File:			hwioascii.c
+	File:           hwioascii.c
 
-	Project:		DCPU-16 Tools
-	Component:		Emulator
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-vm
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines the vm_hw_io_ascii_get_map function which
-					maps libTCOD values to the ASCII equivalents.
+	Description:    Defines the vm_hw_io_ascii_get_map function which
+	                maps libTCOD values to the ASCII equivalents.
 
 **/
 

@@ -1,14 +1,14 @@
 /**
 
-	File:			NBinaryOperator.cpp
+	File:           NBinaryOperator.cpp
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
-					Michael Gerhaeuser
+	Authors:        James Rhodes
+	                Michael Gerhaeuser
 
-	Description:	Defines the NBinaryOperator AST class.
+	Description:    Defines the NBinaryOperator AST class.
 
 **/
 
