@@ -53,21 +53,6 @@ pthread_t sdp_thread;
 
 extern int dbg_yyparse(void* scanner);
 
-#ifdef _WIN32
-char* dirname(char* fixpath)
-{
-	// FIXME: This assumes the resulting path will always
-	// be shorter than the original (which it should be
-	// given that we're only returning a component of it, right?)
-	char drive[_MAX_DRIVE];
-	char dir[_MAX_DIR];
-	_splitpath(fixpath, drive, dir, NULL, NULL);
-	strcpy(fixpath, drive);
-	strcpy(fixpath + strlen(fixpath), dir);
-	return fixpath;
-}
-#endif
-
 void ddbg_sigint(int signal) {
 	pthread_kill(sdp_thread, SIGTERM);
 	exit(0);
@@ -86,7 +71,7 @@ int main(int argc, char** argv) {
 	
 	// Set global path variable.
 	path = strdup(argv[0]);
-	path = (char*) dirname(path);
+	path = (char*) osutil_dirname(path);
 	
 	signal(SIGINT, ddbg_sigint);
 	ddbg_create_vm();
