@@ -1,14 +1,14 @@
 /**
 
-	File:			hwio.c
+	File:           hwio.c
 
-	Project:		DCPU-16 Tools
-	Component:		Emulator
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-vm
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Hosts the virtual screen and keyboard for the
-					emulator.
+	Description:    Hosts the virtual screen and keyboard for the
+	                emulator.
 
 **/
 

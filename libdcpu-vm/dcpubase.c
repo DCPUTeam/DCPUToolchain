@@ -1,15 +1,15 @@
 /**
 
-	File:			dcpubase.c
+	File:           dcpubase.c
 
-	Project:		DCPU-16 Tools
-	Component:		Emulator
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-vm
 
-	Authors:		James Rhodes
-					Aaron Miller
+	Authors:        James Rhodes
+	                Aaron Miller
 
-	Description:	Handles core functionality of
-					the virtual machine.
+	Description:    Handles core functionality of
+	                the virtual machine.
 
 **/
 
@@ -23,10 +23,10 @@
 
 void vm_halt(vm_t* vm, const char* message, ...)
 {
-    va_list argptr;
-    va_start(argptr, message);
-    vfprintf(stderr, message, argptr);
-    va_end(argptr);
+	va_list argptr;
+	va_start(argptr, message);
+	vfprintf(stderr, message, argptr);
+	va_end(argptr);
 	vm->halted = true;
 	return;
 }

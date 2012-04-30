@@ -1,14 +1,14 @@
 /**
 
-	File:			lem1802.h
+	File:           lem1802.h
 
-	Project:		DCPU-16 Tools
-	Component:		Emulator
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-vm
 
-	Authors:		James Rhodes
-					José manuel Díez
+	Authors:        James Rhodes
+	                José manuel Díez
 
-	Description:	Handles LEM1802 functions
+	Description:    Handles LEM1802 functions
 
 **/
 

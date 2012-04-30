@@ -1,13 +1,13 @@
 /**
 
-	File:			main.c
+	File:           main.c
 
-	Project:		DCPU-16 Tools
-	Component:		Debugger
+	Project:        DCPU-16 Tools
+	Component:      Debugger
 
-	Authors:		José Manuel Díez
+	Authors:        José Manuel Díez
 
-	Description:	Socket debugging protocol.
+	Description:    Socket debugging protocol.
 
 **/
 
@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -39,7 +39,8 @@ p_string* emulator_version;
 int parentfd, childfd;
 vm_t* vm;
 
-p_string* pstring_from_cstring(char* string) {
+p_string* pstring_from_cstring(char* string)
+{
 	p_string* res = malloc(sizeof(p_string));
 	
 	res->length = strlen(string);
@@ -50,7 +51,8 @@ p_string* pstring_from_cstring(char* string) {
 	return res;
 }
 
-char* cstring_from_pstring(p_string* string) {
+char* cstring_from_pstring(p_string* string)
+{
 	char* the_string = malloc(sizeof(char) * BUFSIZE);
 	int length = string->length;
 	
@@ -93,11 +95,11 @@ void handle (int sock)
 			deserialize_sdp_packet(in, buffer, n);
 			printf("requested mode: %d\n", in->identifier);
 			
-   			switch(in->identifier) {
-   				case SDP_EMULATOR_INFORMATION:		
-   					out->identifier = SDP_EMULATOR_INFORMATION;
-   					out->length = sizeof(protocol_version) + pstr_length(emulator_name) + pstr_length(emulator_version);
-   					out->payload = malloc(out->length);
+			switch(in->identifier) {
+				case SDP_EMULATOR_INFORMATION:
+					out->identifier = SDP_EMULATOR_INFORMATION;
+					out->length = sizeof(protocol_version) + pstr_length(emulator_name) + pstr_length(emulator_version);
+					out->payload = malloc(out->length);
 					payload_orig = out->payload;
 				
 					memcpy(out->payload, &protocol_version, sizeof(protocol_version));
@@ -109,7 +111,7 @@ void handle (int sock)
 					memcpy(out->payload, serialize_pstring(emulator_version), pstr_length(emulator_version));
 					out->payload += pstr_length(emulator_version);
 				
-					out->payload = payload_orig;	
+					out->payload = payload_orig;
 					send_sdp_packet(sock, out);
 					
 					break;
@@ -127,7 +129,7 @@ void handle (int sock)
 					write_uint16(out, vm->registers[REG_Y]);
 					write_uint16(out, vm->registers[REG_Z]);
 					write_uint16(out, vm->registers[REG_I]);
-					write_uint16(out, vm->registers[REG_J]);					
+					write_uint16(out, vm->registers[REG_J]);
 					write_uint16(out, vm->pc);
 					write_uint16(out, vm->sp);
 					write_uint16(out, vm->ex);
@@ -182,7 +184,7 @@ void handle (int sock)
 
 void ddbg_handle_disconnection(int sgn) {
 	int status;
-	 
+	
 	signal(SIGCHLD, ddbg_handle_disconnection);
 	close(childfd);
 	wait(&status);
@@ -205,7 +207,7 @@ void tcp_server() {
 	struct hostent *hostp;
 	
 	parentfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (parentfd < 0) 
+	if (parentfd < 0)
 		error("ERROR opening socket");
 
 	optval = 1;
@@ -215,7 +217,7 @@ void tcp_server() {
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serveraddr.sin_port = htons((unsigned short) PORT);
-	bind(parentfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)); 
+	bind(parentfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr));
 	listen(parentfd, 5);
 
 	clientlen = sizeof(clientaddr);

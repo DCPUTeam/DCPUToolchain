@@ -1,14 +1,14 @@
 /**
 
-	File:			treloc.c
+	File:           treloc.c
 
-	Project:		DCPU-16 Tools
-	Component:		Assembler
+	Project:        DCPU-16 Tools
+	Component:      Assembler
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines public functions for writing out
-					relocation tables.
+	Description:    Defines public functions for writing out
+	                relocation tables.
 
 **/
 

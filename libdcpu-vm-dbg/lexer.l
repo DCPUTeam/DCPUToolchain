@@ -2,17 +2,17 @@
 
 /**
 
-	File:			lexer.y
+	File:           lexer.y
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCPU-VM-DBG
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-vm-dbg
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:		Defines lexer for the debugger's command-line input.
+	Description:    Defines lexer for the debugger's command-line input.
 
 **/
-	
+
 #include <lexfix.h>
 #include <bstrlib.h>
 #include <string.h>
