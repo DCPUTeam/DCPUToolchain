@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8.5)
 project (toolchain)
 
-
 # Set up some basics.
 set(IS_ROOT 1)
 set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -32,6 +31,13 @@ endif(NOT DEFINED BISON_EXECUTABLE)
 if(NOT DEFINED M4_EXECUTABLE)
 	find_program(M4_EXECUTABLE NAMES m4.exe m4)
 endif(NOT DEFINED M4_EXECUTABLE)
+if(DEFINED ENV{SHELL})
+	if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+		if(NOT MSVC)
+			set(TOOLCHAIN_ON_CYGWIN true)
+		endif(NOT MSVC)
+	endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+endif(DEFINED ENV{SHELL})
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "cmake")
 
 # Set compiler options.
@@ -54,11 +60,14 @@ message("  >> m4 is at: ${M4_EXECUTABLE}")
 message("  >> flex is at: ${FLEX_EXECUTABLE}")
 message("  >> flex unistd is at: ${FLEX_UNISTD_INCLUDE}")
 message("  >> bison is at: ${BISON_EXECUTABLE}")
-message("   (must be GnuWin32 versions on Windows; Cygwin does not work)")
+message("   (must be Cygwin versions on Windows)")
 if(NOT "${EXPERIMENTAL}" STREQUAL "")
 message("  >> experimental features are enabled!")
 set(EXPERIMENTAL true)
 endif(NOT "${EXPERIMENTAL}" STREQUAL "")
+if(DEFINED TOOLCHAIN_ON_CYGWIN)
+message("  >> detected cygwin!")
+endif(DEFINED TOOLCHAIN_ON_CYGWIN)
 
 # Define a function that automatically includes
 # all of the .h and .c files in the project folder.
@@ -165,8 +174,17 @@ endfunction(dt_needs)
 # Define a function which specifies a **pre-built**
 # dependency on the project.
 function(dt_needs_prebuilt dependency winlibname unixlibname)
-	message("    .. adding '${dependency}' include at third-party/${dependency}/include")
-	include_directories("${ROOT_DIR}/third-party/${dependency}/include")
+	if(${dependency} MATCHES "pthread")
+		if(DEFINED TOOLCHAIN_ON_CYGWIN)
+			message("    .. skipping inclusion of pthread headers on cygwin.")
+		else(DEFINED TOOLCHAIN_ON_CYGWIN)
+			message("    .. adding '${dependency}' include at third-party/${dependency}/include")
+			include_directories("${ROOT_DIR}/third-party/${dependency}/include")		
+		endif(DEFINED TOOLCHAIN_ON_CYGWIN)
+	else(${dependency} MATCHES "pthread")
+		message("    .. adding '${dependency}' include at third-party/${dependency}/include")
+		include_directories("${ROOT_DIR}/third-party/${dependency}/include")
+	endif(${dependency} MATCHES "pthread")
 	if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 		message("    .. adding '${dependency}' library at third-party/${dependency}/lib/${winlibname}.lib")
 		target_link_libraries(${PROJECT_NAME} "${ROOT_DIR}/third-party/${dependency}/lib/${winlibname}.lib")
