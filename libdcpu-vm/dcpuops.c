@@ -153,12 +153,12 @@ void vm_op_add(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(2);
 	
 	VM_SKIP_RESET;
-	*store_b = *store_b + val_a;
+	*store_b = val_b + val_a;
 	VM_CHECK_ARITHMETIC_FLOW(+, val_b, val_a);
 	VM_HOOK_FIRE(store_b);
 }

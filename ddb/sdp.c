@@ -222,9 +222,7 @@ void tcp_server() {
 
 	clientlen = sizeof(clientaddr);
 	while (1) {
-		printf("ohai\n");
 		childfd = accept(parentfd, (struct sockaddr *) &clientaddr, &clientlen);
-		printf("got child\n");
 		if(fork() == 0) {
 			handle(childfd);
 			close(childfd);

@@ -235,6 +235,7 @@ void vm_lem1802_init(vm_t* vm, uint16_t pos)
 
 	TCOD_console_set_custom_font(bstr2cstr(imagePath, (char) '\0'), TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);
 	// Load TCOD.
+	
 #if TCOD_HEXVERSION > 0x010500
 	TCOD_console_init_root(screen_width + 2, screen_height + 2, "Toolchain Emulator", false, TCOD_RENDERER_SDL);
 #else

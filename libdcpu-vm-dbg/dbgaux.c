@@ -92,6 +92,13 @@ void ddbg_run_vm()
 	printf("\n");
 }
 
+void ddbg_continue_vm()
+{
+	vm->halted = false;
+	vm_execute(vm);
+	printf("\n");
+}
+
 void ddbg_attach(bstring hw)
 {
 	if (biseq(hw, bfromcstr("lem1802")))

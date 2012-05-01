@@ -76,7 +76,7 @@ general_command:
 		} |
 		ID_CONTINUE
 		{
-			ddbg_run_vm();
+			ddbg_continue_vm();
 		} |
 		ID_STOP
 		{
