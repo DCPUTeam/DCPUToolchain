@@ -24,21 +24,6 @@
 #include "hwtimer.h"
 #include "hw.h"
 
-vm_t* vm_create()
-{
-	// Define variables.
-	vm_t* new_vm;
-	unsigned int i;
-
-	// Allocate and wipe vm memory.
-	new_vm = (vm_t*)malloc(sizeof(vm_t));
-	vm_init(new_vm, true);
-	new_vm->debug = false;
-
-	// Return.
-	return new_vm;
-}
-
 void vm_init(vm_t* vm, bool init_memory)
 {
 	unsigned int i;
@@ -59,6 +44,20 @@ void vm_init(vm_t* vm, bool init_memory)
 	vm->skip = false;
 
 	return;
+}
+
+vm_t* vm_create()
+{
+	// Define variables.
+	vm_t* new_vm;
+
+	// Allocate and wipe vm memory.
+	new_vm = (vm_t*)malloc(sizeof(vm_t));
+	vm_init(new_vm, true);
+	new_vm->debug = false;
+
+	// Return.
+	return new_vm;
 }
 
 void vm_free(vm_t* vm)
