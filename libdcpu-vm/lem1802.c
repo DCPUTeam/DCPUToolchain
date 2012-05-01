@@ -77,7 +77,7 @@ void vm_lem1802_update(vm_t* vm, uint16_t pos)
 			);
 	}
 	// Are we updating a font character?
-	else if (pos > base_screen + 0x17f && pos < base_border)
+	else if (pos >= base_font && pos <= base_font + 0x100)
 	{
 		// Work out the position of the character in the font.
 		i = (pos - base_font) / 2;
@@ -90,10 +90,12 @@ void vm_lem1802_update(vm_t* vm, uint16_t pos)
 		{
 			// Read value.
 			if (x == 0 || x == 1)
-				val = vm->ram[0x8180 + (i * 2)];
+				val = vm->ram[base_font + (i * 2)];
 			else
-				val = vm->ram[0x8180 + (i * 2) + 1];
-
+				val = vm->ram[base_font + (i * 2) + 1];
+			
+			printf("char_update: %x\n", val);
+			
 			// Get upper or lower component of value.
 			if (x == 0 || x == 2)
 				val = val >> 8;
@@ -182,6 +184,12 @@ void vm_lem1802_cycle(vm_t* vm, uint16_t pos)
 	TCOD_console_flush();
 }
 
+void vm_lem1802_load_font(vm_t* vm) 
+{
+	int i = 0;
+	for(i = 0; i < base_font + 0x100; i++) vm_lem1802_update(vm, base_font + i);
+}
+
 void vm_lem1802_interrupt(vm_t* vm)
 {
 	uint16_t requested_action = vm_resolve_value(vm, REG_A, 0);
@@ -206,6 +214,7 @@ void vm_lem1802_interrupt(vm_t* vm)
 			else
 			{
 				base_font = val_b;
+				vm_lem1802_load_font(vm);
 			}
 			break;
 		case MEM_MAP_PALETTE:
