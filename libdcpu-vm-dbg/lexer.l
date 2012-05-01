@@ -38,6 +38,7 @@ char* dbg_trim_and_unescape(char* data, int mode);
 	/* Debugger command identifiers */
 
 "load"						return ID_LOAD;
+"breakpoint"					return ID_BREAKPOINT;
 "break"						return ID_BREAKPOINT;
 "run"						return ID_RUN;
 "continue"					return ID_CONTINUE;
