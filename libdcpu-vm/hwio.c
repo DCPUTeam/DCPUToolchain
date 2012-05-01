@@ -83,7 +83,7 @@ void vm_hwio_interrupt(vm_t* vm)
 	{
 		case KB_CLEAR_BUFFER:
 			last_key = 0;
-			break
+			break;
 		case KB_STORE_IN_REG:
 			*store_c = last_key;
 			last_key = 0x0;
@@ -92,7 +92,7 @@ void vm_hwio_interrupt(vm_t* vm)
 			*store_c = val_b == last_key ? 1 : 0;
 			break;
 		case KB_INTERRUPTS:
-			if(val_b != 0) 
+			if(val_b != 0)
 				interrupt_message = val_b;
 			else
 				interrupt_message = 0;
