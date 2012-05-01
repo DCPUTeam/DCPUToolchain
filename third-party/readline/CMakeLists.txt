@@ -7,7 +7,12 @@ if(NOT DEFINED IS_ROOT)
   message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
 endif(NOT DEFINED IS_ROOT)
 
-# Define the libtcod project.
+# Define linking information for each platform.
+set(${PROJECT_NAME}_Windows readline PARENT_SCOPE)
+set(${PROJECT_NAME}_Unix readline PARENT_SCOPE)
+set(${PROJECT_NAME}_UnixNoInclude true PARENT_SCOPE)
+
+# Define the readline project.
 message("  >> ${PROJECT_NAME}: prebuilt")
 add_library(readline SHARED IMPORTED)
 set(IMPORTED_LOCATION ./lib)
