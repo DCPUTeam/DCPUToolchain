@@ -11,4 +11,5 @@ endif(NOT DEFINED IS_ROOT)
 dt_project(library)
 dt_needs_prebuilt(libtcod libtcod-VS tcod)
 dt_needs(libdcpu)
+dt_needs(bstring)
 

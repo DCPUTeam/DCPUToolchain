@@ -1,14 +1,14 @@
 /**
 
-	File:			objfile.c
+	File:           objfile.c
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCC
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-objfmt
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Defines functions used for reading and writing
-					to object files.
+	Description:    Defines functions used for reading and writing
+	                to object files.
 
 **/
 

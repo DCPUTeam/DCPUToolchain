@@ -1,13 +1,12 @@
 /**
 
-	File:			NMethodCall.cpp
+	File:           NMethodCall.cpp
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
-					Patrick Flick
-
+	Authors:        James Rhodes
+					Patrick Flick    
 	Description:	Defines the NMethodCall AST class.
 
 **/

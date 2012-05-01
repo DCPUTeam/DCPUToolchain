@@ -1,13 +1,13 @@
 /**
 
-	File:			main.c
+	File:           main.c
 
-	Project:		DCPU-16 Tools
-	Component:		Debugger
+	Project:        DCPU-16 Tools
+	Component:      Debugger
 
-	Authors:		José Manuel Díez
+	Authors:        José Manuel Díez
 
-	Description:	Main entry point.
+	Description:    Main entry point.
 
 **/
 
@@ -46,27 +46,11 @@
 #define MAX_ARGUMENTS 10
 #define MAX_ARGUMENT_LENGTH 50
 
-
-char* path;
+bstring path;
 vm_t* vm;
 pthread_t sdp_thread;
 
 extern int dbg_yyparse(void* scanner);
-
-#ifdef _WIN32
-char* dirname(char* fixpath)
-{
-	// FIXME: This assumes the resulting path will always
-	// be shorter than the original (which it should be
-	// given that we're only returning a component of it, right?)
-	char drive[_MAX_DRIVE];
-	char dir[_MAX_DIR];
-	_splitpath(fixpath, drive, dir, NULL, NULL);
-	strcpy(fixpath, drive);
-	strcpy(fixpath + strlen(fixpath), dir);
-	return fixpath;
-}
-#endif
 
 void ddbg_sigint(int signal) {
 	pthread_kill(sdp_thread, SIGTERM);
@@ -77,7 +61,7 @@ void ddbg_sigint(int signal) {
 void get_command(char* command_buffer, int max) {
 	printf("> ");
 	fgets(command_buffer, max, stdin);
-}	
+}
 
 
 int main(int argc, char** argv) {
@@ -85,8 +69,8 @@ int main(int argc, char** argv) {
 	yyscan_t scanner;
 	
 	// Set global path variable.
-	path = strdup(argv[0]);
-	path = (char*) dirname(path);
+
+	path = (bstring) osutil_dirname(bfromcstr(argv[0]));
 	
 	signal(SIGINT, ddbg_sigint);
 	ddbg_create_vm();
@@ -106,7 +90,7 @@ int main(int argc, char** argv) {
 		dbg_yylex_destroy(scanner);
 	}
 	
-    free(buf);
+	free(buf);
 	
 	return 0;
 }

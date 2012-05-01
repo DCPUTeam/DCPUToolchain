@@ -1,27 +1,29 @@
 /**
 
-	File:			lem1802.c
+	File:           lem1802.c
 
-	Project:		DCPU-16 Tools
-	Component:		Emulator
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-vm
 
-	Authors:		James Rhodes
-					José Manuel Díez
-					Tyrel Haveman
+	Authors:        James Rhodes
+	                José Manuel Díez
+	                Tyrel Haveman
 
-	Description:	
+	Description:    Handles LEM1802 functions
 
 **/
 
 #include <stdio.h>
 #include <string.h>
+#include <bstring.h>
+
 #include "hw.h"
 #include "lem1802.h"
 #include "hwioascii.h"
 #include "dcpuhook.h"
 #include "dcpubase.h"
 
-extern char* path;
+extern bstring path;
 
 uint32_t screen_tick = 0;
 uint32_t screen_width = 32;
@@ -218,7 +220,7 @@ void vm_lem1802_interrupt(vm_t* vm)
 
 void vm_lem1802_init(vm_t* vm, uint16_t pos)
 {
-	char imagePath[512] = {0};
+	bstring imagePath;
 	hw_t screen;
 	
 	screen.id_1 = 0xf615;
@@ -228,10 +230,10 @@ void vm_lem1802_init(vm_t* vm, uint16_t pos)
 	screen.y = 0x1337;
 	screen.handler = &vm_lem1802_interrupt;
 
-	strcpy(imagePath, path);
-	strcat(imagePath, "/terminal.png");
+	imagePath = bstrcpy(path);
+	bconcat(imagePath, bfromcstr("/terminal.png"));
 
-	TCOD_console_set_custom_font(imagePath, TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);
+	TCOD_console_set_custom_font(bstr2cstr(imagePath, (char) '\0'), TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);
 	// Load TCOD.
 #if TCOD_HEXVERSION > 0x010500
 	TCOD_console_init_root(screen_width + 2, screen_height + 2, "Toolchain Emulator", false, TCOD_RENDERER_SDL);
@@ -240,7 +242,7 @@ void vm_lem1802_init(vm_t* vm, uint16_t pos)
 #endif
 	TCOD_console_set_keyboard_repeat(200, 10);
 	TCOD_sys_set_fps(10000);
-	char_image = TCOD_image_load(path);
+	char_image = TCOD_image_load(bstr2cstr(path, (char) '\0'));
 	TCOD_sys_get_char_size(&char_width, &char_height);
 
 	// Register hooks.

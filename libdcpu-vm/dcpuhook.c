@@ -1,15 +1,15 @@
 /**
 
-	File:			dcpuops.c
+	File:           dcpuops.c
 
-	Project:		DCPU-16 Tools
-	Component:		Emulator
+	Project:        DCPU-16 Tools
+	Component:      Emulator
 
-	Authors:		James Rhodes
-					Aaron Miller
+	Authors:        James Rhodes
+	                Aaron Miller
 
-	Description:	Handles opcode instructions in the
-					virtual machine.
+	Description:    Handles opcode instructions in the
+	                virtual machine.
 
 **/
 

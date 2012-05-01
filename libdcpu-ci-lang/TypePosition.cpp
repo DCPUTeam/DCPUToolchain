@@ -1,14 +1,14 @@
 /**
 
-	File:			TypePosition.cpp
+	File:           TypePosition.cpp
 
-	Project:		DCPU-16 Tools
-	Component:		LibDCC
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang
 
-	Authors:		James Rhodes
-					Patrick Flick
+	Authors:        James Rhodes
+	                Patrick Flick
 
-	Description:	Defines the TypePosition class.
+	Description:    Defines the TypePosition class.
 
 **/
 

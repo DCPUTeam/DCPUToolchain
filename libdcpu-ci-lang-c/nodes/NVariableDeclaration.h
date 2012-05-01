@@ -1,13 +1,13 @@
 /**
 
-	File:			NVariableDeclaration.h
+	File:           NVariableDeclaration.h
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the NVariableDeclaration AST class.
+	Description:    Declares the NVariableDeclaration AST class.
 
 **/
 

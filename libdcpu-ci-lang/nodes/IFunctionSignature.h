@@ -1,13 +1,13 @@
 /**
 
-	File:			IFunctionSignature.h
+	File:           IFunctionSignature.h
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the IFunctionSignature AST interface.
+	Description:    Declares the IFunctionSignature AST interface.
 
 **/
 

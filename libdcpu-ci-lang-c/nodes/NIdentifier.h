@@ -1,13 +1,13 @@
 /**
 
-	File:			NIdentifier.h
+	File:           NIdentifier.h
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the NIdentifier AST class.
+	Description:    Declares the NIdentifier AST class.
 
 **/
 

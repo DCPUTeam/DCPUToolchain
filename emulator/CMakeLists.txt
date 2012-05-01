@@ -11,6 +11,7 @@ endif(NOT DEFINED IS_ROOT)
 # Define the emulator project.
 dt_project(executable)
 dt_needs_prebuilt(libtcod libtcod-VS tcod)
+dt_needs(bstring)
 dt_needs(argtable2)
 dt_needs(libdcpu)
 dt_needs(libdcpu-vm)

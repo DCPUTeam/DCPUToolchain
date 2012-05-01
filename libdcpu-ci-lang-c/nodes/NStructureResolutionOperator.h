@@ -1,13 +1,13 @@
 /**
 
-	File:			NStructureResolutionOperator.h
+	File:           NStructureResolutionOperator.h
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the NStructureResolutionOperator AST class.
+	Description:    Declares the NStructureResolutionOperator AST class.
 
 **/
 

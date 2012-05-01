@@ -1,14 +1,13 @@
 /**
 
-	File:			pp.c
+	File:           pp.c
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      Compiler
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Handles preprocessing of input 
-					files.
+	Description:    Handles preprocessing of input files.
 
 **/
 
@@ -138,7 +137,7 @@ void pp_base(FILE* in, FILE* out)
 				pp_include(line, in, out);
 			else
 				fprintf(stderr, "preprocessor: ignoring unknown directive #%s.\n", line);
-			
+
 			// Reset variables.
 			has_newline = false;
 		}

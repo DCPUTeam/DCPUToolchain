@@ -1,13 +1,13 @@
 /**
 
-	File:			NReturnStatement.h
+	File:           NReturnStatement.h
 
-	Project:		DCPU-16 Tools
-	Component:		Compiler
+	Project:        DCPU-16 Tools
+	Component:      LibDCPU-ci-lang-c
 
-	Authors:		James Rhodes
+	Authors:        James Rhodes
 
-	Description:	Declares the NReturnStatement AST class.
+	Description:    Declares the NReturnStatement AST class.
 
 **/
 
