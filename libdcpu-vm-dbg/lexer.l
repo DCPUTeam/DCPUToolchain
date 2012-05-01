@@ -52,6 +52,8 @@ char* dbg_trim_and_unescape(char* data, int mode);
 "detach"					return ID_DETACH;
 "list"						return ID_LIST;
 "memory"					return ID_MEMORY;
+"help"						return ID_HELP;
+\?							return ID_HELP;
 
 	/* General stuff */
 

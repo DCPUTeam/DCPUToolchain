@@ -29,6 +29,48 @@ uint16_t breakpoints[MAX_BREAKPOINTS];
 uint16_t breakpoints_num;
 extern vm_t* vm;
 
+void ddbg_help(bstring section)
+{
+	if(biseq(section, bfromcstr("general")))
+	{
+		printf("Available commands:\n");
+		printf("- break\n");
+		printf("- load\n");
+		printf("- run\n");
+		printf("- continue\n");
+		printf("- inspect\n");
+		printf("- quit\n");
+		printf("Type `help <command>' to get help about a particular command.\n");
+	}
+	else if(biseq(section, bfromcstr("break")))
+	{
+		printf("Manipulates breakpoints.\n");
+		printf("Available commands: add, delete, list\n");
+		printf("Syntax: `break <command> <path>:<address>'\n");
+		printf("Alternate syntax: `break <command> <address>'\n");
+		printf("Example: break add memory:0xbeef\n");
+	}
+	else if(biseq(section, bfromcstr("load")))
+	{
+		printf("Loads words from a file to the VM.\n");
+	}
+	else if(biseq(section, bfromcstr("run")) || biseq(section, bfromcstr("continue")))
+	{
+		printf("Sets vm->halted to false, runs the VM.\n");
+	}
+	else if(biseq(section, bfromcstr("inspect")))
+	{
+		printf("Returns information about devices.\n");
+		printf("Available commands: cpu, memory.\n");
+		printf("Syntax: `inspect <command> [<arg1>] [<arg2>]'\n");
+		printf("Note: `inspect memory' takes one or two arguments; the first argument is the start address and the second argument is the number of words to be dumped.\n");
+	}
+	else if(biseq(section, bfromcstr("quit")))
+	{
+		printf("Gracefully quits the debugger.\n");
+	}
+}
+
 void ddbg_cycle_hook(vm_t* vm, uint16_t pos)
 {
 	int i = 0;	

@@ -36,7 +36,7 @@ void yyerror(void* scanner, const char *str);
 
 // Define our lexical token names.
 %token <token> ID_LOAD ID_BREAKPOINT ID_RUN ID_CONTINUE ID_STOP ID_QUIT ID_ADD ID_DELETE
-%token <token> ID_ATTACH ID_INSPECT ID_HARDWARE ID_CPU ID_DETACH ID_LIST ID_MEMORY
+%token <token> ID_ATTACH ID_INSPECT ID_HARDWARE ID_CPU ID_DETACH ID_LIST ID_MEMORY ID_HELP
 %token <token> COLON
 %token <string> PARAM PATH CHARACTER STRING
 %token <number> ADDRESS
@@ -58,7 +58,8 @@ command:
 		breakpoint_command |
 		hardware_command |
 		cpu_command |
-		memory_command ;
+		memory_command |
+		help_command ;
 		
 general_command:
 		ID_LOAD PATH
@@ -232,6 +233,36 @@ memory_inspect_command:
 			ddbg_dump_ram($3, $4);
 		} ;
 
+help_command:
+		ID_HELP
+		{
+			ddbg_help(bfromcstr("general"));
+		} | 
+		ID_HELP ID_BREAKPOINT
+		{
+			ddbg_help(bfromcstr("break"));
+		} |
+		ID_HELP ID_LOAD
+		{
+			ddbg_help(bfromcstr("load"));
+		} |
+		ID_HELP ID_RUN
+		{
+			ddbg_help(bfromcstr("run"));
+		} |
+		ID_HELP ID_CONTINUE
+		{
+			ddbg_help(bfromcstr("continue"));
+		} |
+		ID_HELP ID_INSPECT
+		{
+			ddbg_help(bfromcstr("inspect"));
+		} |
+		ID_HELP ID_QUIT
+		{
+			ddbg_help(bfromcstr("quit"));
+		} ;
+		
 %%
 
 #include "lexer.h"
