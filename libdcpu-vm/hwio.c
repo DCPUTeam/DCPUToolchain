@@ -31,6 +31,7 @@ uint32_t kb_tick = 0;
 uint32_t input_index = 0;
 
 uint16_t last_key = 0x0;
+uint16_t interrupt_message = 0x0;
 
 void vm_hw_io_cycle(vm_t* vm, uint16_t pos)
 {
@@ -63,6 +64,8 @@ void vm_hw_io_cycle(vm_t* vm, uint16_t pos)
 		if (ascii != 0)
 		{
 			last_key = ascii;
+			if(interrupt_message != 0)
+				vm_op_int(vm, interrupt_message);
 		}
 	}
 
@@ -78,10 +81,21 @@ void vm_hwio_interrupt(vm_t* vm)
 	
 	switch(requested_action)
 	{
+		case KB_CLEAR_BUFFER:
+			last_key = 0;
+			break;
 		case KB_STORE_IN_REG:
 			*store_c = last_key;
 			last_key = 0x0;
 			break;
+		case KB_COMPARE:
+			*store_c = val_b == last_key ? 1 : 0;
+			break;
+		case KB_INTERRUPTS:
+			if(val_b != 0)
+				interrupt_message = val_b;
+			else
+				interrupt_message = 0;
 	}
 }
 
