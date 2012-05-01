@@ -1,0 +1,39 @@
+set pc, main
+:message .dat "QWERTYUIOPASDFGHJKLZXCVBNMMqwertyuiopasdfghjklzxcvbnm1234567890!?", 0
+:scroff .dat 0x0
+
+:main
+    set a, 0x0
+    set b, 0x8000
+    hwi 0
+
+    set a, 0x1
+    set b, font
+    hwi 0
+
+    set a, message
+    jsr printstr
+
+:end set pc, end
+
+:printstr
+    ife [a], 0
+        set pc, pop
+    jsr putc
+    add a, 1
+    set pc, printstr
+
+:putc
+    set push, a
+    set a, [a]
+    bor a, 0xf000
+    set b, 0x8000
+    add b, [scroff]
+    set [b], a
+
+    add [scroff], 1
+    ife [scroff], 0x17f
+        set [scroff], 0x0
+
+    set a, pop
+    set pc, pop
