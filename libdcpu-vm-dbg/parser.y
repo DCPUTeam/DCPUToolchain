@@ -41,6 +41,9 @@ void yyerror(void* scanner, const char *str);
 %token <string> PARAM PATH CHARACTER STRING
 %token <number> ADDRESS
 
+// Define our parser types.
+%type <string> param
+
 // Start at the root node.
 %start command
 
@@ -60,7 +63,11 @@ command:
 		cpu_command |
 		memory_command |
 		help_command ;
-		
+
+param:
+		PATH |
+		PARAM ;
+	
 general_command:
 		ID_LOAD PATH
 		{
@@ -157,40 +164,45 @@ hardware_command:
 		hardware_inspect_command ;
 
 hardware_attach_command:
-		ID_HARDWARE ID_ATTACH PATH
+		ID_HARDWARE ID_ATTACH param
 		{
 			// Attach a specified piece of hardware to
 			// the DCPU.
 			ddbg_attach($3);
 		} |
-		ID_ATTACH ID_HARDWARE PARAM
+		ID_ATTACH ID_HARDWARE param
 		{
 			// Attach a specified piece of hardware to
 			// the DCPU.
+			ddbg_attach($3);
 		} ;
 
 hardware_detach_command:
-		ID_HARDWARE ID_DETACH PARAM
+		ID_HARDWARE ID_DETACH param
 		{
 			// Detach a specified piece of hardware from
 			// the DCPU.
+			printf("Not implemented.");
 		} |
-		ID_DETACH ID_HARDWARE PARAM
+		ID_DETACH ID_HARDWARE param
 		{
 			// Detach a specified piece of hardware from
 			// the DCPU.
+			printf("Not implemented.");
 		} ;
 
 hardware_inspect_command:
-		ID_HARDWARE ID_INSPECT PARAM
+		ID_HARDWARE ID_INSPECT param
 		{
 			// Inspect a specified piece of hardware on
 			// the DCPU.
+			printf("Not implemented.");
 		} |
-		ID_INSPECT ID_HARDWARE PARAM
+		ID_INSPECT ID_HARDWARE param
 		{
 			// Inspect a specified piece of hardware on
 			// the DCPU.
+			printf("Not implemented.");
 		} ;
 
 cpu_command:
