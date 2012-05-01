@@ -80,12 +80,13 @@ First install Xcode which should install everything you need to compile.
 
 Next, you'll need to install a few other things, I'll be using homebrew for this, which you can download [here](https://github.com/mxcl/homebrew/wiki/installation), but you could use port, fink or any other way you want to install it.
 
-You will need to install git, hg and cmake.
+You will need to install cmake, git, hg and sdl.
 
 ```
 $ brew install cmake
 $ brew install git
 $ brew install hg
+$ brew install sdl
 ```
 
 Once all of these are installed, you're first going to want to clone the libtcod source from [here](https://bitbucket.org/jice/libtcod).  The reason we are building it from scratch, is because the downloads only has a i386 built dylib, and most likely your going to be building with x64_86, so we'll just build manually.
