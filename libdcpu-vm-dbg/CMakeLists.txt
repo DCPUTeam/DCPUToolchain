@@ -9,8 +9,7 @@ endif(NOT DEFINED IS_ROOT)
 
 # Define the libvm project.
 dt_project(library)
-dt_needs_prebuilt(libtcod libtcod-VS tcod)
-
+dt_needs(libtcod)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
 dt_needs(bstring)
