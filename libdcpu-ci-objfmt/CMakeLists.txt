@@ -7,6 +7,6 @@ if(NOT DEFINED IS_ROOT)
   message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
 endif(NOT DEFINED IS_ROOT)
 
-# Define the libdcc project.
-dt_project(library nodes)
+# Define the libdcpu-ci-objfmt project.
+dt_project(library)
 

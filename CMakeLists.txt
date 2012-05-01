@@ -245,6 +245,7 @@ add_subdirectory(libdcpu-vm)
 add_subdirectory(libdcpu-vm-dbg)
 add_subdirectory(libdcpu-pp)
 add_subdirectory(libdcpu-ci-objfmt)
+add_subdirectory(libdcpu-ci-dbgfmt)
 add_subdirectory(libdcpu-ci-lang)
 add_subdirectory(libdcpu-ci-lang-c)
 

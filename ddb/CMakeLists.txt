@@ -22,6 +22,7 @@ target_link_libraries(ddb pthread)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 dt_needs(bstring)
+dt_needs(libdcpu-ci-dbgfmt)
 dt_needs(libdcpu-vm-dbg)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
