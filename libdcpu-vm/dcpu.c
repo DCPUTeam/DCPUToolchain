@@ -32,32 +32,33 @@ vm_t* vm_create()
 
 	// Allocate and wipe vm memory.
 	new_vm = (vm_t*)malloc(sizeof(vm_t));
-	for (i = 0; i < 0x8; i++)
-		new_vm->registers[i] = 0x0;
-	new_vm->pc = 0x0;
-	new_vm->sp = 0x0;
-	new_vm->ex = 0x0;
-	new_vm->ia = 0x0;
-	for (i = 0; i < 0x10000; i++)
-		new_vm->ram[i] = 0x0;
-	new_vm->dummy = 0x0;
-	
-	// Initialize DCPU-16 components.
-	/*vm_lem1802_init(new_vm, 0);
-	vm_hw_io_init(new_vm, 0);
-	vm_hw_timer_init(new_vm);*/
-	
-	
-	new_vm->sleep_cycles = 0;
-	
-	
-	new_vm->halted = false;
-	new_vm->skip = false;
+	vm_init(new_vm, true);
 	new_vm->debug = false;
-	
-	
+
 	// Return.
 	return new_vm;
+}
+
+void vm_init(vm_t* vm, bool init_memory)
+{
+	unsigned int i;
+
+	for (i = 0; i < 0x8; i++)
+		vm->registers[i] = 0x0;
+	vm->pc = 0x0;
+	vm->sp = 0x0;
+	vm->ex = 0x0;
+	vm->ia = 0x0;
+	if (init_memory) {
+		for (i = 0; i < 0x10000; i++)
+			vm->ram[i] = 0x0;
+	}
+	vm->sleep_cycles = 0;
+	vm->dummy = 0x0;
+	vm->halted = false;
+	vm->skip = false;
+
+	return;
 }
 
 void vm_free(vm_t* vm)
@@ -74,18 +75,9 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 {
 	// Flash the VM's memory from the specified array.
 	unsigned int i;
-	for (i = 0; i < 0x8; i++)
-		vm->registers[i] = 0x0;
-	vm->pc = 0x0;
-	vm->sp = 0x0;
-	vm->ex = 0x0;
-	vm->ia = 0x0;
+	vm_init(vm, false);
 	for (i = 0; i < 0x10000; i++)
 		vm->ram[i] = memory[i];
-	vm->sleep_cycles = 0;
-	vm->dummy = 0x0;
-	vm->halted = false;
-	vm->skip = false;
 }
 
 void vm_execute(vm_t* vm)
