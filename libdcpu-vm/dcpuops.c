@@ -555,16 +555,12 @@ void vm_op_int(vm_t* vm, uint16_t a)
 
 void vm_op_iag(vm_t* vm, uint16_t a)
 {
-	OP_NUM_CYCLES(1);
-	
 	VM_SKIP_RESET;
 	vm_op_set(vm, a, IA);
 }
 
 void vm_op_ias(vm_t* vm, uint16_t a)
 {
-	OP_NUM_CYCLES(1);
-	
 	VM_SKIP_RESET;
 	if(a != 0) 
 		vm->queue_interrupts = 1;
