@@ -82,11 +82,9 @@ void vm_hw_timer_init(vm_t* vm)
 {
 	hw_t timer;
 
-	timer.id_1 = 0x12d0;
-	timer.id_2 = 0xb402;
-	timer.c = 0xFACE;
-	timer.x = 0x1234;
-	timer.y = 0x1337;
+	timer.id = 0x12D0B402;
+	timer.version = 0x0001;
+	timer.manufacturer = 0x00000000;
 	timer.handler = &vm_hw_timer_interrupt;
 
 	hook_id = vm_hook_register(vm, &vm_hw_timer_cycle, HOOK_ON_CYCLE);

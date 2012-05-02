@@ -56,7 +56,6 @@ struct instruction_mapping instruction_name_map[] =
 	OPCODE(STI),
 	OPCODE(STD),
 	NBOPCODE(JSR),
-	NBOPCODE(HCF),
 	NBOPCODE(INT),
 	NBOPCODE(IAG),
 	NBOPCODE(IAS),

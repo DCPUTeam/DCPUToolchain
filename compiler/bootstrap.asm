@@ -76,22 +76,22 @@ DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 ; return address that was specified in the just
 ; free'd stack frame by using the Z register.
 :_stack_return
-	SET Z, PEEK												; [return] [stack frame]   Z -> return value, Y -> stack frame
+	SET Z, PEEK						; [return] [stack frame]   Z -> return value, Y -> stack frame
 	SET PEEK, 0
 	ADD SP, 1
-	SET I, PEEK												; I -> address of next lower stack frame
-	SET J, Y												; J -> address of stack frame
-	ADD J, X												; J -> address of stack frame + stack size (excluding return value)
+	SET I, PEEK						; I -> address of next lower stack frame
+	SET J, Y						; J -> address of stack frame
+	ADD J, X						; J -> address of stack frame + stack size (excluding return value)
 	:_stack_return_loop
 		SET PEEK, 0
-		ADD SP, 1											; First iteration pops return value, then pops through the stack
-		IFN SP, J											; Is the return value + stack frame cleared? (remember that the + size
-															; means it's the address beyond end-of-stack).
-			SET PC, _stack_return_loop						; If not, repeat until it is.
-	SET Y, I												; SP is now at its old position after stack_init
-															; I points to old Y, which is set to its old value
-															; return value.  Set Y to the value of that.
-	SET PC, Z												; Jump to the address of the original return value.
+		ADD SP, 1					; First iteration pops return value, then pops through the stack
+		IFN SP, J					; Is the return value + stack frame cleared? (remember that the + size
+								; means it's the address beyond end-of-stack).
+			SET PC, _stack_return_loop		; If not, repeat until it is.
+	SET Y, I						; SP is now at its old position after stack_init
+								; I points to old Y, which is set to its old value
+								; return value.  Set Y to the value of that.
+	SET PC, Z						; Jump to the address of the original return value.
 
 ; Safety boundary
 ;.BOUNDARY

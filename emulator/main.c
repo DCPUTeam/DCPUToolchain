@@ -24,12 +24,11 @@
 #include <bstring.h>
 #include <argtable2.h>
 #include "dcpu.h"
-#include <lem1802.h>
 #include <hwio.h>
 #include <hwtimer.h>
+#include <hwlem1802.h>
+#include <hwlem1802mem.h>
 #include <osutil.h>
-
-bstring path;
 
 int main(int argc, char* argv[])
 {
@@ -47,8 +46,9 @@ int main(int argc, char* argv[])
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file, or - to read from standard input.");
 	struct arg_lit* debug_mode = arg_lit0("d", "debug", "Show each executed instruction.");
 	struct arg_lit* terminate_mode = arg_lit0("t", "show-on-terminate", "Show state of machine when program is terminated.");
+	struct arg_lit* legacy_mode = arg_lit0("l", "legacy", "Automatically initialize hardware to legacy values.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { input_file, debug_mode, terminate_mode, end };
+	void* argtable[] = { input_file, debug_mode, terminate_mode, legacy_mode, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Set global path variable.
-	path = (bstring) osutil_dirname(bfromcstr(argv[0]));
+	osutil_setarg0(bautofree(bfromcstr(argv[0])));
 
 	// Zero out the flash space.
 	for (i = 0; i < 0x10000; i++)
@@ -97,34 +97,31 @@ int main(int argc, char* argv[])
 
 	// Read up to 0x20000 bytes (as 16-bit words).
 	a = 0;
-
 	for (i = 0; i < 0x20000; i++)
 	{
 		cread = fgetc(load);
-
 		if (cread == -1) break;
-
 		if (uread)
 			cread <<= 8;
-
 		flash[a] += ((cread << 8) | (cread >> 8));
-
 		if (!uread)
 			a += 1;
-
 		uread = !uread;
 	}
-
 	fclose(load);
 
 	// And then use the VM.
 	vm = vm_create();
 	vm->debug = (debug_mode->count > 0);
 	vm_flash(vm, flash);
-	vm_lem1802_init(vm, 0);
-	vm_hw_io_init(vm, 0);
+	vm_hw_lem1802_init(vm);
+	vm_hw_io_init(vm);
 	vm_hw_timer_init(vm);
-
+	if (legacy_mode->count > 0)
+	{
+		vm_hw_lem1802_mem_set_screen(vm, 0x8000);
+		vm_hw_io_set_legacy(true);
+	}
 	vm_execute(vm);
 
 	if (terminate_mode->count > 0)

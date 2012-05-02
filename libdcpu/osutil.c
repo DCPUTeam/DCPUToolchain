@@ -20,6 +20,7 @@
 #include <libgen.h>
 #endif
 #include <stdlib.h>
+#include <assert.h>
 #include "osutil.h"
 
 bstring osutil_arg0 = NULL;
@@ -95,7 +96,7 @@ void osutil_setarg0(freed_bstring arg0)
 	if (osutil_arg0 != NULL)
 		bdestroy(osutil_arg0);
 	osutil_arg0 = bstrcpy(arg0.ref);
-	bdestroy(arg0);
+	bautodestroy(arg0);
 }
 
 ///
@@ -109,5 +110,23 @@ void osutil_setarg0(freed_bstring arg0)
 ///
 bstring osutil_getarg0()
 {
+	assert(osutil_arg0 != NULL);
+
 	return bstrcpy(osutil_arg0);
+}
+
+///
+/// Retrieves the current directory that the application executable is located in.
+///
+/// Retrieves the previously stored path to the application, resolves the directory
+/// using os_dirname and returns a copy of the directory the application is contained in.
+///
+/// @return The path of the directory containing the application.  The result must be freed manually.
+///
+bstring osutil_getarg0path()
+{
+	bstring arg0 = osutil_getarg0();
+	bstring path = osutil_dirname(arg0);
+	bdestroy(arg0);
+	return path;
 }

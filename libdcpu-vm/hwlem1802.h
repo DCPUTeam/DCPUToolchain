@@ -12,8 +12,8 @@
 
 **/
 
-#ifndef __LEM1802_H
-#define __LEM1802_H
+#ifndef __DCPU_HW_LEM1802_H
+#define __DCPU_HW_LEM1802_H
 
 #include <libtcod.h>
 #include "dcpu.h"
@@ -25,8 +25,9 @@
 #define LEM1802_MEM_DUMP_FONT		4
 #define LEM1802_MEM_DUMP_PALETTE	5
 
-void vm_lem1802_init(vm_t* vm, uint16_t pos);
-void vm_lem1802_free(vm_t* vm);
-void vm_lem1802_interrupt(vm_t* vm);
+void vm_hw_lem1802_init(vm_t* vm);
+void vm_hw_lem1802_write(vm_t* vm, uint16_t pos);
+void vm_hw_lem1802_free(vm_t* vm);
+void vm_hw_lem1802_interrupt(vm_t* vm);
 
 #endif

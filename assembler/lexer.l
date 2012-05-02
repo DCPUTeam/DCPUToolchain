@@ -106,7 +106,6 @@ char* trim_and_unescape(char* data, int mode)
 <IN_OPCODE>[Ss][Tt][Ii]		yylval.number = OP_STI; return ADDRESS;
 <IN_OPCODE>[Ss][Tt][Dd]		yylval.number = OP_STD; return ADDRESS;
 <IN_OPCODE>[Jj][Ss][Rr]		yylval.number = NBOP_JSR; return ADDRESS;
-<IN_OPCODE>[Hh][Cc][Ff]		yylval.number = NBOP_HCF; return ADDRESS;
 <IN_OPCODE>[Ii][Nn][Tt]		yylval.number = NBOP_INT; return ADDRESS;
 <IN_OPCODE>[Ii][Aa][Gg]		yylval.number = NBOP_IAG; return ADDRESS;
 <IN_OPCODE>[Ii][Aa][Ss]		yylval.number = NBOP_IAS; return ADDRESS;

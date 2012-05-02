@@ -19,7 +19,6 @@
 #include <stdio.h>
 #include "dcpubase.h"
 #include "hw.h"
-#include "lem1802.h"
 
 #define HW_MAX 0x1000
 
@@ -39,7 +38,7 @@ uint16_t vm_hw_register(vm_t* vm, hw_t hardware)
 		return 0;
 	}
 
-	printf("assigned id %d: %04X %04X\n", id, hardware.id_2, hardware.id_1);
+	printf("assigned id %d: 0x%08X\n", id, hardware.id);
 	vm_hw_connected[id] = 1;
 	vm_hw_list[id] = hardware;
 
@@ -55,9 +54,10 @@ void vm_hw_interrupt(vm_t* vm, uint16_t index)
 {
 	hw_t device = vm_hw_list[index];
 
-	if (vm->debug) printf("\nInterrupting device 0x%04X (0x%04X %04X): %p\n", index, device.id_2, device.id_1, device.handler);
+	if (vm->debug) printf("\nInterrupting device 0x%04X (0x%08X): %p\n", index, device.id, device.handler);
 
-	device.handler(vm);
+	if (device.handler != NULL)
+		device.handler(vm);
 }
 
 uint16_t vm_hw_count(vm_t* vm)

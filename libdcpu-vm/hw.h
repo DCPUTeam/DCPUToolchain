@@ -17,7 +17,6 @@
 
 #include <libtcod.h>
 #include "dcpu.h"
-#include "lem1802.h"
 
 uint16_t vm_hw_register(vm_t* vm, hw_t device);
 void vm_hw_unregister(vm_t* vm, uint16_t id);

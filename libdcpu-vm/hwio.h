@@ -18,12 +18,13 @@
 #include <libtcod.h>
 #include "dcpu.h"
 
-#define KB_CLEAR_BUFFER 0
-#define KB_STORE_IN_REG 1
+#define KB_CLEAR_BUFFER		0
+#define KB_STORE_IN_REG		1
 #define KB_COMPARE		2
-#define KB_INTERRUPTS	3
+#define KB_INTERRUPTS		3
 
-void vm_hw_io_init(vm_t* vm, uint16_t pos);
+void vm_hw_io_init(vm_t* vm);
+void vm_hw_io_set_legacy(bool legacy);
 void vm_hw_io_free(vm_t* vm);
 
 #endif

@@ -19,7 +19,7 @@
 #include <dcpu.h>
 #include <dcpuhook.h>
 #include <hwio.h>
-#include <lem1802.h>
+#include <hwlem1802.h>
 #include <hwtimer.h>
 
 #define MAX_BREAKPOINTS 100
@@ -152,9 +152,9 @@ void ddbg_continue_vm()
 void ddbg_attach(bstring hw)
 {
 	if (biseq(hw, bfromcstr("lem1802")))
-		vm_lem1802_init(vm, 0);
+		vm_hw_lem1802_init(vm);
 	else if (biseq(hw, bfromcstr("keyboard")))
-		vm_hw_io_init(vm, 0);
+		vm_hw_io_init(vm);
 	else if (biseq(hw, bfromcstr("clock")))
 		vm_hw_timer_init(vm);
 	else

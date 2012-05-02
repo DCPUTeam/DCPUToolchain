@@ -654,13 +654,13 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 
 	queried_device = vm_hw_get_device(vm, val_a);
 
-	if (vm->debug) printf("\nhwq: index %d %04X%0X", val_a, queried_device.id_1, queried_device.id_2);
+	if (vm->debug) printf("\nhwq: index %d %08X", val_a, queried_device.id);
 
-	*store_a = queried_device.id_1;
-	*store_b = queried_device.id_2;
-	*store_c = queried_device.c;
-	*store_x = queried_device.x;
-	*store_y = queried_device.y;
+	*store_a = (queried_device.id & 0x0000FFFF) >>	0;
+	*store_b = (queried_device.id & 0xFFFF0000) >> 16;
+	*store_c = queried_device.version;
+	*store_x = (queried_device.manufacturer & 0x0000FFFF) >>  0;
+	*store_y = (queried_device.manufacturer & 0xFFFF0000) >> 16;
 
 	VM_HOOK_FIRE(store_a);
 	VM_HOOK_FIRE(store_b);

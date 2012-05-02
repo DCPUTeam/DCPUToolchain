@@ -167,11 +167,9 @@ typedef void (*hw_interrupt)(vm_t* vm);
 ///
 typedef struct
 {
-	uint16_t id_1;			/// The upper bits of the hardware identifier.
-	uint16_t id_2;			/// The lower bits of the hardware identifier.
-	uint16_t c;			/// TODO
-	uint16_t x;			/// TODO
-	uint16_t y;			/// TODO
+	uint32_t id;			/// The hardware identifier.
+	uint16_t version;		/// The hardware version.
+	uint32_t manufacturer;		/// The hardware manufacturer.
 	hw_interrupt handler;		/// The function which handles interrupts sent to this hardware component.
 } hw_t;
 

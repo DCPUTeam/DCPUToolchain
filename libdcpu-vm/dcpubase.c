@@ -326,11 +326,6 @@ void vm_cycle(vm_t* vm)
 					vm_op_jsr(vm, a);
 					break;
 
-				case NBOP_HCF:
-					vm_print_op_nonbasic("HCF", vm, a);
-					vm_op_hcf(vm, a);
-					break;
-
 				case NBOP_INT:
 					vm_print_op_nonbasic("INT", vm, a);
 					vm_op_int(vm, a);
