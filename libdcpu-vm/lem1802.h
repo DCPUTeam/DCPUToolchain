@@ -18,10 +18,12 @@
 #include <libtcod.h>
 #include "dcpu.h"
 
-#define MEM_MAP_SCREEN	 0
-#define MEM_MAP_FONT	 1
-#define MEM_MAP_PALETTE	 2
-#define SET_BORDER_COLOR 3
+#define LEM1802_MEM_MAP_SCREEN		0
+#define LEM1802_MEM_MAP_FONT		1
+#define LEM1802_MEM_MAP_PALETTE		2
+#define LEM1802_SET_BORDER_COLOR	3
+#define LEM1802_MEM_DUMP_FONT		4
+#define LEM1802_MEM_DUMP_PALETTE	5
 
 void vm_lem1802_init(vm_t* vm, uint16_t pos);
 void vm_lem1802_free(vm_t* vm);

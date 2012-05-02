@@ -34,8 +34,9 @@ uint32_t char_addressable_width = 4;
 uint32_t char_addressable_height = 8;
 const TCOD_color_t color_white = { 255, 255, 255 };
 const TCOD_color_t color_black = { 0, 0, 0 };
-uint16_t vm_write_update, vm_cycle_update;
-
+uint16_t hook_write_id;
+uint16_t hook_cycle_id;
+uint16_t hw_id;
 uint16_t base_screen = 0x8000;
 uint16_t base_font = 0x8180;
 uint16_t base_border = 0x8280;
@@ -149,15 +150,14 @@ void lem1802_set_border(uint16_t val)
 
 	// Redraw frame.
 #if TCOD_HEXVERSION > 0x010500
-
-	for (x = 0; x < screen_width + 2; x++)	TCOD_console_set_char_background(NULL, x, 0, foreclr, TCOD_BKGND_SET);
-
-	for (x = 0; x < screen_width + 2; x++)	TCOD_console_set_char_background(NULL, x, screen_height + 1, foreclr, TCOD_BKGND_SET);
-
-	for (y = 1; y < screen_height + 1; y++) TCOD_console_set_char_background(NULL, 0, y, foreclr, TCOD_BKGND_SET);
-
-	for (y = 1; y < screen_height + 1; y++) TCOD_console_set_char_background(NULL, screen_width + 1, y, foreclr, TCOD_BKGND_SET);
-
+	for (x = 0; x < screen_width + 2; x++)
+		TCOD_console_set_char_background(NULL, x, 0, foreclr, TCOD_BKGND_SET);
+	for (x = 0; x < screen_width + 2; x++)
+		TCOD_console_set_char_background(NULL, x, screen_height + 1, foreclr, TCOD_BKGND_SET);
+	for (y = 1; y < screen_height + 1; y++)
+		TCOD_console_set_char_background(NULL, 0, y, foreclr, TCOD_BKGND_SET);
+	for (y = 1; y < screen_height + 1; y++)
+		TCOD_console_set_char_background(NULL, screen_width + 1, y, foreclr, TCOD_BKGND_SET);
 #else
 	/*	for (x = 0; x < screen_width + 2; x++)	TCOD_console_set_back(NULL, x, 0, foreclr, TCOD_BKGND_SET);
 		for (x = 0; x < screen_width + 2; x++)	TCOD_console_set_back(NULL, x, screen_height + 1, foreclr, TCOD_BKGND_SET);
@@ -169,7 +169,6 @@ void lem1802_set_border(uint16_t val)
 
 void vm_lem1802_cycle(vm_t* vm, uint16_t pos)
 {
-
 	// Only continue if we have done 2500 ticks.
 	if (screen_tick < 2500)
 	{
@@ -195,7 +194,8 @@ void vm_lem1802_load_font(vm_t* vm)
 {
 	int i = 0;
 
-	for (i = 0; i < base_font + 0x100; i++) vm_lem1802_update(vm, base_font + i);
+	for (i = 0; i < base_font + 0x100; i++)
+		vm_lem1802_update(vm, base_font + i);
 }
 
 void vm_lem1802_interrupt(vm_t* vm)
@@ -205,7 +205,7 @@ void vm_lem1802_interrupt(vm_t* vm)
 
 	switch (requested_action)
 	{
-		case MEM_MAP_SCREEN:
+		case LEM1802_MEM_MAP_SCREEN:
 			if (val_b == 0)
 			{
 				vm->halted = true; // TODO: actually turn the screen off instead of halting the whole thing
@@ -217,7 +217,7 @@ void vm_lem1802_interrupt(vm_t* vm)
 
 			break;
 
-		case MEM_MAP_FONT:
+		case LEM1802_MEM_MAP_FONT:
 			if (val_b == 0)
 			{
 				// load original font
@@ -230,17 +230,25 @@ void vm_lem1802_interrupt(vm_t* vm)
 
 			break;
 
-		case MEM_MAP_PALETTE:
+		case LEM1802_MEM_MAP_PALETTE:
 			// TODO
 			break;
 
-		case SET_BORDER_COLOR:
+		case LEM1802_SET_BORDER_COLOR:
 			lem1802_set_border(val_b); // TODO: palette
+			break;
+
+		case LEM1802_MEM_DUMP_FONT:
+			// TODO
+			break;
+
+		case LEM1802_MEM_DUMP_PALETTE:
+			// TODO
 			break;
 	}
 }
 
-void vm_lem1802_init(vm_t* vm, uint16_t pos)
+void vm_lem1802_init(vm_t* vm)
 {
 	bstring imagePath;
 	hw_t screen;
@@ -269,9 +277,14 @@ void vm_lem1802_init(vm_t* vm, uint16_t pos)
 	TCOD_sys_get_char_size(&char_width, &char_height);
 
 	// Register hooks.
-	vm_write_update = vm_hook_register(vm, &vm_lem1802_update, HOOK_ON_WRITE);
-	vm_cycle_update = vm_hook_register(vm, &vm_lem1802_cycle, HOOK_ON_CYCLE);
-
-	vm_hw_register(vm, screen);
+	hook_write_id = vm_hook_register(vm, &vm_lem1802_update, HOOK_ON_WRITE);
+	hook_cycle_id = vm_hook_register(vm, &vm_lem1802_cycle, HOOK_ON_CYCLE);
+	hw_id = vm_hw_register(vm, screen);
 }
 
+void vm_lem1802_free(vm_t* vm)
+{
+	vm_hook_unregister(vm, hook_write_id);
+	vm_hook_unregister(vm, hook_cycle_id);
+	vm_hw_unregister(vm, hw_id);
+}

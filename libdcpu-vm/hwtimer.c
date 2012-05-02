@@ -24,12 +24,16 @@ uint32_t timer_tick = 0;
 uint32_t base_frequency = 0;
 uint16_t message = 0x0;
 uint16_t clock_enabled = 0;
+uint16_t clock_elapsed = 0;
+uint16_t hook_id = 0;
+uint16_t hw_id = 0;
 
 void vm_hw_timer_cycle(vm_t* vm, uint16_t pos)
 {
 	if (clock_enabled == 1)
 	{
 		timer_tick++;
+		clock_elapsed++;
 
 		if (timer_tick > base_frequency)	 // processor runs at 100khz, timer interrupt triggers 60 times a second
 		{
@@ -50,27 +54,25 @@ void vm_hw_timer_interrupt(vm_t* vm)
 
 	switch (requested_action)
 	{
-		case 0x0:
+		case TIMER_SET_ENABLED:
 			if (val_b == 0x0)
-			{
 				clock_enabled = 0;
-			}
 			else
 			{
 				if (val_b > 60) break;
 
 				base_frequency = 100000 / (60 / (int)val_b);
 				clock_enabled = 1;
-
 			}
+			clock_elapsed = 0;
 
 			break;
 
-		case 0x1:
-			// TODO
+		case TIMER_GET_ELAPSED:
+			vm->registers[REG_C] = clock_elapsed;
 			break;
 
-		case 0x2:
+		case TIMER_SET_INTERRUPT:
 			message = val_b;
 			break;
 	}
@@ -87,10 +89,12 @@ void vm_hw_timer_init(vm_t* vm)
 	timer.y = 0x1337;
 	timer.handler = &vm_hw_timer_interrupt;
 
-	vm_hook_register(vm, &vm_hw_timer_cycle, HOOK_ON_CYCLE);
-	vm_hw_register(vm, timer);
+	hook_id = vm_hook_register(vm, &vm_hw_timer_cycle, HOOK_ON_CYCLE);
+	hw_id = vm_hw_register(vm, timer);
 }
 
 void vm_hw_timer_free(vm_t* vm)
 {
+	vm_hook_unregister(vm, hook_id);
+	vm_hw_unregister(vm, hw_id);
 }
