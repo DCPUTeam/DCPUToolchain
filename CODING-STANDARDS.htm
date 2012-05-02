@@ -1,0 +1,552 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+<title>DCPU Team Coding Standard</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+</head>
+<body>
+<h1>C Coding Standard for DCPU Team</h1>
+<p>If there are any ambiguities in this document, please notify <a href="mailto:jrhodes@redpointsoftware.com.au">James Rhodes</a> (Hach-Que) to get issues sorted before committing code.</p>
+<h3>Entity Naming</h3>
+<ul>
+<li><a href="#nncase">
+Names words shall be separated by underscore (_).</a>
+<li><a href="#nconstcase">
+Constants shall be upper case.</a>
+<li><a href="#ntdefsuf">
+Typedefs shall be suffixed with "_t".</a>
+<li><a href="#nmacrocase">
+Macros shall be upper case.</a>
+</ul>
+<h3>Names</h3>
+<ul>
+<li><a href="#NameSensible">
+Use sensible, descriptive names.</a>
+<li><a href="#NameEnglish">
+Only use english names.</a>
+<li><a href="#NameLength">
+Variables with a large scope shall have long names, variables with a small scope can have short names.</a>
+<li><a href="#UseNamePrefix">
+Use name prefixes for identifiers declared in different
+modules</a>
+</ul>
+<h3>Indentation and Spacing</h3>
+<ul>
+<li><a href="#BracesExdented">
+Braces shall follow "Exdented Style".</a>
+<li><a href="#IndentLevel">
+Braces shall be indented 4 columns to the right of the starting position of the enclosing statement or declaration.</a>
+<li><a href="#BracesOmitted">
+Braces containing a single statement may be omitted.</a>
+<li><a href="#BracesEmpty">
+Braces without any contents may be replaced with a semicolon.</a>
+<li><a href="#StmtPerLine">
+Each statement shall be placed on a line on its own.</a>
+<li><a href="#ObjectPerDecl">
+Declare each variable in a separate declaration.</a>
+<li><a href="#OperSpace">
+All binary arithmetic, bitwise and assignment operators and the ternary
+conditional operator (?:) shall be surrounded by spaces; the comma operator
+shall be followed by a space but not preceded; all other operators shall
+not be used with spaces.</a>
+<li><a href="#LineLength">
+Lines shall not exceed 78 characters.</a>
+<li><a href="#TabsAvoid">
+Do not use tabs.</a>
+</ul>
+<h3>Comments</h3>
+<ul>
+<li><a href="#CommentEnglish">
+Comments shall be written in english</a>
+<li><a href="#CommentJavaDoc">
+Use JavaDoc style comments.</a>
+<li><a href="#CommentMultiLine">
+Multiple line comments shall be split in one comment per line,
+each having the /* and */ markers on the same line.</a>
+<li><a href="#CommentPlacement">
+All comments shall be placed above the line the comment
+describes, indented identically.</a>
+<li><a href="#CommentIfDef">
+Use <tt>#ifdef</tt> instead of /* ... */ to comment out blocks
+of code.</a>
+<li><a href="#CommentFunction">
+Every function shall have a comment that describes its purpose.</a>
+</ul>
+<h3>Files</h3>
+<ul>
+<li><a href="#FileNameCase">
+File name shall be treated as case sensitive.</a>
+<li><a href="#CFileExt">
+C source files shall have extension "<tt>.c</tt>".</a>
+<li><a href="#CHeaderExt">
+C header files shall have extension "<tt>.h</tt>".</a>
+<li><a href="#InlineFunctionDefineSeparate">
+Inline functions shall be declared in header files and defined in inline
+definition files.</a>
+<li><a href="#HeaderIncludeGuard">
+Header files must have include guards.</a>
+<li><a href="#IncludeGuardName">
+The name of the macro used in the include guard shall have the same name
+as the file (excluding the extension) followed by the suffix "_H".</a>
+<li><a href="#HeaderSelfContained">
+Header files shall be self-contained</a>
+<li><a href="#IncludeFirst">
+Put <tt>#include</tt> directives at the top of files.</a>
+<li><a href="#IncludeAbsoluteAvoid">
+Do not use absolute directory names in <tt>#include</tt>
+directives.</a>
+<li><a href="#IncludeRelativeAvoid">
+Do not use relative directory names in <tt>#include</tt>
+directives.</a>
+<li><a href="#ProvideCopyright">
+Each file must start with a copyright notice.</a>
+<li><a href="#ProvideAuthor">
+When modifying a file, add your name to the Authors field.</a>
+</ul>
+<h3>Declarations</h3>
+<ul>
+<li><a href="#FunctionParameterNames">
+Provide names of parameters in function declarations.</a>
+<li><a href="#FunctionReturnType">
+Always provide the return type explicitly.</a>
+<li><a href="#FunctionPointerTypedef">
+Use a typedef to define a pointer to a function.</a>
+</ul>
+<h3>Statements</h3>
+<ul>
+<li><a href="#GotoForbid">
+Never use gotos.</a>
+<li><a href="#SwitchDefault">
+All switch statements shall have a default label.</a>
+<li><a href="#DoWhileAvoid">
+Do not use <tt>do-while</tt> loops.</a>
+</ul>
+<h3>Other Typographical Issues</h3>
+<ul>
+<li><a href="#MagicNumberAvoid">
+Do not use literal numbers other than 0 and 1.</a>
+<li><a href="#AssertEncourage">
+Use plenty of assertions.</a>
+<li><a href="#ConditionsWithConstantsLeft">
+Write conditional expressions like: if ( 6 == errorNum ) ...</a>
+<li><a href="#ConditionsExplicitBool">
+Do not rely on implicit conversion to bool in conditions.</a>
+</ul>
+<hr />
+<h2>Entity Naming</h2>
+<a name="nncase" />
+<h3>Names words shall be separated by underscore (_).</h3>
+<a name="nconstcase" />
+<h3>Constants shall be upper case.</h3>
+<a name="ntdefsuf" />
+<h3>Typedefs shall be suffixed with "_t".</h3>
+<a name="nmacrocase" />
+<h3>Macros shall be upper case.</h3>
+<h2>Names</h2>
+<a name="NameSensible" />
+<h3>Use sensible, descriptive names.</h3>
+
+Do not use short cryptic names or names based on internal jokes.
+It shall be easy to type a name without looking up how it is spelt.
+<p>
+Exception: Loop variables and variables with a small scope (less 
+than 20 lines) may have short names to save space if the purpose of 
+that variable is obvious.
+
+<a name="NameEnglish" />
+<h3>Only use english names.</h3>
+
+It is confusing when mixing languages for names.
+English is the preferred language because of its spread in the
+software market and because most libraries used already use english.
+
+<a name="NameLength" />
+<h3>Variables with a large scope shall have long names, variables with a small scope can have short names.</h3>
+
+Scratch variables used for temporary storage or indices are best kept
+short. 
+A programmer reading such variables shall be able to assume that its
+value is not used outside a few lines of code.
+Common scratch variables for integers are <tt>i</tt>, <tt>j</tt>,
+<tt>k</tt>, <tt>m</tt>, <tt>n</tt> and for characters <tt>c</tt> and
+<tt>d</tt>.
+
+<a name="UseNamePrefix" />
+<h3>Use name prefixes for identifiers declared in different
+modules</h3>
+
+This avoids name clashes.
+
+<h2>Indentation and Spacing</h2>
+<a name="BracesExdented" />
+<h3>Braces shall follow "Exdented Style".</h3>
+
+The Exdented Bracing Style means that the curly brace pair are lined
+up with the surrounding statement. Statements and declarations
+between the braces are indented relative to the braces.
+
+<a name="IndentLevel" />
+<h3>Braces shall be indented 4 columns to the right of the starting position of the enclosing statement or declaration.</h3>
+
+Example:
+<table cellspacing=10 cellpadding=5><tr><td width=20></td><td bgcolor="eeeeee"><pre>
+void f(int a)
+{
+    int i;
+    int b;
+    if (a &gt; 0)
+    {
+        i = a;
+        b = a + 3;
+    }
+    else
+        i = a;
+}
+</pre></td></tr></table>
+
+<a name="BracesOmitted" />
+<h3>Braces containing a single statement may be omitted.</h3>
+
+Example:
+<table cellspacing=10 cellpadding=5><tr><td width=20></td><td bgcolor="eeeeee"><pre>
+void f(int a)
+{
+    int i;
+    int b;
+    if (a &gt; 0)
+    {
+        i = a;
+        b = a + 3;
+    }
+    else
+        i = a;
+}
+</pre></td></tr></table>
+
+<a name="BracesEmpty" />
+<h3>Braces without any contents may be replaced with a semicolon.</h3>
+
+When there are no statements in a block, a single semicolon should be used
+to terminate the empty statement and places on the same line.
+<table cellspacing=10 cellpadding=5><tr><td width=20></td><td bgcolor="eeeeee"><pre>
+while (...) ;
+</pre></td></tr></table>
+
+<a name="StmtPerLine" />
+<h3>Each statement shall be placed on a line on its own.</h3>
+
+There is no need to make code compact.
+Putting several statements on the same line only makes the code
+cryptic to read.
+
+<a name="ObjectPerDecl" />
+<h3>Declare each variable in a separate declaration.</h3>
+
+This makes it easier to see all variables.
+
+It also avoids the problem of knowing which variables are pointers. 
+<table cellspacing=10 cellpadding=5><tr><td width=20></td><td bgcolor="eeeeee"><pre>
+int* p, i;
+</pre></td></tr></table>
+It is easy to forget that the star belongs to the declared name, not the type,
+and look at this and say that the type is "pointer to int" and both
+<tt>p</tt> and <tt>i</tt> are declared to this type.
+
+
+<a name="OperSpace" />
+<h3>All binary arithmetic, bitwise and assignment operators and the ternary
+conditional operator (?:) shall be surrounded by spaces; the comma operator
+shall be followed by a space but not preceded; all other operators shall
+not be used with spaces.</h3>
+
+
+<a name="LineLength" />
+<h3>Lines shall not exceed 78 characters.</h3>
+
+Even if your editor handles long lines, other people may have set up
+their editors differently. 
+Long lines in the code may also cause problems for other programs and
+printers.
+
+<a name="TabsAvoid" />
+<h3>Do not use tabs.</h3>
+
+Tabs make the source code difficult to read where different programs
+treat the tabs differently. 
+The same code can look very differently in different views.
+<p>
+Avoid using tabs in your source code to avoid this problem.
+Use spaces instead.
+
+<h2>Comments</h2>
+<a name="CommentEnglish" />
+<h3>Comments shall be written in english</h3>
+
+
+<a name="CommentJavaDoc" />
+<h3>Use JavaDoc style comments.</h3>
+
+The comment styles <tt>///</tt> and <tt>/** ... */</tt> are used by
+JavaDoc, Doxygen and some other code documenting tools.
+
+<a name="CommentMultiLine" />
+<h3>Multiple line comments shall be split in one comment per line,
+each having the /* and */ markers on the same line.</h3>
+
+Long comments which span several lines are difficult to follow. 
+Having each line in the comment begin with <tt>/*</tt> makes the
+comment much clearer and easy to identify.
+This also avoids problems where comments contain code and possibly
+nested comments.
+
+<a name="CommentPlacement" />
+<h3>All comments shall be placed above the line the comment
+describes, indented identically.</h3>
+
+Being consistent on placement of comments removes any question on what
+the comment refers to.
+
+<a name="CommentIfDef" />
+<h3>Use <tt>#ifdef</tt> instead of /* ... */ to comment out blocks
+of code.</h3>
+
+The code that is commented out may already contain comments which then
+terminate the block comment and causes lots of compile errors or
+other harder to find errors.
+
+<a name="CommentFunction" />
+<h3>Every function shall have a comment that describes its purpose.</h3>
+
+
+<h2>Files</h2>
+<a name="FileNameCase" />
+<h3>File name shall be treated as case sensitive.</h3>
+
+
+<a name="CFileExt" />
+<h3>C source files shall have extension "<tt>.c</tt>".</h3>
+
+
+<a name="CHeaderExt" />
+<h3>C header files shall have extension "<tt>.h</tt>".</h3>
+
+
+<a name="InlineFunctionDefineSeparate" />
+<h3>Inline functions shall be declared in header files and defined in inline
+definition files.</h3>
+
+The keyword <tt>inline</tt> shall be used in both places.
+<p>
+Using a separate inline file is useful to keep the header files clean
+and small. 
+The separation is also useful where the inlining is disabled in debug
+builds.
+The inline file is then included from the source file instead of the
+header file to reduce compile time.
+
+<a name="HeaderIncludeGuard" />
+<h3>Header files must have include guards.</h3>
+
+The include guard protects against the header file being included
+multiple times.
+<p>
+Example:
+<table cellspacing=10 cellpadding=5><tr><td width=20></td><td bgcolor="eeeeee"><pre>
+#ifndef __FILE_H
+#define __FILE_H
+...
+#endif
+</pre></td></tr></table>
+
+<a name="IncludeGuardName" />
+<h3>The name of the macro used in the include guard shall have the same name
+as the file (excluding the extension) followed by the suffix "_H".</h3>
+
+
+<a name="HeaderSelfContained" />
+<h3>Header files shall be self-contained</h3>
+
+When a header is included, there shall not be a need to include any
+other headers first.
+<p>
+A simple way to make sure that a header file does not have any dependencies
+is to include it first in the corresponding source file.
+Example:
+<table cellspacing=10 cellpadding=5><tr><td width=20></td><td bgcolor="eeeeee"><pre>
+/* foobar.h */
+
+#include "foobar.h"
+#include &lt;stdio.h&gt;
+
+...
+</pre></td></tr></table>
+
+<a name="IncludeFirst" />
+<h3>Put <tt>#include</tt> directives at the top of files.</h3>
+
+Having all <tt>#include</tt> directives in one place makes it easy to
+find them.
+
+<a name="IncludeAbsoluteAvoid" />
+<h3>Do not use absolute directory names in <tt>#include</tt>
+directives.</h3>
+
+The directory structure may be different on other systems.
+
+<a name="IncludeRelativeAvoid" />
+<h3>Do not use relative directory names in <tt>#include</tt>
+directives.</h3>
+
+The directory structure of the project may change in the future.
+It is then difficult to correct all the directory names.
+
+<a name="ProvideCopyright" />
+<h3>Each file must start with a copyright notice.</h3>
+
+See below for a full example.
+
+<a name="ProvideAuthor" />
+<h3>When modifying a file, add your name to the Authors field.</h3>
+
+<table cellspacing=10 cellpadding=5><tr><td width=20></td><td bgcolor="eeeeee"><pre>
+/**
+
+    File:           filename.c
+
+    Project:        DCPU-Toolchain
+    Component:      LibDCPU-VM
+
+    License:        MIT License
+    Authors:        &lt;person A&gt;
+                    &lt;person B&gt;
+                    &lt;your name here&gt;
+
+    Description:    A reasonable description of what this
+                    file's responsibility is in the project.
+
+**/
+</pre></td></tr></table>
+
+<h2>Declarations</h2>
+<a name="FunctionParameterNames" />
+<h3>Provide names of parameters in function declarations.</h3>
+
+Parameter names are useful to document what the parameter is used for.
+<p>
+The parameter names shall be the same in all declarations and
+definitions of the function.
+
+<a name="FunctionReturnType" />
+<h3>Always provide the return type explicitly.</h3>
+
+
+<a name="FunctionPointerTypedef" />
+<h3>Use a typedef to define a pointer to a function.</h3>
+
+Pointers to functions have a strange syntax. 
+The code becomes much clearer if you use a typedef for the pointer to
+function type.
+This typedef name can then be used to declare variables etc.
+<table cellspacing=10 cellpadding=5><tr><td width=20></td><td bgcolor="eeeeee"><pre>
+double sin(double arg);
+typedef double (*trig_func_t)(double arg);
+
+/* Usage examples */
+trig_func_t my_func = sin;
+void call_func(trig_func_t callback);
+trig_func_t func_table[10];
+</pre></td></tr></table>
+
+<h2>Statements</h2>
+<a name="GotoForbid" />
+<h3>Never use gotos.</h3>
+
+Gotos break structured coding.
+
+<a name="SwitchDefault" />
+<h3>All switch statements shall have a default label.</h3>
+
+Even if there is no action for the default label, it shall be included
+to show that the programmer has considered values not covered by case
+labels.
+If the case labels cover all possibilities, it is useful to put an
+assertion there to document the fact that it is impossible to get
+here.
+An assertion also protects from a future situation where a new
+possibility is introduced by mistake.
+
+<a name="DoWhileAvoid" />
+<h3>Do not use <tt>do-while</tt> loops.</h3>
+
+<tt>do-while</tt> loops are less readable than ordinary while loops and for
+loops since the conditional is at the bottom of the loop. 
+The reader must scan the entire loop in order to understand the scope
+of the loop.
+<p>
+In addition, do-while loops are not needed. 
+Any do-while loop can easily be rewritten into a while loop or a for
+loop.
+Reducing the number of constructs used enhance readability.
+
+<h2>Other Typographical Issues</h2>
+<a name="MagicNumberAvoid" />
+<h3>Do not use literal numbers other than 0 and 1.</h3>
+
+Use constants instead of literal numbers to make the code consistent
+and easy to maintain.
+The name of the constant is also used to document the purpose of the number.
+
+<a name="AssertEncourage" />
+<h3>Use plenty of assertions.</h3>
+
+Assertions are useful to verify pre-conditions, post-conditions and
+any other conditions that should never happen.
+Pre-conditions are useful to verify that functions are called with
+valid arguments.
+They are also useful as documentation of what argument value ranges a
+function is designed to work with.
+
+<p>
+Assertions are macros that print error messages when the condition is
+not met.
+The macros are disabled in release mode and do not cost anything in
+performance or used memory in the end product.
+<p>
+Example: This square root function is only designed to work with
+positive numbers.
+<table cellspacing=10 cellpadding=5><tr><td width=20></td><td bgcolor="eeeeee"><pre>
+#include &lt;assert.h&gt;
+
+double sqrt(double x)
+{
+    // precondition: x is positive
+    assert(x &gt; 0);
+    double result;
+    ...
+    // postcondition: result^2 ~= x
+    assert(abs(result*result-x)/x &lt; 1E-8) ;
+}
+</pre></td></tr></table>
+
+
+<a name="ConditionsWithConstantsLeft" />
+<h3>Write conditional expressions like: if ( 6 == errorNum ) ...</h3>
+
+This style avoids accidental assignments of the variable when the
+comparison operator is written with only one equal sign (=).
+
+<a name="ConditionsExplicitBool" />
+<h3>Do not rely on implicit conversion to bool in conditions.</h3>
+
+<table cellspacing=10 cellpadding=5><tr><td width=20></td><td bgcolor="eeeeee"><pre>
+if (ptr)         // wrong
+if (ptr != NULL) // ok
+</pre></td></tr></table>
+
+<hr />
+<i>Generated 2012-05-02 by <a href="http://www.rosvall.ie/CSG">Coding Standard Generator</a> version 1.13.</i>
+
+</body>
+</html>
