@@ -27,6 +27,7 @@
 #include <lem1802.h>
 #include <hwio.h>
 #include <hwtimer.h>
+#include <osutil.h>
 
 bstring path;
 

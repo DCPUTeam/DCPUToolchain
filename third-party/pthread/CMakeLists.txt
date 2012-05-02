@@ -7,7 +7,13 @@ if(NOT DEFINED IS_ROOT)
   message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
 endif(NOT DEFINED IS_ROOT)
 
-# Define the libtcod project.
+# Define linking information for each platform.
+set(${PROJECT_NAME}_Windows pthreadVC2 PARENT_SCOPE)
+set(${PROJECT_NAME}_Unix pthread PARENT_SCOPE)
+set(${PROJECT_NAME}_UnixNoInclude true PARENT_SCOPE)
+set(${PROJECT_NAME}_CygwinNoInclude true PARENT_SCOPE)
+
+# Define the pthread project.
 message("  >> ${PROJECT_NAME}: prebuilt")
 add_library(pthread SHARED IMPORTED)
 set(IMPORTED_LOCATION ./lib)

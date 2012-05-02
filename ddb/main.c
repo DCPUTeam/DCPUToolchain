@@ -38,9 +38,6 @@
 #include <lexer.h>
 #include <dcpuhook.h>
 
-
-
-
 #include "sdp.h"
 
 #define MAX_ARGUMENTS 10
@@ -48,15 +45,18 @@
 
 bstring path;
 vm_t* vm;
+#ifdef FEATURE_SDP
 pthread_t sdp_thread;
+#endif
 
 extern int dbg_yyparse(void* scanner);
 
 void ddbg_sigint(int signal) {
+#ifdef FEATURE_SDP
 	pthread_kill(sdp_thread, SIGTERM);
+#endif
 	exit(0);
 }
-
 
 void get_command(char* command_buffer, int max) {
 	printf("> ");
@@ -68,15 +68,15 @@ int main(int argc, char** argv) {
 	yyscan_t scanner;
 	
 	// Set global path variable.
-
 	path = (bstring) osutil_dirname(bfromcstr(argv[0]));
 	
+	// Register signal handler.
 	signal(SIGINT, ddbg_sigint);
-	
-	
+
+	// Create VM.	
 	ddbg_create_vm();
-	vm_lem1802_init(vm, 0);
 	
+	// Create SDP thread if supported.
 #ifdef FEATURE_SDP
 	pthread_create(&sdp_thread, NULL, (void*)ddbg_sdp_thread, vm);
 #endif
