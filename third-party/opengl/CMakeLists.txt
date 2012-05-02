@@ -8,7 +8,6 @@ if(NOT DEFINED IS_ROOT)
 endif(NOT DEFINED IS_ROOT)
 
 # Define linking information for each platform.
-set(${PROJECT_NAME}_Windows GL PARENT_SCOPE)
 set(${PROJECT_NAME}_Unix GL PARENT_SCOPE)
 set(${PROJECT_NAME}_UnixNoInclude true PARENT_SCOPE)
 

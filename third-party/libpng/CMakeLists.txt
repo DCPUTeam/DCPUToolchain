@@ -8,22 +8,9 @@ if(NOT DEFINED IS_ROOT)
 endif(NOT DEFINED IS_ROOT)
 
 # Define linking information for each platform.
-set(${PROJECT_NAME}_Windows libpng PARENT_SCOPE)
 set(${PROJECT_NAME}_Unix png PARENT_SCOPE) 
 set(${PROJECT_NAME}_UnixNoInclude true PARENT_SCOPE)
 
 # Define the libpng project.
 message("  >> ${PROJECT_NAME}: prebuilt")
-if(MSVC OR MINGW OR TOOLCHAIN_ON_CYGWIN)
-	add_library(libpng SHARED IMPORTED)
-	set(IMPORTED_LOCATION ./lib)
-	set_property(TARGET libpng PROPERTY include_path "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-	# Copy supporting files.
-	file(GLOB_RECURSE libpng_to_copy RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/bin" bin/*)
-	foreach(i ${libpng_to_copy})
-		file(COPY ./bin/${i} DESTINATION "${ROOT_DIR}/Debug" USE_SOURCE_PERMISSIONS)
-	endforeach(i ${libpng_to_copy})
-else(MSVC OR MINGW OR TOOLCHAIN_ON_CYGWIN)
-	find_package(PNG REQUIRED)
-endif(MSVC OR MINGW OR TOOLCHAIN_ON_CYGWIN)
+find_package(PNG REQUIRED)
