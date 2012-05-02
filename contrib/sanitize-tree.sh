@@ -61,10 +61,10 @@ for i in $FILES; do
         rm $OUTPUT
     else
         # Format our file.
-        expand -i $STORE > $OUTPUT
-        mv $OUTPUT $STORE
-        indent -i4 -bad -bap -bl -bli0 -cli4 -nut -cbi0 -ss -npcs -npsl -ncs -di0 -nbc -bls -blf -lp -ip2 -ppi0 -il0 -l1000 $STORE -o $OUTPUT
-        mv $OUTPUT $STORE
+        expand -i $i > $i.fmtd
+        mv $i.fmtd $i
+        indent -i4 -bad -bap -bl -bli0 -cli4 -nut -cbi0 -ss -npcs -npsl -ncs -di0 -nbc -bls -blf -lp -ip2 -ppi0 -il0 -l1000 $i -o $i.fmtd
+        mv $i.fmtd $i
     fi 
 done
 
