@@ -172,10 +172,10 @@ void vm_hw_lem1802_mem_set_font(vm_t* vm, uint16_t pos)
 
 	// If the new font location is not 0, we must
 	// resynchronise the font.
-	if (font_location == HW_LEM1802_INTERNAL)
+	if (font_location != HW_LEM1802_INTERNAL)
 	{
 		// Synchronise the font.
-		for (i = 0; i < font_location + 0x100; i++)
+		for (i = 0; i < 0x100; i++)
 			vm_hw_lem1802_write(vm, font_location + i);
 	}
 }
