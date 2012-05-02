@@ -1,0 +1,66 @@
+This is a short overview of the coding standards
+employed in this project.  But first, a few rules:
+
+1) ALWAYS use the pre-commit hook to format your code
+   automatically!  It requires you to do nothing other
+   than link .git/hooks/pre-commit to sanitize-tree.sh.
+
+2) Read #1 again.
+
+For the indentation, we use the exdented style with
+single-statements omitting brackets.  That is:
+
+void my_function()
+{
+	if (some_clause)
+	{
+		do_a();
+		do_b();
+	}
+	else
+		do_c();
+}
+
+Note that tabs are 8 spaces.  Visual Studio users in
+particular will need to change the default settings to
+accommodate this.
+
+Now onto the naming conventions.  For C projects,
+lowercase with underscores is the naming convention
+across the board, except in the situation of function
+parameters where, unless otherwise possible, single
+words should be used.  Refer to the table:
+
+#==================================================#
+| TYPE          | EXAMPLE                          |
+#---------------#----------------------------------#
+| variable      | foo_bar                          |
+| global vars   | foo_bar                          |
+| local vars    | foo_bar                          |
+| parameters    | foobar                           |
+| constants     | FOO_BAR                          |
+#---------------#----------------------------------#
+| functions     | foo_bar                          |
+#---------------#----------------------------------#
+| types         | foo_bar                          |
+| typedefs      | foo_bar_t                        |
+#---------------#----------------------------------#
+| enums         | foo_bar                          |
+#---------------#----------------------------------#
+| macros        | FOO_BAR                          |
+#==================================================#
+
+For C++ projects, the following additional naming
+conventions apply (yes these are quite different):
+
+#==================================================#
+| TYPE          | EXAMPLE                          |
+#---------------#----------------------------------#
+| class         | FooBar                           |
+| class fields  | m_FooBar (note: m_ is a prefix)  |
+| class funcs   | fooBar                           |
+#==================================================#
+
+Thanks for following these standards.  It makes it
+easier for everyone.
+

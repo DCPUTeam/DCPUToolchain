@@ -11,6 +11,24 @@
 #
 # - DCPU Team
 
+########## SETTINGS START ############
+SETTING_INDENT_USED=false
+SETTING_INDENT="-i8 -bad -bap -bl -bli0 -cli4 -ut -cbi0 -ss -npcs -npsl -ncs -di0 -nbc -bls -blf -ts8 -lp -ip2 -ppi0 -il0 -l1000"
+SETTING_ASTYLE_USED=true
+SETTING_ASTYLE="--style=allman -T8 -C -S -N -Y -M40 -f -p -U --align-pointer=type --align-reference=type --lineend=linux -q -n"
+##########  SETTINGS END  ############
+
+if [ "$(which indent 2>/dev/null)" == "" ] && $SETTING_INDENT_USED; then
+    echo "You must install 'indent' before committing."
+    exit 1
+fi
+
+if [ "$(which astyle 2>/dev/null)" == "" ] && $SETTING_ASTYLE_USED; then
+    echo "You must install 'astyle' before committing."
+    exit 1
+fi
+
+
 pushd "$(git rev-parse --show-toplevel)" >/dev/null
 
 FILES=""
@@ -44,10 +62,16 @@ for i in $FILES; do
         git cat-file blob :$i > $STORE
 
         # Format our file.
-        expand -i $STORE > $OUTPUT
+        dos2unix $STORE 2>/dev/null
+        unexpand --tabs=8 $STORE > $OUTPUT
         cat $OUTPUT > $STORE
-        indent -i4 -bad -bap -bl -bli0 -cli4 -nut -cbi0 -ss -npcs -npsl -ncs -di0 -nbc -bls -blf -lp -ip2 -ppi0 -il0 -l1000 $STORE -o $OUTPUT
-        cat $OUTPUT > $STORE
+        if $SETTING_INDENT_USED; then
+            indent $SETTING_INDENT $STORE -o $OUTPUT
+            cat $OUTPUT > $STORE
+        fi
+	if $SETTING_ASTYLE_USED; then
+	        astyle $SETTING_ASTYLE $STORE
+	fi
 
         # Add our current temporary storage file
         # back into the index under the original file
@@ -61,10 +85,16 @@ for i in $FILES; do
         rm $OUTPUT
     else
         # Format our file.
-        expand -i $i > $i.fmtd
+        dos2unix $i 2>/dev/null
+        unexpand --tabs=8 $i > $i.fmtd
         mv $i.fmtd $i
-        indent -i4 -bad -bap -bl -bli0 -cli4 -nut -cbi0 -ss -npcs -npsl -ncs -di0 -nbc -bls -blf -lp -ip2 -ppi0 -il0 -l1000 $i -o $i.fmtd
-        mv $i.fmtd $i
+        if $SETTING_INDENT_USED; then
+            indent $SETTING_INDENT $i -o $i.fmtd
+            mv $i.fmtd $i
+        fi
+	if $SETTING_ASTYLE_USED; then
+	        astyle $SETTING_ASTYLE $i
+	fi
     fi 
 done
 
