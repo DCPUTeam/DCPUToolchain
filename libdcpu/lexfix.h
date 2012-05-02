@@ -2,7 +2,7 @@
 
 	File:		lexfix.h
 
-	Project:	DCPU-16 Tools
+	Project:	DCPU-16 Toolchain
 	Component:	LibDCPU
 
 	Authors:	James Rhodes
