@@ -1,14 +1,14 @@
 /**
 
-	File:           lem1802.h
+	File:		lem1802.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-vm
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-vm
 
-	Authors:        James Rhodes
-	                José manuel Díez
+	Authors:	James Rhodes
+			José manuel Díez
 
-	Description:    Handles LEM1802 functions
+	Description:	Handles LEM1802 functions
 
 **/
 
@@ -18,9 +18,9 @@
 #include <libtcod.h>
 #include "dcpu.h"
 
-#define MEM_MAP_SCREEN   0
-#define MEM_MAP_FONT     1
-#define MEM_MAP_PALETTE  2
+#define MEM_MAP_SCREEN	 0
+#define MEM_MAP_FONT	 1
+#define MEM_MAP_PALETTE	 2
 #define SET_BORDER_COLOR 3
 
 void vm_lem1802_init(vm_t* vm, uint16_t pos);

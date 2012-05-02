@@ -1,13 +1,13 @@
 /**
 
-	File:           NStructureResolutionOperator.h
+	File:		NStructureResolutionOperator.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the NStructureResolutionOperator AST class.
+	Description:	Declares the NStructureResolutionOperator AST class.
 
 **/
 
@@ -20,15 +20,15 @@
 
 class NStructureResolutionOperator : public NExpression
 {
-public:
-    NExpression& lhs;
-    NIdentifier& rhs;
-	bool isDereference;
-    NStructureResolutionOperator(NExpression& lhs, NIdentifier& rhs, bool isDereference) :
-        lhs(lhs), rhs(rhs), isDereference(isDereference), NExpression("field") { }
-	virtual AsmBlock* compile(AsmGenerator& context);
-	virtual AsmBlock* reference(AsmGenerator& context);
-	virtual IType& getExpressionType(AsmGenerator& context);
+	public:
+		NExpression& lhs;
+		NIdentifier& rhs;
+		bool isDereference;
+		NStructureResolutionOperator(NExpression& lhs, NIdentifier& rhs, bool isDereference) :
+			lhs(lhs), rhs(rhs), isDereference(isDereference), NExpression("field") { }
+		virtual AsmBlock* compile(AsmGenerator& context);
+		virtual AsmBlock* reference(AsmGenerator& context);
+		virtual IType& getExpressionType(AsmGenerator& context);
 };
 
 #endif

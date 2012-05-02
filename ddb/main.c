@@ -1,13 +1,13 @@
 /**
 
-	File:           main.c
+	File:		main.c
 
-	Project:        DCPU-16 Tools
-	Component:      Debugger
+	Project:	DCPU-16 Tools
+	Component:	Debugger
 
-	Authors:        José Manuel Díez
+	Authors:	José Manuel Díez
 
-	Description:    Main entry point.
+	Description:	Main entry point.
 
 **/
 
@@ -51,48 +51,52 @@ pthread_t sdp_thread;
 
 extern int dbg_yyparse(void* scanner);
 
-void ddbg_sigint(int signal) {
+void ddbg_sigint(int signal)
+{
 #ifdef FEATURE_SDP
 	pthread_kill(sdp_thread, SIGTERM);
 #endif
 	exit(0);
 }
 
-void get_command(char* command_buffer, int max) {
+void get_command(char* command_buffer, int max)
+{
 	printf("> ");
 	fgets(command_buffer, max, stdin);
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
 	char* buf;
 	yyscan_t scanner;
-	
+
 	// Set global path variable.
 	path = (bstring) osutil_dirname(bfromcstr(argv[0]));
-	
+
 	// Register signal handler.
 	signal(SIGINT, ddbg_sigint);
 
-	// Create VM.	
+	// Create VM.
 	ddbg_create_vm();
-	
+
 	// Create SDP thread if supported.
 #ifdef FEATURE_SDP
 	pthread_create(&sdp_thread, NULL, (void*)ddbg_sdp_thread, vm);
 #endif
 	printf("Welcome to the DCPU Toolchain Debugger, the best debugger in the multiverse.\n");
-	
-	for(;;) {
+
+	for (;;)
+	{
 		buf = readline("> ");
-		add_history (buf);
-		
+		add_history(buf);
+
 		dbg_yylex_init(&scanner);
 		dbg_yy_scan_string(buf, scanner);
 		dbg_yyparse(scanner);
 		dbg_yylex_destroy(scanner);
 	}
-	
+
 	free(buf);
-	
+
 	return 0;
 }

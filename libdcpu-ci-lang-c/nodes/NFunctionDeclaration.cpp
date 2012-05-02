@@ -1,13 +1,13 @@
 /**
 
-	File:           NFunctionDeclaration.cpp
+	File:		NFunctionDeclaration.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NFunctionDeclaration AST class.
+	Description:	Defines the NFunctionDeclaration AST class.
 
 **/
 
@@ -33,7 +33,7 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
 
-	// If this function does not have a code block, then we assume 
+	// If this function does not have a code block, then we assume
 	// this function will be imported at some stage.
 	if (this->block == NULL)
 	{
@@ -41,6 +41,7 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 			*block <<  ".IMPORT cfunc_" << this->id.name << std::endl;
 		else
 			throw new CompilerException("Can't declare a function with no body without linker support in the target assembler.");
+
 		return block;
 	}
 
@@ -100,12 +101,12 @@ StackMap NFunctionDeclaration::generateStackMap()
 		throw new CompilerException("Can not generate a stack frame for a function declaration with no body.");
 
 	// Add stack frame data for arguments.
-	for (VariableList::const_iterator i = this->arguments.begin(); i != this->arguments.end(); i++)		
+	for (VariableList::const_iterator i = this->arguments.begin(); i != this->arguments.end(); i++)
 	{
 		map.insert(map.end(), StackPair((*i)->id.name, (*i)->type));
 		// FIXME: Check to make sure arguments do not clash with any
-		//        other argument declarations (hint: check the map to
-		//        see if it already has a match).
+		//	  other argument declarations (hint: check the map to
+		//	  see if it already has a match).
 	}
 
 	// Add stack frame data for variable declarations.
@@ -116,8 +117,8 @@ StackMap NFunctionDeclaration::generateStackMap()
 			NVariableDeclaration* nvd = (NVariableDeclaration*)(*i);
 			map.insert(map.end(), StackPair(nvd->id.name, nvd->type));
 			// FIXME: Check to make sure variables do not clash with arguments
-			//        or other variable declarations (hint: check the map to
-			//        see if it already has a match).
+			//	  or other variable declarations (hint: check the map to
+			//	  see if it already has a match).
 		}
 	}
 

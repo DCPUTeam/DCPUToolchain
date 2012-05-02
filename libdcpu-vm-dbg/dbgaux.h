@@ -1,14 +1,14 @@
 /**
 
-	File:           dbgaux.h
+	File:		dbgaux.h
 
-	Project:        DCPU-16 Toolchain
-	Component:      LibDCPU-vm-dbg
+	Project:	DCPU-16 Toolchain
+	Component:	LibDCPU-vm-dbg
 
-	Authors:        James Rhodes
-	                José Manuel Díez
+	Authors:	James Rhodes
+			José Manuel Díez
 
-	Description:    Declares auxilary functions for the debugger.
+	Description:	Declares auxilary functions for the debugger.
 
 **/
 

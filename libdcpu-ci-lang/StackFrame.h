@@ -1,13 +1,13 @@
 /**
 
-	File:           StackFrame.h
+	File:		StackFrame.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the StackFrame class.
+	Description:	Declares the StackFrame class.
 
 **/
 
@@ -24,15 +24,15 @@ class AsmGenerator;
 
 class StackFrame
 {
-private:
-	AsmGenerator& m_Generator;
-	StackMap m_StackMap;
+	private:
+		AsmGenerator& m_Generator;
+		StackMap m_StackMap;
 
-public:
-	StackFrame(AsmGenerator& generator, StackMap& map) : m_StackMap(map), m_Generator(generator) { };
-	TypePosition getPositionOfVariable(std::string name, bool stackStartAtC = false);
-	IType* getTypeOfVariable(std::string name);
-	uint16_t getSize();
+	public:
+		StackFrame(AsmGenerator& generator, StackMap& map) : m_StackMap(map), m_Generator(generator) { };
+		TypePosition getPositionOfVariable(std::string name, bool stackStartAtC = false);
+		IType* getTypeOfVariable(std::string name);
+		uint16_t getSize();
 };
 
 #endif

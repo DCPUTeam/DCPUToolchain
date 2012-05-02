@@ -1,14 +1,14 @@
 /**
 
-	File:           NBinaryOperator.cpp
+	File:		NBinaryOperator.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
-	                Michael Gerhaeuser
+	Authors:	James Rhodes
+			Michael Gerhaeuser
 
-	Description:    Defines the NBinaryOperator AST class.
+	Description:	Defines the NBinaryOperator AST class.
 
 **/
 
@@ -64,99 +64,117 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 	// Now do the appropriate operation.
 	switch (this->op)
 	{
-	case ADD:
-		*block <<	"	ADD A, B" << std::endl;
-		break;
-	case SUBTRACT:
-		*block <<	"	SUB A, B" << std::endl;
-		break;
-	case STAR:
-		*block <<	"	MUL A, B" << std::endl;
-		break;
-	case SLASH:
-		*block <<	"	DIV A, B" << std::endl;
-		break;
-	case PERCENT:
-		*block <<	"	MOD A, B" << std::endl;
-		break;
-	case BOOLEAN_AND:
-		*block <<	"	IFN A, 0x0" << std::endl;
-		*block <<	"		SET A, 0x1" << std::endl;
-		*block <<	"	IFN B, 0x0" << std::endl;
-		*block <<	"		SET B, 0x1" << std::endl;
-		*block <<	"	XOR A, B" << std::endl;
-		*block <<	"	XOR A, 0x1" << std::endl;
-		break;
-	case BOOLEAN_OR:
-		*block <<	"	IFN A, 0x0" << std::endl;
-		*block <<	"		SET A, 0x1" << std::endl;
-		*block <<	"	IFN B, 0x0" << std::endl;
-		*block <<	"		SET B, 0x1" << std::endl;
-		*block <<	"	BOR A, B" << std::endl;
-		*block <<	"	XOR A, 0x1" << std::endl;
-		break;
-	case BINARY_AND:
-		*block <<	"	AND A, B" << std::endl;
-		break;
-	case BINARY_OR:
-		*block <<	"	BOR A, B" << std::endl;
-		break;
-	case BINARY_XOR:
-		*block <<	"	XOR A, B" << std::endl;
-		break;
-	case BINARY_LEFT_SHIFT:
-		*block <<	"	SHL A, B" << std::endl;
-		break;
-	case BINARY_RIGHT_SHIFT:
-		*block <<	"	SHR A, B" << std::endl;
-		break;
-	case COMPARE_EQUAL:
-		*block <<	"	SUB A, B" << std::endl;
-		*block <<	"	IFN EX, 0x0" << std::endl;
-		*block <<	"		SET A, 0x1" << std::endl;
-		*block <<	"	IFN A, 0x0" << std::endl;
-		*block <<	"		SET A, 0x1" << std::endl;
-		*block <<	"	XOR A, 0x1" << std::endl;
-		break;
-	case COMPARE_NOT_EQUAL:
-		*block <<	"	SUB A, B" << std::endl;
-		*block <<	"	IFN EX, 0x0" << std::endl;
-		*block <<	"		SET A, 0x1" << std::endl;
-		*block <<	"	IFN A, 0x0" << std::endl;
-		*block <<	"		SET A, 0x1" << std::endl;
-		break;
-	case COMPARE_LESS_THAN:
-		*block <<	"	SUB B, A" << std::endl;
-		*block <<	"	IFE EX, 0x1" << std::endl;
-		*block <<	"		SET B, 0x0" << std::endl;
-		*block <<	"	IFN B, 0x0" << std::endl;
-		*block <<	"		SET B, 0x1" << std::endl;
-		*block <<	"	SET A, B" << std::endl;
-		break;
-	case COMPARE_LESS_THAN_EQUAL:
-		*block <<	"	SUB B, A" << std::endl;
-		*block <<	"	IFE EX, 0x1" << std::endl;
-		*block <<	"		SET B, 0x0" << std::endl;
-		*block <<	"	IFE EX, 0x0" << std::endl;
-		*block <<	"		SET B, 0x1" << std::endl;
-		break;
-		*block <<	"	SET A, B" << std::endl;
-	case COMPARE_GREATER_THAN:
-		*block <<	"	SUB A, B" << std::endl;
-		*block <<	"	IFE EX, 0x1" << std::endl;
-		*block <<	"		SET A, 0x0" << std::endl;
-		*block <<	"	IFN A, 0x0" << std::endl;
-		*block <<	"		SET A, 0x1" << std::endl;
-		break;
-	case COMPARE_GREATER_THAN_EQUAL:
-		*block <<	"	SUB A, B" << std::endl;
-		*block <<	"	IFE EX, 0x1" << std::endl;
-		*block <<	"		SET A, 0x0" << std::endl;
-		*block <<	"	IFE EX, 0x0" << std::endl;
-		*block <<	"		SET A, 0x1" << std::endl;
-		break;
-	default:
-		throw new CompilerException("Unknown binary operations requested.");
+		case ADD:
+			*block <<	"	ADD A, B" << std::endl;
+			break;
+
+		case SUBTRACT:
+			*block <<	"	SUB A, B" << std::endl;
+			break;
+
+		case STAR:
+			*block <<	"	MUL A, B" << std::endl;
+			break;
+
+		case SLASH:
+			*block <<	"	DIV A, B" << std::endl;
+			break;
+
+		case PERCENT:
+			*block <<	"	MOD A, B" << std::endl;
+			break;
+
+		case BOOLEAN_AND:
+			*block <<	"	IFN A, 0x0" << std::endl;
+			*block <<	"		SET A, 0x1" << std::endl;
+			*block <<	"	IFN B, 0x0" << std::endl;
+			*block <<	"		SET B, 0x1" << std::endl;
+			*block <<	"	XOR A, B" << std::endl;
+			*block <<	"	XOR A, 0x1" << std::endl;
+			break;
+
+		case BOOLEAN_OR:
+			*block <<	"	IFN A, 0x0" << std::endl;
+			*block <<	"		SET A, 0x1" << std::endl;
+			*block <<	"	IFN B, 0x0" << std::endl;
+			*block <<	"		SET B, 0x1" << std::endl;
+			*block <<	"	BOR A, B" << std::endl;
+			*block <<	"	XOR A, 0x1" << std::endl;
+			break;
+
+		case BINARY_AND:
+			*block <<	"	AND A, B" << std::endl;
+			break;
+
+		case BINARY_OR:
+			*block <<	"	BOR A, B" << std::endl;
+			break;
+
+		case BINARY_XOR:
+			*block <<	"	XOR A, B" << std::endl;
+			break;
+
+		case BINARY_LEFT_SHIFT:
+			*block <<	"	SHL A, B" << std::endl;
+			break;
+
+		case BINARY_RIGHT_SHIFT:
+			*block <<	"	SHR A, B" << std::endl;
+			break;
+
+		case COMPARE_EQUAL:
+			*block <<	"	SUB A, B" << std::endl;
+			*block <<	"	IFN EX, 0x0" << std::endl;
+			*block <<	"		SET A, 0x1" << std::endl;
+			*block <<	"	IFN A, 0x0" << std::endl;
+			*block <<	"		SET A, 0x1" << std::endl;
+			*block <<	"	XOR A, 0x1" << std::endl;
+			break;
+
+		case COMPARE_NOT_EQUAL:
+			*block <<	"	SUB A, B" << std::endl;
+			*block <<	"	IFN EX, 0x0" << std::endl;
+			*block <<	"		SET A, 0x1" << std::endl;
+			*block <<	"	IFN A, 0x0" << std::endl;
+			*block <<	"		SET A, 0x1" << std::endl;
+			break;
+
+		case COMPARE_LESS_THAN:
+			*block <<	"	SUB B, A" << std::endl;
+			*block <<	"	IFE EX, 0x1" << std::endl;
+			*block <<	"		SET B, 0x0" << std::endl;
+			*block <<	"	IFN B, 0x0" << std::endl;
+			*block <<	"		SET B, 0x1" << std::endl;
+			*block <<	"	SET A, B" << std::endl;
+			break;
+
+		case COMPARE_LESS_THAN_EQUAL:
+			*block <<	"	SUB B, A" << std::endl;
+			*block <<	"	IFE EX, 0x1" << std::endl;
+			*block <<	"		SET B, 0x0" << std::endl;
+			*block <<	"	IFE EX, 0x0" << std::endl;
+			*block <<	"		SET B, 0x1" << std::endl;
+			break;
+			*block <<	"	SET A, B" << std::endl;
+
+		case COMPARE_GREATER_THAN:
+			*block <<	"	SUB A, B" << std::endl;
+			*block <<	"	IFE EX, 0x1" << std::endl;
+			*block <<	"		SET A, 0x0" << std::endl;
+			*block <<	"	IFN A, 0x0" << std::endl;
+			*block <<	"		SET A, 0x1" << std::endl;
+			break;
+
+		case COMPARE_GREATER_THAN_EQUAL:
+			*block <<	"	SUB A, B" << std::endl;
+			*block <<	"	IFE EX, 0x1" << std::endl;
+			*block <<	"		SET A, 0x0" << std::endl;
+			*block <<	"	IFE EX, 0x0" << std::endl;
+			*block <<	"		SET A, 0x1" << std::endl;
+			break;
+
+		default:
+			throw new CompilerException("Unknown binary operations requested.");
 	}
 
 	return block;
@@ -172,7 +190,9 @@ IType& NBinaryOperator::getExpressionType(AsmGenerator& context)
 	// A binary operator has the type of each of it's expressions.
 	NType lType = (NType&)this->lhs.getExpressionType(context);
 	NType rType = (NType&)this->rhs.getExpressionType(context);
+
 	if (lType != rType)
 		throw new CompilerException("Unable to implicitly cast from " + lType.name + " to " + rType.name + ".");
+
 	return lType;
 }

@@ -1,13 +1,13 @@
 /**
 
-	File:           NExpression.h
+	File:		NExpression.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the NExpression AST class.
+	Description:	Declares the NExpression AST class.
 
 **/
 
@@ -21,10 +21,10 @@ class NExpression;
 
 class NExpression : public Node
 {
-protected:
-	NExpression(std::string type) : Node("expression-" + type) { }
-public:
-	virtual IType& getExpressionType(AsmGenerator& context) = 0;
+	protected:
+		NExpression(std::string type) : Node("expression-" + type) { }
+	public:
+		virtual IType& getExpressionType(AsmGenerator& context) = 0;
 };
 
 #endif

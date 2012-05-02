@@ -1,14 +1,14 @@
 /**
 
-	File:           ppfind.c
+	File:		ppfind.c
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-pp
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-pp
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the functions used to automatically
-	                locate files based on a set of inclusion paths.
+	Description:	Defines the functions used to automatically
+			locate files based on a set of inclusion paths.
 
 **/
 
@@ -36,7 +36,7 @@ void ppfind_add_path(freed_bstring path)
 	// Initialize if needed.
 	if (!ppfind_initialized)
 		ppfind_init();
-	
+
 	// Add path to list.
 	list_append(&ppfind_include_paths, path.ref);
 
@@ -63,6 +63,7 @@ void ppfind_remove_path(freed_bstring path)
 	for (i = 0; i < list_size(&ppfind_include_paths); i++)
 	{
 		bstring data = (bstring)list_get_at(&ppfind_include_paths, i);
+
 		if (biseq(data, path.ref))
 		{
 			list_delete(&ppfind_include_paths, data);
@@ -92,11 +93,13 @@ bstring ppfind_locate(freed_bstring path)
 	{
 		bstring data = (bstring)list_get_at(&ppfind_include_paths, i);
 		bstring result = bstrcpy(data);
+
 		if (bconchar(result, '/') == BSTR_ERR)
 		{
 			bdestroy(result);
 			continue;
 		}
+
 		if (bconcat(result, path.ref) == BSTR_ERR)
 		{
 			bdestroy(result);
@@ -105,6 +108,7 @@ bstring ppfind_locate(freed_bstring path)
 
 		// Check if file exists.
 		test = fopen((const char*)(result->data), "rb");
+
 		if (test == NULL)
 			continue;
 

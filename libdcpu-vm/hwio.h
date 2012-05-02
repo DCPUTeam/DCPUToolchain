@@ -1,14 +1,14 @@
 /**
 
-	File:           hwio.h
+	File:		hwio.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-vm
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-vm
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares macros and functions used to
-	                host the virtual screen and keyboard.
+	Description:	Declares macros and functions used to
+			host the virtual screen and keyboard.
 
 **/
 

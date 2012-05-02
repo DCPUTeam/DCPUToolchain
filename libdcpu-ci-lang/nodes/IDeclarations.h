@@ -1,13 +1,13 @@
 /**
 
-	File:           IDeclarations.h
+	File:		IDeclarations.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the IDeclarations AST interface.
+	Description:	Declares the IDeclarations AST interface.
 
 **/
 
@@ -19,8 +19,8 @@
 
 class IDeclarations
 {
-public:
-	virtual IFunctionDeclaration* getFunction(std::string name) = 0;
+	public:
+		virtual IFunctionDeclaration* getFunction(std::string name) = 0;
 };
 
 #endif

@@ -1,13 +1,13 @@
 /**
 
-	File:           IFunctionDeclaration.h
+	File:		IFunctionDeclaration.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the IFunctionDeclaration AST interface.
+	Description:	Declares the IFunctionDeclaration AST interface.
 
 **/
 
@@ -18,9 +18,9 @@
 
 class IFunctionDeclaration
 {
-public:
-	virtual StackMap generateStackMap() = 0;
-	virtual IType* getPointerType() = 0;
+	public:
+		virtual StackMap generateStackMap() = 0;
+		virtual IType* getPointerType() = 0;
 };
 
 #endif

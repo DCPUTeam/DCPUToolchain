@@ -1,13 +1,13 @@
 /**
 
-	File:           NSizeOfOperator.h
+	File:		NSizeOfOperator.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the NSizeOfOperator AST class.
+	Description:	Declares the NSizeOfOperator AST class.
 
 **/
 
@@ -17,12 +17,13 @@
 #include "NInteger.h"
 #include "NType.h"
 
-class NSizeOfOperator : public NInteger {
-public:
-    NType& value;
-    NSizeOfOperator(NType& value) : value(value), NInteger("sizeof") { }
-	virtual AsmBlock* compile(AsmGenerator& context);
-	virtual AsmBlock* reference(AsmGenerator& context);
+class NSizeOfOperator : public NInteger
+{
+	public:
+		NType& value;
+		NSizeOfOperator(NType& value) : value(value), NInteger("sizeof") { }
+		virtual AsmBlock* compile(AsmGenerator& context);
+		virtual AsmBlock* reference(AsmGenerator& context);
 };
 
 #endif

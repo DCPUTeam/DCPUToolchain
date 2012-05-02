@@ -1,13 +1,13 @@
 /**
 
-	File:           NCharacter.cpp
+	File:		NCharacter.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NCharacter AST class.
+	Description:	Defines the NCharacter AST class.
 
 **/
 

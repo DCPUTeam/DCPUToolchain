@@ -1,15 +1,15 @@
 /**
 
-	File:           imap.c
+	File:		imap.c
 
-	Project:        DCPU-16 Tools
-	Component:      Assembler
+	Project:	DCPU-16 Tools
+	Component:	Assembler
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines instruction and register maps so that
-	                the assembler can turn character values into
-	                their internal representations.
+	Description:	Defines instruction and register maps so that
+			the assembler can turn character values into
+			their internal representations.
 
 **/
 
@@ -128,24 +128,29 @@ struct register_mapping register_value_next_map[] =
 struct instruction_mapping* get_instruction_by_name(char* name)
 {
 	uint16_t i = 0;
+
 	while (instruction_name_map[i].name != NULL)
 	{
 		if (strcmp(instruction_name_map[i].name, name) == 0)
 			return &instruction_name_map[i];
+
 		i += 1;
 	}
+
 	return NULL;
 }
 
 struct register_mapping* get_register_by_name(char* name, bool bracketed)
 {
 	uint16_t i = 0;
+
 	if (bracketed)
 	{
 		while (register_value_name_map[i].name != NULL)
 		{
 			if (stricmp(register_value_name_map[i].name, name) == 0)
 				return &register_value_name_map[i];
+
 			i += 1;
 		}
 	}
@@ -155,27 +160,32 @@ struct register_mapping* get_register_by_name(char* name, bool bracketed)
 		{
 			if (stricmp(register_name_map[i].name, name) == 0)
 				return &register_name_map[i];
+
 			i += 1;
 		}
 	}
+
 	return NULL;
 }
 
 struct register_mapping* get_register_by_name_next(char* name)
 {
 	uint16_t i = 0;
+
 	while (register_value_next_map[i].name != NULL)
 	{
 		if (stricmp(register_value_next_map[i].name, name) == 0)
 			return &register_value_next_map[i];
+
 		i += 1;
 	}
+
 	return NULL;
 }
 
-void strupper(char *str)
+void strupper(char* str)
 {
-	while(*str != '\0')
+	while (*str != '\0')
 	{
 		*str = toupper(*str);
 		*str++;

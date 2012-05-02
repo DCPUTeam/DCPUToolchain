@@ -1,14 +1,14 @@
 /**
 
-	File:           treloc.c
+	File:		treloc.c
 
-	Project:        DCPU-16 Tools
-	Component:      Assembler
+	Project:	DCPU-16 Tools
+	Component:	Assembler
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines public functions for writing out
-	                relocation tables.
+	Description:	Defines public functions for writing out
+			relocation tables.
 
 **/
 
@@ -30,6 +30,7 @@ uint16_t treloc_init(struct aout_byte* start)
 	reloc_count = 0;
 	current = start;
 	mem_index = 0;
+
 	while (current != NULL)
 	{
 		if (current->type != AOUT_TYPE_NORMAL)
@@ -37,16 +38,20 @@ uint16_t treloc_init(struct aout_byte* start)
 			current = current->next;
 			continue;
 		}
+
 		if (current->label == NULL)
 			mem_index += 1;
+
 		if (current->label_replace != NULL)
 		{
 			fprintf(stderr, "RELOC [0x%04X] 0x%04X (points to %s)\n", reloc_count, mem_index, current->label_replace);
 			reloc_data[reloc_count] = mem_index;
 			reloc_count += 1;
+
 			if (reloc_count == RELOC_MAXIMUM_ENTRIES)
 				ahalt(ERR_RELOCATION_TABLE_TOO_LARGE, NULL);
 		}
+
 		current = current->next;
 	}
 
@@ -63,6 +68,7 @@ void treloc_write(FILE* out)
 	RELOC_WRITE_RAW(RELOC_MAGIC);
 	RELOC_WRITE_RAW(RELOC_VERSION);
 	RELOC_WRITE_RAW(reloc_count);
+
 	for (i = 0; i < reloc_count; i += 1)
 	{
 		RELOC_WRITE_RAW(reloc_data[i]);

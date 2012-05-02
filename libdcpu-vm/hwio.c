@@ -1,14 +1,14 @@
 /**
 
-	File:           hwio.c
+	File:		hwio.c
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-vm
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-vm
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Hosts the virtual screen and keyboard for the
-	                emulator.
+	Description:	Hosts the virtual screen and keyboard for the
+			emulator.
 
 **/
 
@@ -61,10 +61,12 @@ void vm_hw_io_cycle(vm_t* vm, uint16_t pos)
 
 		// If there was a keypress, put it into the buffer if we can.
 		ascii = vm_hw_io_ascii_get_map(key);
+
 		if (ascii != 0)
 		{
 			last_key = ascii;
-			if(interrupt_message != 0)
+
+			if (interrupt_message != 0)
 				vm_op_int(vm, interrupt_message);
 		}
 	}
@@ -78,21 +80,24 @@ void vm_hwio_interrupt(vm_t* vm)
 	uint16_t requested_action = vm_resolve_value(vm, REG_A, 0);
 	uint16_t val_b = vm_resolve_value(vm, REG_B, 0);
 	uint16_t* store_c = vm_internal_get_store(vm, REG_C, POS__);
-	
-	switch(requested_action)
+
+	switch (requested_action)
 	{
 		case KB_CLEAR_BUFFER:
 			last_key = 0;
 			break;
+
 		case KB_STORE_IN_REG:
 			*store_c = last_key;
 			last_key = 0x0;
 			break;
+
 		case KB_COMPARE:
 			*store_c = val_b == last_key ? 1 : 0;
 			break;
+
 		case KB_INTERRUPTS:
-			if(val_b != 0)
+			if (val_b != 0)
 				interrupt_message = val_b;
 			else
 				interrupt_message = 0;
@@ -102,7 +107,7 @@ void vm_hwio_interrupt(vm_t* vm)
 void vm_hw_io_init(vm_t* vm, uint16_t pos)
 {
 	hw_t keyboard;
-	
+
 	keyboard.id_1 = 0x7406;
 	keyboard.id_2 = 0x30cf;
 	keyboard.c = 0xFACE;

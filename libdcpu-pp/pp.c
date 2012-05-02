@@ -1,14 +1,14 @@
 /**
 
-	File:           pp.c
+	File:		pp.c
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-pp
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-pp
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the public API for using the preprocessor
-	                inline in programs.
+	Description:	Defines the public API for using the preprocessor
+			inline in programs.
 
 **/
 
@@ -30,20 +30,25 @@ bstring pp_do(freed_bstring path)
 
 	// Open and set up the temporary output areas.
 	temp = bfromcstr(tempnam(".", "pp."));
+
 	if (biseq(path.ref, bfromcstr("-")))
 		in = stdin;
 	else
 		in = fopen((const char*)(path.ref->data), "r");
+
 	if (in == NULL)
 	{
 		fprintf(stderr, "preprocessor: unable to read from input file.\n");
 		return NULL;
 	}
+
 	out = fopen((const char*)(temp->data), "w");
+
 	if (out == NULL)
 	{
 		if (!biseq(path.ref, bfromcstr("-")))
 			fclose(in);
+
 		fprintf(stderr, "preprocessor: unable to write to temporary output file '%s'.\n", temp->data);
 		return NULL;
 	}
@@ -58,6 +63,7 @@ bstring pp_do(freed_bstring path)
 	// Now do some cleanup.
 	if (!biseq(path.ref, bfromcstr("-")))
 		fclose(in);
+
 	fseek(out, 0, SEEK_SET);
 
 	// Free bstring.
@@ -70,6 +76,7 @@ bstring pp_do(freed_bstring path)
 void pp_cleanup(freed_bstring path)
 {
 	if (path.ref == NULL) return;
+
 	remove((const char*)(path.ref->data));
 	bautodestroy(path);
 }

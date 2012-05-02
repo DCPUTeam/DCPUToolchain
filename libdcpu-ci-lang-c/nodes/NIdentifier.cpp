@@ -1,13 +1,13 @@
 /**
 
-	File:           NIdentifier.cpp
+	File:		NIdentifier.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NIdentifier AST class.
+	Description:	Defines the NIdentifier AST class.
 
 **/
 
@@ -21,8 +21,10 @@ AsmBlock* NIdentifier::compile(AsmGenerator& context)
 
 	// Get the position of the variable.
 	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
+
 	if (!result.isFound())
 		throw new CompilerException("The variable '" + this->name + "' was not found in the scope.");
+
 	if (result.isFunction())
 		throw new CompilerException("Can not get value representation of function '" + this->name + "'; did you want a reference instead?");
 
@@ -39,6 +41,7 @@ AsmBlock* NIdentifier::reference(AsmGenerator& context)
 
 	// Get the position of the variable.
 	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
+
 	if (!result.isFound())
 		throw new CompilerException("The variable '" + this->name + "' was not found in the scope.");
 
@@ -53,6 +56,7 @@ IType& NIdentifier::getExpressionType(AsmGenerator& context)
 	// Search the current context for the variable with
 	// this name and return it's type.
 	IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
+
 	if (type == NULL)
 		throw new CompilerException("Unable to resolve variable '" + this->name + "' when determining type information (does the variable exist?).");
 	else

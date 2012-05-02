@@ -1,13 +1,13 @@
 /**
 
-	File:           NAssemblyStatement.cpp
+	File:		NAssemblyStatement.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NAssemblyStatement AST class.
+	Description:	Defines the NAssemblyStatement AST class.
 
 **/
 
@@ -19,7 +19,7 @@
 AsmBlock* NAssemblyStatement::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-	
+
 	// Directly insert the assembly code.
 	*block << this->asmcode << std::endl;
 

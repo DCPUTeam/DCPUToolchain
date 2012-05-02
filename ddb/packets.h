@@ -1,14 +1,14 @@
 /**
 
-	File:           packets.h
+	File:		packets.h
 
-	Project:        DCPU-16 Tools
-	Component:      Debugger
+	Project:	DCPU-16 Tools
+	Component:	Debugger
 
-	Authors:        José Manuel Díez
+	Authors:	José Manuel Díez
 
-	Description:    Header for packets.c
-	
+	Description:	Header for packets.c
+
 **/
 
 #ifdef FEATURE_SDP

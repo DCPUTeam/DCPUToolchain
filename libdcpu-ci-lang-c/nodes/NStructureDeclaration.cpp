@@ -1,13 +1,13 @@
 /**
 
-	File:           NStructureDeclaration.cpp
+	File:		NStructureDeclaration.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NStructureDeclaration AST class.
+	Description:	Defines the NStructureDeclaration AST class.
 
 **/
 
@@ -31,7 +31,9 @@ size_t NStructureDeclaration::getSize(AsmGenerator& context)
 {
 	// Return the size of each of the fields.
 	size_t s = 0;
+
 	for (VariableList::iterator i = this->fields.begin(); i != this->fields.end(); i++)
 		s += (*i)->type.getWordSize(context);
+
 	return s;
 }

@@ -1,13 +1,13 @@
 /**
 
-	File:           bstring.h
+	File:		bstring.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the freed_bstring type and
+	Description:	Declares the freed_bstring type and
 			imports the rest of the bstring library.
 
 **/

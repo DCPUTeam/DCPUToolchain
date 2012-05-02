@@ -1,14 +1,14 @@
 /**
 
-	File:           Assembler.cpp
+	File:		Assembler.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines what feature support different
-	                assemblers have.
+	Description:	Defines what feature support different
+			assemblers have.
 
 **/
 
@@ -24,7 +24,8 @@ std::map<std::string, const Assembler*> Assembler::m_Assemblers;
 // are not already loaded.
 void Assembler::loadAll()
 {
-	if (m_HasLoaded) return; else m_HasLoaded = true;
+	if (m_HasLoaded) return;
+	else m_HasLoaded = true;
 
 	// Define assemblers.
 	m_Assemblers.insert(entry("dcpu16toolchain", new Assembler(true, false, true, true, true, true, true)));
@@ -35,6 +36,7 @@ void Assembler::loadAll()
 const Assembler* Assembler::getAssembler(std::string name)
 {
 	std::map<std::string, const Assembler*>::iterator i = Assembler::m_Assemblers.find(name);
+
 	if (i == Assembler::m_Assemblers.end())
 		throw new std::runtime_error("Requested assembler information not found (internal error).");
 	else

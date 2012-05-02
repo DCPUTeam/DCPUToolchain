@@ -1,15 +1,15 @@
 /**
 
-	File:           osutil.h
+	File:		osutil.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares functions for interacting with the
-	                local operating system (such as getting
-	                directory names, etc.)
+	Description:	Declares functions for interacting with the
+			local operating system (such as getting
+			directory names, etc.)
 
 **/
 

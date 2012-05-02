@@ -1,13 +1,13 @@
 /**
 
-	File:           NAssemblyStatement.h
+	File:		NAssemblyStatement.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the NAssemblyStatement AST class.
+	Description:	Declares the NAssemblyStatement AST class.
 
 **/
 
@@ -17,13 +17,14 @@
 #include "NStatement.h"
 #include "NExpression.h"
 
-class NAssemblyStatement : public NStatement {
-public:
-    std::string asmcode;
-    NAssemblyStatement(const std::string& asmcode) :
-        asmcode(asmcode), NStatement("assembly") { }
-	virtual AsmBlock* compile(AsmGenerator& context);
-	virtual AsmBlock* reference(AsmGenerator& context);
+class NAssemblyStatement : public NStatement
+{
+	public:
+		std::string asmcode;
+		NAssemblyStatement(const std::string& asmcode) :
+			asmcode(asmcode), NStatement("assembly") { }
+		virtual AsmBlock* compile(AsmGenerator& context);
+		virtual AsmBlock* reference(AsmGenerator& context);
 };
 
 #endif

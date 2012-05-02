@@ -1,13 +1,13 @@
 /**
 
-	File:           NBinaryOperator.h
+	File:		NBinaryOperator.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the NBinaryOperator AST class.
+	Description:	Declares the NBinaryOperator AST class.
 
 **/
 
@@ -16,16 +16,17 @@
 
 #include "NExpression.h"
 
-class NBinaryOperator : public NExpression {
-public:
-    NExpression& lhs;
-    NExpression& rhs;
-	int op;
-    NBinaryOperator(NExpression& lhs, int op, NExpression& rhs) :
-        lhs(lhs), op(op), rhs(rhs), NExpression("binaryop") { }
-	virtual AsmBlock* compile(AsmGenerator& context);
-	virtual AsmBlock* reference(AsmGenerator& context);
-	virtual IType& getExpressionType(AsmGenerator& context);
+class NBinaryOperator : public NExpression
+{
+	public:
+		NExpression& lhs;
+		NExpression& rhs;
+		int op;
+		NBinaryOperator(NExpression& lhs, int op, NExpression& rhs) :
+			lhs(lhs), op(op), rhs(rhs), NExpression("binaryop") { }
+		virtual AsmBlock* compile(AsmGenerator& context);
+		virtual AsmBlock* reference(AsmGenerator& context);
+		virtual IType& getExpressionType(AsmGenerator& context);
 };
 
 #endif

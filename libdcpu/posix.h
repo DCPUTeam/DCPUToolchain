@@ -1,14 +1,14 @@
 /**
 
-	File:           posix.h
+	File:		posix.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Provides macros that allow DCPU-Toolchain to work
-	                on POSIX platforms.
+	Description:	Provides macros that allow DCPU-Toolchain to work
+			on POSIX platforms.
 
 **/
 

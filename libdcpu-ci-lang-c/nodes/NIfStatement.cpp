@@ -1,13 +1,13 @@
 /**
 
-	File:           NIfStatement.cpp
+	File:		NIfStatement.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NIfStatement AST class.
+	Description:	Defines the NIfStatement AST class.
 
 **/
 
@@ -18,11 +18,12 @@
 AsmBlock* NIfStatement::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-	
+
 	// Create labels for the if statement.
 	std::string truelbl = context.getRandomLabel("if");
 	std::string falselbl = "";
 	std::string endlbl = context.getRandomLabel("end");
+
 	if (this->if_false != NULL)
 		falselbl = context.getRandomLabel("else");
 
@@ -34,6 +35,7 @@ AsmBlock* NIfStatement::compile(AsmGenerator& context)
 	// Check the value of A to see where the flow should go.
 	*block <<		"	IFE A, 0x1" << std::endl;
 	*block <<		"		SET PC, " << truelbl << std::endl;
+
 	if (this->if_false != NULL)
 		*block <<	"	SET PC, " << falselbl << std::endl;
 	else

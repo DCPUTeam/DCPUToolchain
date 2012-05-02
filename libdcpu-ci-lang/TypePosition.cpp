@@ -1,14 +1,14 @@
 /**
 
-	File:           TypePosition.cpp
+	File:		TypePosition.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang
 
-	Authors:        James Rhodes
-	                Patrick Flick
+	Authors:	James Rhodes
+			Patrick Flick
 
-	Description:    Defines the TypePosition class.
+	Description:	Defines the TypePosition class.
 
 **/
 
@@ -49,16 +49,19 @@ bool TypePosition::isFunction()
 std::string TypePosition::pushAddress(char registr)
 {
 	std::stringstream sstr;
+
 	if (!this->m_Found)
 		throw new CompilerException("Attempted to push reference position of unknown type position result (internal error).");
+
 	if (this->m_Function)
 		sstr << "	SET " << registr << ", cfunc_" << this->m_FunctionName << std::endl;
 	else if (this->m_Global)
 		sstr << "	SET " << registr << ", _DATA" << std::endl;
-		
+
 	// TODO rename the member m_StackStartAtC, it now works differently
 	else if (this->m_StackStartAtC)
-	{	/*
+	{
+		/*
 		sstr << "	SET " << registr << ", C" << std::endl;
 		sstr << "	ADD " << registr << ", 1" << std::endl;
 		*/
@@ -70,7 +73,9 @@ std::string TypePosition::pushAddress(char registr)
 	}
 	else
 		sstr << "	SET " << registr << ", Y" << std::endl;
+
 	if (this->m_Position != 0)
 		sstr << "	ADD " << registr << ", " << this->m_Position << std::endl;
+
 	return sstr.str();
 }

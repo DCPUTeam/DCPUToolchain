@@ -1,13 +1,13 @@
 /**
 
-	File:           node.h
+	File:		node.h
 
-	Project:        DCPU-16 Tools
-	Component:      Assembler
+	Project:	DCPU-16 Tools
+	Component:	Assembler
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares node structures for the AST.
+	Description:	Declares node structures for the AST.
 
 **/
 
@@ -21,16 +21,16 @@
 typedef struct ast_node_address
 {
 	uint16_t value;
-	uint8_t  bracketed;
-	uint8_t  added;
-	char*    addcmpt;
+	uint8_t	 bracketed;
+	uint8_t	 added;
+	char*	 addcmpt;
 } ast_node_address_t;
 
 // Register
 struct ast_node_register
 {
-	char*    value;
-	uint8_t  bracketed;
+	char*	 value;
+	uint8_t	 bracketed;
 };
 
 // Type enumeration

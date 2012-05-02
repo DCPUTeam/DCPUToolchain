@@ -1,13 +1,13 @@
 /**
 
-	File:           NSizeOfOperator.cpp
+	File:		NSizeOfOperator.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NSizeOfOperator AST class.
+	Description:	Defines the NSizeOfOperator AST class.
 
 **/
 

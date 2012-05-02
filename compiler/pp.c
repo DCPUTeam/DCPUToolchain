@@ -1,13 +1,13 @@
 /**
 
-	File:           pp.c
+	File:		pp.c
 
-	Project:        DCPU-16 Tools
-	Component:      Compiler
+	Project:	DCPU-16 Tools
+	Component:	Compiler
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Handles preprocessing of input files.
+	Description:	Handles preprocessing of input files.
 
 **/
 
@@ -41,6 +41,7 @@ bool strsw(char* src, char* check)
 void pp_init()
 {
 	int i = 0;
+
 	for (i = 0; i < INCLUDE_MAX; i += 1)
 		pp_included_names[i] = NULL;
 }
@@ -99,9 +100,11 @@ void pp_include(char* line, FILE* in, FILE* out)
 
 		// Attempt open.
 		included = fopen(cname, "r");
+
 		if (included == NULL)
 			path_i++;
 	}
+
 	if (included == NULL)
 		fprintf(stderr, "preprocessor: can not include %s.\n", fname);
 	else
@@ -122,6 +125,7 @@ void pp_base(FILE* in, FILE* out)
 	do
 	{
 		current = fgetc(in);
+
 		if (current == '\n')
 		{
 			has_newline = true;
@@ -157,33 +161,43 @@ FILE* pp_do(const char* input)
 	// Do preprocessing.
 	FILE* in;
 	FILE* out;
+
 	if (pp_fname != NULL)
 	{
 		fprintf(stderr, "preprocessor: a preprocessing output file is already open.\n");
 		return NULL;
 	}
+
 	pp_fname = tempnam(".", "pp.");
+
 	if (strcmp(input, "-") == 0)
 		in = stdin;
 	else
 		in = fopen(input, "r");
+
 	if (in == NULL)
 	{
 		fprintf(stderr, "preprocessor: unable to read from input file.\n");
 		return NULL;
 	}
+
 	out = fopen(pp_fname, "wb+");
+
 	if (out == NULL)
 	{
 		if (strcmp(input, "-") != 0)
 			fclose(in);
+
 		fprintf(stderr, "preprocessor: unable to write to temporary output file '%s'.\n", pp_fname);
 		return NULL;
 	}
+
 	pp_init();
 	pp_base(in, out);
+
 	if (strcmp(input, "-") != 0)
 		fclose(in);
+
 	fseek(out, 0, SEEK_SET);
 	return out;
 }

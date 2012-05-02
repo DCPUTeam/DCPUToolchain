@@ -1,13 +1,13 @@
 /**
 
-	File:           CompilerException.h
+	File:		CompilerException.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the CompilerException class.
+	Description:	Declares the CompilerException class.
 
 **/
 
@@ -18,17 +18,20 @@
 
 class CompilerException : public std::exception
 {
-private:
-	std::string m_Message;
+	private:
+		std::string m_Message;
 
-public:
-	CompilerException(std::string message) : m_Message(message) { };
-	virtual ~CompilerException() throw() { };
-	virtual const char* what() const throw()
-	{
-		return this->m_Message.c_str();
-	}
-	inline std::string getMessage() { return this->m_Message; }
+	public:
+		CompilerException(std::string message) : m_Message(message) { };
+		virtual ~CompilerException() throw() { };
+		virtual const char* what() const throw()
+		{
+			return this->m_Message.c_str();
+		}
+		inline std::string getMessage()
+		{
+			return this->m_Message;
+		}
 };
 
 #endif

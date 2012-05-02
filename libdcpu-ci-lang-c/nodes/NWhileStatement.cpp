@@ -1,13 +1,13 @@
 /**
 
-	File:           NWhileStatement.cpp
+	File:		NWhileStatement.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NWhileStatement AST class.
+	Description:	Defines the NWhileStatement AST class.
 
 **/
 
@@ -19,7 +19,7 @@
 AsmBlock* NWhileStatement::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-	
+
 	// Create label for the while statement.
 	std::string startlbl = context.getRandomLabel("while");
 	std::string endlbl = context.getRandomLabel("endwhile");

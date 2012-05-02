@@ -1,13 +1,13 @@
 /**
 
-	File:           main.cpp
+	File:		main.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      Compiler
+	Project:	DCPU-16 Tools
+	Component:	Compiler
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Main entry point.
+	Description:	Main entry point.
 
 **/
 
@@ -25,11 +25,11 @@
 
 extern "C"
 {
-	#include "pp.h"
+#include "pp.h"
 }
 
 extern int yyparse();
-extern FILE *yyin, *yyout;
+extern FILE* yyin, *yyout;
 extern NDeclarations* program;
 
 // Utility directory name function (TODO: Move this into it's own file).
@@ -37,14 +37,16 @@ template<typename string_t>
 
 string_t dirname(string_t source)
 {
-	if (source.size() <= 1) //Make sure it's possible to check the last character.
+	if (source.size() <= 1)	//Make sure it's possible to check the last character.
 	{
 		return source;
 	}
+
 	if (*(source.rbegin() + 1) == '/') //Remove trailing slash if it exists.
 	{
 		source = source.substr(0, source.size() - 1);
 	}
+
 	source.erase(std::find(source.rbegin(), source.rend(), '/').base(), source.end());
 	return source;
 }
@@ -56,19 +58,21 @@ int main(int argc, char* argv[])
 	struct arg_str* type_assembler = arg_str0("t", NULL, "<type>", "The type of assembler to output for.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
-	struct arg_end *end = arg_end(20);
-	void *argtable[] = { output_file, show_help, type_assembler, input_file, end };
+	struct arg_end* end = arg_end(20);
+	void* argtable[] = { output_file, show_help, type_assembler, input_file, end };
 
 	// Parse arguments.
-	int nerrors = arg_parse(argc,argv,argtable);
+	int nerrors = arg_parse(argc, argv, argtable);
+
 	if (nerrors != 0 || show_help->count != 0)
 	{
 		if (show_help->count != 0)
 			arg_print_errors(stdout, end, "compiler");
+
 		fprintf(stderr, "syntax:\n    compiler");
 		arg_print_syntax(stdout, argtable, "\n");
 		fprintf(stderr, "options:\n");
-		arg_print_glossary(stdout, argtable, "    %-25s %s\n");
+		arg_print_glossary(stdout, argtable, "	  %-25s %s\n");
 		return 1;
 	}
 
@@ -78,15 +82,20 @@ int main(int argc, char* argv[])
 	pp_add_search_path(dirname<std::string>(input_file->filename[0]).c_str());
 	yyout = stderr;
 	yyin = pp_do(input_file->filename[0]);
+
 	if (yyin == NULL)
 	{
 		pp_cleanup();
 		return 1;
 	}
+
 	yyparse();
+
 	if (yyin != stdin)
 		fclose(yyin);
+
 	pp_cleanup();
+
 	if (program == NULL)
 	{
 		std::cerr << "An error occurred while compiling." << std::endl;
@@ -95,6 +104,7 @@ int main(int argc, char* argv[])
 
 	// Assembler type.
 	const char* asmtype = "dcpu16toolchain";
+
 	if (type_assembler->count > 0)
 		asmtype = type_assembler->sval[0];
 
@@ -106,6 +116,7 @@ int main(int argc, char* argv[])
 	{
 		AsmGenerator generator(asmtype);
 		AsmBlock* block = program->compile(generator);
+
 		if (strcmp(output_file->filename[0], "-") == 0)
 		{
 			std::cout << generator.m_Preassembly << std::endl;
@@ -120,6 +131,7 @@ int main(int argc, char* argv[])
 			output << generator.m_Postassembly << std::endl;
 			output.close();
 		}
+
 		delete block;
 	}
 	catch (CompilerException* ex)

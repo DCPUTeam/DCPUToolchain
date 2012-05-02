@@ -1,14 +1,14 @@
 /**
 
-	File:           objfile.c
+	File:		objfile.c
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-objfmt
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-objfmt
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines functions used for reading and writing
-	                to object files.
+	Description:	Defines functions used for reading and writing
+			to object files.
 
 **/
 
@@ -37,33 +37,40 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 	// needs resolving, otherwise it's a label that is
 	// provided to other object files.
 	entry = ldata_read(in);
+
 	while (entry->mode != LABEL_END)
 	{
 		if (entry->mode == LABEL_PROVIDED && provided != NULL)
 		{
 			prov_current = lprov_create(entry->label, entry->address + *offset);
+
 			if (prov_last == NULL)
 				*provided = prov_current;
 			else
 				prov_last->next = prov_current;
+
 			prov_last = prov_current;
 		}
 		else if (entry->mode == LABEL_REQUIRED && required != NULL)
 		{
 			req_current = lprov_create(entry->label, entry->address + *offset);
+
 			if (req_last == NULL)
 				*required = req_current;
 			else
 				req_last->next = req_current;
+
 			req_last = req_current;
 		}
 		else if (entry->mode == LABEL_ADJUSTMENT && adjustment != NULL)
 		{
 			adjust_current = lprov_create(NULL, entry->address + *offset);
+
 			if (adjust_last == NULL)
 				*adjustment = adjust_current;
 			else
 				adjust_last->next = adjust_current;
+
 			adjust_last = adjust_current;
 		}
 

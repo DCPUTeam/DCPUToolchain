@@ -1,13 +1,13 @@
 /**
 
-	File:           ddata.c
+	File:		ddata.c
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-CI-DbgFmt
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-CI-DbgFmt
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    
+	Description:
 
 **/
 

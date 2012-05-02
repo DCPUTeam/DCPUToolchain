@@ -1,13 +1,13 @@
 /**
 
-	File:           NStructureDeclaration.h
+	File:		NStructureDeclaration.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the NStructureDeclaration AST class.
+	Description:	Declares the NStructureDeclaration AST class.
 
 **/
 
@@ -20,14 +20,14 @@
 
 class NStructureDeclaration : public NDeclaration
 {
-public:
-	const NIdentifier& id;
-	VariableList fields;
-	NStructureDeclaration(const NIdentifier& id, const VariableList& fields) :
-		id(id), fields(fields), NDeclaration("structure") { };
-	virtual AsmBlock* compile(AsmGenerator& context);
-	virtual AsmBlock* reference(AsmGenerator& context);
-	virtual size_t getSize(AsmGenerator& context);
+	public:
+		const NIdentifier& id;
+		VariableList fields;
+		NStructureDeclaration(const NIdentifier& id, const VariableList& fields) :
+			id(id), fields(fields), NDeclaration("structure") { };
+		virtual AsmBlock* compile(AsmGenerator& context);
+		virtual AsmBlock* reference(AsmGenerator& context);
+		virtual size_t getSize(AsmGenerator& context);
 };
 
 #endif

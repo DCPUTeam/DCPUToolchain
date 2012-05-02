@@ -1,13 +1,13 @@
 /**
 
-	File:           NExpressionStatement.cpp
+	File:		NExpressionStatement.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NExpressionStatement AST class.
+	Description:	Defines the NExpressionStatement AST class.
 
 **/
 

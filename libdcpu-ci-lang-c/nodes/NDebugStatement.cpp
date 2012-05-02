@@ -1,13 +1,13 @@
 /**
 
-	File:           NDebugStatement.cpp
+	File:		NDebugStatement.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NDebugStatement AST class.
+	Description:	Defines the NDebugStatement AST class.
 
 **/
 
@@ -18,7 +18,7 @@
 AsmBlock* NDebugStatement::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-	
+
 	// Evaluate the expression (the expression will always put
 	// it's output in register A).
 	AsmBlock* eval = ((NExpression&)this->result).compile(context);

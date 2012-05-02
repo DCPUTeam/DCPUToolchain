@@ -1,13 +1,13 @@
 /**
 
-	File:           NVariableDeclaration.cpp
+	File:		NVariableDeclaration.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NVariableDeclaration AST class.
+	Description:	Defines the NVariableDeclaration AST class.
 
 **/
 
@@ -23,7 +23,7 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 
 	// Create our new block.
 	AsmBlock* block = new AsmBlock();
-	
+
 	// When an expression is evaluated, the result goes into the A register.
 	AsmBlock* expr = this->initExpr->compile(context);
 	*block << *expr;
@@ -31,6 +31,7 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 
 	// Get the position of the variable.
 	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+
 	if (!result.isFound())
 		throw new CompilerException("The variable '" + this->id.name + "' was not found in the scope.");
 

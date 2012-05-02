@@ -1,13 +1,13 @@
 /**
 
-	File:           NForStatement.cpp
+	File:		NForStatement.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NForStatement AST class.
+	Description:	Defines the NForStatement AST class.
 
 **/
 
@@ -18,7 +18,7 @@
 AsmBlock* NForStatement::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-	
+
 	// Create label for the while statement.
 	std::string startlbl = context.getRandomLabel("for");
 	std::string endlbl = context.getRandomLabel("endfor");

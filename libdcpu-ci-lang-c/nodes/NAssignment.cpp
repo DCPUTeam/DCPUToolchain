@@ -1,13 +1,13 @@
 /**
 
-	File:           NAssignment.cpp
+	File:		NAssignment.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NAssignment AST class.
+	Description:	Defines the NAssignment AST class.
 
 **/
 
@@ -24,7 +24,7 @@
 AsmBlock* NAssignment::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-	
+
 	// We only need to both to push the value of the LHS if we're
 	// doing a relative adjustment.
 	if (this->op != ASSIGN_EQUAL)
@@ -48,7 +48,7 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 	*block <<   *rhs;
 	*block <<	"	SET PUSH, A" << std::endl;
 	delete rhs;
-	
+
 	// If debugging, clear the values as we POP them.
 	if (context.isAssemblerDebug())
 	{
@@ -71,23 +71,28 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 	// Now do the appropriate operation.
 	switch (this->op)
 	{
-	case ASSIGN_EQUAL:
-		*block <<	"	SET A, B" << std::endl;
-		break;
-	case ASSIGN_ADD:
-		*block <<	"	ADD A, B" << std::endl;
-		break;
-	case ASSIGN_SUBTRACT:
-		*block <<	"	SUB A, B" << std::endl;
-		break;
-	case ASSIGN_MULTIPLY:
-		*block <<	"	MUL A, B" << std::endl;
-		break;
-	case ASSIGN_DIVIDE:
-		*block <<	"	DIV A, B" << std::endl;
-		break;
-	default:
-		throw new CompilerException("Unknown assignment operation requested.");
+		case ASSIGN_EQUAL:
+			*block <<	"	SET A, B" << std::endl;
+			break;
+
+		case ASSIGN_ADD:
+			*block <<	"	ADD A, B" << std::endl;
+			break;
+
+		case ASSIGN_SUBTRACT:
+			*block <<	"	SUB A, B" << std::endl;
+			break;
+
+		case ASSIGN_MULTIPLY:
+			*block <<	"	MUL A, B" << std::endl;
+			break;
+
+		case ASSIGN_DIVIDE:
+			*block <<	"	DIV A, B" << std::endl;
+			break;
+
+		default:
+			throw new CompilerException("Unknown assignment operation requested.");
 	}
 
 	// Move the value into register B.

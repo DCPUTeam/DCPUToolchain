@@ -1,13 +1,13 @@
 /**
 
-	File:           AsmGenerator.cpp
+	File:		AsmGenerator.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the AsmGenerator class.
+	Description:	Defines the AsmGenerator class.
 
 **/
 
@@ -79,24 +79,28 @@ void AsmGenerator::finishStackFrame(StackFrame* frame)
 std::string AsmGenerator::getRandomLabel(std::string prefix)
 {
 	std::string result = "";
+
 	while ((result == "") || (std::find(this->m_AutomaticLabels.begin(), this->m_AutomaticLabels.end(), result) != this->m_AutomaticLabels.end()))
 		result = "__" + prefix + "_" + AsmGenerator::getRandomString(10);
+
 	return result;
 }
 
 // Generates a random character.
 char AsmGenerator::getRandomCharacter()
 {
-    unsigned char c;
-    while (!std::isalnum(c = static_cast<unsigned char>(std::rand() % 256))) ;
-    return c;
+	unsigned char c;
+
+	while (!std::isalnum(c = static_cast<unsigned char>(std::rand() % 256))) ;
+
+	return c;
 }
 
 // Generates a random string.
 std::string AsmGenerator::getRandomString(std::string::size_type sz)
 {
-    std::string s;
-    s.reserve(sz);
-    std::generate_n(std::back_inserter(s), sz, AsmGenerator::getRandomCharacter);
-    return s;
+	std::string s;
+	s.reserve(sz);
+	std::generate_n(std::back_inserter(s), sz, AsmGenerator::getRandomCharacter);
+	return s;
 }

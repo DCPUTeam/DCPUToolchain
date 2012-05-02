@@ -1,13 +1,13 @@
 /**
 
-	File:           NType.cpp
+	File:		NType.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the NType AST class.
+	Description:	Defines the NType AST class.
 
 **/
 
@@ -42,6 +42,7 @@ void NType::resolveStruct(AsmGenerator& context)
 
 	// Search AST for struct nodes.
 	NDeclarations* decls = (NDeclarations*)context.m_RootNode;
+
 	for (DeclarationList::iterator i = decls->definitions.begin(); i != decls->definitions.end(); i++)
 		if ((*i)->cType == "statement-declaration-structure")
 			if (((NStructureDeclaration*)*i)->id.name == this->name)
@@ -94,6 +95,7 @@ uint16_t NType::getStructFieldPosition(AsmGenerator& context, std::string name)
 
 	// Count up the position.
 	size_t pos = 0;
+
 	for (VariableList::iterator i = this->resolvedStruct->fields.begin(); i != this->resolvedStruct->fields.end(); i++)
 	{
 		if ((*i)->id.name == name)

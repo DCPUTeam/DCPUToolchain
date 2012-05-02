@@ -1,13 +1,13 @@
 /**
 
-	File:           bstring.c
+	File:		bstring.c
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines utility methods for interacting
+	Description:	Defines utility methods for interacting
 			with freed_bstring type.
 
 **/

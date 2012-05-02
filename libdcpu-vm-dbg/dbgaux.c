@@ -1,14 +1,14 @@
 /**
 
-	File:           dbgaux.c
+	File:		dbgaux.c
 
-	Project:        DCPU-16 Toolchain
-	Component:      LibDCPU-vm-dbg
+	Project:	DCPU-16 Toolchain
+	Component:	LibDCPU-vm-dbg
 
-	Authors:        James Rhodes
-	                José Manuel Díez
+	Authors:	James Rhodes
+			José Manuel Díez
 
-	Description:    Defines auxilary functions for the debugger.
+	Description:	Defines auxilary functions for the debugger.
 
 **/
 
@@ -31,7 +31,7 @@ extern vm_t* vm;
 
 void ddbg_help(bstring section)
 {
-	if(biseq(section, bfromcstr("general")))
+	if (biseq(section, bfromcstr("general")))
 	{
 		printf("Available commands:\n");
 		printf("- break\n");
@@ -42,7 +42,7 @@ void ddbg_help(bstring section)
 		printf("- quit\n");
 		printf("Type `help <command>' to get help about a particular command.\n");
 	}
-	else if(biseq(section, bfromcstr("break")))
+	else if (biseq(section, bfromcstr("break")))
 	{
 		printf("Manipulates breakpoints.\n");
 		printf("Available commands: add, delete, list\n");
@@ -50,22 +50,22 @@ void ddbg_help(bstring section)
 		printf("Alternate syntax: `break <command> <address>'\n");
 		printf("Example: break add memory:0xbeef\n");
 	}
-	else if(biseq(section, bfromcstr("load")))
+	else if (biseq(section, bfromcstr("load")))
 	{
 		printf("Loads words from a file to the VM.\n");
 	}
-	else if(biseq(section, bfromcstr("run")) || biseq(section, bfromcstr("continue")))
+	else if (biseq(section, bfromcstr("run")) || biseq(section, bfromcstr("continue")))
 	{
 		printf("Sets vm->halted to false, runs the VM.\n");
 	}
-	else if(biseq(section, bfromcstr("inspect")))
+	else if (biseq(section, bfromcstr("inspect")))
 	{
 		printf("Returns information about devices.\n");
 		printf("Available commands: cpu, memory.\n");
 		printf("Syntax: `inspect <command> [<arg1>] [<arg2>]'\n");
 		printf("Note: `inspect memory' takes one or two arguments; the first argument is the start address and the second argument is the number of words to be dumped.\n");
 	}
-	else if(biseq(section, bfromcstr("quit")))
+	else if (biseq(section, bfromcstr("quit")))
 	{
 		printf("Gracefully quits the debugger.\n");
 	}
@@ -73,10 +73,11 @@ void ddbg_help(bstring section)
 
 void ddbg_cycle_hook(vm_t* vm, uint16_t pos)
 {
-	int i = 0;	
-	for(i = 0; i < breakpoints_num; i++)
+	int i = 0;
+
+	for (i = 0; i < breakpoints_num; i++)
 	{
-		if(vm->pc == breakpoints[i] && vm->pc != 0xFFFF)
+		if (vm->pc == breakpoints[i] && vm->pc != 0xFFFF)
 		{
 			vm->halted = true;
 			printf("Breakpoint hit at 0x%04X.\n", breakpoints[i]);
@@ -90,8 +91,9 @@ void ddbg_load(bstring path)
 	unsigned int a = 0, i = 0;
 	int cread;
 	bool uread = true;
-	
+
 	load = fopen(path->data, "rb");
+
 	if (load == NULL)
 	{
 		printf("Unable to load %s from disk.\n", path->data);
@@ -101,16 +103,22 @@ void ddbg_load(bstring path)
 	for (i = 0; i < 0x20000; i++)
 	{
 		cread = fgetc(load);
+
 		if (cread == -1) break;
+
 		if (uread)
 			cread <<= 8;
+
 		flash[a] += ((cread << 8) | (cread >> 8));
+
 		if (!uread)
 			a += 1;
+
 		uread = !uread;
 	}
+
 	fclose(load);
-	
+
 	printf("Loaded 0x%04X words from %s.\n", a, path->data);
 }
 
@@ -160,18 +168,18 @@ void ddbg_add_breakpoint(bstring file, int index)
 		printf("Only memory breakpoints can be set at this time (use memory:address).\n");
 		return;
 	}
-	
+
 	if (index < 0)
 	{
 		printf("Index must be greater than 0.\n");
 		return;
 	}
-	
+
 	breakpoints[breakpoints_num++] = index;
 	printf("Breakpoint added at 0x%04X.\n", index);
 }
 
-void ddbg_delete_breakpoint(bstring file, int index) 
+void ddbg_delete_breakpoint(bstring file, int index)
 {
 	int i = 0;
 	bool found = false;
@@ -181,25 +189,28 @@ void ddbg_delete_breakpoint(bstring file, int index)
 		printf("Only memory breakpoints can be set at this time (use memory:address).\n");
 		return;
 	}
-	
+
 	if (index < 0)
 	{
 		printf("Index must be greater than 0.\n");
 		return;
 	}
-	
-	for(i = 0; i < breakpoints_num; i++)
+
+	for (i = 0; i < breakpoints_num; i++)
 	{
-		if(breakpoints[i] == index)
+		if (breakpoints[i] == index)
 		{
 			breakpoints[i] = 0xFFFF;
 			found = true;
 		}
 	}
-	
-	if(found == true) {
+
+	if (found == true)
+	{
 		printf("Breakpoint at %s:%d removed.\n", bstr2cstr(file, 0), index);
-	} else {
+	}
+	else
+	{
 		printf("There was no breakpoint at %s:%d.\n", bstr2cstr(file, 0), index);
 	}
 }
@@ -207,23 +218,24 @@ void ddbg_delete_breakpoint(bstring file, int index)
 void ddbg_breakpoints_list()
 {
 	int i = 0;
-	
+
 	printf("%d breakpoints loaded.\n", breakpoints_num);
-	for(i = 0; i < breakpoints_num; i++) printf("- at 0x%04X\n", breakpoints[i]);
+
+	for (i = 0; i < breakpoints_num; i++) printf("- at 0x%04X\n", breakpoints[i]);
 }
 
 void ddbg_dump_state()
 {
-	fprintf(stderr, "A:   0x%04X     [A]:   0x%04X\n", vm->registers[REG_A], vm->ram[vm->registers[REG_A]]);
-	fprintf(stderr, "B:   0x%04X     [B]:   0x%04X\n", vm->registers[REG_B], vm->ram[vm->registers[REG_B]]);
-	fprintf(stderr, "C:   0x%04X     [C]:   0x%04X\n", vm->registers[REG_C], vm->ram[vm->registers[REG_C]]);
-	fprintf(stderr, "X:   0x%04X     [X]:   0x%04X\n", vm->registers[REG_X], vm->ram[vm->registers[REG_X]]);
-	fprintf(stderr, "Y:   0x%04X     [Y]:   0x%04X\n", vm->registers[REG_Y], vm->ram[vm->registers[REG_Y]]);
-	fprintf(stderr, "Z:   0x%04X     [Z]:   0x%04X\n", vm->registers[REG_Z], vm->ram[vm->registers[REG_Z]]);
-	fprintf(stderr, "I:   0x%04X     [I]:   0x%04X\n", vm->registers[REG_I], vm->ram[vm->registers[REG_I]]);
-	fprintf(stderr, "J:   0x%04X     [J]:   0x%04X\n", vm->registers[REG_J], vm->ram[vm->registers[REG_J]]);
-	fprintf(stderr, "PC:  0x%04X     SP:    0x%04X\n", vm->pc, vm->sp);
-	fprintf(stderr, "EX:  0x%04X     IA:    0x%04X\n", vm->ex, vm->ia);
+	fprintf(stderr, "A:   0x%04X	 [A]:	0x%04X\n", vm->registers[REG_A], vm->ram[vm->registers[REG_A]]);
+	fprintf(stderr, "B:   0x%04X	 [B]:	0x%04X\n", vm->registers[REG_B], vm->ram[vm->registers[REG_B]]);
+	fprintf(stderr, "C:   0x%04X	 [C]:	0x%04X\n", vm->registers[REG_C], vm->ram[vm->registers[REG_C]]);
+	fprintf(stderr, "X:   0x%04X	 [X]:	0x%04X\n", vm->registers[REG_X], vm->ram[vm->registers[REG_X]]);
+	fprintf(stderr, "Y:   0x%04X	 [Y]:	0x%04X\n", vm->registers[REG_Y], vm->ram[vm->registers[REG_Y]]);
+	fprintf(stderr, "Z:   0x%04X	 [Z]:	0x%04X\n", vm->registers[REG_Z], vm->ram[vm->registers[REG_Z]]);
+	fprintf(stderr, "I:   0x%04X	 [I]:	0x%04X\n", vm->registers[REG_I], vm->ram[vm->registers[REG_I]]);
+	fprintf(stderr, "J:   0x%04X	 [J]:	0x%04X\n", vm->registers[REG_J], vm->ram[vm->registers[REG_J]]);
+	fprintf(stderr, "PC:  0x%04X	 SP:	0x%04X\n", vm->pc, vm->sp);
+	fprintf(stderr, "EX:  0x%04X	 IA:	0x%04X\n", vm->ex, vm->ia);
 }
 
 
@@ -232,26 +244,28 @@ void ddbg_dump_ram(int start, int difference)
 {
 	int end;
 	int i = 0;
-	
+
 	if (start < 0 || difference < 0)
 	{
 		printf("Invalid parameters provided to 'inspect memory'.");
 		return;
 	}
-	
+
 	if (difference == 0)
 		end = start + 32;
 	else
 		end = start + difference;
-	
-	for(i = 0; i < difference; i++)
+
+	for (i = 0; i < difference; i++)
 	{
 		if (i % 8 == 0)
 			printf("%04X: ", start + i);
+
 		printf("%04X ", vm->ram[start + i]);
+
 		if ((i + 1) % 8 == 0)
 			printf("\n");
 	}
-	
+
 	printf("\n");
 }

@@ -1,14 +1,14 @@
 /**
 
-	File:           pp.h
+	File:		pp.h
 
-	Project:        DCPU-16 Tools
-	Component:      Compiler
+	Project:	DCPU-16 Tools
+	Component:	Compiler
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the functions used by the
-	                compiler for preprocessing.
+	Description:	Declares the functions used by the
+			compiler for preprocessing.
 
 **/
 

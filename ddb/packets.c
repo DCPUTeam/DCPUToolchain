@@ -1,13 +1,13 @@
 /**
 
-	File:           packets.c
+	File:		packets.c
 
-	Project:        DCPU-16 Tools
-	Component:      Debugger
+	Project:	DCPU-16 Tools
+	Component:	Debugger
 
-	Authors:        José Manuel Díez
+	Authors:	José Manuel Díez
 
-	Description:    Miscellaneous packet functions.
+	Description:	Miscellaneous packet functions.
 
 **/
 
@@ -32,7 +32,7 @@ unsigned char* serialize_sdp_packet(unsigned char* buffer, sdp_packet* out)
 	memcpy(buffer, &out->length, sizeof(out->length));
 	buffer += sizeof(out->length);
 
-	memcpy(buffer, (void *) out->payload, orig_length);
+	memcpy(buffer, (void*) out->payload, orig_length);
 	buffer += orig_length;
 
 	return buffer;
@@ -62,7 +62,8 @@ void send_sdp_packet(int sock, sdp_packet* out)
 	ptr = serialize_sdp_packet(serialization_buffer, out);
 	n = write(sock, serialization_buffer, ptr - serialization_buffer);
 
-	if(n == -1) {
+	if (n == -1)
+	{
 		printf("Closing sock.\n");
 		close(sock);
 		exit(0);
@@ -71,7 +72,8 @@ void send_sdp_packet(int sock, sdp_packet* out)
 	printf("Wrote %d bytes\n", n);
 }
 
-unsigned char* serialize_pstring(p_string* string) {
+unsigned char* serialize_pstring(p_string* string)
+{
 	unsigned char* buffer = malloc(sizeof(unsigned char) * BUFSIZE);
 	uint16_t serialized_length = htons(string->length);
 

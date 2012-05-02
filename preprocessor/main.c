@@ -1,13 +1,13 @@
 /**
 
-	File:           main.c
+	File:		main.c
 
-	Project:        DCPU-16 Tools
-	Component:      Preprocessor
+	Project:	DCPU-16 Tools
+	Component:	Preprocessor
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Main entry point.
+	Description:	Main entry point.
 
 **/
 

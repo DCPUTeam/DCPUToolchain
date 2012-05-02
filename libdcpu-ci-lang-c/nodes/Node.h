@@ -1,13 +1,13 @@
 /**
 
-	File:           Node.h
+	File:		Node.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the Node AST class.
+	Description:	Declares the Node AST class.
 
 **/
 
@@ -21,14 +21,17 @@ class AsmGenerator;
 
 class Node
 {
-public:
-	std::string cType;
-protected:
-	Node(std::string type) { this->cType = type; }
-public:
-	virtual ~Node() {}
-	virtual AsmBlock* compile(AsmGenerator& context) = 0;
-	virtual AsmBlock* reference(AsmGenerator& context) = 0;
+	public:
+		std::string cType;
+	protected:
+		Node(std::string type)
+		{
+			this->cType = type;
+		}
+	public:
+		virtual ~Node() {}
+		virtual AsmBlock* compile(AsmGenerator& context) = 0;
+		virtual AsmBlock* reference(AsmGenerator& context) = 0;
 };
 
 #endif

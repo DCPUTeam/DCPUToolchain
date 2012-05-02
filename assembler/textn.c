@@ -1,14 +1,14 @@
 /**
 
-	File:           textn.c
+	File:		textn.c
 
-	Project:        DCPU-16 Tools
-	Component:      Assembler
+	Project:	DCPU-16 Tools
+	Component:	Assembler
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines public functions for writing out
-	                extension tables.
+	Description:	Defines public functions for writing out
+			extension tables.
 
 **/
 
@@ -35,17 +35,21 @@ uint16_t textn_init(struct aout_byte* start)
 	extension_offset = 0;
 	current = start;
 	mem_index = 0;
+
 	while (current != NULL)
 	{
 		if (current->type == AOUT_TYPE_METADATA_EXTENSION)
 		{
 			ext_name = textn_verify_name(current->label);
+
 			if (ext_name == NULL)
 				ahalt(ERR_EXTENSION_UNKNOWN, current->label);
+
 			extension_data[extension_count] = ext_name;
 			fprintf(stderr, "EXTENSION [0x%04X] %s\n", extension_offset, ext_name);
 			extension_count += 1;
 			extension_offset += strlen(ext_name) + 1;
+
 			if (extension_count == EXTENSION_MAXIMUM_ENTRIES)
 				ahalt(ERR_EXTENSION_TABLE_TOO_LARGE, NULL);
 		}
@@ -74,12 +78,14 @@ void textn_write(FILE* out)
 	EXTENSION_WRITE_RAW(EXTENSION_MAGIC);
 	EXTENSION_WRITE_RAW(EXTENSION_VERSION);
 	EXTENSION_WRITE_RAW(extension_count);
+
 	for (i = 0; i < extension_count; i += 1)
 	{
 		for (a = 0; a < strlen(extension_data[i]); a += 1)
 		{
 			EXTENSION_WRITE_RAW(extension_data[i][a]);
 		}
+
 		EXTENSION_WRITE_RAW(0);
 	}
 }
@@ -97,10 +103,12 @@ char* extension_map[EXTENSION_MAP_MAXIMUM] =
 char* textn_verify_name(char* name)
 {
 	uint16_t i;
+
 	for (i = 0; i < EXTENSION_MAP_MAXIMUM; i += 1)
 	{
 		if (stricmp(name, extension_map[i]) == 0)
 			return extension_map[i];
 	}
+
 	return NULL;
 }

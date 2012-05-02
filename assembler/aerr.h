@@ -1,14 +1,14 @@
 /**
 
-	File:           aerr.h
+	File:		aerr.h
 
-	Project:        DCPU-16 Tools
-	Component:      Assembler
+	Project:	DCPU-16 Tools
+	Component:	Assembler
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares error codes and functions in the
-	                error handling infrastructure.
+	Description:	Declares error codes and functions in the
+			error handling infrastructure.
 
 **/
 

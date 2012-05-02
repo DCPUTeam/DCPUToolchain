@@ -1,13 +1,13 @@
 /**
 
-	File:           IFunctionSignature.h
+	File:		IFunctionSignature.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the IFunctionSignature AST interface.
+	Description:	Declares the IFunctionSignature AST interface.
 
 **/
 
@@ -18,8 +18,8 @@
 
 class IFunctionSignature
 {
-public:
-	virtual StackMap generateStackMap() = 0;
+	public:
+		virtual StackMap generateStackMap() = 0;
 };
 
 #endif

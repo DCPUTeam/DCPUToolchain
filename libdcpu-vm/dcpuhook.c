@@ -1,15 +1,15 @@
 /**
 
-	File:           dcpuops.c
+	File:		dcpuops.c
 
-	Project:        DCPU-16 Tools
-	Component:      Emulator
+	Project:	DCPU-16 Tools
+	Component:	Emulator
 
-	Authors:        James Rhodes
-	                Aaron Miller
+	Authors:	James Rhodes
+			Aaron Miller
 
-	Description:    Handles opcode instructions in the
-	                virtual machine.
+	Description:	Handles opcode instructions in the
+			virtual machine.
 
 **/
 
@@ -28,6 +28,7 @@ uint16_t vm_hook_mode[HOOK_MAX] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode)
 {
 	uint16_t i;
+
 	for (i = 0; i < HOOK_MAX; i += 1)
 		if (vm_hook_list[i] != NULL && vm_hook_mode[i] == mode)
 			vm_hook_list[i](vm, pos);
@@ -37,8 +38,10 @@ uint16_t vm_hook_register(vm_t* vm, vm_hook hook, uint16_t mode)
 {
 	uint16_t id = 0;
 	printf("registering hook\n");
+
 	while (vm_hook_list[id] != NULL && id < HOOK_MAX)
 		id++;
+
 	if (id >= HOOK_MAX)
 	{
 		vm_halt(vm, "unable to register hook, maximum reached!");

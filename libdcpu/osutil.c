@@ -1,15 +1,15 @@
 /**
 
-	File:           osutil.c
+	File:		osutil.c
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines functions for interacting with the
-	                local operating system (such as getting
-                        directory names, etc.)
+	Description:	Defines functions for interacting with the
+			local operating system (such as getting
+			directory names, etc.)
 
 **/
 
@@ -55,6 +55,6 @@ bstring osutil_dirname(bstring path)
 void osutil_makebinary(FILE* fd)
 {
 #ifdef _WIN32
-	_setmode( _fileno( stdout ), _O_BINARY );
+	_setmode(_fileno(stdout), _O_BINARY);
 #endif
 }

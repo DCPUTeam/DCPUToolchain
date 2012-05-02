@@ -1,13 +1,13 @@
 /**
 
-	File:           NAddressOfOperator.h
+	File:		NAddressOfOperator.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the NAddressOfOperator AST class.
+	Description:	Declares the NAddressOfOperator AST class.
 
 **/
 
@@ -18,12 +18,12 @@
 
 class NAddressOfOperator : public NExpression
 {
-public:
-    NExpression& expr;
-	NAddressOfOperator(NExpression& expr) : expr(expr), NExpression("addressof") { }
-	virtual AsmBlock* compile(AsmGenerator& context);
-	virtual AsmBlock* reference(AsmGenerator& context);
-	virtual IType& getExpressionType(AsmGenerator& context);
+	public:
+		NExpression& expr;
+		NAddressOfOperator(NExpression& expr) : expr(expr), NExpression("addressof") { }
+		virtual AsmBlock* compile(AsmGenerator& context);
+		virtual AsmBlock* reference(AsmGenerator& context);
+		virtual IType& getExpressionType(AsmGenerator& context);
 };
 
 #endif

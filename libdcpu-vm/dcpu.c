@@ -1,14 +1,14 @@
 /**
 
-	File:           dcpu.c
+	File:		dcpu.c
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-vm
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-vm
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Handles high-level operations performed
-	                on the virtual machine (such as creation).
+	Description:	Handles high-level operations performed
+			on the virtual machine (such as creation).
 
 **/
 
@@ -30,14 +30,18 @@ void vm_init(vm_t* vm, bool init_memory)
 
 	for (i = 0; i < 0x8; i++)
 		vm->registers[i] = 0x0;
+
 	vm->pc = 0x0;
 	vm->sp = 0x0;
 	vm->ex = 0x0;
 	vm->ia = 0x0;
-	if (init_memory) {
+
+	if (init_memory)
+	{
 		for (i = 0; i < 0x10000; i++)
 			vm->ram[i] = 0x0;
 	}
+
 	vm->sleep_cycles = 0;
 	vm->dummy = 0x0;
 	vm->halted = false;
@@ -75,6 +79,7 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 	// Flash the VM's memory from the specified array.
 	unsigned int i;
 	vm_init(vm, false);
+
 	for (i = 0; i < 0x10000; i++)
 		vm->ram[i] = memory[i];
 }

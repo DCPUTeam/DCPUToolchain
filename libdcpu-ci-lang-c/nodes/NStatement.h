@@ -1,13 +1,13 @@
 /**
 
-	File:           NStatement.h
+	File:		NStatement.h
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares the NStatement AST class.
+	Description:	Declares the NStatement AST class.
 
 **/
 
@@ -18,8 +18,8 @@
 
 class NStatement : public Node
 {
-protected:
-	NStatement(std::string type) : Node("statement-" + type) { }
+	protected:
+		NStatement(std::string type) : Node("statement-" + type) { }
 };
 
 #endif

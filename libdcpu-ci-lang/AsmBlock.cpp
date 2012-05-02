@@ -1,13 +1,13 @@
 /**
 
-	File:           AsmBlock.cpp
+	File:		AsmBlock.cpp
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines the AsmBlock class.
+	Description:	Defines the AsmBlock class.
 
 **/
 
@@ -54,6 +54,7 @@ AsmBlock& operator<< (AsmBlock& block, const std::string& input)
 AsmBlock& operator<< (AsmBlock& block, const AsmBlock& input)
 {
 	if (&input == NULL) return block;
+
 	block.m_Assembly += input.m_Assembly + "\n";
 	return block;
 }

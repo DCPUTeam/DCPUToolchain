@@ -1,14 +1,14 @@
 /**
 
-	File:           ldata.c
+	File:		ldata.c
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-objfmt
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-objfmt
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Defines functions used to retrieve the
-	                linker table from an object file.
+	Description:	Defines functions used to retrieve the
+			linker table from an object file.
 
 **/
 
@@ -37,6 +37,7 @@ void ldata_write(FILE* out, struct ldata_entry* entry)
 	// 256 bytes in memory, so we need to copy it first.
 	char* cpy = malloc(256);
 	memset(cpy, 0, 256);
+
 	if (entry->label != NULL)
 	{
 		if (strlen(entry->label) + 1 < 256)
@@ -44,6 +45,7 @@ void ldata_write(FILE* out, struct ldata_entry* entry)
 		else
 			memcpy(cpy, entry->label, 256);
 	}
+
 	cpy[255] = '\0'; // Safety.
 
 	// Read the character information (256 bytes).

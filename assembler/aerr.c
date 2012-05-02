@@ -1,15 +1,15 @@
 /**
 
-	File:           aerr.c
+	File:		aerr.c
 
-	Project:        DCPU-16 Tools
-	Component:      Assembler
+	Project:	DCPU-16 Tools
+	Component:	Assembler
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Implements error handling infrastructure
-	                so that the assembler can safely handle
-	                errors as they occur.
+	Description:	Implements error handling infrastructure
+			so that the assembler can safely handle
+			errors as they occur.
 
 **/
 

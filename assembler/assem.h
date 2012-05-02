@@ -1,14 +1,14 @@
 /**
 
-	File:           assem.h
+	File:		assem.h
 
-	Project:        DCPU-16 Tools
-	Component:      Assembler
+	Project:	DCPU-16 Tools
+	Component:	Assembler
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Declares public functions to traverse and
-	                process the AST.
+	Description:	Declares public functions to traverse and
+			process the AST.
 
 **/
 

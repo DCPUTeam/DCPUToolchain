@@ -1,14 +1,14 @@
 /**
 
-	File:           aout.c
+	File:		aout.c
 
-	Project:        DCPU-16 Tools
-	Component:      Assembler
+	Project:	DCPU-16 Tools
+	Component:	Assembler
 
-	Authors:        James Rhodes
+	Authors:	James Rhodes
 
-	Description:    Implements outputting emitted opcodes and raw
-	                values into RAM images.
+	Description:	Implements outputting emitted opcodes and raw
+			values into RAM images.
 
 **/
 
@@ -45,8 +45,10 @@ struct aout_byte* aout_create_opcode(uint16_t opcode, uint16_t a, uint16_t b)
 	byte->raw = 0x0;
 	byte->label = NULL;
 	byte->label_replace = NULL;
+
 	if (opcode == 0 && a == 0)
 		ahalt(ERR_OUTPUT_NULL, NULL);
+
 	return byte;
 }
 
@@ -221,6 +223,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 	// First go through and replace all labels that need to be.
 	current_outer = start;
 	out_index = code_offset;
+
 	while (current_outer != NULL)
 	{
 		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
@@ -233,11 +236,12 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 			current_outer = current_outer->next;
 			continue;
 		}
-		
+
 		if (current_outer->label_replace != NULL)
 		{
 			current_inner = start;
 			mem_index = code_offset;
+
 			while (current_inner != NULL)
 			{
 				if (current_inner->type == AOUT_TYPE_METADATA_ORIGIN)
@@ -252,6 +256,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 					// of entry doesn't affect executable size).
 					if (!intermediate)
 						ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
+
 					if (strcmp(current_inner->label, current_outer->label_replace) == 0)
 					{
 						current_outer->raw = 0xFFFF;
@@ -300,6 +305,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 						}
 						else
 							ahalt(ERR_OPERATION_NOT_DEFINED_FOR_LABEL_RESOLUTION, NULL);
+
 						break;
 					}
 				}
@@ -307,11 +313,14 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 				// Goto next.
 				current_inner = current_inner->next;
 			}
+
 			if (current_outer->label_replace != NULL)
 				ahalt(ERR_LABEL_NOT_FOUND, current_outer->label_replace);
 		}
+
 		if (current_outer->type == AOUT_TYPE_NORMAL && current_outer->label == NULL)
 			out_index += 1;
+
 		current_outer = current_outer->next;
 	}
 
@@ -327,16 +336,17 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 		// linked.
 		true_origin = (uint16_t)ftell(out);
 	}
-	
+
 	// Write out our extension table.
 	textn_write(out);
 
 	// If relocatable, write out our relocation table.
 	if (relocatable)
 		treloc_write(out);
-	
+
 	// Now write to the file.
 	current_outer = start;
+
 	while (current_outer != NULL)
 	{
 		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
@@ -348,9 +358,12 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 		{
 			// Include binary file.
 			bname = ppfind_locate(bautofree(bfromcstr(current_outer->label)));
+
 			if (bname == NULL)
 				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
+
 			temp = fopen((const char*)(bname->data), "rb");
+
 			if (temp == NULL)
 				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
 
