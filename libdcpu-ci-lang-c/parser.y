@@ -38,6 +38,7 @@ class NInteger;
 #include "nodes/NDereferenceOperator.h"
 #include "nodes/NMethodCall.h"
 #include "nodes/NBinaryOperator.h"
+#include "nodes/NUnaryOperator.h"
 #include "nodes/NAddressOfOperator.h"
 #include "nodes/NInteger.h"
 #include "nodes/NSizeOfOperator.h"
@@ -123,13 +124,16 @@ void yyerror(const char* msg)
 %type <variable> var_decl
 %type <block> block stmts block_or_stmt
 %type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm
-%type <token> assignop binaryop
+%type <token> assignop
 
 /* OPERATOR PRECEDENCE (LOWEST -> HIGHEST) */
+/* TODO the precedence might be messed up quite a bit here *
+/*
 %left IPOSTINC IPOSTDEC DOT DEREFDOT
 %right IPREINC IPREDEC IUNARYPLUS IUNARYMINUS NEGATE BITWISE_NEGATE IADDROF
 %left STAR SLASH PERCENT
-%left ADD SUBTRACT
+%left ADD
+%left SUBTRACT
 %left BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
 %left COMPARE_LESS_THAN COMPARE_LESS_THAN_EQUAL COMPARE_GREATER_THAN COMPARE_GREATER_THAN_EQUAL
 %left COMPARE_EQUAL COMPARE_NOT_EQUAL
@@ -140,6 +144,22 @@ void yyerror(const char* msg)
 %left BOOLEAN_OR
 %right ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE
 %left COMMA
+*/
+
+%left COMMA
+%right ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE
+%left BOOLEAN_OR
+%left BOOLEAN_AND
+%left BINARY_OR
+%left BINARY_XOR
+%left BINARY_AND
+%left COMPARE_EQUAL COMPARE_NOT_EQUAL
+%left COMPARE_LESS_THAN COMPARE_LESS_THAN_EQUAL COMPARE_GREATER_THAN COMPARE_GREATER_THAN_EQUAL
+%left BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
+%left ADD SUBTRACT
+%left STAR SLASH PERCENT
+%right IPREINC IPREDEC IUNARYPLUS IUNARYMINUS NEGATE BITWISE_NEGATE IADDROF
+%left IPOSTINC IPOSTDEC DOT DEREFDOT
 
 /* START POINT */
 %start program
@@ -449,14 +469,117 @@ expr:
 		{
 			$$ = new NStructureResolutionOperator(*$1, *$3, true);
 		} |*/
-		expr binaryop expr
+		
+				
+		/* Boolean Binary Operators */	
+		
+		expr BOOLEAN_AND expr
 		{
 			$$ = new NBinaryOperator(*$1, $2, *$3);
 		} |
+		expr BOOLEAN_OR expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+				
+		/* Binary Binary Operators */	
+		
+		expr BINARY_AND expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr BINARY_OR expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr BINARY_XOR expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr BINARY_LEFT_SHIFT expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr BINARY_RIGHT_SHIFT expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		
+		/* Arithmetic Binary Operators */		
+		
+		expr SUBTRACT expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr ADD expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr STAR expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr SLASH expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr PERCENT expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		
+		/* Comparing Binary Operators */		
+		
+		expr COMPARE_EQUAL expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr COMPARE_NOT_EQUAL expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr COMPARE_LESS_THAN expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr COMPARE_LESS_THAN_EQUAL expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr COMPARE_GREATER_THAN expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		expr COMPARE_GREATER_THAN_EQUAL expr
+		{
+			$$ = new NBinaryOperator(*$1, $2, *$3);
+		} |
+		
 		BINARY_AND addressable %prec IADDROF
 		{
 			$$ = new NAddressOfOperator(*$2);
 		} |
+		
+		
+		/* unary operators TODO IPOSTINC IPOSTDEC IPREINC IPREDEC  */
+		SUBTRACT expr %prec IUNARYMINUS
+		{
+			$$ = new NUnaryOperator($1,*$2);
+		} |
+		ADD expr %prec IUNARYPLUS
+		{
+			$$ = new NUnaryOperator($1,*$2);
+		} |
+		NEGATE expr
+		{
+			$$ = new NUnaryOperator($1,*$2);
+		} |
+		BITWISE_NEGATE expr
+		{
+			$$ = new NUnaryOperator($1,*$2);
+		} |
+
+		/* ( expr ) */
 		CURVED_OPEN expr CURVED_CLOSE
 		{
 			$$ = $2;
@@ -529,26 +652,6 @@ assignop:
 		ASSIGN_SUBTRACT |
 		ASSIGN_MULTIPLY |
 		ASSIGN_DIVIDE ;
-
-binaryop:
-		BOOLEAN_AND |
-		BOOLEAN_OR |
-		BINARY_AND | 
-		BINARY_OR | 
-		BINARY_XOR |
-		BINARY_LEFT_SHIFT |
-		BINARY_RIGHT_SHIFT |
-		COMPARE_EQUAL |
-		COMPARE_NOT_EQUAL |
-		COMPARE_LESS_THAN |
-		COMPARE_LESS_THAN_EQUAL |
-		COMPARE_GREATER_THAN |
-		COMPARE_GREATER_THAN_EQUAL |
-		ADD |
-		SUBTRACT | 
-		STAR |
-		SLASH |
-		PERCENT ;
 
 type_base:
 		TYPE_VOID

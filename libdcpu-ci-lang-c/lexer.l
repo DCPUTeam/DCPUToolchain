@@ -163,6 +163,8 @@ extern int string_return;
 "^"					{ HANDLE; return yylval.token = BINARY_XOR; }
 "<<"					{ HANDLE; return yylval.token = BINARY_LEFT_SHIFT; }
 ">>"					{ HANDLE; return yylval.token = BINARY_RIGHT_SHIFT; }
+"~"					{ HANDLE; return yylval.token = BITWISE_NEGATE; }
+"!"					{ HANDLE; return yylval.token = NEGATE; }
 
 	/* Comments and whitespace */
 
