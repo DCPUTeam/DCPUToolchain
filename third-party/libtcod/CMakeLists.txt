@@ -32,7 +32,11 @@ else(MSVC OR TOOLCHAIN_ON_CYGWIN)
 	dt_needs_prebuilt(libpng)
 	dt_needs_prebuilt(sdl)
 	dt_needs_prebuilt(opengl)
-	dt_folder("third-party")
+	dt_folder("third-party")	
+
+	# OS X
+	dt_needs_osx_dependency(SDL)
+	dt_needs_osx_dependency(SDLmain)
 
 	# We also need to change our C compiler flags, since TCOD doesn't
 	# conform to our compiling standards :P
