@@ -54,7 +54,9 @@ bstring osutil_dirname(bstring path)
 	char* cpath;
 
 	cpath = bstr2cstr(path, '0');
-	dirname(cpath);
+	// needs to return in case of dirname implementation not changing parameter
+	// in particular this doesn't work on OS X check $ man 3 dirname
+	cpath = dirname(cpath);
 	bpath = bfromcstr(cpath);
 	bcstrfree(cpath);
 

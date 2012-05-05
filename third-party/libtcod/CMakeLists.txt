@@ -30,9 +30,15 @@ else(MSVC OR TOOLCHAIN_ON_CYGWIN)
 	dt_project(library)
 	dt_needs_prebuilt(zlib)
 	dt_needs_prebuilt(libpng)
-	dt_needs_prebuilt(sdl)
-	dt_needs_prebuilt(opengl)
-	dt_folder("third-party")
+	if(APPLE)
+		dt_needs_osx_dependency(SDL)
+		dt_needs_osx_dependency(SDLmain)
+		dt_needs_osx_dependency(OpenGL)
+	else()
+		dt_needs_prebuilt(sdl)
+		dt_needs_prebuilt(opengl)
+	endif()
+	dt_folder("third-party")	
 
 	# We also need to change our C compiler flags, since TCOD doesn't
 	# conform to our compiling standards :P

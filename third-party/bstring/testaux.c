@@ -379,7 +379,7 @@ int i;
 	return ret;
 }
 
-int main () {
+int __main () {
 int ret = 0;
 
 	printf ("Direct case testing of bstraux functions\n");

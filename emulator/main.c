@@ -30,6 +30,10 @@
 #include <hwlem1802mem.h>
 #include <osutil.h>
 
+#ifdef __APPLE__
+	#define main SDL_main
+#endif
+
 int main(int argc, char* argv[])
 {
 	// Define our variables.
