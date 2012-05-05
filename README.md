@@ -74,6 +74,38 @@ dcputoolchain/build$ make
 
 If everything went well the binaries are in ```dcputoolchain/Debug```
 
+#### Fedora 16
+First install a few required packages with
+
+```
+$ sudo yum install bison flex cmake mesa-lib* zlib-devel libpng-devel
+$ sudo yum groupinstall "Development Tools"
+```
+
+Download [libtcod](http://doryen.eptalys.net/libtcod/download/) and copy
+
+```
+$ sudo cp libtcod*.so /usr/lib
+$ sudo cp -r include /usr/include/libtcod
+```
+
+Next clone the repository into a new folder
+
+```
+$ git clone git://github.com/DCPUTeam/DCPUToolchain.git dcputoolchain
+$ cd dcputoolchain
+```
+
+Now generate the makefiles and and compile with
+
+```
+dcputoolchain$ cd build
+dcputoolchain/build$ cmake ..
+dcputoolchain/build$ make
+```
+
+If everything went well the binaries are in ```dcputoolchain/Debug```
+
 ### Instructions for Mac
 
 First install Xcode which should install everything you need to compile.
