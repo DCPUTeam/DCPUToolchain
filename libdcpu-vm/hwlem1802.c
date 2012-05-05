@@ -218,7 +218,6 @@ void vm_hw_lem1802_init(vm_t* vm)
 
 	// Initialize the memory for LEM1802.
 	vm_hw_lem1802_mem_init(vm);
-
 	// Set up the LEM1802 hardware information.
 	screen.id = 0x7349F615;
 	screen.version = 0x1802;
