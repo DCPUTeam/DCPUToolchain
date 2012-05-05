@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 	yyscan_t scanner;
 
 	// Set global path variable.
-	path = (bstring) osutil_dirname(bfromcstr(argv[0]));
+	osutil_setarg0(bautofree(bfromcstr(argv[0])));
 
 	// Register signal handler.
 	signal(SIGINT, ddbg_sigint);

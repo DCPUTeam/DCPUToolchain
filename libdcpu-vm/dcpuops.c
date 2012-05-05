@@ -201,9 +201,10 @@ void vm_op_mul(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_mli(vm_t* vm, uint16_t b, uint16_t a)
 {
-	int16_t val_b, val_a;
+	uint16_t val_a;
+	int16_t val_b;
 	uint16_t* store_b;
-	val_a = (int16_t)vm_resolve_value(vm, a, POS_A);
+	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = (int16_t)vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
 	OP_NUM_CYCLES(2);
@@ -241,9 +242,10 @@ void vm_op_div(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a)
 {
-	int16_t val_b, val_a;
+	uint16_t val_a;
+	int16_t val_b;
 	uint16_t* store_b;
-	val_a = (int16_t)vm_resolve_value(vm, a, POS_A);
+	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = (int16_t)vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
 	OP_NUM_CYCLES(3);
@@ -266,7 +268,9 @@ void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
 {
-	int16_t val_b, val_a;
+	uint16_t val_a;
+	uint16_t val_b;
+	int16_t val_b_signed;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value_once(vm, b, POS_B);
@@ -275,8 +279,14 @@ void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
 
 	VM_SKIP_RESET;
 
+	// compute 2s complement
+	if(val_b > 2^8) 
+		val_b_signed = 0 - (0x10000 - val_b);
+	else
+		val_b_signed = val_b;
+		
 	if (val_a != 0)
-		*store_b = val_b % val_a;
+		*store_b = val_b_signed % val_a;
 	else
 		*store_b = 0;
 
