@@ -21,6 +21,7 @@
 #include <hwio.h>
 #include <hwlem1802.h>
 #include <hwtimer.h>
+#include <imap.h>
 
 #define MAX_BREAKPOINTS 100
 
@@ -238,8 +239,6 @@ void ddbg_dump_state()
 	fprintf(stderr, "EX:  0x%04X	 IA:	0x%04X\n", vm->ex, vm->ia);
 }
 
-
-
 void ddbg_dump_ram(int start, int difference)
 {
 	int end;
@@ -267,5 +266,54 @@ void ddbg_dump_ram(int start, int difference)
 			printf("\n");
 	}
 
+	printf("\n");
+}
+
+void ddbg_disassemble(int start, int difference)
+{
+	int end;
+	int i = 0;
+	uint16_t inst, op_a, op_b;
+	struct instruction_mapping* map_inst;
+	struct register_mapping* map_op_a;
+	struct register_mapping* map_op_b;
+	
+	if (start < 0 || difference < 0)
+	{
+		printf("Invalid parameters provided to 'disassemble'.");
+		return;
+	}
+	
+	if (difference == 0)
+		end = start + 32;
+	else
+		end = start + difference;
+	
+	for (i = 0; i < difference; i++)
+	{
+		inst = INSTRUCTION_GET_OP(vm->ram[start + i]);
+		op_a = INSTRUCTION_GET_A(vm->ram[start + i]);
+		op_b = INSTRUCTION_GET_B(vm->ram[start + i]);
+		
+		map_inst = get_instruction_by_value(inst, op_a);
+		map_op_a = get_register_by_value(op_a);
+		map_op_b = get_register_by_value(op_b);
+		
+		printf("%04X: ");
+		if (map_inst != NULL)
+			printf("%s ", map_inst->name);
+		else
+			printf("DAT ");
+		if (map_op_a != NULL)
+			printf("%s ", map_op_a->name);
+		else
+			printf("%04X", op_a);
+		if (map_op_b != NULL)
+			printf("%s ", map_op_b->name);
+		else
+			printf("%04X", op_b);
+		printf("\n");
+	}
+	
 	printf("\n");
 }

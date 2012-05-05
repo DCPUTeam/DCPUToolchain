@@ -1,9 +1,9 @@
 /**
 
-	File:		aout.h
+	File:		imap.h
 
 	Project:	DCPU-16 Tools
-	Component:	Assembler
+	Component:	LibDCPU
 
 	Authors:	James Rhodes
 
@@ -34,7 +34,9 @@ struct register_mapping
 	uint16_t value;
 };
 
+struct instruction_mapping* get_instruction_by_value(uint16_t opcode, uint16_t nbopcode);
 struct instruction_mapping* get_instruction_by_name(char* name);
+struct register_mapping* get_register_by_value(uint16_t value);
 struct register_mapping* get_register_by_name(char* name, bool bracketed);
 struct register_mapping* get_register_by_name_next(char* name);
 void strupper(char* str);

@@ -3,7 +3,7 @@
 	File:		imap.c
 
 	Project:	DCPU-16 Tools
-	Component:	Assembler
+	Component:	LibDCPU
 
 	Authors:	James Rhodes
 
@@ -15,6 +15,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "posix.h"
 #include "imap.h"
@@ -124,6 +125,31 @@ struct register_mapping register_value_next_map[] =
 	NULL
 };
 
+struct register_mapping register_disasm_map[] =
+{
+	{ "NXT", NXT },
+	{ "NXT_LIT", NXT_LIT },
+	NULL
+};
+
+struct instruction_mapping* get_instruction_by_value(uint16_t opcode, uint16_t nbopcode)
+{
+	uint16_t i = 0;
+	printf("0x%04X 0x%04X\n", opcode, nbopcode);
+	
+	while (instruction_name_map[i].name != NULL)
+	{
+		printf(" - 0x%04X 0x%04X\n", instruction_name_map[i].opcode, instruction_name_map[i].nbopcode);
+		if ((opcode != OP_NONBASIC && instruction_name_map[i].opcode == opcode) ||
+			(opcode == OP_NONBASIC && instruction_name_map[i].opcode == OP_NONBASIC && instruction_name_map[i].nbopcode == nbopcode))
+			return &instruction_name_map[i];
+		
+		i += 1;
+	}
+	
+	return NULL;
+}
+
 struct instruction_mapping* get_instruction_by_name(char* name)
 {
 	uint16_t i = 0;
@@ -136,6 +162,37 @@ struct instruction_mapping* get_instruction_by_name(char* name)
 		i += 1;
 	}
 
+	return NULL;
+}
+
+struct register_mapping* get_register_by_value(uint16_t value)
+{
+	uint16_t i = 0;
+	
+	while (register_value_name_map[i].name != NULL)
+	{
+		if (register_value_name_map[i].value == value)
+			return &register_value_name_map[i];
+		
+		i += 1;
+	}
+	i = 0;
+	while (register_name_map[i].name != NULL)
+	{
+		if (register_name_map[i].value == value)
+			return &register_name_map[i];
+		
+		i += 1;
+	}
+	i = 0;
+	while (register_disasm_map[i].name != NULL)
+	{
+		if (register_disasm_map[i].value == value)
+			return &register_disasm_map[i];
+		
+		i += 1;
+	}
+	
 	return NULL;
 }
 

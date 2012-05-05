@@ -25,3 +25,4 @@ void ddbg_add_breakpoint(bstring file, int index);
 void ddbg_breakpoints_list();
 void ddbg_dump_state();
 void ddbg_dump_ram(int start, int difference);
+void ddbg_disassemble(int start, int difference);

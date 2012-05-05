@@ -37,7 +37,7 @@ void yyerror(void* scanner, const char *str);
 // Define our lexical token names.
 %token <token> ID_LOAD ID_BREAKPOINT ID_RUN ID_CONTINUE ID_STOP ID_QUIT ID_ADD ID_DELETE
 %token <token> ID_ATTACH ID_INSPECT ID_HARDWARE ID_CPU ID_DETACH ID_LIST ID_MEMORY ID_HELP
-%token <token> COLON
+%token <token> ID_DISASSEMBLE COLON
 %token <string> PARAM PATH CHARACTER STRING
 %token <number> ADDRESS
 
@@ -221,7 +221,8 @@ cpu_inspect_command:
 		} ;
 
 memory_command:
-		memory_inspect_command ;
+		memory_inspect_command |
+		memory_disassemble_command ;
 
 memory_inspect_command:
 		ID_MEMORY ID_INSPECT ADDRESS
@@ -243,6 +244,18 @@ memory_inspect_command:
 		{
 			// Inspect the state of memory.
 			ddbg_dump_ram($3, $4);
+		} ;
+
+memory_disassemble_command:
+		ID_DISASSEMBLE ADDRESS
+		{
+			// Disassemble memory.
+			ddbg_disassemble($2, 0);
+		} |
+		ID_DISASSEMBLE ADDRESS ADDRESS
+		{
+			// Disassemble memory.
+			ddbg_disassemble($2, $3);
 		} ;
 
 help_command:

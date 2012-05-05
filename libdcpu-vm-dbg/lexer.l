@@ -22,6 +22,8 @@
 
 char* dbg_trim_and_unescape(char* data, int mode);
 
+#define COPY yylval->string = bfromcstr(strdup(yytext));
+
 %}
 
 %option case-insensitive
@@ -37,24 +39,26 @@ char* dbg_trim_and_unescape(char* data, int mode);
 
 	/* Debugger command identifiers */
 
-"load"						return ID_LOAD;
-"breakpoint"					return ID_BREAKPOINT;
-"break"						return ID_BREAKPOINT;
-"run"						return ID_RUN;
-"continue"					return ID_CONTINUE;
-"stop"						return ID_STOP;
-"quit"						return ID_QUIT;
-"add"						return ID_ADD;
-"delete"					return ID_DELETE;
-"attach"					return ID_ATTACH;
-"inspect"					return ID_INSPECT;
-"hardware"					return ID_HARDWARE;
-"cpu"						return ID_CPU;
-"detach"					return ID_DETACH;
-"list"						return ID_LIST;
-"memory"					return ID_MEMORY;
-"help"						return ID_HELP;
-\?							return ID_HELP;
+"load"						COPY; return ID_LOAD;
+"breakpoint"					COPY; return ID_BREAKPOINT;
+"break"						COPY; return ID_BREAKPOINT;
+"disassemble"					COPY; return ID_DISASSEMBLE;
+"disasm"					COPY; return ID_DISASSEMBLE;
+"run"						COPY; return ID_RUN;
+"continue"					COPY; return ID_CONTINUE;
+"stop"						COPY; return ID_STOP;
+"quit"						COPY; return ID_QUIT;
+"add"						COPY; return ID_ADD;
+"delete"					COPY; return ID_DELETE;
+"attach"					COPY; return ID_ATTACH;
+"inspect"					COPY; return ID_INSPECT;
+"hardware"					COPY; return ID_HARDWARE;
+"cpu"						COPY; return ID_CPU;
+"detach"					COPY; return ID_DETACH;
+"list"						COPY; return ID_LIST;
+"memory"					COPY; return ID_MEMORY;
+"help"						COPY; return ID_HELP;
+\?						COPY; return ID_HELP;
 
 	/* General stuff */
 
