@@ -280,7 +280,16 @@ void TCOD_sys_set_custom_font(const char *fontFile,int nb_ch, int nb_cv, int fla
 	}
 	if ( TCOD_ctx.font_tcod_layout ) TCOD_ctx.font_in_row=true;
 	check_ascii_to_tcod();
-	TCOD_sys_load_font();
+	
+	// This does not need to be done and causes weird effects on 64-bit systems.
+	// I don't know why it only applies to 64-bit, but as far as I can tell, what happens
+	// is that the custom font is set, allocates ASCII tables as intended.  Then when the
+	// root console is initialized, the ASCII tables get reset in TCOD_sys_startup.  That
+	// causes the font to get all weirded up.  However!  After TCOD_sys_startup is called,
+	// it will call TCOD_sys_load_font if the character map is not yet set, so by not
+	// calling this function now, we delay the actual font load until after TCOD_sys_startup
+	// and thus the ASCII tables do not get clobbered by that function call!
+	//TCOD_sys_load_font();
 }
 
 static void find_resolution() {
