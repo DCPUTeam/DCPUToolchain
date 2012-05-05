@@ -1,6 +1,18 @@
 cmake_minimum_required(VERSION 2.8.5)
 project (toolchain)
 
+# Main version information.
+set(VERSION_STAGE "alpha")
+execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE git_hash)
+if("${git_hash}" STREQUAL "")
+	add_definitions(-DVERSION_STAGE=${VERSION_STAGE})
+else("${git_hash}" STREQUAL "")
+	string(STRIP ${git_hash} git_hash)
+	string(SUBSTRING ${git_hash} 0 9 git_hash)
+	set(VERSION_GIT ${git_hash})
+	add_definitions(-DVERSION_STAGE=${VERSION_STAGE} -DVERSION_GIT=${VERSION_GIT})
+endif("${git_hash}" STREQUAL "")
+
 # Set up some basics.
 set(IS_ROOT 1)
 set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -56,6 +68,11 @@ endif(MSVC)
 
 # Show configuration.
 message("-- Showing configuration")
+if(DEFINED VERSION_GIT)
+	message("  >> version is: '${VERSION_STAGE}; #${VERSION_GIT}'")
+else(DEFINED VERSION_GIT)
+	message("  >> version is: '${VERSION_STAGE}'")
+endif(DEFINED VERSION_GIT)
 message("  >> m4 is at: ${M4_EXECUTABLE}")
 message("  >> flex is at: ${FLEX_EXECUTABLE}")
 message("  >> flex unistd is at: ${FLEX_UNISTD_INCLUDE}")
@@ -145,6 +162,7 @@ function(dt_project type)
 		message(FATAL_ERROR "Unknown project type definition for ${PROJECT_NAME}")
 	endif("${type}" MATCHES "^executable$")
 	set_target_properties(${PROJECT_NAME} PROPERTIES include_path "${CMAKE_CURRENT_SOURCE_DIR}")
+
 endfunction(dt_project type)
 
 # Define a function which will place the current project

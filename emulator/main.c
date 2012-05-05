@@ -29,6 +29,7 @@
 #include <hwlem1802.h>
 #include <hwlem1802mem.h>
 #include <osutil.h>
+#include <version.h>
 
 int main(int argc, char* argv[])
 {
@@ -52,7 +53,8 @@ int main(int argc, char* argv[])
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
-
+	
+	version_print(bautofree(bfromcstr("Emulator")));
 	if (nerrors != 0 || show_help->count != 0)
 	{
 		if (show_help->count != 0)

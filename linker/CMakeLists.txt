@@ -9,6 +9,7 @@ endif(NOT DEFINED IS_ROOT)
 
 # Define the linker project.
 dt_project(executable)
+dt_needs(bstring)
 dt_needs(argtable2)
 dt_needs(libdcpu)
 dt_needs(libdcpu-ci-objfmt)

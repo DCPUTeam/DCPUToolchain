@@ -9,6 +9,7 @@ endif(NOT DEFINED IS_ROOT)
 
 # Define the compiler project.
 dt_project(executable)
+dt_needs(bstring)
 dt_needs(argtable2)
 dt_needs(libdcpu)
 dt_needs(libdcpu-ci-lang)

@@ -37,6 +37,7 @@
 #include <parser.h>
 #include <lexer.h>
 #include <dcpuhook.h>
+#include <version.h>
 
 #include "sdp.h"
 
@@ -83,7 +84,7 @@ int main(int argc, char** argv)
 #ifdef FEATURE_SDP
 	pthread_create(&sdp_thread, NULL, (void*)ddbg_sdp_thread, vm);
 #endif
-	printf("Welcome to the DCPU Toolchain Debugger, the best debugger in the multiverse.\n");
+	version_print(bautofree(bfromcstr("Debugger")));
 
 	for (;;)
 	{

@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <argtable2.h>
+#include <version.h>
 #include "objfile.h"
 #include "lprov.h"
 #include "ldata.h"
@@ -41,7 +42,8 @@ int main(int argc, char* argv[])
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
-
+	
+	version_print(bautofree(bfromcstr("Linker")));
 	if (nerrors != 0 || show_help->count != 0)
 	{
 		if (show_help->count != 0)

@@ -25,6 +25,7 @@
 
 extern "C"
 {
+#include <version.h>
 #include "pp.h"
 }
 
@@ -63,7 +64,8 @@ int main(int argc, char* argv[])
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
-
+	
+	version_print(bautofree(bfromcstr("Compiler")));
 	if (nerrors != 0 || show_help->count != 0)
 	{
 		if (show_help->count != 0)

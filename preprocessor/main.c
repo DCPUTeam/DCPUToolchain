@@ -18,6 +18,7 @@
 #include <lexer.h>
 #include <assert.h>
 #include <ppfind.h>
+#include <version.h>
 
 extern int pp_yyparse(void* scanner);
 
@@ -25,7 +26,8 @@ int main(int argc, char* argv[])
 {
 	yyscan_t scanner;
 	FILE* file;
-
+	
+	version_print(bautofree(bfromcstr("Preprocessor")));
 	file = fopen(argv[1], "r");
 	assert(file != NULL);
 	ppfind_add_autopath(bautofree(bfromcstr(argv[1])));
