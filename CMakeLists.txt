@@ -193,6 +193,28 @@ function(dt_needs dependency)
 	endif("${${dependency}_include_path}" MATCHES "NOTFOUND")
 endfunction(dt_needs)
 
+# Define a function which specifies a framework/library to be linked with the project for Mac
+function(dt_needs_osx_dependency dependency)
+	if(APPLE)
+		message("    .. adding '${dependency}' for Mac")
+		find_library(${dependency}_LIBRARY ${dependency})
+
+		# Fix for Mac libraries appending ;-framework X at the end specifically for SDL
+		# if this proves to be an issue for other libraries, this case statement can be removed/expanded
+		# STREQUAL is used to match SDL and not SDLmain
+		if("${dependency}" STREQUAL "SDL")
+			foreach(lib ${SDL_LIBRARY})
+				mark_as_advanced(${lib})
+				target_link_libraries(${PROJECT_NAME} "${lib}")
+			endforeach(lib)
+			find_path(SDL_INCLUDE_DIR SDL/SDL.h)
+		else()
+			mark_as_advanced(${dependency}_LIBRARY)
+			target_link_libraries(${PROJECT_NAME} "${${dependency}_LIBRARY}")
+		endif()
+	endif(APPLE)
+endfunction(dt_needs_osx_dependency dependency)
+
 # Define a function which specifies a **pre-built**
 # dependency on the project.
 function(dt_needs_prebuilt dependency)

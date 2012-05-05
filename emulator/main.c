@@ -31,6 +31,10 @@
 #include <osutil.h>
 #include <version.h>
 
+#ifdef __APPLE__
+	#define main SDL_main
+#endif
+
 int main(int argc, char* argv[])
 {
 	// Define our variables.
