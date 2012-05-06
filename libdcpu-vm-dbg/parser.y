@@ -247,6 +247,11 @@ memory_inspect_command:
 		} ;
 
 memory_disassemble_command:
+		ID_DISASSEMBLE
+		{
+			// Disassemble memory.
+			ddbg_disassemble(0, 0);
+		} |
 		ID_DISASSEMBLE ADDRESS
 		{
 			// Disassemble memory.

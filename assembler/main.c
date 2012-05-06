@@ -20,6 +20,7 @@
 #include <osutil.h>
 #include <pp.h>
 #include <ppfind.h>
+#include <version.h>
 #include "assem.h"
 #include "node.h"
 #include "aerr.h"
@@ -49,7 +50,7 @@ int main(int argc, char* argv[])
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
-	
+
 	version_print(bautofree(bfromcstr("Assembler")));
 	if (nerrors != 0 || show_help->count != 0)
 	{

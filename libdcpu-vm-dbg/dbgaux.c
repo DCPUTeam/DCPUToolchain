@@ -25,6 +25,7 @@
 
 #define MAX_BREAKPOINTS 100
 
+uint16_t flash_size = 0;
 uint16_t flash[0x10000];
 uint16_t breakpoints[MAX_BREAKPOINTS];
 uint16_t breakpoints_num;
@@ -121,6 +122,7 @@ void ddbg_load(bstring path)
 	fclose(load);
 
 	printf("Loaded 0x%04X words from %s.\n", a, path->data);
+	flash_size = a;
 }
 
 void ddbg_create_vm()
@@ -241,7 +243,6 @@ void ddbg_dump_state()
 
 void ddbg_dump_ram(int start, int difference)
 {
-	int end;
 	int i = 0;
 
 	if (start < 0 || difference < 0)
@@ -251,9 +252,7 @@ void ddbg_dump_ram(int start, int difference)
 	}
 
 	if (difference == 0)
-		end = start + 32;
-	else
-		end = start + difference;
+		difference = 32;
 
 	for (i = 0; i < difference; i++)
 	{
@@ -271,49 +270,59 @@ void ddbg_dump_ram(int start, int difference)
 
 void ddbg_disassemble(int start, int difference)
 {
-	int end;
 	int i = 0;
-	uint16_t inst, op_a, op_b;
+	uint16_t inst, op_a, op_b, val;
 	struct instruction_mapping* map_inst;
 	struct register_mapping* map_op_a;
 	struct register_mapping* map_op_b;
-	
+
 	if (start < 0 || difference < 0)
 	{
 		printf("Invalid parameters provided to 'disassemble'.");
 		return;
 	}
-	
+
 	if (difference == 0)
-		end = start + 32;
-	else
-		end = start + difference;
-	
+		difference = (flash_size - start);
+
 	for (i = 0; i < difference; i++)
 	{
+		val = vm->ram[start + i];
 		inst = INSTRUCTION_GET_OP(vm->ram[start + i]);
 		op_a = INSTRUCTION_GET_A(vm->ram[start + i]);
 		op_b = INSTRUCTION_GET_B(vm->ram[start + i]);
-		
-		map_inst = get_instruction_by_value(inst, op_a);
+
+		map_inst = get_instruction_by_value(inst, op_b);
 		map_op_a = get_register_by_value(op_a);
 		map_op_b = get_register_by_value(op_b);
-		
-		printf("%04X: ");
+
+		printf("0x%04X (0x%04X): ", start + i, vm->ram[start + i]);
 		if (map_inst != NULL)
+		{
 			printf("%s ", map_inst->name);
+			if (op_b == NXT)
+				printf("[0x%04X] ", vm->ram[start + (++i)]);
+			else if (op_b == NXT_LIT)
+				printf("0x%04X ", vm->ram[start + (++i)]);
+			else if (map_op_b != NULL)
+				printf("%s ", map_op_b->name);
+			else
+				printf("0x%04X", op_b);
+			if (op_a == NXT)
+				printf("[0x%04X] ", vm->ram[start + (++i)]);
+			else if (op_a == NXT_LIT)
+				printf("0x%04X", vm->ram[start + (++i)]);
+			else if (map_op_a != NULL)
+				printf("%s ", map_op_a->name);
+			else
+				printf("0x%04X", op_a);
+		}
+		else if (val == 0x0)
+			printf("<null>"); // No data here.
 		else
-			printf("DAT ");
-		if (map_op_a != NULL)
-			printf("%s ", map_op_a->name);
-		else
-			printf("%04X", op_a);
-		if (map_op_b != NULL)
-			printf("%s ", map_op_b->name);
-		else
-			printf("%04X", op_b);
+			printf("DAT");
 		printf("\n");
 	}
-	
+
 	printf("\n");
 }

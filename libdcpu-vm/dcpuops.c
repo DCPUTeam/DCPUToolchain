@@ -280,11 +280,11 @@ void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
 	VM_SKIP_RESET;
 
 	// compute 2s complement
-	if(val_b > 2^8) 
+	if (val_b > (2 ^ 8))
 		val_b_signed = 0 - (0x10000 - val_b);
 	else
 		val_b_signed = val_b;
-		
+
 	if (val_a != 0)
 		*store_b = val_b_signed % val_a;
 	else
