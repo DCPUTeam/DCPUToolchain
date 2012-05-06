@@ -38,7 +38,7 @@ bstring pp_do(freed_bstring path)
 
 	if (in == NULL)
 	{
-		fprintf(stderr, "preprocessor: unable to read from input file.\n");
+		fprintf(stderr, "preprocessor: unable to read from input file '%s'.\n", path.ref->data);
 		return NULL;
 	}
 

@@ -30,8 +30,6 @@
 #include "nodes/Lists.h"
 #include "parser.hpp"
 
-unsigned int yyclineno = 1;
-int yycolumn = 0;
 void count();
 void comment_line();
 void comment();
@@ -43,6 +41,8 @@ extern int string_return;
 #define HANDLE count()
 
 %}
+
+%option yylineno
 
 %x IN_CHAR
 %x IN_STRING
@@ -72,12 +72,12 @@ extern int string_return;
 
 "__asm"					{ HANDLE; BEGIN(AT_ASM); }
 <AT_ASM>\{				{ HANDLE; BEGIN(IN_ASM_BLOCK); string_return = AT_ASM; }
-<AT_ASM>\n				{ yyclineno++; }
+<AT_ASM>\n				{ }
 <AT_ASM>[ \t]+				/* ignore whitespace */;
 <AT_ASM>[^\{]				{ HANDLE; return ERROR; }
 <IN_ASM_BLOCK>\}			{ HANDLE; BEGIN(INITIAL); string_return = INITIAL; }
 <IN_ASM_BLOCK>[^\}]*			{ HANDLE; yylval.string = new std::string(yytext); return ASSEMBLY; }
-<IN_ASM_BLOCK>\n			{ yyclineno++; }
+<IN_ASM_BLOCK>\n			{ }
 <IN_ASM_BLOCK>[ \t]+			/* ignore whitespace */;
 
 	/* Type keywords */
@@ -168,7 +168,7 @@ extern int string_return;
 
 	/* Comments and whitespace */
 
-\n					{ yyclineno++; }
+\n					{ }
 "//"					{ comment_line(); }
 "/*"					{ comment(); }
 [ \t]+					/* ignore whitespace */;
@@ -197,7 +197,7 @@ void comment_line()
 
 void count()
 {
-	int i;
+	/*int i;
 
 	for (i = 0; yytext[i] != '\0'; i++)
 		if (yytext[i] == '\n')
@@ -207,7 +207,7 @@ void count()
 		else
 			yycolumn++;
 
-	ECHO;
+	ECHO;*/
 }
 
 int check_type()

@@ -1,18 +1,3 @@
-; Authors: James Rhodes, Patrick Flick
-;
-;
-;	File:			bootstrap.asm
-;
-;	Project:		DCPU-16 Tools
-;	Component:		Compiler
-;
-;	Authors:		James Rhodes
-;					Patrick Flick
-;
-;	Description:	Defines Stack and halt routines.
-;					-> this file is necessary for the compiler
-;
-
 ; Immediately jump to _setup.
 SET PC, _setup
 

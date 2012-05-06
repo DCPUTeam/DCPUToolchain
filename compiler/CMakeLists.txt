@@ -12,6 +12,7 @@ dt_project(executable)
 dt_needs(bstring)
 dt_needs(argtable2)
 dt_needs(libdcpu)
+dt_needs(libdcpu-pp)
 dt_needs(libdcpu-ci-lang)
 dt_needs(libdcpu-ci-lang-c)
 

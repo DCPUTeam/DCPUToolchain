@@ -38,7 +38,7 @@ void ppfind_add_path(freed_bstring path)
 		ppfind_init();
 
 	// Add path to list.
-	list_append(&ppfind_include_paths, path.ref);
+	list_append(&ppfind_include_paths, bstrcpy(path.ref));
 
 	// Free memory.
 	bautodestroy(path);

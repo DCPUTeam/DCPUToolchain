@@ -54,12 +54,7 @@ NDeclarations* program;
 // YY-stuff.
 extern int yylex();
 extern int yycolumn;
-
-void yyerror(const char* msg)
-{
-	fflush(stdout);
-	fprintf(stderr, "\n%*s\n%*s\n", yycolumn, "^", yycolumn, msg);
-}
+void yyerror(const char *str);
 
 %}
 
@@ -706,3 +701,12 @@ type_base:
 		{
 			$$ = new NIdentifier("uint64_t");
 		} ;
+
+%%
+
+#include "lexer.hpp"
+	
+void yyerror(const char *str)
+{
+    fprintf(stderr,"error at line %i: %s\n", yylineno, str);
+}

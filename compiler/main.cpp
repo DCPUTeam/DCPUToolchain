@@ -26,31 +26,13 @@
 extern "C"
 {
 #include <version.h>
-#include "pp.h"
+#include <pp.h>
+#include <ppfind.h>
 }
 
 extern int yyparse();
 extern FILE* yyin, *yyout;
 extern NDeclarations* program;
-
-// Utility directory name function (TODO: Move this into it's own file).
-template<typename string_t>
-
-string_t dirname(string_t source)
-{
-	if (source.size() <= 1)	//Make sure it's possible to check the last character.
-	{
-		return source;
-	}
-
-	if (*(source.rbegin() + 1) == '/') //Remove trailing slash if it exists.
-	{
-		source = source.substr(0, source.size() - 1);
-	}
-
-	source.erase(std::find(source.rbegin(), source.rend(), '/').base(), source.end());
-	return source;
-}
 
 int main(int argc, char* argv[])
 {
@@ -64,7 +46,7 @@ int main(int argc, char* argv[])
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
-	
+
 	version_print(bautofree(bfromcstr("Compiler")));
 	if (nerrors != 0 || show_help->count != 0)
 	{
@@ -78,16 +60,26 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	// Run the preprocessor.
+	ppfind_add_path(bautofree(bfromcstr(".")));
+	ppfind_add_path(bautofree(bfromcstr("include")));
+	ppfind_add_autopath(bautofree(bfromcstr(input_file->filename[0])));
+	bstring pp_result_name = pp_do(bautofree(bfromcstr(input_file->filename[0])));
+
+	if (pp_result_name == NULL)
+	{
+		fprintf(stderr, "compiler: invalid result returned from preprocessor.\n");
+		pp_cleanup(bautofree(pp_result_name));
+		return 1;
+	}
+
 	// Parse C.
-	pp_add_search_path(".");
-	pp_add_search_path("include");
-	pp_add_search_path(dirname<std::string>(input_file->filename[0]).c_str());
 	yyout = stderr;
-	yyin = pp_do(input_file->filename[0]);
+	yyin = fopen((const char*)(pp_result_name->data), "r");
 
 	if (yyin == NULL)
 	{
-		pp_cleanup();
+		pp_cleanup(bautofree(pp_result_name));
 		return 1;
 	}
 
@@ -96,7 +88,7 @@ int main(int argc, char* argv[])
 	if (yyin != stdin)
 		fclose(yyin);
 
-	pp_cleanup();
+	pp_cleanup(bautofree(pp_result_name));
 
 	if (program == NULL)
 	{
