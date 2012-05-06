@@ -22,6 +22,9 @@ NFunctionDeclaration::NFunctionDeclaration(const NType& type, const NIdentifier&
 	// We need to generate an NFunctionPointerType for when we are resolved
 	// as a pointer (for storing a reference to us into a variable).
 	this->pointerType = new NFunctionPointerType(type, arguments);
+	
+	// FIXME remove debug output
+	std::cout << "Parsed Function " << this->id.name << " and signature " << this->getSignature() << std::endl;
 }
 
 NFunctionDeclaration::~NFunctionDeclaration()

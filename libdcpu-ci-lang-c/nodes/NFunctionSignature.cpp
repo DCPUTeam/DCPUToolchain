@@ -27,6 +27,11 @@ std::string NFunctionSignature::calculateSignature(const NType& returnType, cons
 	return name;
 }
 
+
+std::string NFunctionSignature::getSignature() {
+	return NFunctionSignature(this->type, this->arguments);
+}
+
 StackMap NFunctionSignature::generateStackMap()
 {
 	StackMap map;
