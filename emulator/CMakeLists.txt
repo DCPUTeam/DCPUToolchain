@@ -15,4 +15,5 @@ dt_needs(bstring)
 dt_needs(argtable2)
 dt_needs(libdcpu)
 dt_needs(libdcpu-vm)
+dt_needs(libdcpu-ci-objfmt)
 
