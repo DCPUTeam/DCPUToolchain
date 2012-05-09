@@ -27,6 +27,7 @@ class NFunctionSignature : public IFunctionSignature
 			: type(type), arguments(arguments) { };
 		std::string getSignature();
 		static std::string calculateSignature(const NType& returnType, const VariableList& arguments);
+		static std::string calculateSignature(const VariableList& arguments);
 		virtual StackMap generateStackMap();
 };
 

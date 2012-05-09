@@ -186,11 +186,17 @@ IType& NMethodCall::getExpressionType(AsmGenerator& context)
 /*  include the return type. Thus it is not compatible to */
 /*  NFunctionSignature::calculateSignature() */
 std::string NMethodCall::calculateSignature(AsmGenerator& context) {
-	std::string name = "(";
+	
+	
+
+	std::string sig = "(";
 	for (ExpressionList::const_iterator i = this->arguments.begin(); i != this->arguments.end(); i++) {
+		if (i != this->arguments.begin()) {
+			sig = sig + ",";
+		}
 		NType type = (NType&)(*i)->getExpressionType(context);
-		name += type.name + ",";
+		sig = sig + type.name;
 	}
-	name += ")";
-	return name;
+	sig = sig + ")";
+	return sig;
 }
