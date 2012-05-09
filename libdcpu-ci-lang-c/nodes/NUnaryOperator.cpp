@@ -86,7 +86,7 @@ AsmBlock* NUnaryOperator::reference(AsmGenerator& context)
 
 IType& NUnaryOperator::getExpressionType(AsmGenerator& context)
 {
-	// A binary operator has the type of each of it's expressions.
+	// A unary operator has the type of it's expression.
 	NType rType = (NType&)this->rhs.getExpressionType(context);
 
 	return rType;

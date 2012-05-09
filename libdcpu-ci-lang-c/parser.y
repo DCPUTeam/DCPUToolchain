@@ -39,6 +39,7 @@ class NInteger;
 #include "nodes/NMethodCall.h"
 #include "nodes/NBinaryOperator.h"
 #include "nodes/NUnaryOperator.h"
+#include "nodes/NPreIncDec.h"
 #include "nodes/NAddressOfOperator.h"
 #include "nodes/NInteger.h"
 #include "nodes/NSizeOfOperator.h"
@@ -464,6 +465,16 @@ expr:
 		{
 			$$ = new NStructureResolutionOperator(*$1, *$3, true);
 		} |*/
+		
+		/* Increment and Decrement */
+		INCREMENT expr %prec IPREINC
+		{
+			$$ = new NPreIncDec($1, *$2);
+		} |
+		DECREMENT expr %prec IPREDEC
+		{
+			$$ = new NPreIncDec($1, *$2);
+		} |
 		
 				
 		/* Boolean Binary Operators */	
