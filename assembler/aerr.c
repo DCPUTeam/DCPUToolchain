@@ -15,10 +15,11 @@
 
 #include <stdlib.h>
 #include <setjmp.h>
+#include <ppexpr.h>
 #include "aerr.h"
 
 // Error strings
-const char* err_strings[17] =
+const char* err_strings[19] =
 {
 	"assembler: generic assembling error.\n",
 	"assembler: label '%s' not found.\n",
@@ -35,7 +36,10 @@ const char* err_strings[17] =
 	"assembler: unrecognized opcode '%s' encountered.\n",
 	"assembler: unable to include binary file '%s' inline.\n",
 	"assembler: the .EXPORT and .IMPORT directives can not be used unless generating intermediate code.\n",
-	"assembler: operation not defined for label resolution.\n"
+	"assembler: operation not defined for label resolution.\n",
+	"assembler: unable to resolve '%s' as label resolution is not permitted at this time.\n",
+	"assembler: the imported label '%s' may not be used as a component of an expression.\n",
+	"assembler: expression '%s' evaluates to zero while being used as a divisor.\n"
 };
 
 // Error definition
@@ -48,4 +52,22 @@ void ahalt(int errid, const char* errdata)
 	err->errid = errid;
 	err->errdata = errdata;
 	longjmp(errjmp, (long)err);
+}
+
+uint16_t ahalt_label_resolution_not_permitted(bstring name)
+{
+	ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, name->data);
+}
+
+void ahalt_expression_exit_handler(int code, void* data)
+{
+	switch (code)
+	{
+		case EXPR_EXIT_LABEL_NOT_FOUND:
+			ahalt(ERR_LABEL_NOT_FOUND, ((bstring)data)->data);
+		case EXPR_EXIT_DIVIDE_BY_ZERO:
+			ahalt(ERR_EXPRESSION_DIVIDE_BY_ZERO, ((bstring)data)->data);
+		default:
+			ahalt(ERR_GENERIC, NULL);
+	}
 }

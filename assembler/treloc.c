@@ -14,6 +14,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <ppexpr.h>
 #include "treloc.h"
 #include "aout.h"
 #include "aerr.h"
@@ -42,9 +43,9 @@ uint16_t treloc_init(struct aout_byte* start)
 		if (current->label == NULL)
 			mem_index += 1;
 
-		if (current->label_replace != NULL)
+		if (current->expr != NULL && current->expr->type == EXPR_LABEL)
 		{
-			fprintf(stderr, "RELOC [0x%04X] 0x%04X (points to %s)\n", reloc_count, mem_index, current->label_replace);
+			fprintf(stderr, "RELOC [0x%04X] 0x%04X (points to %s)\n", reloc_count, mem_index, ((bstring)current->expr->data)->data);
 			reloc_data[reloc_count] = mem_index;
 			reloc_count += 1;
 

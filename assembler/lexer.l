@@ -17,39 +17,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <bstring.h>
 #include "parser.h"
 #include "dcpu.h"
 
 unsigned int yyalineno = 1;
-
-char* trim_and_unescape(char* data, int mode)
-{
-	unsigned int i = 0, a = 0;
-	char* result = malloc(strlen(data) - 1);
-	memset(result, '\0', strlen(data) - 1);
-	for (i = 1; i < strlen(data) - 1; i++)
-	{
-		if (data[i] == '\\' && data[i+1] == '"' && mode == 0)
-		{
-			result[a] = '"';
-			i++; // skip '"'
-			a++; // increment position
-		}
-		else if (data[i] == '\\' && data[i+1] == '\'' && mode == 1)
-		{
-			result[a] = '\'';
-			i++; // skip '"'
-			a++; // increment position
-		}
-		else
-		{
-			result[a] = data[i];
-			a++; // increment position
-		}
-	}
-	free(data);
-	return result;
-}
 
 %}
 
@@ -57,6 +29,8 @@ char* trim_and_unescape(char* data, int mode)
 %x IN_REG
 %x IN_VAL
 %x IN_NXT
+%x IN_CHAR
+%x IN_STRING
 
 %%
 
@@ -156,18 +130,60 @@ char* trim_and_unescape(char* data, int mode)
 <IN_OPCODE>[Ii][Aa]		yylval.number = IA; return ADDRESS;
 <IN_OPCODE>[Nn][Xx][Tt]		yylval.number = NXT; return ADDRESS;
 
+	/* Expression operators */
+	
+\(				return PAREN_OPEN;
+\)				return PAREN_CLOSE;
+\+				return ADD;
+\-				return SUBTRACT;
+\*				return MULTIPLY;
+\/				return DIVIDE;
+\%				return MODULUS;
+\==				return EQUALS;
+\!=				return NOT_EQUALS;
+\<				return LESS_THAN;
+\<=				return LESS_EQUALS;
+\>				return GREATER_THAN;
+\>=				return GREATER_EQUALS;
+\&				return BITWISE_AND;
+\|				return BITWISE_BOR;
+\^				return BITWISE_XOR;
+\~				return BITWISE_NOT;
+
+	/* String and character analysis */
+
+\'					yylval.string = bfromcstr(""); BEGIN(IN_CHAR);
+\"					yylval.string = bfromcstr(""); BEGIN(IN_STRING);
+<IN_CHAR>\'				BEGIN(INITIAL); return CHARACTER;
+<IN_STRING>\"				BEGIN(INITIAL); return STRING;
+<IN_STRING,IN_CHAR>\\a			bconchar(yylval.string, '\a');
+<IN_STRING,IN_CHAR>\\b			bconchar(yylval.string, '\b');
+<IN_STRING,IN_CHAR>\\f			bconchar(yylval.string, '\f');
+<IN_STRING,IN_CHAR>\\n			bconchar(yylval.string, '\n');
+<IN_STRING,IN_CHAR>\\r			bconchar(yylval.string, '\r');
+<IN_STRING,IN_CHAR>\\t			bconchar(yylval.string, '\t');
+<IN_STRING,IN_CHAR>\\v			bconchar(yylval.string, '\v');
+<IN_STRING,IN_CHAR>\\\'			bconchar(yylval.string, '\'');
+<IN_STRING,IN_CHAR>\\\"			bconchar(yylval.string, '\"');
+<IN_STRING,IN_CHAR>\\\\			bconchar(yylval.string, '\\');
+<IN_STRING,IN_CHAR>\\\?			bconchar(yylval.string, '\?');
+<IN_STRING,IN_CHAR>\\[0-7]{1,3}		bconchar(yylval.string, (char)strtoul(yytext + 1, NULL, 8));
+<IN_STRING,IN_CHAR>\\x[a-fA-F0-9]{2}	bconchar(yylval.string, (char)strtoul(yytext + 2, NULL, 16));
+<IN_STRING,IN_CHAR>\\[0-9]+		return ERROR;
+<IN_STRING,IN_CHAR>\\(.|\n)		bconchar(yylval.string, yytext[1]);
+<IN_STRING>[^\\\n\"]+			bcatcstr(yylval.string, yytext);
+<IN_CHAR>[^\\\n\']+			bcatcstr(yylval.string, yytext);
+
 	/* General stuff */
 
-[A-Za-z_-]+[A-Za-z0-9_-]*	yylval.string = strdup(yytext); return WORD;
+[A-Za-z_]+[A-Za-z0-9_-]*	yylval.word = strdup(yytext); return WORD;
+0b[0-1]+			yylval.number = strtoul(yytext, NULL, 2); return ADDRESS;
 0x[0-9A-Fa-f]+			yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
 [0-9]+				yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
-L?'(\\.|[^\\'])+'		{ yylval.string = trim_and_unescape(strdup(yytext), 1); return CHARACTER; }
-L?\"(\\.|[^\\"])*\"		{ yylval.string = trim_and_unescape(strdup(yytext), 0); return STRING; }
 ,				return COMMA;
 \[				return BRACKET_OPEN;
 \]				return BRACKET_CLOSE;
 \:				return COLON;
-\+				return ADD;
 
 \n				yyalineno++; return NEWLINE;
 \;[^\r\n]*			/* ignore comments */;

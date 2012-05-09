@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <bstring.h>
+#include <ppexpr.h>
 #include "node.h"
 #include "imap.h"
 
@@ -44,7 +46,8 @@ int yywrap()
 %union
 {
 	int number;
-	char* string;
+	char* word;
+	bstring string;
 	struct ast_node_address* address;
 	struct ast_node_register* registr;
 	struct ast_node_parameter* parameter;
@@ -54,13 +57,17 @@ int yywrap()
 	struct ast_node_line* line;
 	struct ast_node_lines* lines;
 	struct ast_node_root* root;
+	struct expr* expr;
 	int* token;
 }
 
 // Define our lexical token names.
-%token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT ADD
+%token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT
+%token <token> ADD SUBTRACT MULTIPLY DIVIDE MODULUS EQUALS NOT_EQUALS LESS_THAN LESS_EQUALS GREATER_THAN GREATER_EQUALS
+%token <token> PAREN_OPEN PAREN_CLOSE BITWISE_AND BITWISE_BOR BITWISE_XOR BITWISE_NOT BOOLEAN_OR BOOLEAN_AND BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
 %token <token> KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL
-%token <string> WORD STRING CHARACTER
+%token <word> WORD
+%token <string> STRING CHARACTER
 %token <number> ADDRESS
 
 // Defines the type of each parser symbols.
@@ -75,6 +82,19 @@ int yywrap()
 %type <label> label
 %type <line> line
 %type <lines> lines
+%type <expr> expr
+
+// Operator precedence (lowest -> highest)
+%left BOOLEAN_OR
+%left BOOLEAN_AND
+%left BINARY_OR
+%left BINARY_XOR
+%left BINARY_AND
+%left COMPARE_EQUAL COMPARE_NOT_EQUAL
+%left COMPARE_LESS_THAN COMPARE_LESS_THAN_EQUAL COMPARE_GREATER_THAN COMPARE_GREATER_THAN_EQUAL
+%left BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
+%left ADD SUBTRACT
+%left MULTIPLY DIVIDE MODULUS
 
 // Start at the root node.
 %start root
@@ -142,7 +162,8 @@ line:
 			lnode->label = lbl;
 			lnode->prev = NULL;
 			lnode->keyword_data_string = NULL;
-			lnode->keyword_data_numeric = 0;
+			lnode->keyword_data_expr_1 = NULL;
+			lnode->keyword_data_expr_2 = NULL;
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_instruction;
@@ -151,9 +172,10 @@ line:
 			$$->label = NULL;
 			$$->prev = lnode;
 			$$->keyword_data_string = NULL;
-			$$->keyword_data_numeric = 0;
+			$$->keyword_data_expr_1 = NULL;
+			$$->keyword_data_expr_2 = NULL;
 		} |
-		FILL ADDRESS ADDRESS NEWLINE
+		FILL expr expr NEWLINE
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
@@ -162,8 +184,8 @@ line:
 			$$->label = NULL;
 			$$->prev = NULL;
 			$$->keyword_data_string = NULL;
-			$$->keyword_data_numeric = $2;
-			$$->keyword_data_numeric_2 = $3;
+			$$->keyword_data_expr_1 = $2;
+			$$->keyword_data_expr_2 = $3;
 		} |
 		KEYWORD WORD NEWLINE
 		{
@@ -173,8 +195,9 @@ line:
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = NULL;
-			$$->keyword_data_string = $2;
-			$$->keyword_data_numeric = 0;
+			$$->keyword_data_string = bfromcstr($2);
+			$$->keyword_data_expr_1 = NULL;
+			$$->keyword_data_expr_2 = NULL;
 		} |
 		KEYWORD STRING NEWLINE
 		{
@@ -185,9 +208,10 @@ line:
 			$$->label = NULL;
 			$$->prev = NULL;
 			$$->keyword_data_string = $2;
-			$$->keyword_data_numeric = 0;
+			$$->keyword_data_expr_1 = NULL;
+			$$->keyword_data_expr_2 = NULL;
 		} |
-		KEYWORD ADDRESS NEWLINE
+		KEYWORD expr NEWLINE
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
@@ -196,7 +220,8 @@ line:
 			$$->label = NULL;
 			$$->prev = NULL;
 			$$->keyword_data_string = NULL;
-			$$->keyword_data_numeric = $2;
+			$$->keyword_data_expr_1 = $2;
+			$$->keyword_data_expr_2 = NULL;
 		} |
 		KEYWORD NEWLINE
 		{
@@ -207,7 +232,8 @@ line:
 			$$->label = NULL;
 			$$->prev = NULL;
 			$$->keyword_data_string = NULL;
-			$$->keyword_data_numeric = 0;
+			$$->keyword_data_expr_1 = NULL;
+			$$->keyword_data_expr_2 = NULL;
 		} |
 		instruction NEWLINE
 		{
@@ -218,7 +244,8 @@ line:
 			$$->label = NULL;
 			$$->prev = NULL;
 			$$->keyword_data_string = NULL;
-			$$->keyword_data_numeric = 0;
+			$$->keyword_data_expr_1 = NULL;
+			$$->keyword_data_expr_2 = NULL;
 		} |
 		label NEWLINE
 		{
@@ -229,7 +256,8 @@ line:
 			$$->label = $1;
 			$$->prev = NULL;
 			$$->keyword_data_string = NULL;
-			$$->keyword_data_numeric = 0;
+			$$->keyword_data_expr_1 = NULL;
+			$$->keyword_data_expr_2 = NULL;
 		} |
 		label instruction NEWLINE
 		{
@@ -240,7 +268,8 @@ line:
 			lnode->label = $1;
 			lnode->prev = NULL;
 			lnode->keyword_data_string = NULL;
-			lnode->keyword_data_numeric = 0;
+			lnode->keyword_data_expr_1 = NULL;
+			lnode->keyword_data_expr_2 = NULL;
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_instruction;
@@ -249,7 +278,8 @@ line:
 			$$->label = NULL;
 			$$->prev = lnode;
 			$$->keyword_data_string = NULL;
-			$$->keyword_data_numeric = 0;
+			$$->keyword_data_expr_1 = NULL;
+			$$->keyword_data_expr_2 = NULL;
 		} |
 		label KEYWORD WORD NEWLINE
 		{
@@ -260,7 +290,8 @@ line:
 			lnode->label = $1;
 			lnode->prev = NULL;
 			lnode->keyword_data_string = NULL;
-			lnode->keyword_data_numeric = 0;
+			lnode->keyword_data_expr_1 = NULL;
+			lnode->keyword_data_expr_2 = NULL;
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
@@ -268,8 +299,9 @@ line:
 			$$->instruction = NULL;
 			$$->label = NULL;
 			$$->prev = lnode;
-			$$->keyword_data_string = $3;
-			$$->keyword_data_numeric = 0;
+			$$->keyword_data_string = bfromcstr($3);
+			$$->keyword_data_expr_1 = NULL;
+			$$->keyword_data_expr_2 = NULL;
 		} |
 		label KEYWORD STRING NEWLINE
 		{
@@ -280,7 +312,8 @@ line:
 			lnode->label = $1;
 			lnode->prev = NULL;
 			lnode->keyword_data_string = NULL;
-			lnode->keyword_data_numeric = 0;
+			lnode->keyword_data_expr_1 = NULL;
+			lnode->keyword_data_expr_2 = NULL;
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
@@ -289,9 +322,10 @@ line:
 			$$->label = NULL;
 			$$->prev = lnode;
 			$$->keyword_data_string = $3;
-			$$->keyword_data_numeric = 0;
+			$$->keyword_data_expr_1 = NULL;
+			$$->keyword_data_expr_2 = NULL;
 		} |
-		label KEYWORD ADDRESS NEWLINE
+		label KEYWORD expr NEWLINE
 		{
 			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
 			lnode->type = type_label;
@@ -300,7 +334,8 @@ line:
 			lnode->label = $1;
 			lnode->prev = NULL;
 			lnode->keyword_data_string = NULL;
-			lnode->keyword_data_numeric = 0;
+			lnode->keyword_data_expr_1 = NULL;
+			lnode->keyword_data_expr_2 = NULL;
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
@@ -309,7 +344,8 @@ line:
 			$$->label = NULL;
 			$$->prev = lnode;
 			$$->keyword_data_string = NULL;
-			$$->keyword_data_numeric = $3;
+			$$->keyword_data_expr_1 = $3;
+			$$->keyword_data_expr_2 = NULL;
 		} |
 		label KEYWORD NEWLINE
 		{
@@ -320,7 +356,8 @@ line:
 			lnode->label = $1;
 			lnode->prev = NULL;
 			lnode->keyword_data_string = NULL;
-			lnode->keyword_data_numeric = 0;
+			lnode->keyword_data_expr_1 = NULL;
+			lnode->keyword_data_expr_2 = NULL;
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
@@ -329,7 +366,8 @@ line:
 			$$->label = NULL;
 			$$->prev = lnode;
 			$$->keyword_data_string = NULL;
-			$$->keyword_data_numeric = 0;
+			$$->keyword_data_expr_1 = NULL;
+			$$->keyword_data_expr_2 = NULL;
 		} ;
 
 label:
@@ -337,6 +375,11 @@ label:
 		{
 			$$ = malloc(sizeof(struct ast_node_label));
 			$$->name = $2;
+		} |
+		WORD COLON
+		{
+			$$ = malloc(sizeof(struct ast_node_label));
+			$$->name = $1;
 		} ;
 
 instruction:
@@ -440,25 +483,17 @@ bracketed_register:
 		};
 
 address:
-		ADDRESS
+		expr
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
 			$$->value = $1;
 			$$->bracketed = 0;
 			$$->added = 0;
 			$$->addcmpt = NULL;
-		} |
-		CHARACTER
-		{
-			$$ = malloc(sizeof(struct ast_node_parameter));
-			$$->value = (uint16_t)($1[0]);
-			$$->bracketed = 0;
-			$$->added = 0;
-			$$->addcmpt = NULL;
 		};
 
 bracketed_address:
-		BRACKET_OPEN ADDRESS BRACKET_CLOSE
+		BRACKET_OPEN expr BRACKET_CLOSE
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
 			$$->value = $2;
@@ -468,7 +503,7 @@ bracketed_address:
 		};
 
 bracketed_added_address:
-		BRACKET_OPEN ADDRESS ADD WORD BRACKET_CLOSE
+		BRACKET_OPEN expr ADD WORD BRACKET_CLOSE
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
 			$$->value = $2;
@@ -476,7 +511,7 @@ bracketed_added_address:
 			$$->added = 1;
 			$$->addcmpt = $4;
 		} |
-		BRACKET_OPEN WORD ADD ADDRESS BRACKET_CLOSE
+		BRACKET_OPEN WORD ADD expr BRACKET_CLOSE
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
 			$$->value = $4;
@@ -484,3 +519,88 @@ bracketed_added_address:
 			$$->added = 1;
 			$$->addcmpt = $2;
 		};
+
+expr:
+		ADDRESS
+		{
+			$$ = expr_new_number($1);
+		} |
+		CHARACTER
+		{
+			$$ = expr_new_number((uint16_t)$1->data[0]);
+			bdestroy($1);
+		} |
+		WORD
+		{
+			$$ = expr_new_label(bautofree(bfromcstr($1)));
+			free($1);
+		} |
+		PAREN_OPEN expr PAREN_CLOSE
+		{
+			$$ = $2;
+		} |
+		SUBTRACT expr
+		{
+			$$ = expr_new(expr_new_number(0), EXPR_OP_SUBTRACT, $2);
+		} |
+		BITWISE_NOT expr
+		{
+			$$ = expr_new(expr_new_number(0xFFFF), EXPR_OP_XOR, $2);
+		} |
+		expr DIVIDE expr
+		{
+			$$ = expr_new($1, EXPR_OP_DIVIDE, $3);
+		} |
+		expr MULTIPLY expr
+		{
+			$$ = expr_new($1, EXPR_OP_MULTIPLY, $3);
+		} |
+		expr SUBTRACT expr
+		{
+			$$ = expr_new($1, EXPR_OP_SUBTRACT, $3);
+		} |
+		expr ADD expr
+		{
+			$$ = expr_new($1, EXPR_OP_ADD, $3);
+		} |
+		expr MODULUS expr
+		{
+			$$ = expr_new($1, EXPR_OP_MODULUS, $3);
+		} |
+		expr BITWISE_AND expr
+		{
+			$$ = expr_new($1, EXPR_OP_AND, $3);
+		} |
+		expr BITWISE_XOR expr
+		{
+			$$ = expr_new($1, EXPR_OP_XOR, $3);
+		} |
+		expr BITWISE_BOR expr
+		{
+			$$ = expr_new($1, EXPR_OP_BOR, $3);
+		} |
+		expr EQUALS expr
+		{
+			$$ = expr_new($1, EXPR_OP_EQUALS, $3);
+		} |
+		expr NOT_EQUALS expr
+		{
+			$$ = expr_new($1, EXPR_OP_NOT_EQUALS, $3);
+		} |
+		expr LESS_THAN expr
+		{
+			$$ = expr_new($1, EXPR_OP_LESS_THAN, $3);
+		} |
+		expr LESS_EQUALS expr
+		{
+			$$ = expr_new($1, EXPR_OP_LESS_EQUALS, $3);
+		} |
+		expr GREATER_THAN expr
+		{
+			$$ = expr_new($1, EXPR_OP_GREATER_THAN, $3);
+		} |
+		expr GREATER_EQUALS expr
+		{
+			$$ = expr_new($1, EXPR_OP_GREATER_EQUALS, $3);
+		} ;
+		

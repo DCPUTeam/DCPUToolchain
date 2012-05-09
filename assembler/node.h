@@ -16,11 +16,13 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <bstring.h>
+#include <ppexpr.h>
 
 // Address
 typedef struct ast_node_address
 {
-	uint16_t value;
+	struct expr* value;
 	uint8_t	 bracketed;
 	uint8_t	 added;
 	char*	 addcmpt;
@@ -52,7 +54,7 @@ struct ast_node_parameter
 	enum ast_node_type type;
 	struct ast_node_address* address;
 	struct ast_node_register* registr;
-	char* raw;
+	bstring raw;
 	struct ast_node_parameter* prev;
 };
 
@@ -83,9 +85,9 @@ struct ast_node_line
 	struct ast_node_label* label;
 	struct ast_node_instruction* instruction;
 	struct ast_node_line* prev;
-	char* keyword_data_string;
-	uint16_t keyword_data_numeric;
-	uint16_t keyword_data_numeric_2;
+	bstring keyword_data_string;
+	struct expr* keyword_data_expr_1;
+	struct expr* keyword_data_expr_2;
 };
 
 // Lines

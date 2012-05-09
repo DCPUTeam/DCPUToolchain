@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <bstring.h>
+#include <ppexpr.h>
 #include "node.h"
 #include "dcpu.h"
 #include "imap.h"
@@ -69,33 +71,37 @@ void reverse_parameters(struct ast_node_parameters* params)
 struct process_parameter_results
 {
 	uint16_t v;
-	uint16_t v_extra;
+	struct expr* v_extra;
 	bool v_extra_used;
 	char* v_label;
 	bool v_label_bracketed;
-	char* v_raw;
+	bstring v_raw;
 };
 
 struct process_parameters_results
 {
 	uint16_t a;
 	uint16_t b;
-	uint16_t a_extra;
-	uint16_t b_extra;
+	struct expr* a_extra;
+	struct expr* b_extra;
 	bool a_extra_used;
 	bool b_extra_used;
 	bool a_label_bracketed;
 	bool b_label_bracketed;
 	char* a_label;
 	char* b_label;
-	char* raw;
+	bstring raw;
 };
 
 struct process_parameter_results process_address(struct ast_node_address* param)
 {
 	struct process_parameter_results result;
 	struct register_mapping* registr;
+	bstring btmp = NULL;
 	result.v_raw = NULL;
+	
+	if (param->value != NULL)
+		btmp = expr_representation(param->value);
 
 	if (param->bracketed && param->added)
 	{
@@ -115,7 +121,7 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 			ahalt(ERR_NEXTED_REGISTER_UNSUPPORTED, param->addcmpt);
 		}
 
-		fprintf(stderr, "[0x%04X+%s]", param->value, registr->name);
+		fprintf(stderr, "[%s+%s]", btmp->data, registr->name);
 		result.v = registr->value;
 		result.v_extra = param->value;
 		result.v_extra_used = true;
@@ -126,12 +132,12 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 		// This is either the form 0x1000 or [0x1000].
 		if (param->bracketed)
 		{
-			fprintf(stderr, "[0x%04X]", param->value);
+			fprintf(stderr, "[%s]", btmp->data);
 			result.v = NXT;
 		}
 		else
 		{
-			fprintf(stderr, "0x%04X", param->value);
+			fprintf(stderr, "%s", btmp->data);
 			result.v = NXT_LIT;
 		}
 
@@ -139,7 +145,10 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 		result.v_extra_used = true;
 		result.v_label = NULL;
 	}
-
+	
+	if (btmp != NULL)
+		bdestroy(btmp);
+	
 	return result;
 }
 
@@ -300,7 +309,7 @@ void process_line(struct ast_node_line* line)
 	struct process_parameter_results dparam;
 	struct ast_node_parameter* dcurrent;
 	uint32_t dchrproc;
-	uint16_t i;
+	uint16_t i, flimit, fchar, opos;
 
 	// Change depending on the type of line.
 	switch (line->type)
@@ -321,8 +330,10 @@ void process_line(struct ast_node_line* line)
 					fprintf(stderr, ".FILL");
 
 					// Emit N words with value X
-					for (i = 0; i < line->keyword_data_numeric; i++)
-						aout_emit(aout_create_raw(line->keyword_data_numeric_2));
+					flimit = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
+					fchar = expr_evaluate(line->keyword_data_expr_2, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
+					for (i = 0; i < flimit; i++)
+						aout_emit(aout_create_raw(fchar));
 
 					break;
 
@@ -330,7 +341,7 @@ void process_line(struct ast_node_line* line)
 					fprintf(stderr, ".EXTENSION %s", line->keyword_data_string);
 
 					// Emit extension metadata.
-					aout_emit(aout_create_metadata_extension(line->keyword_data_string));
+					aout_emit(aout_create_metadata_extension(bstr2cstr(line->keyword_data_string, '0')));
 
 					break;
 
@@ -338,15 +349,16 @@ void process_line(struct ast_node_line* line)
 					fprintf(stderr, ".INCBIN %s", line->keyword_data_string);
 
 					// Emit binary include metadata.
-					aout_emit(aout_create_metadata_incbin(line->keyword_data_string));
+					aout_emit(aout_create_metadata_incbin(bstr2cstr(line->keyword_data_string, '0')));
 
 					break;
 
 				case ORIGIN:
-					fprintf(stderr, ".ORIGIN 0x%04X", line->keyword_data_numeric);
+					opos = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
+					fprintf(stderr, ".ORIGIN 0x%04X", opos);
 
 					// Emit origin set metadata.
-					aout_emit(aout_create_metadata_origin(line->keyword_data_numeric));
+					aout_emit(aout_create_metadata_origin(opos));
 
 					break;
 
@@ -354,7 +366,7 @@ void process_line(struct ast_node_line* line)
 					fprintf(stderr, ".EXPORT %s", line->keyword_data_string);
 
 					// Emit export metadata.
-					aout_emit(aout_create_metadata_export(line->keyword_data_string));
+					aout_emit(aout_create_metadata_export(bstr2cstr(line->keyword_data_string, '0')));
 
 					break;
 
@@ -362,7 +374,7 @@ void process_line(struct ast_node_line* line)
 					fprintf(stderr, ".IMPORT %s", line->keyword_data_string);
 
 					// Emit export metadata.
-					aout_emit(aout_create_metadata_import(line->keyword_data_string));
+					aout_emit(aout_create_metadata_import(bstr2cstr(line->keyword_data_string, '0')));
 
 					break;
 
@@ -393,16 +405,16 @@ void process_line(struct ast_node_line* line)
 
 					// Output depending on what kind of parameter it was.
 					if (dparam.v_label != NULL) // If this is a label, output something that we need to replace.
-						aout_emit(aout_create_label_replace(dparam.v_label));
+						aout_emit(aout_create_expr(expr_new_label(bautofree(bfromcstr(dparam.v_label)))));
 					else if (dparam.v_raw != NULL) // If the raw field is not null, get each character and output it.
 					{
-						fprintf(stderr, " \"%s\"", (const char*)dparam.v_raw);
+						fprintf(stderr, " \"%s\"", dparam.v_raw->data);
 
-						for (dchrproc = 0; dchrproc < strlen(dparam.v_raw); dchrproc++)
-							aout_emit(aout_create_raw(dparam.v_raw[dchrproc]));
+						for (dchrproc = 0; dchrproc < blength(dparam.v_raw); dchrproc++)
+							aout_emit(aout_create_raw(dparam.v_raw->data[dchrproc]));
 					}
 					else if (dparam.v_extra_used == true) // Just a single address.
-						aout_emit(aout_create_raw(dparam.v_extra));
+						aout_emit(aout_create_expr(dparam.v_extra));
 					else // Something that isn't handled by DAT.
 					{
 						fprintf(stderr, "\n");
@@ -442,14 +454,14 @@ void process_line(struct ast_node_line* line)
 
 				// If the parameter is a label or requires an extra word, output them.
 				if (ppresults.b_label != NULL)
-					aout_emit(aout_create_label_replace(ppresults.b_label));
+					aout_emit(aout_create_expr(expr_new_label(bautofree(bfromcstr(ppresults.b_label)))));
 				else if (ppresults.b_extra_used)
-					aout_emit(aout_create_raw(ppresults.b_extra));
+					aout_emit(aout_create_expr(ppresults.b_extra));
 
 				if (ppresults.a_label != NULL)
-					aout_emit(aout_create_label_replace(ppresults.a_label));
+					aout_emit(aout_create_expr(expr_new_label(bautofree(bfromcstr(ppresults.a_label)))));
 				else if (ppresults.a_extra_used)
-					aout_emit(aout_create_raw(ppresults.a_extra));
+					aout_emit(aout_create_expr(ppresults.a_extra));
 
 			}
 

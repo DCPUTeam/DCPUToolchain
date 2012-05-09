@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <ppexpr.h>
 #include "dcpu.h"
 
 #define AOUT_TYPE_NORMAL 0
@@ -35,19 +36,19 @@ struct aout_byte
 	uint16_t b;
 	struct aout_byte* next;
 	struct aout_byte* prev;
+	struct expr* expr;
+	char* label;
 	bool raw_used;
 	uint16_t raw;
-	char* label;
-	char* label_replace;
 };
 
 extern struct aout_byte* start;
 extern struct aout_byte* end;
 
-struct aout_byte* aout_create_opcode(uint16_t opcode, uint16_t a, uint16_t b);
 struct aout_byte* aout_create_raw(uint16_t raw);
+struct aout_byte* aout_create_opcode(uint16_t opcode, uint16_t a, uint16_t b);
 struct aout_byte* aout_create_label(char* name);
-struct aout_byte* aout_create_label_replace(char* name);
+struct aout_byte* aout_create_expr(struct expr* expression);
 struct aout_byte* aout_create_metadata_extension(char* name);
 struct aout_byte* aout_create_metadata_incbin(char* path);
 struct aout_byte* aout_create_metadata_origin(uint16_t address);
