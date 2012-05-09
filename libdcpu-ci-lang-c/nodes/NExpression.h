@@ -17,6 +17,7 @@
 class IType;
 class NExpression;
 
+#include <AsmGenerator.h>
 #include "Node.h"
 
 class NExpression : public Node
@@ -25,6 +26,8 @@ class NExpression : public Node
 		NExpression(std::string type) : Node("expression-" + type) { }
 	public:
 		virtual IType& getExpressionType(AsmGenerator& context) = 0;
+		virtual AsmBlock* compilePostOperators(AsmGenerator& context) = 0; 
+		
 };
 
 #endif

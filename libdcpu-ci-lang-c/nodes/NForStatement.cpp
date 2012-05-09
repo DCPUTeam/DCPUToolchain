@@ -25,16 +25,22 @@ AsmBlock* NForStatement::compile(AsmGenerator& context)
 
 	// Do the initalization statement.
 	AsmBlock* initEval = this->initEval.compile(context);
+	AsmBlock* initEvalPostOp = this->initEval.compilePostOperators(context);
 	*block << *initEval;
+	*block << *initEvalPostOp;
 	delete initEval;
+	delete initEvalPostOp;
 
 	// Output the start label.
 	*block << ":" << startlbl << std::endl;
 
 	// When an expression is evaluated, the result goes into the A register.
 	AsmBlock* checkEval = this->checkEval.compile(context);
+	AsmBlock* checkEvalPost = this->checkEval.compilePostOperators(context);
 	*block << *checkEval;
+	*block << *checkEvalPost;
 	delete checkEval;
+	delete checkEvalPost;
 
 	// If A is not true, jump to the end.
 	*block <<	"	IFN A, 0x1" << std::endl;
@@ -47,8 +53,11 @@ AsmBlock* NForStatement::compile(AsmGenerator& context)
 
 	// Do the loop statement.
 	AsmBlock* loopEval = this->loopEval.compile(context);
+	AsmBlock* loopEvalPost = this->loopEval.compilePostOperators(context);
 	*block << *loopEval;
+	*block << *loopEvalPost;
 	delete loopEval;
+	delete loopEvalPost;
 
 	// Jump back up to the start to do the evaluation.
 	*block <<	"	SET PC, " << startlbl << std::endl;

@@ -180,6 +180,22 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 	return block;
 }
 
+
+AsmBlock* NBinaryOperator::compilePostOperators(AsmGenerator& context)
+{
+	AsmBlock* block = new AsmBlock();
+	// compile post operators of lhs
+	AsmBlock* lhs = this->lhs.compilePostOperators(context);
+	*block <<   *lhs;
+	delete lhs;
+	// compile post operators of rhs
+	AsmBlock* rhs = this->rhs.compilePostOperators(context);
+	*block <<   *rhs;
+	delete rhs;
+
+	return block;
+}
+
 AsmBlock* NBinaryOperator::reference(AsmGenerator& context)
 {
 	throw new CompilerException("Unable to get reference to the result of an binary operator.");

@@ -25,6 +25,9 @@ class NInteger : public NExpression
 		long long value;
 		NInteger(long long value) : value(value), NExpression("integer") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
+		AsmBlock* compilePostOperators(AsmGenerator& context) {
+			return new AsmBlock();
+		}
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType& getExpressionType(AsmGenerator& context);
 

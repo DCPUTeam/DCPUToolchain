@@ -165,6 +165,22 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	return block;
 }
 
+
+
+AsmBlock* NMethodCall::compilePostOperators(AsmGenerator& context) {
+	AsmBlock* block = new AsmBlock();
+	// Evaluate each of the argument expressions.
+	for (ExpressionList::iterator i = this->arguments.begin(); i != this->arguments.end(); i++)
+	{
+		// Compile the expression.
+		AsmBlock* inst = (*i)->compilePostOperators(context);
+		*block << *inst;
+		delete inst;
+	}
+	return block;
+}
+
+
 AsmBlock* NMethodCall::reference(AsmGenerator& context)
 {
 	throw new CompilerException("Unable to get reference to the result of a method call.");

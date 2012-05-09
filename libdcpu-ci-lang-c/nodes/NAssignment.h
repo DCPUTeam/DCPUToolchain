@@ -25,6 +25,7 @@ class NAssignment : public NExpression
 		NAssignment(NExpression& lhs, int op, NExpression& rhs) :
 			lhs(lhs), op(op), rhs(rhs), NExpression("assignment") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
+		virtual AsmBlock* compilePostOperators(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType& getExpressionType(AsmGenerator& context);
 };

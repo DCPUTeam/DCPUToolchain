@@ -23,6 +23,9 @@ class NBlock : public NExpression
 		StatementList statements;
 		NBlock() : NExpression("block") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
+		AsmBlock* compilePostOperators(AsmGenerator& context) {
+			return new AsmBlock();
+		}
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType& getExpressionType(AsmGenerator& context);
 };

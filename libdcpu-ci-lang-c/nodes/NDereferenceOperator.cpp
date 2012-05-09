@@ -31,6 +31,19 @@ AsmBlock* NDereferenceOperator::compile(AsmGenerator& context)
 	return block;
 }
 
+
+AsmBlock* NDereferenceOperator::compilePostOperators(AsmGenerator& context)
+{
+	AsmBlock* block = new AsmBlock();
+
+	// get the post operators of the deref (example:  *(i++) )
+	AsmBlock* expr = this->expr.compilePostOperators(context);
+	*block <<   *expr;
+	delete expr;
+
+	return block;
+}
+
 AsmBlock* NDereferenceOperator::reference(AsmGenerator& context)
 {
 	// We want the value of the expression because we're using it as

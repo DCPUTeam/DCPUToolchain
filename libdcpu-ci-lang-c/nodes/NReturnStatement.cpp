@@ -21,6 +21,7 @@ AsmBlock* NReturnStatement::compile(AsmGenerator& context)
 
 	// Evaluate the expression (the expression will always put
 	// it's output in register A).
+	// FIXME: does the return statement have to evaluate Post-Operations?
 	AsmBlock* eval = ((NExpression&)this->result).compile(context);
 	*block << *eval;
 	delete eval;

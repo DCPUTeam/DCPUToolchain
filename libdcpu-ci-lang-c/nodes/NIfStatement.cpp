@@ -29,8 +29,11 @@ AsmBlock* NIfStatement::compile(AsmGenerator& context)
 
 	// When an expression is evaluated, the result goes into the A register.
 	AsmBlock* expr = this->eval.compile(context);
+	AsmBlock* exprPost = this->eval.compilePostOperators(context);
 	*block << *expr;
+	*block << *exprPost;
 	delete expr;
+	delete exprPost;
 
 	// Check the value of A to see where the flow should go.
 	*block <<		"	IFE A, 0x1" << std::endl;

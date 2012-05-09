@@ -39,6 +39,10 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 	*block << result.pushAddress('I');
 	*block <<	"	SET [I], A" << std::endl;
 
+	AsmBlock* exprPost = this->initExpr->compilePostOperators(context);
+	*block << *exprPost;
+	delete exprPost;
+
 	return block;
 }
 
