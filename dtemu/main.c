@@ -71,7 +71,8 @@ int main(int argc, char* argv[])
 		arg_print_syntax(stderr, argtable, "\n");
 		printf("options:\n");
 		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
-		exit(1);
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+		return 1;
 	}
 
 	// Set global path variable.
@@ -94,7 +95,8 @@ int main(int argc, char* argv[])
 		if (load == NULL)
 		{
 			fprintf(stderr, "emulator: unable to load %s from disk.\n", argv[1]);
-			exit(1);
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+			return 1;
 		}
 	}
 	else
@@ -134,7 +136,8 @@ int main(int argc, char* argv[])
 	{
 		fprintf(stderr, "emulator: it appears you passed intermediate code for execution.  link\n");
 		fprintf(stderr, "	   the input code with the toolchain linker to execute it.\n");
-		exit(1);
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+		return 1;
 	}
 
 	// And then use the VM.
@@ -168,5 +171,6 @@ int main(int argc, char* argv[])
 
 	vm_free(vm);
 
+	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;
 }

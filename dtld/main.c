@@ -53,6 +53,7 @@ int main(int argc, char* argv[])
 		arg_print_syntax(stdout, argtable, "\n");
 		printf("options:\n");
 		arg_print_glossary(stdout, argtable, "	  %-25s %s\n");
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
@@ -63,6 +64,7 @@ int main(int argc, char* argv[])
 	{
 		// Handle the error.
 		fprintf(stderr, "linker: unable to write to output file.\n");
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
@@ -80,6 +82,7 @@ int main(int argc, char* argv[])
 			// Handle the error.
 			fprintf(stderr, "linker: unable to read input file '%s'.\n", input_files->filename[i]);
 			fclose(out);
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 			return 1;
 		}
 
@@ -95,6 +98,7 @@ int main(int argc, char* argv[])
 			fprintf(stderr, "linker: input file '%s' is not in object format 1.0.\n", input_files->filename[i]);
 			fclose(in);
 			fclose(out);
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 			return 1;
 		}
 
@@ -121,6 +125,7 @@ int main(int argc, char* argv[])
 			// Handle the error.
 			fprintf(stderr, "linker: unable to read input file '%s'.\n", input_files->filename[i]);
 			fclose(out);
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 			return 1;
 		}
 
@@ -195,6 +200,7 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "linker: completed successfully.\n", input_files->filename[i]);
 	fclose(out);
 
+	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;
 }
 

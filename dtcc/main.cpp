@@ -57,6 +57,7 @@ int main(int argc, char* argv[])
 		arg_print_syntax(stderr, argtable, "\n");
 		fprintf(stderr, "options:\n");
 		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
@@ -70,6 +71,7 @@ int main(int argc, char* argv[])
 	{
 		fprintf(stderr, "compiler: invalid result returned from preprocessor.\n");
 		pp_cleanup(bautofree(pp_result_name));
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
@@ -80,6 +82,7 @@ int main(int argc, char* argv[])
 	if (yyin == NULL)
 	{
 		pp_cleanup(bautofree(pp_result_name));
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
@@ -93,6 +96,7 @@ int main(int argc, char* argv[])
 	if (program == NULL)
 	{
 		std::cerr << "An error occurred while compiling." << std::endl;
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
@@ -133,8 +137,10 @@ int main(int argc, char* argv[])
 		std::string msg = ex->getMessage();
 		std::cerr << "An error occurred while compiling." << std::endl;
 		std::cerr << msg << std::endl;
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
+	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;
 }

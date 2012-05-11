@@ -61,7 +61,8 @@ int main(int argc, char* argv[])
 		arg_print_syntax(stderr, argtable, "\n");
 		fprintf(stderr, "options:\n");
 		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
-		exit(1);
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+		return 1;
 	}
 
 	// Set up error handling.
@@ -76,6 +77,7 @@ int main(int argc, char* argv[])
 		if (img != NULL)
 			fclose(img);
 
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
@@ -87,6 +89,7 @@ int main(int argc, char* argv[])
 	{
 		fprintf(stderr, "assembler: invalid result returned from preprocessor.\n");
 		pp_cleanup(bautofree(pp_result_name));
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
@@ -96,6 +99,7 @@ int main(int argc, char* argv[])
 	if (yyin == NULL)
 	{
 		pp_cleanup(bautofree(pp_result_name));
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
@@ -110,6 +114,7 @@ int main(int argc, char* argv[])
 	if (&ast_root == NULL || ast_root.values == NULL)
 	{
 		fprintf(stderr, "assembler: syntax error, see above.\n");
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
@@ -125,6 +130,7 @@ int main(int argc, char* argv[])
 		if (img == NULL)
 		{
 			fprintf(stderr, "assembler: output file not writable.\n");
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 			return 1;
 		}
 	}
@@ -142,5 +148,6 @@ int main(int argc, char* argv[])
 	fclose(img);
 	fprintf(stderr, "assembler: completed successfully.\n");
 
+	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;
 }

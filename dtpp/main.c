@@ -49,6 +49,7 @@ int main(int argc, char* argv[])
 		arg_print_syntax(stderr, argtable, "\n");
 		fprintf(stderr, "options:\n");
 		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
 
@@ -76,5 +77,6 @@ int main(int argc, char* argv[])
 	pp_yylex_destroy(scanner);
 	if (!biseq(path, bfromcstr("-")))
 		fclose(file);
+	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;
 }
