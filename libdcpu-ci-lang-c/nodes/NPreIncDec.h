@@ -24,7 +24,6 @@ class NPreIncDec : public NExpression
 		NPreIncDec(int op, NExpression& expr) :
 			expr(expr), op(op), NExpression("preincdec") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* compilePostOperators(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType& getExpressionType(AsmGenerator& context);
 };

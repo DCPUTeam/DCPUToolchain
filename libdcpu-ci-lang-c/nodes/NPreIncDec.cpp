@@ -56,13 +56,6 @@ AsmBlock* NPreIncDec::compile(AsmGenerator& context)
 	return block;
 }
 
-AsmBlock* NPreIncDec::compilePostOperators(AsmGenerator& context)
-{
-	AsmBlock* block = new AsmBlock();
-	return block;
-}
-
-
 AsmBlock* NPreIncDec::reference(AsmGenerator& context)
 {
 	throw new CompilerException("Unable to get reference to the result of an Pre-Increment.");
