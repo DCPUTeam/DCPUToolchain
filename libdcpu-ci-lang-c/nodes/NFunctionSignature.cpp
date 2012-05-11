@@ -15,16 +15,31 @@
 #include "NFunctionSignature.h"
 #include "Lists.h"
 
+std::string NFunctionSignature::calculateSignature(const VariableList& arguments) {
+	std::string sig = "(";
+	for (VariableList::const_iterator i = arguments.begin(); i != arguments.end(); i++) {
+		if (i != arguments.begin()) {
+			sig = sig + ",";
+		}
+		sig = sig + (*i)->type.name;
+	}
+	sig = sig + ")";
+	return sig;
+}
+
+
+
 std::string NFunctionSignature::calculateSignature(const NType& returnType, const VariableList& arguments)
 {
-	std::string name = "fp-(";
-	name += returnType.name + "-";
-
-	for (VariableList::const_iterator i = arguments.begin(); i != arguments.end(); i++)
-		name += (*i)->type.name + ",";
-
-	name += ")";
+	std::string name = returnType.name;
+	std::string argumentsSig = NFunctionSignature::calculateSignature(arguments);
+	name = name + "-" + argumentsSig;
 	return name;
+}
+
+
+std::string NFunctionSignature::getSignature() {
+	return NFunctionSignature::calculateSignature(this->arguments);
 }
 
 StackMap NFunctionSignature::generateStackMap()

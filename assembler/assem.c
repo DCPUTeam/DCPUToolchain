@@ -329,7 +329,7 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case EXTENSION:
-					fprintf(stderr, ".EXTENSION %s", line->keyword_data_string);
+					fprintf(stderr, ".EXTENSION %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit extension metadata.
 					aout_emit(aout_create_metadata_extension(bstr2cstr(line->keyword_data_string, '0')));
@@ -337,7 +337,7 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case INCBIN:
-					fprintf(stderr, ".INCBIN %s", line->keyword_data_string);
+					fprintf(stderr, ".INCBIN %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit binary include metadata.
 					aout_emit(aout_create_metadata_incbin(bstr2cstr(line->keyword_data_string, '0')));
@@ -354,7 +354,7 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case EXPORT:
-					fprintf(stderr, ".EXPORT %s", line->keyword_data_string);
+					fprintf(stderr, ".EXPORT %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit export metadata.
 					aout_emit(aout_create_metadata_export(bstr2cstr(line->keyword_data_string, '0')));
@@ -362,7 +362,7 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case IMPORT:
-					fprintf(stderr, ".IMPORT %s", line->keyword_data_string);
+					fprintf(stderr, ".IMPORT %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit export metadata.
 					aout_emit(aout_create_metadata_import(bstr2cstr(line->keyword_data_string, '0')));

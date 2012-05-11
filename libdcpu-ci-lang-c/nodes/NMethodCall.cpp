@@ -45,6 +45,26 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		funcsig = (NFunctionSignature*)((NFunctionPointerType*)vartype);
 		isDirect = false;
 	}
+	
+	// check if the called function matches the signature of this method call
+	// typedef std::vector<NVariableDeclaration*> VariableList; funcsig->arguments
+	// typedef std::vector<NExpression*> ExpressionList for this->arguments
+	// first check if argument length are the same
+	if (this->arguments.size() != funcsig->arguments.size()) {
+		throw new CompilerException("There is no function with the name "
+			+ this->id.name + " and signature " + this->calculateSignature(context) + "\n"
+			+ "Candidates are:\t" + this->id.name + " with signature " + funcsig->getSignature());
+	}
+	// now check types of all the arguments
+	for (unsigned int i = 0; i < funcsig->arguments.size();i++) {
+		NType callerType = (NType&) this->arguments[i]->getExpressionType(context);
+		NType calleeType = (NType&) funcsig->arguments[i]->type;
+		if (callerType.name != calleeType.name) {
+		throw new CompilerException("There is no function with the name "
+			+ this->id.name + " and signature " + this->calculateSignature(context) + "\n"
+			+ "Candidates are:\t" + this->id.name + " with signature " + funcsig->getSignature());
+		}
+	}
 
 	// Get the stack table of this method.
 	StackFrame* frame = context.generateStackFrameIncomplete(funcsig);
@@ -162,4 +182,24 @@ IType& NMethodCall::getExpressionType(AsmGenerator& context)
 		throw new CompilerException("Called function was not found '" + this->id.name + "'.");
 
 	return (NType&)funcdecl->type;
+}
+
+
+/*  This function gets a signature for compiler error output and does not */
+/*  include the return type. Thus it is not compatible to */
+/*  NFunctionSignature::calculateSignature() */
+std::string NMethodCall::calculateSignature(AsmGenerator& context) {
+	
+	
+
+	std::string sig = "(";
+	for (ExpressionList::const_iterator i = this->arguments.begin(); i != this->arguments.end(); i++) {
+		if (i != this->arguments.begin()) {
+			sig = sig + ",";
+		}
+		NType type = (NType&)(*i)->getExpressionType(context);
+		sig = sig + type.name;
+	}
+	sig = sig + ")";
+	return sig;
 }

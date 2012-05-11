@@ -31,6 +31,7 @@ class NMethodCall : public NExpression
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType& getExpressionType(AsmGenerator& context);
+		virtual std::string calculateSignature(AsmGenerator& context);
 };
 
 #endif
