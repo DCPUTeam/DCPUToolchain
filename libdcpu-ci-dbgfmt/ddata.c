@@ -14,7 +14,7 @@
 
 #include "ddata.h"
 
-int dbgfmt_write_to_file(char* path, uint32_t num_symbols, dbg_sym* symbols) {
+int dbgfmt_write_to_file(char* path, uint32_t num_symbols, struct dbg_sym* symbols) {
 	FILE *out;
 	struct dbg_sym_file_header* hdr = dbgfmt_header(num_symbols);
 	

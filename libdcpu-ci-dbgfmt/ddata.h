@@ -44,7 +44,7 @@ struct dbgfmt_serialization_result {
 	uint8_t* bytestream;
 	uint16_t length;
 };
-int dbgfmt_write_to_file(char* path, uint32_t num_symbols, dbg_sym* symbols);
+int dbgfmt_write_to_file(char* path, uint32_t num_symbols, struct dbg_sym* symbols);
 struct dbg_sym_file_header* dbgfmt_header(uint32_t num_symbols);
 struct dbg_sym* dbgfmt_debugging_symbol(uint8_t type, void* payload);
 struct dbg_sym_basic_payload* dbgfmt_basic_payload(char* path, uint16_t lineno, uint16_t address);
