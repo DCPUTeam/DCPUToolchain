@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
 	pp_yylex_init(&scanner);
 	pp_yyset_out(stdout, scanner);
 	pp_yyset_in(file, scanner);
+	handle_start(bautofree(bfromcstr(argv[1])), stdout);
 	pp_yyparse(scanner);
 	pp_yylex_destroy(scanner);
 	return 0;

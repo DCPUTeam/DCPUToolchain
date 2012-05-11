@@ -18,6 +18,7 @@ class NAssignmentExpression;
 class NInteger;
 
 #include <lexfix.h>
+#include <bstring.h>
 #include <cstdio>
 #include <vector>
 #include <AsmGenerator.h>
@@ -54,6 +55,7 @@ NDeclarations* program;
 // YY-stuff.
 extern int yylex();
 extern int yycolumn;
+extern bstring yyfilename;
 void yyerror(const char *str);
 
 %}
@@ -77,6 +79,9 @@ void yyerror(const char *str);
 	long number;
 	int token;
 }
+
+/* TOKENS: File and line information */
+%token <token> LINE_FILE
 
 /* TOKENS: Error token for Flex to throw an error */
 %token <token> ERROR
@@ -705,8 +710,10 @@ type_base:
 %%
 
 #include "lexer.hpp"
-	
+#include <cassert>
+
 void yyerror(const char *str)
 {
-    fprintf(stderr,"error at line %i: %s\n", yylineno, str);
+	assert(yyfilename != NULL);
+	fprintf(stdout,"error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
 }

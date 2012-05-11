@@ -19,6 +19,9 @@
 AsmBlock* NDeclarations::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Tell the generator that we are the root.
 	context.m_RootNode = this;

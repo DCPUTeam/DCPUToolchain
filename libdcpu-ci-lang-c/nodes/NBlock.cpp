@@ -18,6 +18,9 @@
 AsmBlock* NBlock::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Now run through each instruction and generate code for it.
 	for (StatementList::iterator i = this->statements.begin(); i != this->statements.end(); i++)

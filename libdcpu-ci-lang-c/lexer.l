@@ -15,6 +15,7 @@
 **/
 	
 #include <lexfix.h>
+#include <bstring.h>
 #include <string>
 #include <cstdio>
 #include "nodes/NBlock.h"
@@ -33,10 +34,16 @@
 void count();
 void comment_line();
 void comment();
-extern "C" int yywrap() { return 1; }
 char* trim_and_unescape(char* data, int mode);
 int check_type();
 extern int string_return;
+extern void parse_line_file(char* yytext);
+bstring yyfilename = NULL;
+
+extern "C"
+{ 
+	#include <rparse.h>
+}
 
 #define HANDLE count()
 
@@ -50,6 +57,10 @@ extern int string_return;
 %x IN_ASM_BLOCK
 
 %%
+
+	/* Line and file directives */
+	
+\#\ [0-9]+\ [^\n]*\n			{ HANDLE; rparse_do(yytext, &yylineno, &yyfilename); }
 
 	/* Constants */
 	
@@ -234,4 +245,9 @@ int check_type()
 	// need to check here for those as well.
 
 	return IDENTIFIER;
+}
+
+int yywrap()
+{
+	return 1;
 }

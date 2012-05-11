@@ -15,6 +15,7 @@
 #define __DCPU_COMP_NODES_STATEMENT_H
 
 #include "Node.h"
+#include <string>
 
 class NStatement : public Node
 {

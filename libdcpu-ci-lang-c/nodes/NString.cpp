@@ -19,6 +19,9 @@
 AsmBlock* NString::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Stop if the assembler doesn't support DAT.
 	if (!context.getAssembler().supportsDataInstruction)

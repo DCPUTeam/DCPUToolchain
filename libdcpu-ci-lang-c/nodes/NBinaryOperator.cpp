@@ -25,6 +25,9 @@
 AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// When an expression is evaluated, the result goes into the A register.
 	AsmBlock* lhs = this->lhs.compile(context);

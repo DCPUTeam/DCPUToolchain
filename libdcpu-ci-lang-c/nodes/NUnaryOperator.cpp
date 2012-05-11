@@ -24,6 +24,9 @@
 AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// When an expression is evaluated, the result goes into the A register.
 	AsmBlock* rhs = this->rhs.compile(context);

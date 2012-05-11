@@ -23,22 +23,13 @@
 #include "node.h"
 #include "imap.h"
 
-extern unsigned int yyalineno;
-
 // Root node for the AST.
 struct ast_node_root ast_root;
 
-int yylex();
-
-void yyerror(const char *str)
-{
-    fprintf(stderr,"error at line %i: %s\n", yyalineno, str);
-}
-
-int yywrap()
-{
-    return 1;
-}
+extern int yylex();
+extern bstring yyfilename;
+extern int yylineno;
+void yyerror(const char *str);
 
 %}
 
@@ -164,6 +155,8 @@ line:
 			lnode->keyword_data_string = NULL;
 			lnode->keyword_data_expr_1 = NULL;
 			lnode->keyword_data_expr_2 = NULL;
+			lnode->line = yylineno;
+			lnode->file = bstrcpy(yyfilename);
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_instruction;
@@ -174,6 +167,8 @@ line:
 			$$->keyword_data_string = NULL;
 			$$->keyword_data_expr_1 = NULL;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		FILL expr expr NEWLINE
 		{
@@ -186,6 +181,8 @@ line:
 			$$->keyword_data_string = NULL;
 			$$->keyword_data_expr_1 = $2;
 			$$->keyword_data_expr_2 = $3;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		KEYWORD WORD NEWLINE
 		{
@@ -198,6 +195,8 @@ line:
 			$$->keyword_data_string = bfromcstr($2);
 			$$->keyword_data_expr_1 = NULL;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		KEYWORD STRING NEWLINE
 		{
@@ -210,6 +209,8 @@ line:
 			$$->keyword_data_string = $2;
 			$$->keyword_data_expr_1 = NULL;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		KEYWORD expr NEWLINE
 		{
@@ -222,6 +223,8 @@ line:
 			$$->keyword_data_string = NULL;
 			$$->keyword_data_expr_1 = $2;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		KEYWORD NEWLINE
 		{
@@ -234,6 +237,8 @@ line:
 			$$->keyword_data_string = NULL;
 			$$->keyword_data_expr_1 = NULL;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		instruction NEWLINE
 		{
@@ -246,6 +251,8 @@ line:
 			$$->keyword_data_string = NULL;
 			$$->keyword_data_expr_1 = NULL;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		label NEWLINE
 		{
@@ -258,6 +265,8 @@ line:
 			$$->keyword_data_string = NULL;
 			$$->keyword_data_expr_1 = NULL;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		label instruction NEWLINE
 		{
@@ -270,6 +279,8 @@ line:
 			lnode->keyword_data_string = NULL;
 			lnode->keyword_data_expr_1 = NULL;
 			lnode->keyword_data_expr_2 = NULL;
+			lnode->line = yylineno;
+			lnode->file = bstrcpy(yyfilename);
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_instruction;
@@ -280,6 +291,8 @@ line:
 			$$->keyword_data_string = NULL;
 			$$->keyword_data_expr_1 = NULL;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		label KEYWORD WORD NEWLINE
 		{
@@ -292,6 +305,8 @@ line:
 			lnode->keyword_data_string = NULL;
 			lnode->keyword_data_expr_1 = NULL;
 			lnode->keyword_data_expr_2 = NULL;
+			lnode->line = yylineno;
+			lnode->file = bstrcpy(yyfilename);
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
@@ -302,6 +317,8 @@ line:
 			$$->keyword_data_string = bfromcstr($3);
 			$$->keyword_data_expr_1 = NULL;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		label KEYWORD STRING NEWLINE
 		{
@@ -314,6 +331,8 @@ line:
 			lnode->keyword_data_string = NULL;
 			lnode->keyword_data_expr_1 = NULL;
 			lnode->keyword_data_expr_2 = NULL;
+			lnode->line = yylineno;
+			lnode->file = bstrcpy(yyfilename);
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
@@ -324,6 +343,8 @@ line:
 			$$->keyword_data_string = $3;
 			$$->keyword_data_expr_1 = NULL;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		label KEYWORD expr NEWLINE
 		{
@@ -336,6 +357,8 @@ line:
 			lnode->keyword_data_string = NULL;
 			lnode->keyword_data_expr_1 = NULL;
 			lnode->keyword_data_expr_2 = NULL;
+			lnode->line = yylineno;
+			lnode->file = bstrcpy(yyfilename);
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
@@ -346,6 +369,8 @@ line:
 			$$->keyword_data_string = NULL;
 			$$->keyword_data_expr_1 = $3;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} |
 		label KEYWORD NEWLINE
 		{
@@ -358,6 +383,8 @@ line:
 			lnode->keyword_data_string = NULL;
 			lnode->keyword_data_expr_1 = NULL;
 			lnode->keyword_data_expr_2 = NULL;
+			lnode->line = yylineno;
+			lnode->file = bstrcpy(yyfilename);
 
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
@@ -368,6 +395,8 @@ line:
 			$$->keyword_data_string = NULL;
 			$$->keyword_data_expr_1 = NULL;
 			$$->keyword_data_expr_2 = NULL;
+			$$->line = yylineno;
+			$$->file = bstrcpy(yyfilename);
 		} ;
 
 label:
@@ -603,4 +632,14 @@ expr:
 		{
 			$$ = expr_new($1, EXPR_OP_GREATER_EQUALS, $3);
 		} ;
-		
+
+%%
+
+#include "lexer.h"
+#include <assert.h>
+
+void yyerror(const char *str)
+{
+	assert(yyfilename != NULL);
+	fprintf(stdout,"error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
+}

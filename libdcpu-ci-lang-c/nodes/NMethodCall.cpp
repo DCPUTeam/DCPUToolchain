@@ -21,6 +21,9 @@
 AsmBlock* NMethodCall::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Get the function declaration.
 	bool isDirect = true;

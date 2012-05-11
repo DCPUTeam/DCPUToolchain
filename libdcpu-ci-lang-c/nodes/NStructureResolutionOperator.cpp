@@ -18,6 +18,9 @@
 AsmBlock* NStructureResolutionOperator::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Use our reference function to generate the location.
 	AsmBlock* expr = this->reference(context);
@@ -33,6 +36,9 @@ AsmBlock* NStructureResolutionOperator::compile(AsmGenerator& context)
 AsmBlock* NStructureResolutionOperator::reference(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// So on the left-hand side we have an expression that needs to
 	// evaluate to a structure, the only expressions that can do that

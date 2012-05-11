@@ -18,12 +18,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <bstring.h>
+#include <rparse.h>
 #include "parser.h"
 #include "dcpu.h"
 
-unsigned int yyalineno = 1;
+/*int yywrap()
+{
+	return 1;
+}*/
+
+bstring yyfilename = NULL;
 
 %}
+
+%option yylineno
 
 %x IN_OPCODE
 %x IN_REG
@@ -33,6 +41,10 @@ unsigned int yyalineno = 1;
 %x IN_STRING
 
 %%
+
+	/* Line and file directives */
+	
+\#\ [0-9]+\ [^\n]*\n				rparse_do(yytext, &yylineno, &yyfilename);
 
 	/* Assembler keywords */
 
@@ -185,8 +197,13 @@ unsigned int yyalineno = 1;
 \]				return BRACKET_CLOSE;
 \:				return COLON;
 
-\n				yyalineno++; return NEWLINE;
+\n				return NEWLINE;
 \;[^\r\n]*			/* ignore comments */;
 [ \t]+				/* ignore whitespace */;
 
 %%
+
+int yywrap()
+{
+	return 1;
+}

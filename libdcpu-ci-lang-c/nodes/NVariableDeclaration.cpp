@@ -23,6 +23,9 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 
 	// Create our new block.
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// When an expression is evaluated, the result goes into the A register.
 	AsmBlock* expr = this->initExpr->compile(context);

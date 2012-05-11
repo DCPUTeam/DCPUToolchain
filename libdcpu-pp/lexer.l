@@ -63,6 +63,7 @@ char* pp_trim_and_unescape(char* data)
 
 	/* Preprocessor keywords */
 
+<INITIAL>[\.\#][Ll][Ii][Nn][Ee]						BEGIN(PREPROCESSING); return LINE;
 <INITIAL>[\.\#][Ii][Nn][Cc][Ll][Uu][Dd][Ee]				BEGIN(PREPROCESSING); return INCLUDE;
 <INITIAL>[\.\#][Ee][Qq][Uu][Aa][Tt][Ee]					BEGIN(PREPROCESSING); return EQUATE;
 <INITIAL>[\.\#][Ee][Qq][Uu]						BEGIN(PREPROCESSING); return EQUATE;

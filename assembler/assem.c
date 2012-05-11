@@ -220,23 +220,6 @@ struct process_parameter_results process_parameter(struct ast_node_parameter* pa
 	return result;
 }
 
-char* str_concat(char* a, char* b)
-{
-	// TODO: Actually find out how abuse of not memory managing this is.
-	char* res;
-
-	if (a == NULL)
-		return b;
-	else
-	{
-		res = malloc(strlen(a) + strlen(b) + 1);
-		memcpy(res, a, strlen(a));
-		memcpy(res + strlen(a), b, strlen(b));
-		res[strlen(a) + strlen(b) + 1] = '\0';
-		return res;
-	}
-}
-
 struct process_parameters_results process_parameters(struct ast_node_parameters* params)
 {
 	struct process_parameters_results result;
@@ -310,6 +293,14 @@ void process_line(struct ast_node_line* line)
 	struct ast_node_parameter* dcurrent;
 	uint32_t dchrproc;
 	uint16_t i, flimit, fchar, opos;
+	
+	// If the line information is provided, output
+	// debugging symbols.
+	if (line != NULL && line->file != NULL)
+	{
+		// TODO: Output a debugging symbol here.
+		//fprintf(stderr, "line %i %s\n", line->line, line->file->data);
+	}
 
 	// Change depending on the type of line.
 	switch (line->type)

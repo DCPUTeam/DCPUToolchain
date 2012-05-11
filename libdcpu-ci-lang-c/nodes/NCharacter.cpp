@@ -19,6 +19,9 @@
 AsmBlock* NCharacter::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Load the numeric value in register A.
 	*block << "	SET A, " << (uint8_t)((char)this->value[0]) << "" << std::endl;
