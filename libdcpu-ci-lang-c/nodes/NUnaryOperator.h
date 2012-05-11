@@ -24,7 +24,6 @@ class NUnaryOperator : public NExpression
 		NUnaryOperator(int op, NExpression& rhs) :
 			op(op), rhs(rhs), NExpression("unaryop") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* compilePostOperators(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType& getExpressionType(AsmGenerator& context);
 };

@@ -23,9 +23,6 @@ class NIdentifier : public NExpression
 		NIdentifier(const std::string& name) : name(name), NExpression("identifier") { }
 		NIdentifier(const std::string& name, std::string type) : name(name), NExpression("identifier-" + type) { }
 		virtual AsmBlock* compile(AsmGenerator& context);
-		AsmBlock* compilePostOperators(AsmGenerator& context) {
-			return new AsmBlock();
-		}
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType& getExpressionType(AsmGenerator& context);
 };

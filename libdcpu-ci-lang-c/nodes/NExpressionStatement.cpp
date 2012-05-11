@@ -17,15 +17,7 @@
 
 AsmBlock* NExpressionStatement::compile(AsmGenerator& context)
 {
-	AsmBlock* block = new AsmBlock();
-	AsmBlock* expr = this->expression.compile(context);
-	AsmBlock* exprPost = this->expression.compilePostOperators(context);
-	*block << *expr;
-	*block << *exprPost;
-	delete expr;
-	delete exprPost;
-	return block;
-	
+	return this->expression.compile(context);
 }
 
 AsmBlock* NExpressionStatement::reference(AsmGenerator& context)

@@ -68,17 +68,6 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 	return block;
 }
 
-AsmBlock* NUnaryOperator::compilePostOperators(AsmGenerator& context)
-{
-	AsmBlock* block = new AsmBlock();
-
-	AsmBlock* expr = this->rhs.compilePostOperators(context);
-	*block <<   *expr;
-	delete expr;
-
-	return block;
-}
-
 AsmBlock* NUnaryOperator::reference(AsmGenerator& context)
 {
 	throw new CompilerException("Unable to get reference to the result of an unary operator.");
@@ -86,7 +75,7 @@ AsmBlock* NUnaryOperator::reference(AsmGenerator& context)
 
 IType& NUnaryOperator::getExpressionType(AsmGenerator& context)
 {
-	// A unary operator has the type of it's expression.
+	// A binary operator has the type of each of it's expressions.
 	NType rType = (NType&)this->rhs.getExpressionType(context);
 
 	return rType;

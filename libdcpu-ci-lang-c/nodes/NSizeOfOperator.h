@@ -23,9 +23,6 @@ class NSizeOfOperator : public NInteger
 		NType& value;
 		NSizeOfOperator(NType& value) : value(value), NInteger("sizeof") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
-		AsmBlock* compilePostOperators(AsmGenerator& context) {
-			return new AsmBlock();
-		}
 		virtual AsmBlock* reference(AsmGenerator& context);
 };
 

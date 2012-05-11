@@ -29,11 +29,8 @@ AsmBlock* NWhileStatement::compile(AsmGenerator& context)
 
 	// When an expression is evaluated, the result goes into the A register.
 	AsmBlock* eval = this->eval.compile(context);
-	AsmBlock* evalPost = this->eval.compilePostOperators(context);
 	*block << *eval;
-	*block << *evalPost;
 	delete eval;
-	delete evalPost;
 
 	// If A is not true, jump to the end.
 	*block <<	"	IFN A, 0x1" << std::endl;

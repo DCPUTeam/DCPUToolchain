@@ -22,7 +22,6 @@ class NDereferenceOperator : public NExpression
 		NExpression& expr;
 		NDereferenceOperator(NExpression& expr) : expr(expr), NExpression("dereference") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* compilePostOperators(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType& getExpressionType(AsmGenerator& context);
 };

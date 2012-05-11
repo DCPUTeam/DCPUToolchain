@@ -22,9 +22,6 @@ class NString : public NExpression
 		std::string value;
 		NString(std::string value) : value(value), NExpression("string") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
-		AsmBlock* compilePostOperators(AsmGenerator& context) {
-			return new AsmBlock();
-		}
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType& getExpressionType(AsmGenerator& context);
 };

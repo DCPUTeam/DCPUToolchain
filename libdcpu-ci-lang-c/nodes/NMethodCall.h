@@ -29,7 +29,6 @@ class NMethodCall : public NExpression
 			id(id), arguments(arguments), NExpression("methodcall") { }
 		NMethodCall(const NIdentifier& id) : id(id), NExpression("methodcall") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* compilePostOperators(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType& getExpressionType(AsmGenerator& context);
 		virtual std::string calculateSignature(AsmGenerator& context);
