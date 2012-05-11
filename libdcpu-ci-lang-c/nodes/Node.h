@@ -22,7 +22,7 @@ class AsmGenerator;
 extern int yylineno;
 extern "C"
 {
-	#include <bstring.h>
+#include <bstring.h>
 	extern bstring yyfilename;
 }
 

@@ -52,7 +52,7 @@ AsmBlock* NPreIncDec::compile(AsmGenerator& context)
 
 	// Move the value into the target address.
 	*block <<	"	SET [B], A" << std::endl;
-	
+
 	return block;
 }
 

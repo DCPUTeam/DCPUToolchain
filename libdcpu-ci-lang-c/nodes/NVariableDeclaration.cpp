@@ -23,7 +23,7 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 
 	// Create our new block.
 	AsmBlock* block = new AsmBlock();
-	
+
 	// Add file and line information.
 	*block << this->getFileAndLineState();
 

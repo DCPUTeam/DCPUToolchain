@@ -18,7 +18,7 @@
 AsmBlock* NIfStatement::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-	
+
 	// Add file and line information.
 	*block << this->getFileAndLineState();
 

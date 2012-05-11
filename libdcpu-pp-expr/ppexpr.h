@@ -1,15 +1,15 @@
 /**
- * 
+ *
  *	File:		ppexpr.h
- * 
+ *
  *	Project:	DCPU-16 Toolchain
  *	Component:	LibDCPU-PP-Expr
- * 
+ *
  *	Authors:	James Rhodes
- * 
+ *
  *	Description:	Declares the public API for using the compile-time
  *			expression system in programs.
- * 
+ *
  **/
 
 #ifndef __DCPU_LIBDCPU_PP_EXPR_H

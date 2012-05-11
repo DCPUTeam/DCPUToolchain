@@ -30,11 +30,11 @@ AsmBlock* NPostIncDec::compile(AsmGenerator& context)
 	AsmBlock* reference = this->expr.reference(context);
 	*block <<   *reference;
 	delete reference;
-	
+
 	*block <<	"	SET B, A" << std::endl;
 	// return old value in A
 	*block <<	"	SET A, [B]" << std::endl;
-	
+
 	// increment/decrement
 	switch (this->op)
 	{
@@ -49,7 +49,7 @@ AsmBlock* NPostIncDec::compile(AsmGenerator& context)
 		default:
 			throw new CompilerException("Unknown Post-Increase-Decrease operation requested.");
 	}
-	
+
 	return block;
 }
 

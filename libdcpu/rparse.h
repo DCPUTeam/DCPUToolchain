@@ -1,15 +1,15 @@
 /**
- * 
+ *
  *	File:		rparse.h
- * 
+ *
  *	Project:	DCPU-16 Toolchain
  *	Component:	LibDCPU
- * 
+ *
  *	Authors:	James Rhodes
- * 
+ *
  *	Description:	Declares functions for parsing line and filename
  *			information at a lexing stage.
- * 
+ *
  **/
 
 #ifndef __DCPU_RPARSE_H

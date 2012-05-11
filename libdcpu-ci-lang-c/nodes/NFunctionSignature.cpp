@@ -15,10 +15,13 @@
 #include "NFunctionSignature.h"
 #include "Lists.h"
 
-std::string NFunctionSignature::calculateSignature(const VariableList& arguments) {
+std::string NFunctionSignature::calculateSignature(const VariableList& arguments)
+{
 	std::string sig = "(";
-	for (VariableList::const_iterator i = arguments.begin(); i != arguments.end(); i++) {
-		if (i != arguments.begin()) {
+	for (VariableList::const_iterator i = arguments.begin(); i != arguments.end(); i++)
+	{
+		if (i != arguments.begin())
+		{
 			sig = sig + ",";
 		}
 		sig = sig + (*i)->type.name;
@@ -38,7 +41,8 @@ std::string NFunctionSignature::calculateSignature(const NType& returnType, cons
 }
 
 
-std::string NFunctionSignature::getSignature() {
+std::string NFunctionSignature::getSignature()
+{
 	return NFunctionSignature::calculateSignature(this->arguments);
 }
 

@@ -24,25 +24,29 @@
 #define DBGFMT_MAGIC		0xc0debeaf
 
 
-struct dbg_sym_file {
+struct dbg_sym_file
+{
 	uint32_t magic;
 	uint32_t num_symbols;
 	struct dbg_sym* symbols;
 };
 
-struct dbg_sym {
+struct dbg_sym
+{
 	uint16_t length;
 	uint8_t type;
 	uint8_t* payload;
 };
 
-struct dbg_sym_basic_payload {
+struct dbg_sym_basic_payload
+{
 	char* path;
 	uint16_t lineno;
 	uint16_t address;
 };
 
-struct dbgfmt_serialization_result {
+struct dbgfmt_serialization_result
+{
 	uint8_t* bytestream;
 	uint16_t length;
 };

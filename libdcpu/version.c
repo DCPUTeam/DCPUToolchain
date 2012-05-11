@@ -37,7 +37,7 @@ bstring version_get()
 void version_print(freed_bstring application)
 {
 	bstring ver = version_get();
-	
+
 	fprintf(stderr, "DCPU-16 Toolchain ");
 	fprintf(stderr, "%s", application.ref->data);
 	fprintf(stderr, " (");
@@ -45,7 +45,7 @@ void version_print(freed_bstring application)
 	fprintf(stderr, ")\n");
 	fprintf(stderr, "This software is MIT licensed.\n");
 	fprintf(stderr, "\n");
-	
+
 	bdestroy(ver);
 	bautodestroy(application);
 }

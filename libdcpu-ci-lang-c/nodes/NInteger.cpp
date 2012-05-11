@@ -45,7 +45,7 @@ NType& NInteger::UInt64Type(internal_UInt64Type);
 AsmBlock* NInteger::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-	
+
 	// Add file and line information.
 	*block << this->getFileAndLineState();
 

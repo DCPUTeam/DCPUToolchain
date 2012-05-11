@@ -1,15 +1,15 @@
 /**
- * 
+ *
  *	File:		ppexpr.c
- * 
+ *
  *	Project:	DCPU-16 Toolchain
  *	Component:	LibDCPU-PP-Expr
- * 
+ *
  *	Authors:	James Rhodes
- * 
+ *
  *	Description:	Defines the public API for using the compile-time
  *			expression system in programs.
- * 
+ *
  **/
 
 #include <bstring.h>
@@ -55,7 +55,7 @@ struct expr* expr_new_label(freed_bstring label)
 uint16_t expr_evaluate(struct expr* e, uint16_t(*labelreplace)(bstring label), void(*errexit)(int code, void* data))
 {
 	uint16_t t;
-	
+
 	switch (e->type)
 	{
 		case EXPR_NUMBER:
@@ -127,21 +127,51 @@ bstring expr_representation(struct expr* e)
 			b = expr_representation(e->b);
 			switch (e->op)
 			{
-				case EXPR_OP_ADD:		op = bfromcstr("+"); break;
-				case EXPR_OP_SUBTRACT:		op = bfromcstr("-"); break;
-				case EXPR_OP_MULTIPLY:		op = bfromcstr("*"); break;
-				case EXPR_OP_DIVIDE:		op = bfromcstr("/"); break;
-				case EXPR_OP_MODULUS:		op = bfromcstr("%"); break;
-				case EXPR_OP_EQUALS:		op = bfromcstr("=="); break;
-				case EXPR_OP_NOT_EQUALS:	op = bfromcstr("!="); break;
-				case EXPR_OP_LESS_THAN:		op = bfromcstr("<"); break;
-				case EXPR_OP_LESS_EQUALS:	op = bfromcstr("<="); break;
-				case EXPR_OP_GREATER_THAN:	op = bfromcstr(">"); break;
-				case EXPR_OP_GREATER_EQUALS:	op = bfromcstr(">="); break;
-				case EXPR_OP_AND:		op = bfromcstr("&"); break;
-				case EXPR_OP_BOR:		op = bfromcstr("|"); break;
-				case EXPR_OP_XOR:		op = bfromcstr("^"); break;
-				default:			op = bfromcstr("???"); break;
+				case EXPR_OP_ADD:
+					op = bfromcstr("+");
+					break;
+				case EXPR_OP_SUBTRACT:
+					op = bfromcstr("-");
+					break;
+				case EXPR_OP_MULTIPLY:
+					op = bfromcstr("*");
+					break;
+				case EXPR_OP_DIVIDE:
+					op = bfromcstr("/");
+					break;
+				case EXPR_OP_MODULUS:
+					op = bfromcstr("%");
+					break;
+				case EXPR_OP_EQUALS:
+					op = bfromcstr("==");
+					break;
+				case EXPR_OP_NOT_EQUALS:
+					op = bfromcstr("!=");
+					break;
+				case EXPR_OP_LESS_THAN:
+					op = bfromcstr("<");
+					break;
+				case EXPR_OP_LESS_EQUALS:
+					op = bfromcstr("<=");
+					break;
+				case EXPR_OP_GREATER_THAN:
+					op = bfromcstr(">");
+					break;
+				case EXPR_OP_GREATER_EQUALS:
+					op = bfromcstr(">=");
+					break;
+				case EXPR_OP_AND:
+					op = bfromcstr("&");
+					break;
+				case EXPR_OP_BOR:
+					op = bfromcstr("|");
+					break;
+				case EXPR_OP_XOR:
+					op = bfromcstr("^");
+					break;
+				default:
+					op = bfromcstr("???");
+					break;
 			}
 			result = bfromcstr("");
 			bconchar(result, '(');
@@ -178,7 +208,7 @@ void expr_delete(struct expr* e)
 			expr_delete(e->b);
 			break;
 	}
-	
+
 	// Free the expression itself.
 	free(e);
 }

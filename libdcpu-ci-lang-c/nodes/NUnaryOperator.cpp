@@ -24,7 +24,7 @@
 AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-	
+
 	// Add file and line information.
 	*block << this->getFileAndLineState();
 
@@ -44,26 +44,26 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 			*block <<	"	SET A, B" << std::endl;
 			break;
 
-		/* unary negative:  "A = -B" */
-		case SUBTRACT:	
+			/* unary negative:  "A = -B" */
+		case SUBTRACT:
 			// A = 0 - B
 			*block <<	"	SET A, 0x0" << std::endl;
 			*block <<	"	SUB A, B" << std::endl;
 			break;
 
-		/* unary bitwise negate:  "A = ~B" */
+			/* unary bitwise negate:  "A = ~B" */
 		case BITWISE_NEGATE:
 			*block <<	"	SET A, 0xffff" << std::endl;
 			*block <<	"	XOR A, B" << std::endl;
 			break;
-		/* boolean negate: A = !B  */
+			/* boolean negate: A = !B  */
 		case NEGATE:
 			*block <<	"	IFN B, 0x0" << std::endl;
 			*block <<	"		SET B, 0x1" << std::endl;
 			*block <<	"	SET A, 0x1" << std::endl;
 			*block <<	"	XOR A, B" << std::endl;
 			break;
-			
+
 		default:
 			throw new CompilerException("Unknown unary operations requested.");
 	}
