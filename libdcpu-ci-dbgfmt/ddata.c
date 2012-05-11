@@ -16,15 +16,27 @@
 
 int dbgfmt_write_to_file(char* path, uint32_t num_symbols, struct dbg_sym* symbols) {
 	FILE *out;
-	struct dbg_sym_file_header* hdr = dbgfmt_header(num_symbols);
+	struct dbg_sym_file* hdr = dbgfmt_header(num_symbols);
+	//size_t i = 0;
 	
 	out = fopen(path, "wb");
 	fwrite(&hdr->magic, sizeof(hdr->magic), 1, out);
 	fwrite(&hdr->num_symbols, sizeof(hdr->num_symbols), 1, out);
-	
 	fclose(out);
 	
 	return 0;
+}
+
+struct dbg_sym_file* dbgfmt_read_file(char* path) {
+	FILE *in;
+	struct dbg_sym_file* file = malloc(sizeof(struct dbg_sym_file));
+	
+	in = fopen(path, "rb");
+	fread(&file->magic, 1, sizeof(file->magic), in);
+	fread(&file->num_symbols, 1, sizeof(file->symbols), in);
+	fclose(in);
+	
+	return file;
 }
 
 struct dbgfmt_serialization_result* dbgfmt_serialize_basic(void* payload) {
@@ -49,8 +61,8 @@ struct dbgfmt_serialization_result* dbgfmt_serialize_basic(void* payload) {
 	return ser_res;
 }
 
-struct dbg_sym_file_header* dbgfmt_header(uint32_t num_symbols) {
-	struct dbg_sym_file_header* header = malloc(sizeof(struct dbg_sym_file_header));
+struct dbg_sym_file* dbgfmt_header(uint32_t num_symbols) {
+	struct dbg_sym_file* header = malloc(sizeof(struct dbg_sym_file));
 	
 	header->magic = DBGFMT_MAGIC;
 	header->num_symbols = num_symbols;
