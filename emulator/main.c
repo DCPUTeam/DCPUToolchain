@@ -23,13 +23,14 @@
 #include <string.h>
 #include <bstring.h>
 #include <argtable2.h>
-#include "dcpu.h"
+#include <dcpu.h>
 #include <hwio.h>
 #include <hwtimer.h>
 #include <hwlem1802.h>
 #include <hwlem1802mem.h>
 #include <osutil.h>
 #include <version.h>
+#include <ldata.h>
 
 #ifdef __APPLE__
 	#define main SDL_main
@@ -40,11 +41,13 @@ int main(int argc, char* argv[])
 	// Define our variables.
 	FILE* load;
 	uint16_t flash[0x10000];
+	char leading[0x100];
 	unsigned int i, a;
 	int cread;
 	bool uread = true;
 	vm_t* vm;
 	int nerrors;
+	bstring ss, st;
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
@@ -77,6 +80,10 @@ int main(int argc, char* argv[])
 	// Zero out the flash space.
 	for (i = 0; i < 0x10000; i++)
 		flash[i] = 0x0;
+	
+	// Zero out the leading space.
+	for (i = 0; i < 0x100; i++)
+		leading[i] = 0x0;
 
 	// Load from either file or stdin.
 	if (strcmp(input_file->filename[0], "-") != 0)
@@ -86,7 +93,7 @@ int main(int argc, char* argv[])
 
 		if (load == NULL)
 		{
-			printf("Unable to load %s from disk.\n", argv[1]);
+			fprintf(stderr, "emulator: unable to load %s from disk.\n", argv[1]);
 			exit(1);
 		}
 	}
@@ -106,6 +113,7 @@ int main(int argc, char* argv[])
 	for (i = 0; i < 0x20000; i++)
 	{
 		cread = fgetc(load);
+		leading[i] = cread;
 		if (cread == -1) break;
 		if (uread)
 			cread <<= 8;
@@ -115,6 +123,19 @@ int main(int argc, char* argv[])
 		uread = !uread;
 	}
 	fclose(load);
+	
+	// Check to see if the first X bytes matches the header
+	// for intermediate code and stop if it does.
+	ss = bfromcstr("");
+	st = bfromcstr(ldata_objfmt);
+	for (i = 0; i < strlen(ldata_objfmt); i++)
+		bconchar(ss, leading[i]);
+	if (biseq(ss, st))
+	{
+		fprintf(stderr, "emulator: it appears you passed intermediate code for execution.  link\n");
+		fprintf(stderr, "          the input code with the toolchain linker to execute it.\n");
+		exit(1);
+	}
 
 	// And then use the VM.
 	vm = vm_create();

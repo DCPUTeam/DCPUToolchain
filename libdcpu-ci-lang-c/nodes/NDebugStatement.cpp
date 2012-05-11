@@ -18,6 +18,9 @@
 AsmBlock* NDebugStatement::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Evaluate the expression (the expression will always put
 	// it's output in register A).

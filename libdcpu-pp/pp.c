@@ -27,14 +27,21 @@ bstring pp_do(freed_bstring path)
 	FILE* out;
 	bstring temp;
 	yyscan_t scanner;
+	freed_bstring friendly;
 
 	// Open and set up the temporary output areas.
 	temp = bfromcstr(tempnam(".", "pp."));
 
 	if (biseq(path.ref, bfromcstr("-")))
+	{
+		friendly = bautofree(bfromcstr("-"));
 		in = stdin;
+	}
 	else
+	{
+		friendly = bautofree(bstrcpy(path.ref));
 		in = fopen((const char*)(path.ref->data), "r");
+	}
 
 	if (in == NULL)
 	{
@@ -57,6 +64,7 @@ bstring pp_do(freed_bstring path)
 	pp_yylex_init(&scanner);
 	pp_yyset_out(out, scanner);
 	pp_yyset_in(in, scanner);
+	handle_start(friendly, out);
 	pp_yyparse(scanner);
 	pp_yylex_destroy(scanner);
 

@@ -15,7 +15,10 @@
 #ifndef __DCPU_ASM_AERR_H
 #define __DCPU_ASM_AERR_H
 
+#include <stdint.h>
 #include <setjmp.h>
+#include <bstring.h>
+#include <ppexpr.h>
 
 // Error codes
 #define ERR_GENERIC 0
@@ -34,6 +37,9 @@
 #define ERR_UNABLE_TO_INCBIN 13
 #define ERR_NOT_GENERATING_INTERMEDIATE_CODE 14
 #define ERR_OPERATION_NOT_DEFINED_FOR_LABEL_RESOLUTION 15
+#define ERR_LABEL_RESOLUTION_NOT_PERMITTED 16
+#define ERR_EXPRESSION_NOT_PERMITTED 17
+#define ERR_EXPRESSION_DIVIDE_BY_ZERO 18
 
 // Variables
 extern const char* err_strings[];
@@ -48,5 +54,7 @@ struct errinfo
 
 // Utility method for throwing errors.
 void ahalt(int errid, const char* errdata);
+uint16_t ahalt_label_resolution_not_permitted(bstring name);
+void ahalt_expression_exit_handler(int code, void* data);
 
 #endif

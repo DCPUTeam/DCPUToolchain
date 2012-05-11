@@ -24,6 +24,9 @@
 AsmBlock* NAssignment::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// We only need to both to push the value of the LHS if we're
 	// doing a relative adjustment.

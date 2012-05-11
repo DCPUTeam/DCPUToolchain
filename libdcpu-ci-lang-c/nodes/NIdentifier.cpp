@@ -18,6 +18,9 @@
 AsmBlock* NIdentifier::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Get the position of the variable.
 	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
@@ -38,6 +41,9 @@ AsmBlock* NIdentifier::compile(AsmGenerator& context)
 AsmBlock* NIdentifier::reference(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Get the position of the variable.
 	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);

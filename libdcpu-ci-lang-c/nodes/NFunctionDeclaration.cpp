@@ -35,6 +35,9 @@ NFunctionDeclaration::~NFunctionDeclaration()
 AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// If this function does not have a code block, then we assume
 	// this function will be imported at some stage.

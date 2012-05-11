@@ -19,6 +19,9 @@
 AsmBlock* NAssemblyStatement::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Directly insert the assembly code.
 	*block << this->asmcode << std::endl;

@@ -31,6 +31,8 @@ list_t scopes;
 list_t macros;
 void pp_discard_buffer();
 void yyerror(void* scanner, const char *str);
+void handle_line(int line, bstring file, void* current);
+void handle_start(freed_bstring name, FILE* current);
 void handle_output(bstring output, void* scanner);
 void handle_include(bstring fname, void* current);
 bool is_globally_initialized = false;
@@ -101,7 +103,7 @@ struct macrodef_entry* active_macro = NULL;
 }
 
 // Define our lexical token names.
-%token <token> INCLUDE EQUATE IF IFDEF IFNDEF ELSE ENDIF MACRO ENDMACRO PARAM_OPEN PARAM_CLOSE COMMA UNDEF MACROCALL
+%token <token> LINE INCLUDE EQUATE IF IFDEF IFNDEF ELSE ENDIF MACRO ENDMACRO PARAM_OPEN PARAM_CLOSE COMMA UNDEF MACROCALL
 %token <string> STRING WORD
 %token <any> ANY_CHAR
 %token <number> NUMBER
@@ -179,6 +181,14 @@ preprocessor:
 			/* We must recursively invoke the preprocessor on the new
 			   input, sending to standard output. */
 			handle_include($2, scanner);
+		} |
+		LINE NUMBER STRING
+		{
+			handle_line($2, $3, scanner);
+		} |
+		LINE NUMBER WORD
+		{
+			handle_line($2, $3, scanner);
 		} |
 		EQUATE WORD STRING
 		{
@@ -446,7 +456,7 @@ callarg:
 
 void yyerror(void* scanner, const char *str)
 {
-    fprintf(stderr,"error at line %i: %s\n", pp_yyget_lineno(scanner), str);
+	fprintf(stderr,"error at line %i: %s\n", pp_yyget_lineno(scanner), str);
 }
 
 void handle_output(bstring output, void* scanner)
@@ -460,13 +470,29 @@ void handle_output(bstring output, void* scanner)
 	}
 }
 
+void handle_line(int line, bstring file, void* current)
+{
+	fprintf(pp_yyget_out((yyscan_t)current), "# %i %s", line, file->data);
+}
+
+bstring pp_yyfilename = NULL;
+
+void handle_start(freed_bstring name, FILE* output)
+{
+	fprintf(output, "# 1 %s\n", name.ref->data);
+	pp_yyfilename = bstrcpy(name.ref);
+	bautodestroy(name);
+}
+
 void handle_include(bstring fname, void* current)
 {
 	yyscan_t scanner;
 	FILE* ffnew;
 	bstring dir;
 	bstring path;
-
+	int origline;
+	bstring origfile;
+	
 	// Search for the file using ppfind.
 	if (fname->data[0] != '/' && fname->data[1] != ':')
 		path = ppfind_locate(bautocpy(fname));
@@ -487,7 +513,18 @@ void handle_include(bstring fname, void* current)
 	// to the include path.
 	dir = osutil_dirname(path);
 	ppfind_add_path(bautocpy(dir));
-
+	
+	// Check to make sure the original filename is set.
+	assert(pp_yyfilename != NULL);
+	
+	// Store existing state (line number
+	// and filename).
+	origfile = bstrcpy(pp_yyfilename);
+	origline = pp_yyget_lineno(current);
+	
+	// Output the new state.
+	fprintf(pp_yyget_out(current), "\n# 1 %s\n", path->data);
+	
 	// Include the file.
 	ffnew = fopen((const char*)(path->data), "r");
 	assert(ffnew != NULL);
@@ -498,7 +535,14 @@ void handle_include(bstring fname, void* current)
 	fclose(ffnew);
 	pp_yylex_destroy(scanner);
 	bdestroy(path);
-
+	
+	// Restore the old state and output
+	// a line adjustment.
+	bdestroy(pp_yyfilename);
+	pp_yyfilename = origfile;
+	pp_yyset_lineno(origline, current);
+	fprintf(pp_yyget_out(current), "\n# %i %s\n", origline, origfile->data);
+	
 	// Remove the include path again.
 	ppfind_remove_path(bautocpy(dir));
 }

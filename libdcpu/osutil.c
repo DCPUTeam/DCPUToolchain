@@ -52,12 +52,13 @@ bstring osutil_dirname(bstring path)
 {
 	bstring bpath;
 	char* cpath;
+	char* opath;
 
 	cpath = bstr2cstr(path, '0');
 	// needs to return in case of dirname implementation not changing parameter
 	// in particular this doesn't work on OS X check $ man 3 dirname
-	cpath = dirname(cpath);
-	bpath = bfromcstr(cpath);
+	opath = dirname(cpath);
+	bpath = bfromcstr(opath);
 	bcstrfree(cpath);
 
 	return bpath;

@@ -45,6 +45,9 @@ NType& NInteger::UInt64Type(internal_UInt64Type);
 AsmBlock* NInteger::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Load the numeric value in register A.
 	*block <<	"	SET A, " << (const size_t)this->value << std::endl;

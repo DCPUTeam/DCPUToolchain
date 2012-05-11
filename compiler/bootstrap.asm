@@ -1,3 +1,4 @@
+.LINE 1 "resource:bootstrap.asm"
 ; Immediately jump to _setup.
 SET PC, _setup
 

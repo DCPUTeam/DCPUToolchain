@@ -19,6 +19,9 @@
 AsmBlock* NWhileStatement::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
+	
+	// Add file and line information.
+	*block << this->getFileAndLineState();
 
 	// Create label for the while statement.
 	std::string startlbl = context.getRandomLabel("while");
