@@ -6,6 +6,7 @@
 	Component:	LibDCPU-CI-DbgFmt
 
 	Authors:	James Rhodes
+				José Manuel Díez
 
 	Description:
 

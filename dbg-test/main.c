@@ -7,7 +7,7 @@ int main(int argc, char** argv) {
 	struct dbg_sym* sym = dbgfmt_debugging_symbol(DBGFMT_BASIC, (void*) pld);
 	struct dbg_sym_file* file;
 	
-	printf("%s %x %x\n", pld->path, pld->lineno, pld->address);
+	printf("%s %x %x %d %d\n", pld->path, pld->lineno, pld->address, sym->length, sym->type);
 	dbgfmt_write_to_file("test.bin", 1, sym);
 	
 	file = dbgfmt_read_file("test.bin");

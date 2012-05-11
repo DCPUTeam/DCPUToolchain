@@ -17,11 +17,16 @@
 int dbgfmt_write_to_file(char* path, uint32_t num_symbols, struct dbg_sym* symbols) {
 	FILE *out;
 	struct dbg_sym_file* hdr = dbgfmt_header(num_symbols);
-	//size_t i = 0;
+	size_t i = 0;
 	
 	out = fopen(path, "wb");
 	fwrite(&hdr->magic, sizeof(hdr->magic), 1, out);
 	fwrite(&hdr->num_symbols, sizeof(hdr->num_symbols), 1, out);
+	for(i = 0; i < num_symbols; i++) {
+		fwrite(&symbols[i].length, sizeof(symbols[i].length), 1, out);
+		fwrite(&symbols[i].type, sizeof(symbols[i].type), 1, out);
+		fwrite(symbols[i].payload, 1, symbols[i].length, out);
+	}
 	fclose(out);
 	
 	return 0;
@@ -30,10 +35,19 @@ int dbgfmt_write_to_file(char* path, uint32_t num_symbols, struct dbg_sym* symbo
 struct dbg_sym_file* dbgfmt_read_file(char* path) {
 	FILE *in;
 	struct dbg_sym_file* file = malloc(sizeof(struct dbg_sym_file));
+	size_t i, length;
+	uint16_t tmp;
 	
 	in = fopen(path, "rb");
-	fread(&file->magic, 1, sizeof(file->magic), in);
-	fread(&file->num_symbols, 1, sizeof(file->symbols), in);
+	fread(&file->magic, sizeof(file->magic), 1, in);
+	fread(&file->num_symbols, sizeof(file->symbols), 1, in);
+	printf("%d\n", sizeof(file->symbols));
+	fseek(in, sizeof(file->symbols), SEEK_SET);
+	for(i = 0; i < file->num_symbols; i++) {
+		fread(&tmp, sizeof(uint16_t), 1, in);
+		printf("%d\n", tmp);
+	}
+	
 	fclose(in);
 	
 	return file;
@@ -55,8 +69,6 @@ struct dbgfmt_serialization_result* dbgfmt_serialize_basic(void* payload) {
 	
 	ser_res->bytestream = origin;
 	ser_res->length = length;
-	
-	printf("length: %d\n", length);
 	
 	return ser_res;
 }
