@@ -111,6 +111,7 @@ void vm_hw_lem1802_write(vm_t* vm, uint16_t pos)
 				{
 					for (ay = 0; ay < char_height / HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT; ay += 1)
 					{
+						
 						// If bit is true, write to the pixel white.
 						if (((val & (0x1 << (8 - y))) >> (8 - y)) == 0x1)
 							TCOD_image_put_pixel(char_image, (fx + x) * char_width / HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH + ax, (fy + y) * char_height / HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT + ay, color_white);
