@@ -323,14 +323,14 @@ add_subdirectory(libdcpu-ci-lang)
 add_subdirectory(libdcpu-ci-lang-c)
 
 # Add executable folders.
-add_subdirectory(preprocessor)
-add_subdirectory(compiler)
-add_subdirectory(assembler)
-add_subdirectory(linker)
-add_subdirectory(ddb)
+add_subdirectory(dtpp)
+add_subdirectory(dtcc)
+add_subdirectory(dtasm)
+add_subdirectory(dtld)
+add_subdirectory(dtdb)
 
 if("${BUILD_EMULATOR}" MATCHES true)
-	add_subdirectory(emulator)
+	add_subdirectory(dtemu)
 endif("${BUILD_EMULATOR}" MATCHES true)
 
 # Add kernel, using the multi-threading version if available.

@@ -42,14 +42,14 @@ int main(int argc, char* argv[])
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
-	
+
 	version_print(bautofree(bfromcstr("Linker")));
 	if (nerrors != 0 || show_help->count != 0)
 	{
 		if (show_help->count != 0)
 			arg_print_errors(stdout, end, "linker");
 
-		printf("syntax:\n    linker");
+		printf("syntax:\n    dtld");
 		arg_print_syntax(stdout, argtable, "\n");
 		printf("options:\n");
 		arg_print_glossary(stdout, argtable, "	  %-25s %s\n");

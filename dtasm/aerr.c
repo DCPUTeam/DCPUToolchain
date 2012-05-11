@@ -57,6 +57,7 @@ void ahalt(int errid, const char* errdata)
 uint16_t ahalt_label_resolution_not_permitted(bstring name)
 {
 	ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, name->data);
+	return 0;
 }
 
 void ahalt_expression_exit_handler(int code, void* data)

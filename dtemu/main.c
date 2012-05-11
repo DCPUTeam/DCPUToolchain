@@ -33,7 +33,7 @@
 #include <ldata.h>
 
 #ifdef __APPLE__
-	#define main SDL_main
+#define main SDL_main
 #endif
 
 int main(int argc, char* argv[])
@@ -60,14 +60,14 @@ int main(int argc, char* argv[])
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
-	
+
 	version_print(bautofree(bfromcstr("Emulator")));
 	if (nerrors != 0 || show_help->count != 0)
 	{
 		if (show_help->count != 0)
 			arg_print_errors(stdout, end, "emulator");
 
-		printf("syntax:\n    emulator");
+		printf("syntax:\n    dtemu");
 		arg_print_syntax(stderr, argtable, "\n");
 		printf("options:\n");
 		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 	// Zero out the flash space.
 	for (i = 0; i < 0x10000; i++)
 		flash[i] = 0x0;
-	
+
 	// Zero out the leading space.
 	for (i = 0; i < 0x100; i++)
 		leading[i] = 0x0;
@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 		uread = !uread;
 	}
 	fclose(load);
-	
+
 	// Check to see if the first X bytes matches the header
 	// for intermediate code and stop if it does.
 	ss = bfromcstr("");
@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
 	if (biseq(ss, st))
 	{
 		fprintf(stderr, "emulator: it appears you passed intermediate code for execution.  link\n");
-		fprintf(stderr, "          the input code with the toolchain linker to execute it.\n");
+		fprintf(stderr, "	   the input code with the toolchain linker to execute it.\n");
 		exit(1);
 	}
 

@@ -206,7 +206,7 @@ uint16_t aout_get_label_address(bstring name)
 {
 	struct aout_byte* current = start;
 	uint16_t mem_index = code_offset;
-	
+
 	while (current != NULL)
 	{
 		if (current->type == AOUT_TYPE_METADATA_ORIGIN)
@@ -235,11 +235,11 @@ uint16_t aout_get_label_address(bstring name)
 				return 0;
 			}
 		}
-		
+
 		// Goto next.
 		current = current->next;
 	}
-	
+
 	// Error if we get to here.
 	ahalt(ERR_LABEL_NOT_FOUND, name->data);
 	return 0;
@@ -266,7 +266,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 	// If relocatable, initialize out our relocation table.
 	if (relocatable)
 		code_offset += treloc_init(start);
-	
+
 	// First go through and evaluate all expressions that need to be.
 	current_outer = start;
 	out_index = code_offset;
@@ -286,7 +286,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 				if ((relocatable || intermediate) && !shown_expr_warning)
 				{
 					fprintf(stderr, "warning: expressions will not be adjusted at link or relocation time.\n");
-					fprintf(stderr, "         ensure labels are not used as part of expressions.\n");
+					fprintf(stderr, "	  ensure labels are not used as part of expressions.\n");
 					shown_expr_warning = true;
 				}
 				current_outer->raw_used = true;
@@ -301,7 +301,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 				current_inner = start;
 				mem_index = code_offset;
 				did_find = false;
-				
+
 				// Search for .IMPORT directives first.
 				while (current_inner != NULL)
 				{
@@ -317,7 +317,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 						// of entry doesn't affect executable size).
 						if (!intermediate)
 							ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
-						
+
 						if (strcmp(current_inner->label, ((bstring)current_outer->expr->data)->data) == 0)
 						{
 							// We don't actually know our position yet;
@@ -333,11 +333,11 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 							break;
 						}
 					}
-					
+
 					// Goto next.
 					current_inner = current_inner->next;
 				}
-				
+
 				// If it wasn't found in the .IMPORT directives, try searching
 				// labels directly using the expression engine.
 				if (!did_find)

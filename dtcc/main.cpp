@@ -51,12 +51,12 @@ int main(int argc, char* argv[])
 	if (nerrors != 0 || show_help->count != 0)
 	{
 		if (show_help->count != 0)
-			arg_print_errors(stdout, end, "compiler");
+			arg_print_errors(stderr, end, "compiler");
 
-		fprintf(stderr, "syntax:\n    compiler");
-		arg_print_syntax(stdout, argtable, "\n");
+		fprintf(stderr, "syntax:\n    dtcc");
+		arg_print_syntax(stderr, argtable, "\n");
 		fprintf(stderr, "options:\n");
-		arg_print_glossary(stdout, argtable, "	  %-25s %s\n");
+		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
 		return 1;
 	}
 

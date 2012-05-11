@@ -99,7 +99,7 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 	struct register_mapping* registr;
 	bstring btmp = NULL;
 	result.v_raw = NULL;
-	
+
 	if (param->value != NULL)
 		btmp = expr_representation(param->value);
 
@@ -145,10 +145,10 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 		result.v_extra_used = true;
 		result.v_label = NULL;
 	}
-	
+
 	if (btmp != NULL)
 		bdestroy(btmp);
-	
+
 	return result;
 }
 
@@ -293,7 +293,7 @@ void process_line(struct ast_node_line* line)
 	struct ast_node_parameter* dcurrent;
 	uint32_t dchrproc;
 	uint16_t i, flimit, fchar, opos;
-	
+
 	// If the line information is provided, output
 	// debugging symbols.
 	if (line != NULL && line->file != NULL)
@@ -401,7 +401,7 @@ void process_line(struct ast_node_line* line)
 					{
 						fprintf(stderr, " \"%s\"", dparam.v_raw->data);
 
-						for (dchrproc = 0; dchrproc < blength(dparam.v_raw); dchrproc++)
+						for (dchrproc = 0; dchrproc < (uint32_t)blength(dparam.v_raw); dchrproc++)
 							aout_emit(aout_create_raw(dparam.v_raw->data[dchrproc]));
 					}
 					else if (dparam.v_extra_used == true) // Just a single address.

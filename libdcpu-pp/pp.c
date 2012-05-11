@@ -20,6 +20,7 @@
 #include "pp.h"
 
 extern int pp_yyparse(void* scanner);
+extern void handle_start(freed_bstring name, FILE* output);
 
 bstring pp_do(freed_bstring path)
 {
