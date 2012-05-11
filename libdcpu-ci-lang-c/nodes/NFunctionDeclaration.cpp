@@ -24,7 +24,7 @@ NFunctionDeclaration::NFunctionDeclaration(const NType& type, const NIdentifier&
 	this->pointerType = new NFunctionPointerType(type, arguments);
 	
 	// FIXME remove debug output
-	std::cout << "Parsed Function " << this->id.name << " and signature " << this->getSignature() << std::endl;
+	//std::cout << "Parsed Function " << this->id.name << " and signature " << this->getSignature() << std::endl;
 }
 
 NFunctionDeclaration::~NFunctionDeclaration()

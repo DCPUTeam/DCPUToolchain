@@ -1,13 +1,13 @@
 /**
 
-	File:		NPreIncDec.cpp
+	File:		NPostIncDec.cpp
 
 	Project:	DCPU-16 Tools
 	Component:	LibDCPU-ci-lang-c
 
 	Authors:	Patrick Flick
 
-	Description:	Defines the NPreIncDec AST class.
+	Description:	Defines the NPostIncDec AST class.
 
 **/
 
@@ -19,9 +19,9 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "../parser.hpp"
-#include "NPreIncDec.h"
+#include "NPostIncDec.h"
 
-AsmBlock* NPreIncDec::compile(AsmGenerator& context)
+AsmBlock* NPostIncDec::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
 
@@ -30,45 +30,35 @@ AsmBlock* NPreIncDec::compile(AsmGenerator& context)
 	AsmBlock* reference = this->expr.reference(context);
 	*block <<   *reference;
 	delete reference;
-
+	
 	*block <<	"	SET B, A" << std::endl;
+	// return old value in A
 	*block <<	"	SET A, [B]" << std::endl;
-
-	// Now do the appropriate operation.
+	
+	// increment/decrement
 	switch (this->op)
 	{
 		case INCREMENT:
-			*block <<	"	ADD A, 1" << std::endl;
+			*block <<	"	ADD [B], 1" << std::endl;
 			break;
 
 		case DECREMENT:
-			*block <<	"	SUB A, 1" << std::endl;
+			*block <<	"	SUB [B], 1" << std::endl;
 			break;
 
 		default:
-			throw new CompilerException("Unknown Pre-Increase-Decrease operation requested.");
+			throw new CompilerException("Unknown Post-Increase-Decrease operation requested.");
 	}
-
-
-	// Move the value into the target address.
-	*block <<	"	SET [B], A" << std::endl;
 	
 	return block;
 }
 
-AsmBlock* NPreIncDec::compilePostOperators(AsmGenerator& context)
+AsmBlock* NPostIncDec::reference(AsmGenerator& context)
 {
-	AsmBlock* block = new AsmBlock();
-	return block;
+	throw new CompilerException("Unable to get reference to the result of an Post-Increment.");
 }
 
-
-AsmBlock* NPreIncDec::reference(AsmGenerator& context)
-{
-	throw new CompilerException("Unable to get reference to the result of an Pre-Increment.");
-}
-
-IType& NPreIncDec::getExpressionType(AsmGenerator& context)
+IType& NPostIncDec::getExpressionType(AsmGenerator& context)
 {
 	// An assignment has the type of it's LHS.
 	return this->expr.getExpressionType(context);
