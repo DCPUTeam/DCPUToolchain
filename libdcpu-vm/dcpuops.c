@@ -661,7 +661,6 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 	OP_NUM_CYCLES(4);
 
 	VM_SKIP_RESET;
-
 	if (val_a < vm_hw_count(vm))
 	{
 		queried_device = vm_hw_get_device(vm, val_a);
@@ -670,6 +669,7 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 
 		*store_a = (queried_device.id & 0x0000FFFF) >>	0;
 		*store_b = (queried_device.id & 0xFFFF0000) >> 16;
+		printf("\nA %x B %x\n", (queried_device.id & 0x0000FFFF), (queried_device.id & 0xFFFF0000) >> 16);
 		*store_c = queried_device.version;
 		*store_x = (queried_device.manufacturer & 0x0000FFFF) >>  0;
 		*store_y = (queried_device.manufacturer & 0xFFFF0000) >> 16;

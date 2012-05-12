@@ -54,10 +54,8 @@ extern int dbg_yyparse(void* scanner);
 
 void ddbg_sigint(int signal)
 {
-#ifdef FEATURE_SDP
-	pthread_kill(sdp_thread, SIGTERM);
-#endif
-	exit(0);
+	vm->halted = true;
+	printf("(interrupt)\n");
 }
 
 void get_command(char* command_buffer, int max)
