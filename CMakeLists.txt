@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.5)
 project (toolchain)
 
 # Main version information.
-set(VERSION_STAGE "alpha")
+set(VERSION_STAGE "beta")
 execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE git_hash)
 if("${git_hash}" STREQUAL "")
 	add_definitions(-DVERSION_STAGE=${VERSION_STAGE})
