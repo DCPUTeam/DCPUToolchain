@@ -34,28 +34,80 @@ int dbgfmt_write_to_file(char* path, uint32_t num_symbols, struct dbg_sym* symbo
 	return 0;
 }
 
+uint8_t* dbgfmt_deserialize_basic(FILE *stream, uint16_t length) {
+	size_t str_length = length - 2 * sizeof(uint16_t);
+	uint16_t tmp;
+	uint8_t* result = malloc(str_length + 2 * sizeof(uint16_t)), *origin;
+	origin = result;
+	
+	fread(result, str_length, 1, stream);
+	result += str_length;
+	fread(result, sizeof(uint16_t), 1, stream);
+	result += sizeof(uint16_t);
+	fread(result, sizeof(uint16_t), 1, stream);
+	result = origin;
+	
+	return result;
+}
+
+struct dbg_sym_basic_payload* dbgfmt_get_basic(struct dbg_sym* bytes) {
+	struct dbg_sym_basic_payload* result = malloc(sizeof(struct dbg_sym_basic_payload));
+	size_t str_length = bytes->length - 2 * sizeof(uint16_t);
+	
+	result->path = malloc(str_length+1001);
+	//memcpy(result->path, bytes->payload, str_length);
+	printf("get_basic: %s\n", bytes->payload);
+	
+	return result;
+}
+
 struct dbg_sym_file* dbgfmt_read_file(char* path)
 {
 	FILE* in;
 	struct dbg_sym_file* file = malloc(sizeof(struct dbg_sym_file));
-	size_t i;
+	struct dbg_sym* tmp_symbol = malloc(sizeof(struct dbg_sym)), *origin;
+	size_t i, symbols_start, symbols_end;
+	struct dbg_sym_basic_payload* very_tmp_smbl;
 	uint16_t tmp;
 
 	in = fopen(path, "rb");
 	fread(&file->magic, sizeof(file->magic), 1, in);
 	fread(&file->num_symbols, sizeof(file->symbols), 1, in);
-	printf("%d\n", sizeof(file->symbols));
+	
 	fseek(in, sizeof(file->symbols), SEEK_SET);
+	symbols_start = ftell(in);
+	fseek(in, 0, SEEK_END);
+	symbols_end = ftell(in);
+	fseek(in, symbols_start, SEEK_SET);
+	file->symbols = malloc(symbols_end - symbols_start);
+	origin = file->symbols;
+	
 	for (i = 0; i < file->num_symbols; i++)
 	{
-		fread(&tmp, sizeof(uint16_t), 1, in);
-		printf("%d\n", tmp);
+		fread(&tmp_symbol->length, sizeof(uint16_t), 1, in);
+		fread(&tmp_symbol->type, sizeof(uint8_t), 1, in);
+		
+		switch(tmp_symbol->type) {
+			case DBGFMT_BASIC:
+				tmp_symbol->payload = dbgfmt_deserialize_basic(in, tmp_symbol->length);
+				break;
+		}
+		
+		memcpy(file->symbols, &tmp_symbol->length, sizeof(uint16_t));
+		file->symbols += sizeof(uint16_t);
+		memcpy(file->symbols, &tmp_symbol->type, sizeof(uint8_t));
+		file->symbols += sizeof(uint8_t);
+		memcpy(file->symbols, tmp_symbol->payload, tmp_symbol->length);
+		file->symbols += tmp_symbol->length;		
 	}
+	
+	file->symbols = origin;
 
 	fclose(in);
 
 	return file;
 }
+
 
 struct dbgfmt_serialization_result* dbgfmt_serialize_basic(void* payload)
 {

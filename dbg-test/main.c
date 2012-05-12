@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-	struct dbg_sym_basic_payload* pld = dbgfmt_basic_payload("ohai", 0xabad, 0x1dea);
+	struct dbg_sym_basic_payload* pld = dbgfmt_basic_payload("ohai", 0xabad, 0x1dea), *got;
 	struct dbg_sym* sym = dbgfmt_debugging_symbol(DBGFMT_BASIC, (void*) pld);
 	struct dbg_sym_file* file;
 
@@ -13,6 +13,6 @@ int main(int argc, char** argv)
 
 	file = dbgfmt_read_file("test.bin");
 	printf("reading: %x %x\n", file->magic, file->num_symbols);
-
+	dbgfmt_get_basic(file->symbols);
 	return 0;
 }
