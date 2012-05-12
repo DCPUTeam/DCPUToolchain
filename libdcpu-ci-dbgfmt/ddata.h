@@ -21,8 +21,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <bstring.h>
+#include <simclist.h>
 
-#define DBGFMT_MAGIC		0xc0debeaf
+#define DBGFMT_MAGIC		0xC0DEBEAF
+#define DBGFMT_UNDETERMINED	0xFFFF
 
 #define DBGFMT_SYMBOL_LINE	0x1
 
@@ -37,7 +39,7 @@ struct dbg_sym
 {
 	uint16_t length;
 	uint8_t type;
-	uint8_t* payload;
+	void* payload;
 };
 
 struct dbg_sym_payload_line
@@ -53,8 +55,11 @@ struct dbgfmt_serialization_result
 	uint16_t length;
 };
 
-int dbgfmt_write(bstring path, uint32_t num_symbols, struct dbg_sym* symbols);
+int dbgfmt_write(bstring path, list_t* symbols);
 struct dbg_sym_file* dbgfmt_read(bstring path);
+
+
+void dbgfmt_update_symbol(struct dbg_sym* symbol, uint16_t address);
 
 struct dbg_sym* dbgfmt_create_symbol(uint8_t type, void* payload);
 struct dbg_sym_payload_line* dbgfmt_create_symbol_line(bstring path, uint16_t lineno, uint16_t address);

@@ -20,6 +20,7 @@
 #include <pp.h>
 #include <ppfind.h>
 #include <assert.h>
+#include <ddata.h>
 #include "aout.h"
 #include "aerr.h"
 #include "dcpu.h"
@@ -46,6 +47,7 @@ struct aout_byte* aout_create_raw(uint16_t raw)
 	byte->label = NULL;
 	byte->raw_used = true;
 	byte->raw = raw;
+	byte->symbol = NULL;
 	return byte;
 }
 
@@ -62,6 +64,7 @@ struct aout_byte* aout_create_opcode(uint16_t opcode, uint16_t a, uint16_t b)
 	byte->label = NULL;
 	byte->raw_used = false;
 	byte->raw = 0x0;
+	byte->symbol = NULL;
 
 	if (opcode == 0 && a == 0)
 		ahalt(ERR_OUTPUT_NULL, NULL);
@@ -82,6 +85,7 @@ struct aout_byte* aout_create_label(char* name)
 	byte->label = name;
 	byte->raw_used = false;
 	byte->raw = 0x0;
+	byte->symbol = NULL;
 	return byte;
 }
 
@@ -98,6 +102,7 @@ struct aout_byte* aout_create_expr(struct expr* expression)
 	byte->label = NULL;
 	byte->raw_used = false;
 	byte->raw = 0x0;
+	byte->symbol = NULL;
 	return byte;
 }
 
@@ -114,6 +119,7 @@ struct aout_byte* aout_create_metadata_extension(char* name)
 	byte->label = name;
 	byte->raw_used = false;
 	byte->raw = 0x0;
+	byte->symbol = NULL;
 	return byte;
 }
 
@@ -130,6 +136,7 @@ struct aout_byte* aout_create_metadata_incbin(char* path)
 	byte->label = path;
 	byte->raw_used = false;
 	byte->raw = 0x0;
+	byte->symbol = NULL;
 	return byte;
 }
 
@@ -146,6 +153,7 @@ struct aout_byte* aout_create_metadata_origin(uint16_t address)
 	byte->label = NULL;
 	byte->raw_used = false;
 	byte->raw = 0x0;
+	byte->symbol = NULL;
 	return byte;
 }
 
@@ -162,6 +170,7 @@ struct aout_byte* aout_create_metadata_export(char* name)
 	byte->label = name;
 	byte->raw_used = false;
 	byte->raw = 0x0;
+	byte->symbol = NULL;
 	return byte;
 }
 
@@ -178,10 +187,11 @@ struct aout_byte* aout_create_metadata_import(char* name)
 	byte->label = name;
 	byte->raw_used = false;
 	byte->raw = 0x0;
+	byte->symbol = NULL;
 	return byte;
 }
 
-void aout_emit(struct aout_byte* byte)
+struct aout_byte* aout_emit(struct aout_byte* byte)
 {
 	if (start == NULL && end == NULL)
 	{
@@ -197,6 +207,8 @@ void aout_emit(struct aout_byte* byte)
 		end->next = byte;
 		end = byte;
 	}
+	
+	return byte;
 }
 
 // Writing state variables.
@@ -362,22 +374,6 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 							break;
 						}
 					}
-					/*else if (current_inner->type == AOUT_TYPE_NORMAL)
-					{
-						// We're adjusting a label reference in the code
-						// to it's actual value.
-						current_outer->raw = mem_index;
-						current_outer->expr->data = NULL;
-
-						// We also need to add this entry to the adjustment
-						// table for the linker since it also needs to adjust
-						// internal label jumps in files when it concatenates
-						// all of the object code together.
-						linker_temp = lprov_create(NULL, out_index);
-						linker_temp->next = linker_adjustment;
-						linker_adjustment = linker_temp;
-						fprintf(stderr, "LINK ADJUST 0x%04X\n", out_index);
-					}*/
 
 					// Goto next.
 					current_inner = current_inner->next;
@@ -469,6 +465,9 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 		}
 		else if (current_outer->type == AOUT_TYPE_NORMAL)
 		{
+			// Update the debugging symbol.
+			dbgfmt_update_symbol(current_outer->symbol, (uint16_t)(ftell(out) / 2));
+			
 			// Normal output.
 			if (current_outer->raw_used == true)
 			{

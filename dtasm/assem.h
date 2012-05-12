@@ -18,11 +18,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <simclist.h>
 #include "node.h"
 #include "dcpu.h"
 
 void reverse_lines(struct ast_node_lines* lines);
-void process_root(struct ast_node_root* root);
+void process_root(struct ast_node_root* root, list_t* symbols);
 
 
 #endif

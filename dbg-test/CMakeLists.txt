@@ -11,12 +11,9 @@ endif(NOT DEFINED IS_ROOT)
 # Define the emulator project.
 dt_project(executable)
 dt_needs(bstring)
+dt_needs(simclist)
 dt_needs(libdcpu-ci-dbgfmt)
 dt_needs(libdcpu-vm-dbg)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
-
-if(DEFINED EXPERIMENTAL)
-	add_definitions(-DFEATURE_SDP)
-endif(DEFINED EXPERIMENTAL)
 

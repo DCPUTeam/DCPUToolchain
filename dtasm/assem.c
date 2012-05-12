@@ -19,12 +19,16 @@
 #include <stdio.h>
 #include <bstring.h>
 #include <ppexpr.h>
+#include <simclist.h>
+#include <ddata.h>
 #include "node.h"
 #include "dcpu.h"
 #include "imap.h"
 #include "aout.h"
 #include "aerr.h"
 #include "parser.h"
+
+list_t* assem_dbg_symbols = NULL;
 
 void reverse_lines(struct ast_node_lines* lines)
 {
@@ -293,14 +297,8 @@ void process_line(struct ast_node_line* line)
 	struct ast_node_parameter* dcurrent;
 	uint32_t dchrproc;
 	uint16_t i, flimit, fchar, opos;
-
-	// If the line information is provided, output
-	// debugging symbols.
-	if (line != NULL && line->file != NULL)
-	{
-		// TODO: Output a debugging symbol here.
-		//fprintf(stderr, "line %i %s\n", line->line, line->file->data);
-	}
+	struct aout_byte* result = NULL;
+	struct dbg_sym* newsym;
 
 	// Change depending on the type of line.
 	switch (line->type)
@@ -430,18 +428,15 @@ void process_line(struct ast_node_line* line)
 
 				// Force the parameter value to be NXT if it's a label.
 				if (ppresults.a_label != NULL) ppresults.a = NXT_LIT;
-
 				if (ppresults.b_label != NULL) ppresults.b = NXT_LIT;
-
 				if (ppresults.a_label != NULL && ppresults.a_label_bracketed) ppresults.a = NXT;
-
 				if (ppresults.b_label != NULL && ppresults.b_label_bracketed) ppresults.b = NXT;
-
+				
 				// Output the initial opcode.
 				if (insttype->opcode != OP_NONBASIC)
-					aout_emit(aout_create_opcode(insttype->opcode, ppresults.a, ppresults.b));
+					result = aout_emit(aout_create_opcode(insttype->opcode, ppresults.a, ppresults.b));
 				else
-					aout_emit(aout_create_opcode(insttype->opcode, insttype->nbopcode, ppresults.a));
+					result = aout_emit(aout_create_opcode(insttype->opcode, insttype->nbopcode, ppresults.a));
 
 				// If the parameter is a label or requires an extra word, output them.
 				if (ppresults.b_label != NULL)
@@ -465,6 +460,18 @@ void process_line(struct ast_node_line* line)
 			aout_emit(aout_create_label(line->label->name));
 			break;
 	}
+	
+	// If the line information is provided, output
+	// debugging symbols.
+	if (line != NULL && line->file != NULL && result != NULL)
+	{
+		// Output a file / line number debugging symbol here.
+		newsym = dbgfmt_create_symbol(DBGFMT_SYMBOL_LINE, dbgfmt_create_symbol_line(line->file, line->line, DBGFMT_UNDETERMINED));
+		result->symbol = newsym;
+		list_append(assem_dbg_symbols, newsym);
+		
+		fprintf(stderr, "Debugging symbol: %i %s\n", line->line, line->file->data);
+	}
 }
 
 void process_lines(struct ast_node_lines* lines)
@@ -487,8 +494,14 @@ void process_lines(struct ast_node_lines* lines)
 	}
 }
 
-void process_root(struct ast_node_root* root)
+void process_root(struct ast_node_root* root, list_t* symbols)
 {
+	// Associate the global symbols variable.
+	assem_dbg_symbols = symbols;
+	
 	// Process all of the lines.
 	process_lines(root->values);
+	
+	// Reset the global symbols variable.
+	assem_dbg_symbols = NULL;
 }

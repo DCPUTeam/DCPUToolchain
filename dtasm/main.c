@@ -21,6 +21,8 @@
 #include <pp.h>
 #include <ppfind.h>
 #include <version.h>
+#include <simclist.h>
+#include <ddata.h>
 #include "assem.h"
 #include "node.h"
 #include "aerr.h"
@@ -35,9 +37,11 @@ char* fileloc = NULL;
 int main(int argc, char* argv[])
 {
 	FILE* img = NULL;
+	FILE* sym = NULL;
 	int nerrors;
 	bstring pp_result_name;
 	struct errinfo* errval;
+	list_t symbols;
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
@@ -45,8 +49,9 @@ int main(int argc, char* argv[])
 	struct arg_lit* gen_intermediate = arg_lit0("i", "intermediate", "Generate intermediate code for use with the linker.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
+	struct arg_file* symbols_file = arg_file0("s", "debug-symbols", "<file>", "The debugging symbol output file.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { output_file, gen_relocatable, gen_intermediate, show_help, input_file, end };
+	void* argtable[] = { output_file, symbols_file, gen_relocatable, gen_intermediate, show_help, input_file, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -118,8 +123,11 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	// Initialize storage for debugging symbols.
+	list_init(&symbols);
+	
 	// Process AST.
-	process_root(&ast_root);
+	process_root(&ast_root, &symbols);
 
 	// Save to either file or stdout.
 	if (strcmp(output_file->filename[0], "-") != 0)
@@ -147,6 +155,21 @@ int main(int argc, char* argv[])
 	aout_write(img, (gen_relocatable->count > 0), (gen_intermediate->count > 0));
 	fclose(img);
 	fprintf(stderr, "assembler: completed successfully.\n");
+	
+	// Save debugging symbols to specified file if provided.
+	if (symbols_file->count > 0)
+	{
+		if (strcmp(symbols_file->filename[0], "-") == 0)
+		{
+			fprintf(stderr, "assembler: debugging symbols can not be written to stdout.\n");
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+			return 1;
+		}
+		
+		// Write symbols.
+		dbgfmt_write(bfromcstr(symbols_file->filename[0]), &symbols);
+		fprintf(stderr, "assembler: wrote debugging symbols.\n");
+	}
 
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;

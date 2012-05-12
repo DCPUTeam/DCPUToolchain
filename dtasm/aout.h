@@ -40,6 +40,7 @@ struct aout_byte
 	char* label;
 	bool raw_used;
 	uint16_t raw;
+	struct dbg_sym* symbol;
 };
 
 extern struct aout_byte* start;
@@ -54,7 +55,7 @@ struct aout_byte* aout_create_metadata_incbin(char* path);
 struct aout_byte* aout_create_metadata_origin(uint16_t address);
 struct aout_byte* aout_create_metadata_export(char* name);
 struct aout_byte* aout_create_metadata_import(char* name);
-void aout_emit(struct aout_byte* byte);
+struct aout_byte* aout_emit(struct aout_byte* byte);
 void aout_write(FILE* out, bool relocatable, bool intermediate);
 
 #endif
