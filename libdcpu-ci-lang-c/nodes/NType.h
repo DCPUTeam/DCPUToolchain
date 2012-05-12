@@ -23,24 +23,25 @@ class NStructureDeclaration;
 class NType : public NIdentifier, public IType
 {
 	private:
+		std::string _name;
 		void resolveStruct(AsmGenerator& context);
 
 	protected:
 		NType(std::string classifier, const std::string& name, unsigned int pointerCount, bool isStruct) :
-			pointerCount(pointerCount), isStruct(isStruct), resolvedStruct(NULL), NIdentifier(name, "type-" + classifier) { }
+			pointerCount(pointerCount), isStruct(isStruct), resolvedStruct(NULL), _name(name), NIdentifier(name, "type-" + classifier) { }
 
 	public:
 		unsigned int pointerCount;
 		bool isStruct;
 		NStructureDeclaration* resolvedStruct;
 		NType(const std::string& name, unsigned int pointerCount, bool isStruct) :
-			pointerCount(pointerCount), isStruct(isStruct), resolvedStruct(NULL), NIdentifier(name, "type") { }
+			pointerCount(pointerCount), isStruct(isStruct), resolvedStruct(NULL), _name(name), NIdentifier(name, "type") { }
 		uint16_t getStructFieldPosition(AsmGenerator& context, std::string name);
 		size_t getBitSize(AsmGenerator& context);
 		virtual uint16_t getWordSize(AsmGenerator& context);
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType& getExpressionType(AsmGenerator& context);
+		virtual IType* getExpressionType(AsmGenerator& context);
 
 		// Operator overloads.
 		bool operator==(const NType& other) const;

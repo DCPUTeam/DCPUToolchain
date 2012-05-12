@@ -57,7 +57,7 @@ AsmBlock* NIdentifier::reference(AsmGenerator& context)
 	return block;
 }
 
-IType& NIdentifier::getExpressionType(AsmGenerator& context)
+IType* NIdentifier::getExpressionType(AsmGenerator& context)
 {
 	// Search the current context for the variable with
 	// this name and return it's type.
@@ -66,5 +66,5 @@ IType& NIdentifier::getExpressionType(AsmGenerator& context)
 	if (type == NULL)
 		throw new CompilerException("Unable to resolve variable '" + this->name + "' when determining type information (does the variable exist?).");
 	else
-		return *type;
+		return type;
 }

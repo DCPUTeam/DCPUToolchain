@@ -23,7 +23,7 @@ class NString : public NExpression
 		NString(std::string value) : value(value), NExpression("string") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType& getExpressionType(AsmGenerator& context);
+		virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

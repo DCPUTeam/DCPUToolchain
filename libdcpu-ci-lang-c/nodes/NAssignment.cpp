@@ -118,7 +118,7 @@ AsmBlock* NAssignment::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of an assignment.");
 }
 
-IType& NAssignment::getExpressionType(AsmGenerator& context)
+IType* NAssignment::getExpressionType(AsmGenerator& context)
 {
 	// An assignment has the type of it's LHS.
 	return this->lhs.getExpressionType(context);

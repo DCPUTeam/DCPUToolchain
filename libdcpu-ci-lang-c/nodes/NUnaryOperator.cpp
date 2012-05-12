@@ -76,10 +76,8 @@ AsmBlock* NUnaryOperator::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of an unary operator.");
 }
 
-IType& NUnaryOperator::getExpressionType(AsmGenerator& context)
+IType* NUnaryOperator::getExpressionType(AsmGenerator& context)
 {
-	// A binary operator has the type of each of it's expressions.
-	NType rType = (NType&)this->rhs.getExpressionType(context);
-
-	return rType;
+	// A unary operator has the type of it's expression.
+	return this->rhs.getExpressionType(context);
 }

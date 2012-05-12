@@ -58,7 +58,7 @@ AsmBlock* NPostIncDec::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of an Post-Increment.");
 }
 
-IType& NPostIncDec::getExpressionType(AsmGenerator& context)
+IType* NPostIncDec::getExpressionType(AsmGenerator& context)
 {
 	// An assignment has the type of it's LHS.
 	return this->expr.getExpressionType(context);

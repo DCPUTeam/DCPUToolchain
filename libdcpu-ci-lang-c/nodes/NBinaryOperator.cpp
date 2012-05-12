@@ -188,14 +188,17 @@ AsmBlock* NBinaryOperator::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of an binary operator.");
 }
 
-IType& NBinaryOperator::getExpressionType(AsmGenerator& context)
+IType* NBinaryOperator::getExpressionType(AsmGenerator& context)
 {
 	// A binary operator has the type of each of it's expressions.
-	NType lType = (NType&)this->lhs.getExpressionType(context);
-	NType rType = (NType&)this->rhs.getExpressionType(context);
+	IType* lType = this->lhs.getExpressionType(context);
+	IType* rType = this->rhs.getExpressionType(context);
 
-	if (lType != rType)
-		throw new CompilerException("Unable to implicitly cast from " + lType.name + " to " + rType.name + ".");
+	// FIXME: We need a proper type system allowing for implicit
+	//        casts between reasonable values (currently this won't
+	//        even permit you to cast between int and int16_t).
+	//if (lType != rType)
+	//	throw new CompilerException("Unable to implicitly cast from " + lType.name + " to " + rType.name + ".");
 
 	return lType;
 }

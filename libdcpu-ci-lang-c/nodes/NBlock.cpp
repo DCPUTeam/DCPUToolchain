@@ -38,8 +38,8 @@ AsmBlock* NBlock::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of a block node.");
 }
 
-IType& NBlock::getExpressionType(AsmGenerator& context)
+IType* NBlock::getExpressionType(AsmGenerator& context)
 {
 	// A block of statements has no type.
-	return NType::VoidType;
+	return new NType(NType::VoidType);
 }

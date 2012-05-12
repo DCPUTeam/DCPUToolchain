@@ -23,7 +23,7 @@ class NCharacter : public NExpression
 		NCharacter(std::string value) : value(value), NExpression("character") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType& getExpressionType(AsmGenerator& context);
+		virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

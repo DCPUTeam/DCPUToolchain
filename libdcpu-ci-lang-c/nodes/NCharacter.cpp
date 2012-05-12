@@ -34,8 +34,8 @@ AsmBlock* NCharacter::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to a character node.");
 }
 
-IType& NCharacter::getExpressionType(AsmGenerator& context)
+IType* NCharacter::getExpressionType(AsmGenerator& context)
 {
 	// A character has the type char.
-	return NInteger::CharType;
+	return new NType(NInteger::CharType);
 }

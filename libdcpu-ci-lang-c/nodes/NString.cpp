@@ -43,10 +43,10 @@ AsmBlock* NString::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of a string literal.");
 }
 
-IType& NString::getExpressionType(AsmGenerator& context)
+IType* NString::getExpressionType(AsmGenerator& context)
 {
 	// A string has the type char*.
-	NType t = NType(NInteger::CharType);
-	t.pointerCount += 1;
+	NType* t = new NType(NInteger::CharType);
+	t->pointerCount += 1;
 	return t;
 }

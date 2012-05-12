@@ -15,12 +15,13 @@
 #define __DCPU_COMP_INTERFACES_TYPE_H
 
 #include <stdint.h>
+#include "../CompilerException.h"
 #include "../AsmGenerator.h"
 
 class IType
 {
 	public:
-		virtual uint16_t getWordSize(AsmGenerator& context) = 0;
+		virtual uint16_t getWordSize(AsmGenerator& context) { throw new CompilerException("Unable to get word size of unspecified type (internal error)."); }
 };
 
 #endif

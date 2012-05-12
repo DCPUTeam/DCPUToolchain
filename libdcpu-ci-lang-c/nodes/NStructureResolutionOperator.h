@@ -28,7 +28,7 @@ class NStructureResolutionOperator : public NExpression
 			lhs(lhs), rhs(rhs), isDereference(isDereference), NExpression("field") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType& getExpressionType(AsmGenerator& context);
+		virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

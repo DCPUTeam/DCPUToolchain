@@ -61,7 +61,7 @@ AsmBlock* NPreIncDec::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of an Pre-Increment.");
 }
 
-IType& NPreIncDec::getExpressionType(AsmGenerator& context)
+IType* NPreIncDec::getExpressionType(AsmGenerator& context)
 {
 	// An assignment has the type of it's LHS.
 	return this->expr.getExpressionType(context);

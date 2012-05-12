@@ -24,7 +24,7 @@ class NExpression : public Node
 	protected:
 		NExpression(std::string type) : Node("expression-" + type) { }
 	public:
-		virtual IType& getExpressionType(AsmGenerator& context) = 0;
+		virtual IType* getExpressionType(AsmGenerator& context) = 0;
 };
 
 #endif

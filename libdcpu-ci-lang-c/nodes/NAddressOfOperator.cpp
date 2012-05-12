@@ -27,11 +27,11 @@ AsmBlock* NAddressOfOperator::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of an address-of operator.");
 }
 
-IType& NAddressOfOperator::getExpressionType(AsmGenerator& context)
+IType* NAddressOfOperator::getExpressionType(AsmGenerator& context)
 {
 	// The address of operator has the type of it's expression as a pointer.
-	IType& c = this->expr.getExpressionType(context);
-	NType t = NType((NType&)c);
-	t.pointerCount += 1;
+	IType* i = this->expr.getExpressionType(context);
+	NType* t = new NType(*((NType*)i));
+	t->pointerCount += 1;
 	return t;
 }

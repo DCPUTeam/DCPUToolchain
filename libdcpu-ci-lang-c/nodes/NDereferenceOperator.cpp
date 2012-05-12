@@ -42,13 +42,14 @@ AsmBlock* NDereferenceOperator::reference(AsmGenerator& context)
 	return this->expr.compile(context);
 }
 
-IType& NDereferenceOperator::getExpressionType(AsmGenerator& context)
+IType* NDereferenceOperator::getExpressionType(AsmGenerator& context)
 {
 	// An dereference operator has the "unpointered" type of it's expression.
-	NType t = NType((NType&)this->expr.getExpressionType(context));
+	IType* i = this->expr.getExpressionType(context);
+	NType* t = new NType(*((NType*)i));
 
-	if (t.pointerCount > 0)
-		t.pointerCount -= 1;
+	if (t->pointerCount > 0)
+		t->pointerCount -= 1;
 	else
 		throw new CompilerException("Attempting to dereference non-pointer type during type resolution.");
 

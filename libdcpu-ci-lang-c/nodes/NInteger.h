@@ -26,7 +26,7 @@ class NInteger : public NExpression
 		NInteger(long long value) : value(value), NExpression("integer") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType& getExpressionType(AsmGenerator& context);
+		virtual IType* getExpressionType(AsmGenerator& context);
 
 		// Specific types for integers.
 		static NType& Int8Type;

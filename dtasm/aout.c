@@ -362,7 +362,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 							break;
 						}
 					}
-					/*else if (current_inner->type == AOUT_TYPE_NORMAL && (bstring)current_outer->expr->data != NULL)
+					/*else if (current_inner->type == AOUT_TYPE_NORMAL)
 					{
 						// We're adjusting a label reference in the code
 						// to it's actual value.
@@ -393,6 +393,15 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 					expr_delete(current_outer->expr);
 					current_outer->expr = NULL;
 					did_find = true;
+					
+					// We also need to add this entry to the adjustment
+					// table for the linker since it also needs to adjust
+					// internal label jumps in files when it concatenates
+					// all of the object code together.
+					linker_temp = lprov_create(NULL, out_index);
+					linker_temp->next = linker_adjustment;
+					linker_adjustment = linker_temp;
+					fprintf(stderr, "LINK ADJUST 0x%04X\n", out_index);
 				}
 			}
 		}

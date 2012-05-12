@@ -60,8 +60,8 @@ AsmBlock* NInteger::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of a numeric literal.");
 }
 
-IType& NInteger::getExpressionType(AsmGenerator& context)
+IType* NInteger::getExpressionType(AsmGenerator& context)
 {
 	// All literals are currently unsigned 16-bit integers.
-	return NInteger::UInt16Type;
+	return new NType(NInteger::UInt16Type);
 }

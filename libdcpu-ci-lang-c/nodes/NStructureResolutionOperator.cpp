@@ -52,14 +52,14 @@ AsmBlock* NStructureResolutionOperator::reference(AsmGenerator& context)
 		throw new CompilerException("Unable to use AST node " + this->lhs.cType + " as part of the structure resolution operator; it is not a suitable left-value.");
 
 	// Ensure the LHS expression is actually a structure type.
-	NType& t = (NType&)this->lhs.getExpressionType(context);
+	NType* t = (NType*)this->lhs.getExpressionType(context);
 
-	if (!t.isStruct)
+	if (!t->isStruct)
 		throw new CompilerException("Unable to use AST node " + this->lhs.cType + " as part of the structure resolution operator; the resulting type is not a structure.");
 
 	// We need to work out at what offset is the RHS identifier
 	// in the structure.
-	uint16_t pos = t.getStructFieldPosition(context, this->rhs.name);
+	uint16_t pos = t->getStructFieldPosition(context, this->rhs.name);
 
 	// Evaluate the LHS, placing a reference to it's position on the stack.
 	AsmBlock* lhs = this->lhs.reference(context);
@@ -73,7 +73,7 @@ AsmBlock* NStructureResolutionOperator::reference(AsmGenerator& context)
 	return block;
 }
 
-IType& NStructureResolutionOperator::getExpressionType(AsmGenerator& context)
+IType* NStructureResolutionOperator::getExpressionType(AsmGenerator& context)
 {
 	// A structure resolution operator has the type of it's field.
 	throw new CompilerException("Unable to resolve type for structure resolution operator.");

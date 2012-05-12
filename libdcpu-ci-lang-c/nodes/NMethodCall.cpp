@@ -46,6 +46,9 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		isDirect = false;
 	}
 
+	// FIXME: Again, without implicit type casting this breaks quite a few
+	// things, so it's disabled for now.
+	/*
 	// check if the called function matches the signature of this method call
 	// typedef std::vector<NVariableDeclaration*> VariableList; funcsig->arguments
 	// typedef std::vector<NExpression*> ExpressionList for this->arguments
@@ -59,16 +62,17 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	// now check types of all the arguments
 	for (unsigned int i = 0; i < funcsig->arguments.size(); i++)
 	{
-		NType callerType = (NType&) this->arguments[i]->getExpressionType(context);
-		NType calleeType = (NType&) funcsig->arguments[i]->type;
-		if (callerType.name != calleeType.name)
+		NType* callerType = (NType*) this->arguments[i]->getExpressionType(context);
+		NType& calleeType = funcsig->arguments[i]->type;
+		if (callerType->name != calleeType.name)
 		{
 			throw new CompilerException("There is no function with the name "
 						    + this->id.name + " and signature " + this->calculateSignature(context) + "\n"
 						    + "Candidates are:\t" + this->id.name + " with signature " + funcsig->getSignature());
 		}
 	}
-
+	*/
+	
 	// Get the stack table of this method.
 	StackFrame* frame = context.generateStackFrameIncomplete(funcsig);
 
@@ -176,7 +180,7 @@ AsmBlock* NMethodCall::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of a method call.");
 }
 
-IType& NMethodCall::getExpressionType(AsmGenerator& context)
+IType* NMethodCall::getExpressionType(AsmGenerator& context)
 {
 	// An method call has the type of the method's return type.
 	NFunctionDeclaration* funcdecl = (NFunctionDeclaration*)context.getFunction(this->id.name);
@@ -184,7 +188,7 @@ IType& NMethodCall::getExpressionType(AsmGenerator& context)
 	if (funcdecl == NULL)
 		throw new CompilerException("Called function was not found '" + this->id.name + "'.");
 
-	return (NType&)funcdecl->type;
+	return new NType(funcdecl->type);
 }
 
 
@@ -193,9 +197,6 @@ IType& NMethodCall::getExpressionType(AsmGenerator& context)
 /*  NFunctionSignature::calculateSignature() */
 std::string NMethodCall::calculateSignature(AsmGenerator& context)
 {
-
-
-
 	std::string sig = "(";
 	for (ExpressionList::const_iterator i = this->arguments.begin(); i != this->arguments.end(); i++)
 	{
@@ -203,8 +204,8 @@ std::string NMethodCall::calculateSignature(AsmGenerator& context)
 		{
 			sig = sig + ",";
 		}
-		NType type = (NType&)(*i)->getExpressionType(context);
-		sig = sig + type.name;
+		NType* type = (NType*)((*i)->getExpressionType(context));
+		sig = sig + type->name;
 	}
 	sig = sig + ")";
 	return sig;

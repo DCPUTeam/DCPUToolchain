@@ -25,7 +25,7 @@ class NPostIncDec : public NExpression
 			expr(expr), op(op), NExpression("postincdec") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType& getExpressionType(AsmGenerator& context);
+		virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

@@ -108,10 +108,10 @@ uint16_t NType::getStructFieldPosition(AsmGenerator& context, std::string name)
 	throw new CompilerException("Unable to lookup field " + name + " in structure " + this->resolvedStruct->id.name + "!");
 }
 
-IType& NType::getExpressionType(AsmGenerator& context)
+IType* NType::getExpressionType(AsmGenerator& context)
 {
 	// Types are of type type ;)
-	return NType::TypeType;
+	return new NType(NType::TypeType);
 }
 
 bool NType::operator==(const NType& other) const
