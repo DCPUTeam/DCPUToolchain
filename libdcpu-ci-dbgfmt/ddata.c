@@ -130,8 +130,6 @@ struct dbg_sym_payload_line* dbgfmt_get_symbol_line(struct dbg_sym* bytes)
 
 	result->path = malloc(str_length + 1001);
 	//memcpy(result->path, bytes->payload, str_length);
-	printf("get_basic: %s\n", bytes->payload);
-
 	return result;
 }
 

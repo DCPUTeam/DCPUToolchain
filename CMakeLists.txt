@@ -339,4 +339,4 @@ if(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
 else(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
 #	add_subdirectory(kernel)
 endif(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
-add_subdirectory(dbg-test)
+
