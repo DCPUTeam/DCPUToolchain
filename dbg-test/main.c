@@ -13,6 +13,6 @@ int main(int argc, char** argv)
 
 	file = dbgfmt_read(bfromcstr("test.bin"));
 	printf("reading: %x %x\n", file->magic, file->num_symbols);
-
+	dbgfmt_get_basic(file->symbols);
 	return 0;
 }
