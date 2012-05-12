@@ -27,14 +27,13 @@ AsmBlock* NReturnStatement::compile(AsmGenerator& context)
 	AsmBlock* eval = ((NExpression&)this->result).compile(context);
 	*block << *eval;
 	delete eval;
-
+	
 	// Free locals.
-	*block <<  "	SET X, " << context.m_CurrentFrame->getLocalsSize() << std::endl;
-	*block <<  "	SET PC, _stack_caller_free" << std::endl;
+	*block <<  "	ADD SP, " << context.m_CurrentFrame->getLocalsSize() << std::endl;
 
 	// Return from this function.
 	*block <<  "	SET X, " << context.m_CurrentFrame->getParametersSize() << std::endl;
-	*block <<  "	SET PC, _stack_caller_return" << std::endl;
+	*block <<  "	SET PC, _stack_callee_return" << std::endl;
 
 	return block;
 }

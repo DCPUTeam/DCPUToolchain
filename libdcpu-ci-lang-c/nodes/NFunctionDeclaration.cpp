@@ -76,8 +76,7 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 	*block <<  ":cfunc_" << this->id.name << "_actual" << std::endl;
 
 	// Allocate locals.
-	*block <<  "	SET X, " << frame->getLocalsSize() << std::endl;
-	*block <<  "	SET PC, _stack_caller_init" << std::endl;
+	*block <<  "	SUB SP, " << frame->getLocalsSize() << std::endl;
 
 	// Now compile the block.
 	AsmBlock* iblock = this->block->compile(context);
@@ -85,13 +84,12 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 	delete iblock;
 
 	// Free locals.
-	*block <<  "	SET X, " << frame->getLocalsSize() << std::endl;
-	*block <<  "	SET PC, _stack_caller_free" << std::endl;
+	*block <<  "	ADD SP, " << frame->getLocalsSize() << std::endl;
 
 	// Return from this function.
 	*block <<  "	SET A, 0xFFFF" << std::endl;
 	*block <<  "	SET X, " << frame->getParametersSize() << std::endl;
-	*block <<  "	SET PC, _stack_caller_return" << std::endl;
+	*block <<  "	SET PC, _stack_callee_return" << std::endl;
 
 	// Clean up frame.
 	context.finishStackFrame(frame);

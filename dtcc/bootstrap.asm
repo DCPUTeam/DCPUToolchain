@@ -30,7 +30,7 @@ SET PC, _setup
 ; |                     |
 ;  ---------------------
 
-:_stack_callee_init
+:_stack_caller_init
 	SET I, POP
 	SET J, SP
 	SUB SP, X
@@ -49,24 +49,7 @@ SET PC, _setup
 	SET PEEK, Z
 	SET Y, SP
 	ADD Y, 2
-	SET PC, I
-
-.BOUNDARY
-
-; Sets up additional stack space for local
-; variables, with an additional size of
-; X being allocated onto the stack.
-:_stack_caller_init
-	SUB SP, X
-
-.BOUNDARY
-
-; Frees additional stack space for local
-; variables, with the additional size of
-; the stack being specified in X.
-:_stack_caller_free
-	ADD SP, X
-	
+	SET PC, I	
 
 .BOUNDARY
 
@@ -75,7 +58,7 @@ SET PC, _setup
 ; stack frame into Y.  It then jumps to the
 ; return address that was specified in the just
 ; free'd stack frame by using the Z register.
-:_stack_caller_return
+:_stack_callee_return
 	SET Z, PEEK						; [return] [stack frame]   Z -> return value, Y -> stack frame
 	SET PEEK, 0
 	ADD SP, 1

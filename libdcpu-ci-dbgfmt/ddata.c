@@ -54,9 +54,9 @@ uint8_t* dbgfmt_deserialize_basic(FILE* stream, uint16_t length)
 	return result;
 }
 
-struct dbg_sym_basic_payload* dbgfmt_get_basic(struct dbg_sym* bytes)
+struct dbg_sym_payload_line* dbgfmt_get_symbol_line(struct dbg_sym* bytes)
 {
-	struct dbg_sym_basic_payload* result = malloc(sizeof(struct dbg_sym_basic_payload));
+	struct dbg_sym_payload_line* result = malloc(sizeof(struct dbg_sym_payload_line));
 	size_t str_length = bytes->length - 2 * sizeof(uint16_t);
 
 	result->path = malloc(str_length + 1001);
@@ -72,7 +72,7 @@ struct dbg_sym_file* dbgfmt_read(bstring path)
 	struct dbg_sym_file* file = malloc(sizeof(struct dbg_sym_file));
 	struct dbg_sym* tmp_symbol = malloc(sizeof(struct dbg_sym)), *origin;
 	size_t i, symbols_start, symbols_end;
-	struct dbg_sym_basic_payload* very_tmp_smbl;
+	struct dbg_sym_payload_line* very_tmp_smbl;
 	uint16_t tmp;
 
 	in = fopen(path->data, "rb");
@@ -94,7 +94,7 @@ struct dbg_sym_file* dbgfmt_read(bstring path)
 
 		switch (tmp_symbol->type)
 		{
-			case DBGFMT_BASIC:
+			case DBGFMT_SYMBOL_LINE:
 				tmp_symbol->payload = dbgfmt_deserialize_basic(in, tmp_symbol->length);
 				break;
 		}

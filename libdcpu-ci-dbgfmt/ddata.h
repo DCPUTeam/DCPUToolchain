@@ -59,4 +59,7 @@ struct dbg_sym_file* dbgfmt_read(bstring path);
 struct dbg_sym* dbgfmt_create_symbol(uint8_t type, void* payload);
 struct dbg_sym_payload_line* dbgfmt_create_symbol_line(bstring path, uint16_t lineno, uint16_t address);
 
+
+struct dbg_sym_payload_line* dbgfmt_get_symbol_line(struct dbg_sym* bytes);
+
 #endif

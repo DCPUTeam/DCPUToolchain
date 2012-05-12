@@ -115,7 +115,8 @@ int main(int argc, char* argv[])
 	for (i = 0; i < 0x20000; i++)
 	{
 		cread = fgetc(load);
-		leading[i] = cread;
+		if (i < 0x100)
+			leading[i] = cread;
 		if (cread == -1) break;
 		if (uread)
 			cread <<= 8;
