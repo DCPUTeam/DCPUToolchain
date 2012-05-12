@@ -104,17 +104,19 @@ SET PC, _setup
 :_locate_device
 	SET PUSH, A
 	SET PUSH, B
-	SET I, 0
+	SET I, 0 ; I is the hardware number being checke
 	:_locate_enum
-		IFE I, 0xFFFF 
-		    SET PC, _locate_none_found
+		IFE I, 0xFFFF
+			SET PC, _locate_none_found
 		SET J, SP
-	:_hw_searchloop
-		HWQ I
-		IFN A, [J]
-			IFN B, [J + 1]
-				SET PC, _hw_searchloop_continue
-		SET PC, _locate_found
+	:_hw_searchloop ; Search the clock driver table for a compatible driver
+		HWQ I ; Get hardware info for this device
+		IFN A, [J] ; compare it to the current driver's ID
+			SET PC, _hw_searchloop_continue
+	:_hw_searchloop_a_e
+		IFE B, [J + 1]
+			SET PC, _locate_found
+		SET PC, _hw_searchloop_continue
 	:_hw_searchloop_continue
 		ADD I, 1
 		SET PC, _hw_searchloop
@@ -122,8 +124,7 @@ SET PC, _setup
 		SET A, 0
 		SET PC, POP
 	:_locate_found
-		SET 0, POP
-		SET 0, POP
+		ADD SP, 2
 		SET A, I
 		SET PC, POP
 	
@@ -136,12 +137,12 @@ SET PC, _setup
 	
 	; Initialize the screen.
 	SET A, 0x7349
-	SET B, 0xF615
+	SET B, 0xf615
 	JSR _locate_device
 	SET PUSH, A
 	SET A, 0x0
 	SET B, 0x8000
-	HWI POP
+	HWI 0
 	
 ; THE COMPILER MUST GENERATE THE CONTENTS
 ; OF _setup SO THAT THE STACK IS CORRECTLY
