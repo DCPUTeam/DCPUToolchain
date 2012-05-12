@@ -109,7 +109,7 @@ SET PC, _setup
 		IFE I, 0xFFFF
 			SET PC, _locate_none_found
 		SET J, SP
-	:_hw_searchloop ; Search the clock driver table for a compatible driver
+	:_hw_searchloop ; Compare the hwq'd information to the requested device
 		HWQ I ; Get hardware info for this device
 		IFN A, [J] ; compare it to the current driver's ID
 			SET PC, _hw_searchloop_continue
@@ -142,7 +142,7 @@ SET PC, _setup
 	SET PUSH, A
 	SET A, 0x0
 	SET B, 0x8000
-	HWI 0
+	HWI POP
 	
 ; THE COMPILER MUST GENERATE THE CONTENTS
 ; OF _setup SO THAT THE STACK IS CORRECTLY
