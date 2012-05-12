@@ -50,13 +50,15 @@ void ddbg_help(bstring section)
 	{
 		printf("Manipulates breakpoints.\n");
 		printf("Available commands: add, delete, list\n");
-		printf("Syntax: `break <command> <path>:<address>'\n");
-		printf("Alternate syntax: `break <command> <address>'\n");
+		printf("Syntax: `break <command> <path>:<index>'\n");
 		printf("Example: break add memory:0xbeef\n");
+		printf("Example: break add test.c:23\n");
+		printf("Note: `test.c:23` will only work correctly if you have previously loaded symbols with the `load symbols` command.\n");
 	}
 	else if (biseq(section, bfromcstr("load")))
 	{
 		printf("Loads words from a file to the VM.\n");
+		printf("Syntax: `load [symbols] <file>'\n");
 	}
 	else if (biseq(section, bfromcstr("run")) || biseq(section, bfromcstr("continue")))
 	{
@@ -65,7 +67,7 @@ void ddbg_help(bstring section)
 	else if (biseq(section, bfromcstr("inspect")))
 	{
 		printf("Returns information about devices.\n");
-		printf("Available commands: cpu, memory.\n");
+		printf("Available commands: cpu, memory, symbols.\n");
 		printf("Syntax: `inspect <command> [<arg1>] [<arg2>]'\n");
 		printf("Note: `inspect memory' takes one or two arguments; the first argument is the start address and the second argument is the number of words to be dumped.\n");
 	}
@@ -84,7 +86,8 @@ void ddbg_cycle_hook(vm_t* vm, uint16_t pos)
 		if (vm->pc == breakpoints[i] && vm->pc != 0xFFFF)
 		{
 			vm->halted = true;
-			printf("Breakpoint hit at 0x%04X.\n", breakpoints[i]);
+			vm_hook_break(vm); // Required for UI to update correctly.
+			printf("Breakpoint hit at 0x%04X.", breakpoints[i]);
 		}
 	}
 }
@@ -168,10 +171,10 @@ void ddbg_attach(bstring hw)
 
 int32_t ddbg_file_to_address(bstring file, int index)
 {
-	int i;
+	unsigned int i;
 	struct dbg_sym* sym;
 	struct dbg_sym_payload_line* payload_line;
-	
+
 	if (biseq(file, bfromcstr("memory")))
 	{
 		// We use the index as memory address.
@@ -206,7 +209,7 @@ int32_t ddbg_file_to_address(bstring file, int index)
 			}
 		}
 	}
-	
+
 	// If we don't find a memory address, we return -1.
 	return -1;
 }
@@ -231,7 +234,7 @@ void ddbg_delete_breakpoint(bstring file, int index)
 	int i = 0;
 	bool found = false;
 	int32_t memory = ddbg_file_to_address(file, index);
-	
+
 	// Did we get a valid result?
 	if (memory == -1)
 	{
@@ -368,10 +371,10 @@ void ddbg_load_symbols(bstring path)
 {
 	// TODO: Free existing symbols if
 	// symbols is not NULL.
-	
+
 	// Load symbols.
 	symbols = dbgfmt_read(path);
-	
+
 	printf("Loaded symbols from %s.\n", path->data);
 }
 
@@ -383,7 +386,7 @@ void ddbg_inspect_symbols()
 		printf("No symbols are loaded.\n");
 		return;
 	}
-	
+
 	// Print out a list of symbols.
 	printf("%u symbols are loaded.\n", list_size(symbols));
 }

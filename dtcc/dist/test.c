@@ -2,7 +2,7 @@
 // Test file for the DCPU-16 compiler.
 //
 
-#include <screen.m>
+#include "screen.m"
 
 int globalInt;
 int anotherInt;

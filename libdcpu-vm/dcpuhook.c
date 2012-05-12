@@ -34,6 +34,11 @@ void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode)
 			vm_hook_list[i](vm, pos);
 }
 
+void vm_hook_break(vm_t* vm)
+{
+	vm_hook_fire(vm, 0, HOOK_ON_BREAK);
+}
+
 uint16_t vm_hook_register(vm_t* vm, vm_hook hook, uint16_t mode)
 {
 	uint16_t id = 0;

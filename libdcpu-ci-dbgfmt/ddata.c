@@ -29,19 +29,19 @@ int dbgfmt_write(bstring path, list_t* symbols)
 	struct dbgfmt_serialization_result* result;
 	void* rawdata;
 	uint16_t rawlength;
-	
+
 	out = fopen(path->data, "wb");
 	fwrite(&hdr->magic, sizeof(hdr->magic), 1, out);
 	fwrite(&total, sizeof(uint32_t), 1, out);
 	for (i = 0; i < total; i++)
 	{
 		struct dbg_sym* sym = (struct dbg_sym*)list_get_at(symbols, i);
-		
+
 		switch (sym->type)
 		{
 			case DBGFMT_SYMBOL_LINE:
 				result = dbgfmt_serialize_payload_line((struct dbg_sym_payload_line*)sym->payload);
-				
+
 				rawdata = malloc(result->length);
 				memcpy(rawdata, result->bytestream, result->length);
 				rawlength = result->length;
@@ -50,15 +50,15 @@ int dbgfmt_write(bstring path, list_t* symbols)
 				assert(0 /* unable to write out unknown debugging symbol */);
 				break;
 		}
-		
+
 		fwrite(&rawlength, sizeof(rawlength), 1, out);
 		fwrite(&sym->type, sizeof(sym->type), 1, out);
 		fwrite(rawdata, 1, rawlength, out);
-		
+
 		free(rawdata);
 	}
 	fclose(out);
-	
+
 	return 0;
 }
 
@@ -69,35 +69,35 @@ list_t* dbgfmt_read(bstring path)
 	struct dbg_sym* symbol;
 	void* payload;
 	list_t* result = malloc(sizeof(list_t));
-	int i;
-	
+	uint32_t i;
+
 	// Open the file.
 	in = fopen(path->data, "rb");
-	
+
 	// FIXME: Do some checking here to see if the file
 	// was loaded successfully.
-	
+
 	// Initialize the list of symbols.
 	list_init(result);
-	
+
 	// Read in the header information.
 	fread(&headers.magic, sizeof(headers.magic), 1, in);
 	fread(&headers.num_symbols, sizeof(headers.num_symbols), 1, in);
-	
+
 	// Now read until EOF.
 	for (i = 0; i < headers.num_symbols; i++)
 	{
 		// Allocate space for a new symbol.
 		symbol = malloc(sizeof(struct dbg_sym));
-		
+
 		// Read in it's header information.
 		fread(&symbol->length, sizeof(symbol->length), 1, in);
 		fread(&symbol->type, sizeof(symbol->type), 1, in);
-		
+
 		// Now allocate and read in the payload.
 		payload = malloc(symbol->length);
 		fread(payload, symbol->length, 1, in);
-		
+
 		// Deserialize the payload.
 		switch (symbol->type)
 		{
@@ -108,17 +108,17 @@ list_t* dbgfmt_read(bstring path)
 				assert(0 /* unable to write out unknown debugging symbol */);
 				break;
 		}
-		
+
 		// Add the deserialized structure to the symbol.
 		symbol->payload = payload;
-		
+
 		// Add the symbol to the list.
 		list_append(result, symbol);
 	}
-	
+
 	// Close the file.
 	fclose(in);
-	
+
 	// Return the result list.
 	return result;
 }
@@ -138,20 +138,20 @@ struct dbg_sym_payload_line* dbgfmt_get_symbol_line(struct dbg_sym* bytes)
 struct dbgfmt_serialization_result* dbgfmt_serialize_payload_line(struct dbg_sym_payload_line* payload)
 {
 	struct dbgfmt_serialization_result* ser_res = malloc(sizeof(struct dbgfmt_serialization_result));
-	
+
 	uint16_t length = strlen(payload->path->data) + 1 + sizeof(payload->lineno) + sizeof(payload->address);
 	uint8_t* result = malloc(length);
 	uint8_t* origin = result;
-	
+
 	strcpy(result, payload->path->data);
 	result += strlen(payload->path->data) + 1;
 	memcpy(result, &payload->lineno, sizeof(payload->lineno));
 	result += sizeof(payload->lineno);
 	memcpy(result, &payload->address, sizeof(payload->address));
-	
+
 	ser_res->bytestream = origin;
 	ser_res->length = length;
-	
+
 	return ser_res;
 }
 
@@ -159,21 +159,21 @@ struct dbg_sym_payload_line* dbgfmt_deserialize_symbol_line(void* data, uint16_t
 {
 	struct dbg_sym_payload_line* payload = malloc(sizeof(struct dbg_sym_payload_line));
 	size_t pathlen = length - 2 * sizeof(uint16_t); // FIXME: There should be a better way of handling string length.
-	
+
 	// Read the string data into storage, then assign
 	// the bstring.
 	char* storage = malloc(pathlen); // Length includes NULL terminator.
 	memcpy(storage, data, pathlen);
 	payload->path = bfromcstr(storage);
 	free(storage);
-	
+
 	// Read in other properties.
-	memcpy(&payload->lineno, data + pathlen, sizeof(uint16_t));
-	memcpy(&payload->address, data + pathlen + sizeof(uint16_t), sizeof(uint16_t));
-	
+	memcpy(&payload->lineno, (char*)data + pathlen, sizeof(uint16_t));
+	memcpy(&payload->address, (char*)data + pathlen + sizeof(uint16_t), sizeof(uint16_t));
+
 	// Free the passed data.
 	free(data);
-	
+
 	return payload;
 }
 
@@ -190,7 +190,6 @@ struct dbg_sym_file* dbgfmt_header(uint32_t num_symbols)
 struct dbg_sym* dbgfmt_create_symbol(uint8_t type, void* payload)
 {
 	struct dbg_sym* symbol = malloc(sizeof(struct dbg_sym));
-	struct dbgfmt_serialization_result* result;
 
 	symbol->type = type;
 	symbol->payload = payload;
@@ -210,15 +209,15 @@ struct dbg_sym_payload_line* dbgfmt_create_symbol_line(bstring path, uint16_t li
 	return payload;
 }
 
-void dbgfmt_update_symbol(struct dbg_sym* (*symbols)[4], uint16_t symbols_count, uint16_t address)
+void dbgfmt_update_symbol(struct dbg_sym * (*symbols)[4], uint16_t symbols_count, uint16_t address)
 {
 	int i;
-	
+
 	for (i = 0; i < symbols_count; i++)
 	{
 		if ((*symbols)[i] == NULL)
 			continue;
-		
+
 		switch ((*symbols)[i]->type)
 		{
 			case DBGFMT_SYMBOL_LINE:

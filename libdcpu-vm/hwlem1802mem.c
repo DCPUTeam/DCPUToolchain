@@ -87,7 +87,11 @@ void vm_hw_lem1802_mem_init(vm_t* vm)
 
 	// Determine the font path.
 	font_path = osutil_getarg0path();
+#ifdef WIN32
+	bconcat(font_path, bfromcstr("\\terminal.png"));
+#else
 	bconcat(font_path, bfromcstr("/terminal.png"));
+#endif
 
 	// Set the custom font based on the path.
 	TCOD_console_set_custom_font(font_path->data, TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);

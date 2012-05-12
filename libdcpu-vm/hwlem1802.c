@@ -27,6 +27,7 @@
 uint32_t screen_tick = 0;
 uint16_t hook_write_id;
 uint16_t hook_cycle_id;
+uint16_t hook_break_id;
 uint16_t hw_id;
 
 void vm_hw_lem1802_write(vm_t* vm, uint16_t pos)
@@ -171,6 +172,10 @@ void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos)
 	// Check to see if window is closed.
 	if (TCOD_console_is_window_closed())
 	{
+		// FIXME: Cleanly detach the hardware from the
+		// virtual machine in the case of the debugger,
+		// rather than stopping the VM.
+
 		// Stop VM.
 		vm->halted = true;
 		return;
@@ -178,6 +183,17 @@ void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos)
 
 	// Update screen.
 	TCOD_console_flush();
+
+	// Required for proper redraw event to occur.  Since it's
+	// non-blocking, it shouldn't consume a character from the
+	// input, but this is not confirmed!
+	TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+}
+
+void vm_hw_lem1802_break(vm_t* vm, uint16_t pos)
+{
+	screen_tick = 2500;
+	vm_hw_lem1802_cycle(vm, pos);
 }
 
 void vm_hw_lem1802_interrupt(vm_t* vm)
@@ -228,6 +244,7 @@ void vm_hw_lem1802_init(vm_t* vm)
 	// Register hooks.
 	hook_write_id = vm_hook_register(vm, &vm_hw_lem1802_write, HOOK_ON_WRITE);
 	hook_cycle_id = vm_hook_register(vm, &vm_hw_lem1802_cycle, HOOK_ON_CYCLE);
+	hook_break_id = vm_hook_register(vm, &vm_hw_lem1802_break, HOOK_ON_BREAK);
 	hw_id = vm_hw_register(vm, screen);
 }
 
@@ -236,5 +253,6 @@ void vm_hw_lem1802_free(vm_t* vm)
 	// Unregister hooks.
 	vm_hook_unregister(vm, hook_write_id);
 	vm_hook_unregister(vm, hook_cycle_id);
+	vm_hook_unregister(vm, hook_break_id);
 	vm_hw_unregister(vm, hw_id);
 }

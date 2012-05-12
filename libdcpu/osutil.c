@@ -130,6 +130,19 @@ bstring osutil_getarg0path()
 {
 	bstring arg0 = osutil_getarg0();
 	bstring path = osutil_dirname(arg0);
+#ifdef WIN32
+	// Special handling for Windows where the path
+	// can be blank if argument 0 is just the executable
+	// name.
+	if (biseqcstr(path, ""))
+	{
+		bdestroy(path);
+		bdestroy(arg0);
+		arg0 = bfromcstr(".\\");
+		bconcat(arg0, osutil_getarg0());
+		path = osutil_dirname(arg0);
+	}
+#endif
 	bdestroy(arg0);
 	return path;
 }

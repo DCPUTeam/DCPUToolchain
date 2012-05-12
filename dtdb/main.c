@@ -52,10 +52,13 @@ pthread_t sdp_thread;
 
 extern int dbg_yyparse(void* scanner);
 
-void ddbg_sigint(int signal)
+void ddbg_sigint(int sig)
 {
 	vm->halted = true;
 	printf("(interrupt)\n");
+#ifdef WIN32
+	signal(SIGINT, ddbg_sigint);
+#endif
 }
 
 void get_command(char* command_buffer, int max)
