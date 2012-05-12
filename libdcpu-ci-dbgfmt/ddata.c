@@ -18,6 +18,7 @@
 struct dbg_sym_file* dbgfmt_header(uint32_t num_symbols);
 struct dbg_sym* dbgfmt_debugging_symbol(uint8_t type, void* payload);
 struct dbgfmt_serialization_result* dbgfmt_serialize_payload_line(struct dbg_sym_payload_line* payload);
+struct dbg_sym_payload_line* dbgfmt_deserialize_symbol_line(void* data, uint16_t length);
 
 int dbgfmt_write(bstring path, list_t* symbols)
 {
@@ -27,7 +28,7 @@ int dbgfmt_write(bstring path, list_t* symbols)
 	size_t i = 0;
 	struct dbgfmt_serialization_result* result;
 	void* rawdata;
-	uint32_t rawlength;
+	uint16_t rawlength;
 	
 	out = fopen(path->data, "wb");
 	fwrite(&hdr->magic, sizeof(hdr->magic), 1, out);
@@ -61,20 +62,64 @@ int dbgfmt_write(bstring path, list_t* symbols)
 	return 0;
 }
 
-uint8_t* dbgfmt_deserialize_basic(FILE* stream, uint16_t length)
+list_t* dbgfmt_read(bstring path)
 {
-	size_t str_length = length - 2 * sizeof(uint16_t);
-	uint16_t tmp;
-	uint8_t* result = malloc(str_length + 2 * sizeof(uint16_t)), *origin;
-	origin = result;
-
-	fread(result, str_length, 1, stream);
-	result += str_length;
-	fread(result, sizeof(uint16_t), 1, stream);
-	result += sizeof(uint16_t);
-	fread(result, sizeof(uint16_t), 1, stream);
-	result = origin;
-
+	FILE* in;
+	struct dbg_sym_file headers;
+	struct dbg_sym* symbol;
+	void* payload;
+	list_t* result = malloc(sizeof(list_t));
+	int i;
+	
+	// Open the file.
+	in = fopen(path->data, "rb");
+	
+	// FIXME: Do some checking here to see if the file
+	// was loaded successfully.
+	
+	// Initialize the list of symbols.
+	list_init(result);
+	
+	// Read in the header information.
+	fread(&headers.magic, sizeof(headers.magic), 1, in);
+	fread(&headers.num_symbols, sizeof(headers.num_symbols), 1, in);
+	
+	// Now read until EOF.
+	for (i = 0; i < headers.num_symbols; i++)
+	{
+		// Allocate space for a new symbol.
+		symbol = malloc(sizeof(struct dbg_sym));
+		
+		// Read in it's header information.
+		fread(&symbol->length, sizeof(symbol->length), 1, in);
+		fread(&symbol->type, sizeof(symbol->type), 1, in);
+		
+		// Now allocate and read in the payload.
+		payload = malloc(symbol->length);
+		fread(payload, symbol->length, 1, in);
+		
+		// Deserialize the payload.
+		switch (symbol->type)
+		{
+			case DBGFMT_SYMBOL_LINE:
+				payload = dbgfmt_deserialize_symbol_line(payload, symbol->length);
+				break;
+			default:
+				assert(0 /* unable to write out unknown debugging symbol */);
+				break;
+		}
+		
+		// Add the deserialized structure to the symbol.
+		symbol->payload = payload;
+		
+		// Add the symbol to the list.
+		list_append(result, symbol);
+	}
+	
+	// Close the file.
+	fclose(in);
+	
+	// Return the result list.
 	return result;
 }
 
@@ -110,52 +155,26 @@ struct dbgfmt_serialization_result* dbgfmt_serialize_payload_line(struct dbg_sym
 	return ser_res;
 }
 
-struct dbg_sym_file* dbgfmt_read(bstring path)
+struct dbg_sym_payload_line* dbgfmt_deserialize_symbol_line(void* data, uint16_t length)
 {
-	FILE* in;
-	struct dbg_sym_file* file = malloc(sizeof(struct dbg_sym_file));
-	struct dbg_sym* tmp_symbol = malloc(sizeof(struct dbg_sym)), *origin;
-	size_t i, symbols_start, symbols_end;
-	struct dbg_sym_payload_line* very_tmp_smbl;
-	uint16_t tmp;
-
-	in = fopen(path->data, "rb");
-	fread(&file->magic, sizeof(file->magic), 1, in);
-	fread(&file->num_symbols, sizeof(file->symbols), 1, in);
-
-	fseek(in, sizeof(file->symbols), SEEK_SET);
-	symbols_start = ftell(in);
-	fseek(in, 0, SEEK_END);
-	symbols_end = ftell(in);
-	fseek(in, symbols_start, SEEK_SET);
-	file->symbols = malloc(symbols_end - symbols_start);
-	origin = file->symbols;
-
-	for (i = 0; i < file->num_symbols; i++)
-	{
-		fread(&tmp_symbol->length, sizeof(uint16_t), 1, in);
-		fread(&tmp_symbol->type, sizeof(uint8_t), 1, in);
-
-		switch (tmp_symbol->type)
-		{
-			case DBGFMT_SYMBOL_LINE:
-				tmp_symbol->payload = dbgfmt_deserialize_basic(in, tmp_symbol->length);
-				break;
-		}
-
-		memcpy(file->symbols, &tmp_symbol->length, sizeof(uint16_t));
-		file->symbols += sizeof(uint16_t);
-		memcpy(file->symbols, &tmp_symbol->type, sizeof(uint8_t));
-		file->symbols += sizeof(uint8_t);
-		memcpy(file->symbols, tmp_symbol->payload, tmp_symbol->length);
-		file->symbols += tmp_symbol->length;
-	}
-
-	file->symbols = origin;
-
-	fclose(in);
-
-	return file;
+	struct dbg_sym_payload_line* payload = malloc(sizeof(struct dbg_sym_payload_line));
+	size_t pathlen = length - 2 * sizeof(uint16_t); // FIXME: There should be a better way of handling string length.
+	
+	// Read the string data into storage, then assign
+	// the bstring.
+	char* storage = malloc(pathlen); // Length includes NULL terminator.
+	memcpy(storage, data, pathlen);
+	payload->path = bfromcstr(storage);
+	free(storage);
+	
+	// Read in other properties.
+	memcpy(&payload->lineno, data + pathlen, sizeof(uint16_t));
+	memcpy(&payload->address, data + pathlen + sizeof(uint16_t), sizeof(uint16_t));
+	
+	// Free the passed data.
+	free(data);
+	
+	return payload;
 }
 
 struct dbg_sym_file* dbgfmt_header(uint32_t num_symbols)
@@ -191,17 +210,22 @@ struct dbg_sym_payload_line* dbgfmt_create_symbol_line(bstring path, uint16_t li
 	return payload;
 }
 
-void dbgfmt_update_symbol(struct dbg_sym* symbol, uint16_t address)
+void dbgfmt_update_symbol(struct dbg_sym* (*symbols)[4], uint16_t symbols_count, uint16_t address)
 {
-	if (symbol == NULL)
-		return;
+	int i;
 	
-	switch (symbol->type)
+	for (i = 0; i < symbols_count; i++)
 	{
-		case DBGFMT_SYMBOL_LINE:
-			((struct dbg_sym_payload_line*)symbol->payload)->address = address;
-			break;
-		default:
-			assert(0 /* debugging symbol wasn't of any known type during update */);
+		if ((*symbols)[i] == NULL)
+			continue;
+		
+		switch ((*symbols)[i]->type)
+		{
+			case DBGFMT_SYMBOL_LINE:
+				((struct dbg_sym_payload_line*)(*symbols)[i]->payload)->address = address;
+				break;
+			default:
+				assert(0 /* debugging symbol wasn't of any known type during update */);
+		}
 	}
 }

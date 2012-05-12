@@ -40,7 +40,8 @@ struct aout_byte
 	char* label;
 	bool raw_used;
 	uint16_t raw;
-	struct dbg_sym* symbol;
+	struct dbg_sym* symbols[4];
+	uint16_t symbols_count;
 };
 
 extern struct aout_byte* start;

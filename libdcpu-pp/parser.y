@@ -31,6 +31,7 @@ list_t scopes;
 list_t macros;
 void pp_discard_buffer();
 void yyerror(void* scanner, const char *str);
+void handle_uline(int line, bstring file, void* current);
 void handle_line(int line, bstring file, void* current);
 void handle_start(freed_bstring name, FILE* current);
 void handle_output(bstring output, void* scanner);
@@ -103,7 +104,8 @@ struct macrodef_entry* active_macro = NULL;
 }
 
 // Define our lexical token names.
-%token <token> LINE INCLUDE EQUATE IF IFDEF IFNDEF ELSE ENDIF MACRO ENDMACRO PARAM_OPEN PARAM_CLOSE COMMA UNDEF MACROCALL
+%token <token> LINE ULINE INCLUDE EQUATE IF IFDEF IFNDEF ELSE ENDIF MACRO
+%token <token> ENDMACRO PARAM_OPEN PARAM_CLOSE COMMA UNDEF MACROCALL
 %token <string> STRING WORD
 %token <any> ANY_CHAR
 %token <number> NUMBER
@@ -189,6 +191,14 @@ preprocessor:
 		LINE NUMBER WORD
 		{
 			handle_line($2, $3, scanner);
+		} |
+		ULINE NUMBER STRING
+		{
+			handle_uline($2, $3, scanner);
+		} |
+		ULINE NUMBER WORD
+		{
+			handle_uline($2, $3, scanner);
 		} |
 		EQUATE WORD STRING
 		{
@@ -473,6 +483,11 @@ void handle_output(bstring output, void* scanner)
 void handle_line(int line, bstring file, void* current)
 {
 	fprintf(pp_yyget_out((yyscan_t)current), "# %i %s", line, file->data);
+}
+
+void handle_uline(int line, bstring file, void* current)
+{
+	fprintf(pp_yyget_out((yyscan_t)current), "#U %i %s", line, file->data);
 }
 
 bstring pp_yyfilename = NULL;

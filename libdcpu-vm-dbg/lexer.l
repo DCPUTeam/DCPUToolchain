@@ -40,6 +40,7 @@ char* dbg_trim_and_unescape(char* data, int mode);
 	/* Debugger command identifiers */
 
 "load"						COPY; return ID_LOAD;
+"symbols"					COPY; return ID_SYMBOLS;
 "breakpoint"					COPY; return ID_BREAKPOINT;
 "break"						COPY; return ID_BREAKPOINT;
 "disassemble"					COPY; return ID_DISASSEMBLE;

@@ -47,7 +47,11 @@ struct aout_byte* aout_create_raw(uint16_t raw)
 	byte->label = NULL;
 	byte->raw_used = true;
 	byte->raw = raw;
-	byte->symbol = NULL;
+	byte->symbols[0] = NULL;
+	byte->symbols[1] = NULL;
+	byte->symbols[2] = NULL;
+	byte->symbols[3] = NULL;
+	byte->symbols_count = 0;
 	return byte;
 }
 
@@ -64,7 +68,11 @@ struct aout_byte* aout_create_opcode(uint16_t opcode, uint16_t a, uint16_t b)
 	byte->label = NULL;
 	byte->raw_used = false;
 	byte->raw = 0x0;
-	byte->symbol = NULL;
+	byte->symbols[0] = NULL;
+	byte->symbols[1] = NULL;
+	byte->symbols[2] = NULL;
+	byte->symbols[3] = NULL;
+	byte->symbols_count = 0;
 
 	if (opcode == 0 && a == 0)
 		ahalt(ERR_OUTPUT_NULL, NULL);
@@ -85,7 +93,11 @@ struct aout_byte* aout_create_label(char* name)
 	byte->label = name;
 	byte->raw_used = false;
 	byte->raw = 0x0;
-	byte->symbol = NULL;
+	byte->symbols[0] = NULL;
+	byte->symbols[1] = NULL;
+	byte->symbols[2] = NULL;
+	byte->symbols[3] = NULL;
+	byte->symbols_count = 0;
 	return byte;
 }
 
@@ -102,7 +114,11 @@ struct aout_byte* aout_create_expr(struct expr* expression)
 	byte->label = NULL;
 	byte->raw_used = false;
 	byte->raw = 0x0;
-	byte->symbol = NULL;
+	byte->symbols[0] = NULL;
+	byte->symbols[1] = NULL;
+	byte->symbols[2] = NULL;
+	byte->symbols[3] = NULL;
+	byte->symbols_count = 0;
 	return byte;
 }
 
@@ -119,7 +135,11 @@ struct aout_byte* aout_create_metadata_extension(char* name)
 	byte->label = name;
 	byte->raw_used = false;
 	byte->raw = 0x0;
-	byte->symbol = NULL;
+	byte->symbols[0] = NULL;
+	byte->symbols[1] = NULL;
+	byte->symbols[2] = NULL;
+	byte->symbols[3] = NULL;
+	byte->symbols_count = 0;
 	return byte;
 }
 
@@ -136,7 +156,11 @@ struct aout_byte* aout_create_metadata_incbin(char* path)
 	byte->label = path;
 	byte->raw_used = false;
 	byte->raw = 0x0;
-	byte->symbol = NULL;
+	byte->symbols[0] = NULL;
+	byte->symbols[1] = NULL;
+	byte->symbols[2] = NULL;
+	byte->symbols[3] = NULL;
+	byte->symbols_count = 0;
 	return byte;
 }
 
@@ -153,7 +177,11 @@ struct aout_byte* aout_create_metadata_origin(uint16_t address)
 	byte->label = NULL;
 	byte->raw_used = false;
 	byte->raw = 0x0;
-	byte->symbol = NULL;
+	byte->symbols[0] = NULL;
+	byte->symbols[1] = NULL;
+	byte->symbols[2] = NULL;
+	byte->symbols[3] = NULL;
+	byte->symbols_count = 0;
 	return byte;
 }
 
@@ -170,7 +198,11 @@ struct aout_byte* aout_create_metadata_export(char* name)
 	byte->label = name;
 	byte->raw_used = false;
 	byte->raw = 0x0;
-	byte->symbol = NULL;
+	byte->symbols[0] = NULL;
+	byte->symbols[1] = NULL;
+	byte->symbols[2] = NULL;
+	byte->symbols[3] = NULL;
+	byte->symbols_count = 0;
 	return byte;
 }
 
@@ -187,7 +219,11 @@ struct aout_byte* aout_create_metadata_import(char* name)
 	byte->label = name;
 	byte->raw_used = false;
 	byte->raw = 0x0;
-	byte->symbol = NULL;
+	byte->symbols[0] = NULL;
+	byte->symbols[1] = NULL;
+	byte->symbols[2] = NULL;
+	byte->symbols[3] = NULL;
+	byte->symbols_count = 0;
 	return byte;
 }
 
@@ -466,7 +502,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 		else if (current_outer->type == AOUT_TYPE_NORMAL)
 		{
 			// Update the debugging symbol.
-			dbgfmt_update_symbol(current_outer->symbol, (uint16_t)(ftell(out) / 2));
+			dbgfmt_update_symbol(&current_outer->symbols, current_outer->symbols_count, (uint16_t)((ftell(out) - true_origin) / 2));
 			
 			// Normal output.
 			if (current_outer->raw_used == true)

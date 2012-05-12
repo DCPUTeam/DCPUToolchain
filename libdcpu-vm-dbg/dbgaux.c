@@ -22,6 +22,7 @@
 #include <hwlem1802.h>
 #include <hwtimer.h>
 #include <imap.h>
+#include <ddata.h>
 
 #define MAX_BREAKPOINTS 100
 
@@ -30,6 +31,7 @@ uint16_t flash[0x10000];
 uint16_t breakpoints[MAX_BREAKPOINTS];
 uint16_t breakpoints_num;
 extern vm_t* vm;
+list_t* symbols;
 
 void ddbg_help(bstring section)
 {
@@ -164,44 +166,82 @@ void ddbg_attach(bstring hw)
 		printf("Unrecognized hardware.\n");
 }
 
+int32_t ddbg_file_to_address(bstring file, int index)
+{
+	int i;
+	struct dbg_sym* sym;
+	struct dbg_sym_payload_line* payload_line;
+	
+	if (biseq(file, bfromcstr("memory")))
+	{
+		// We use the index as memory address.
+		if (index < 0)
+		{
+			printf("Memory address must be greater than 0.\n");
+			return -1;
+		}
+		else
+			return index;
+	}
+	else if (symbols != NULL)
+	{
+		// Search through our debugging symbols.
+		for (i = 0; i < list_size(symbols); i++)
+		{
+			sym = list_get_at(symbols, i);
+			switch (sym->type)
+			{
+				case DBGFMT_SYMBOL_LINE:
+					payload_line = (struct dbg_sym_payload_line*)sym->payload;
+					if (binstr(payload_line->path, 0, file) != BSTR_ERR && payload_line->lineno == index)
+					{
+						// The filename and line number matches, we have found
+						// our symbol entry.
+						printf("Line information: %s:%u is at 0x%04X\n", payload_line->path->data, payload_line->lineno, payload_line->address);
+						return payload_line->address;
+					}
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	
+	// If we don't find a memory address, we return -1.
+	return -1;
+}
+
 void ddbg_add_breakpoint(bstring file, int index)
 {
-	if (!biseq(file, bfromcstr("memory")))
+	int32_t memory = ddbg_file_to_address(file, index);
+
+	// Did we get a valid result?
+	if (memory == -1)
 	{
-		printf("Only memory breakpoints can be set at this time (use memory:address).\n");
+		printf("Unable to resolve specified symbol.\n");
 		return;
 	}
 
-	if (index < 0)
-	{
-		printf("Index must be greater than 0.\n");
-		return;
-	}
-
-	breakpoints[breakpoints_num++] = index;
-	printf("Breakpoint added at 0x%04X.\n", index);
+	breakpoints[breakpoints_num++] = memory;
+	printf("Breakpoint added at 0x%04X.\n", memory);
 }
 
 void ddbg_delete_breakpoint(bstring file, int index)
 {
 	int i = 0;
 	bool found = false;
-
-	if (!biseq(file, bfromcstr("memory")))
+	int32_t memory = ddbg_file_to_address(file, index);
+	
+	// Did we get a valid result?
+	if (memory == -1)
 	{
-		printf("Only memory breakpoints can be set at this time (use memory:address).\n");
-		return;
-	}
-
-	if (index < 0)
-	{
-		printf("Index must be greater than 0.\n");
+		printf("Unable to resolve specified symbol.\n");
 		return;
 	}
 
 	for (i = 0; i < breakpoints_num; i++)
 	{
-		if (breakpoints[i] == index)
+		if (breakpoints[i] == memory)
 		{
 			breakpoints[i] = 0xFFFF;
 			found = true;
@@ -209,13 +249,9 @@ void ddbg_delete_breakpoint(bstring file, int index)
 	}
 
 	if (found == true)
-	{
-		printf("Breakpoint at %s:%d removed.\n", bstr2cstr(file, 0), index);
-	}
+		printf("Breakpoint removed at 0x%04X.\n", memory);
 	else
-	{
 		printf("There was no breakpoint at %s:%d.\n", bstr2cstr(file, 0), index);
-	}
 }
 
 void ddbg_breakpoints_list()
@@ -325,4 +361,29 @@ void ddbg_disassemble(int start, int difference)
 	}
 
 	printf("\n");
+}
+
+
+void ddbg_load_symbols(bstring path)
+{
+	// TODO: Free existing symbols if
+	// symbols is not NULL.
+	
+	// Load symbols.
+	symbols = dbgfmt_read(path);
+	
+	printf("Loaded symbols from %s.\n", path->data);
+}
+
+void ddbg_inspect_symbols()
+{
+	// Check to see if no symbols are loaded.
+	if (symbols == NULL)
+	{
+		printf("No symbols are loaded.\n");
+		return;
+	}
+	
+	// Print out a list of symbols.
+	printf("%u symbols are loaded.\n", list_size(symbols));
 }

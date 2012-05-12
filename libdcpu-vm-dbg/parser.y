@@ -37,7 +37,7 @@ void yyerror(void* scanner, const char *str);
 // Define our lexical token names.
 %token <token> ID_LOAD ID_BREAKPOINT ID_RUN ID_CONTINUE ID_STOP ID_QUIT ID_ADD ID_DELETE
 %token <token> ID_ATTACH ID_INSPECT ID_HARDWARE ID_CPU ID_DETACH ID_LIST ID_MEMORY ID_HELP
-%token <token> ID_DISASSEMBLE COLON
+%token <token> ID_DISASSEMBLE ID_SYMBOLS COLON
 %token <string> PARAM PATH CHARACTER STRING
 %token <number> ADDRESS
 
@@ -69,6 +69,11 @@ param:
 		PARAM ;
 	
 general_command:
+		ID_LOAD ID_SYMBOLS PATH
+		{
+			// Path is in $3.
+			ddbg_load_symbols($3);
+		} |
 		ID_LOAD PATH
 		{
 			// Path is in $2.
@@ -95,6 +100,11 @@ general_command:
 		{
 			// Stop debugger.
 			exit(0);
+		} |
+		ID_INSPECT ID_SYMBOLS
+		{
+			// Show a list of all of the loaded symbols.
+			ddbg_inspect_symbols();
 		} ;
 
 breakpoint_command:

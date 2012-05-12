@@ -27,6 +27,11 @@
 	return 1;
 }*/
 
+// Filename tracking for language producing assembly.
+int	yyulineno = 0;
+bstring yyufilename = NULL;
+
+// Filename tracking for local assembly.
 bstring yyfilename = NULL;
 
 %}
@@ -45,6 +50,7 @@ bstring yyfilename = NULL;
 	/* Line and file directives */
 	
 \#\ [0-9]+\ [^\n]*\n				rparse_do(yytext, &yylineno, &yyfilename);
+\#U\ [0-9]+\ [^\n]*\n				rparse_do(yytext, &yyulineno, &yyufilename);
 
 	/* Assembler keywords */
 

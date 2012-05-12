@@ -1,4 +1,4 @@
-.LINE 1 "resource:bootstrap.asm"
+.ULINE 2 "bootstrap.asm"
 
 ; Immediately jump to _setup.
 SET PC, _setup
@@ -98,12 +98,50 @@ SET PC, _setup
 	SET EX, 0
 	SET PC, _halt
 
+; Locates a hardware device based on the specified
+; ID loaded into registers A and B.  The resulting
+; message ID is loaded into register A.
+:_locate_device
+	SET PUSH, A
+	SET PUSH, B
+	SET I, 0
+	:_locate_enum
+		IFE I, 0xFFFF 
+		    SET PC, _locate_none_found
+		SET J, SP
+	:_hw_searchloop
+		HWQ I
+		IFN A, [J]
+			IFN B, [J + 1]
+				SET PC, _hw_searchloop_continue
+		SET PC, _locate_found
+	:_hw_searchloop_continue
+		ADD I, 1
+		SET PC, _hw_searchloop
+	:_locate_none_found
+		SET A, 0
+		SET PC, POP
+	:_locate_found
+		SET 0, POP
+		SET 0, POP
+		SET A, I
+		SET PC, POP
+	
 ; Safety boundary
 .BOUNDARY
 
 ; Handles initially jumping into the main function
 ; that the user has provided.
 :_setup
+	
+	; Initialize the screen.
+	SET A, 0x7349
+	SET B, 0xF615
+	JSR _locate_device
+	SET PUSH, A
+	SET A, 0x0
+	SET B, 0x8000
+	HWI POP
 	
 ; THE COMPILER MUST GENERATE THE CONTENTS
 ; OF _setup SO THAT THE STACK IS CORRECTLY

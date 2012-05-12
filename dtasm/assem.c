@@ -461,16 +461,32 @@ void process_line(struct ast_node_line* line)
 			break;
 	}
 	
-	// If the line information is provided, output
-	// debugging symbols.
-	if (line != NULL && line->file != NULL && result != NULL)
+	// If we can associate debugging symbols with this instruction...
+	if (result != NULL)
 	{
-		// Output a file / line number debugging symbol here.
-		newsym = dbgfmt_create_symbol(DBGFMT_SYMBOL_LINE, dbgfmt_create_symbol_line(line->file, line->line, DBGFMT_UNDETERMINED));
-		result->symbol = newsym;
-		list_append(assem_dbg_symbols, newsym);
+		// If the line information is provided, output
+		// debugging symbols.
+		if (line != NULL && line->file != NULL)
+		{
+			// Output a file / line number debugging symbol here.
+			newsym = dbgfmt_create_symbol(DBGFMT_SYMBOL_LINE, dbgfmt_create_symbol_line(line->file, line->line, DBGFMT_UNDETERMINED));
+			result->symbols[result->symbols_count++] = newsym;
+			list_append(assem_dbg_symbols, newsym);
+			
+			fprintf(stderr, "Debugging symbol: %i %s\n", line->line, line->file->data);
+		}
 		
-		fprintf(stderr, "Debugging symbol: %i %s\n", line->line, line->file->data);
+		// If the higher-language line information is
+		// provided, output debugging symbols.
+		if (line != NULL && line->ufile != NULL)
+		{
+			// Output a file / line number debugging symbol here.
+			newsym = dbgfmt_create_symbol(DBGFMT_SYMBOL_LINE, dbgfmt_create_symbol_line(line->ufile, line->uline, DBGFMT_UNDETERMINED));
+			result->symbols[result->symbols_count++] = newsym;
+			list_append(assem_dbg_symbols, newsym);
+			
+			fprintf(stderr, "High-level debugging symbol: %i %s\n", line->uline, line->ufile->data);
+		}
 	}
 }
 

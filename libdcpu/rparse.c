@@ -40,8 +40,6 @@ void rparse_do(char* yytext, int* out_line, bstring* out_filename)
 	bassign(*out_filename, file);
 	*out_line = line;
 
-	printf("# %i %s\n", line, file->data);
-
 	// Free resources.
 	bdestroy(file);
 	bdestroy(bline);

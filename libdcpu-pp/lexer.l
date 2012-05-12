@@ -64,6 +64,7 @@ char* pp_trim_and_unescape(char* data)
 	/* Preprocessor keywords */
 
 <INITIAL>[\.\#][Ll][Ii][Nn][Ee]						BEGIN(PREPROCESSING); return LINE;
+<INITIAL>[\.\#][Uu][Ll][Ii][Nn][Ee]					BEGIN(PREPROCESSING); return ULINE;
 <INITIAL>[\.\#][Ii][Nn][Cc][Ll][Uu][Dd][Ee]				BEGIN(PREPROCESSING); return INCLUDE;
 <INITIAL>[\.\#][Ee][Qq][Uu][Aa][Tt][Ee]					BEGIN(PREPROCESSING); return EQUATE;
 <INITIAL>[\.\#][Ee][Qq][Uu]						BEGIN(PREPROCESSING); return EQUATE;
@@ -82,7 +83,7 @@ char* pp_trim_and_unescape(char* data)
 
 <MACRODEF,MACROCALLDEF,PREPROCESSING>[A-Za-z_-]+[A-Za-z0-9_-]*		yylval->string = bfromcstr(yytext); return WORD;
 <MACROCALLDEF,PREPROCESSING>0x[0-9A-Fa-f]+				yylval->number = strtoul(yytext, NULL, 16); return NUMBER;
-<MACROCALLDEF,PREPROCESSING>[0-9]+					yylval->number = strtoul(yytext, NULL, 10); return NUMBER;
+<MACROCALLDEF,PREPROCESSING>[1-9]+[0-9]*				yylval->number = strtoul(yytext, NULL, 10); return NUMBER;
 <MACROCALLDEF,PREPROCESSING>0[0-7]+					yylval->number = strtoul(yytext, NULL, 8); return NUMBER;
 <MACROCALLDEF,PREPROCESSING>L?\"(\\.|[^\\"])*\"				yylval->string = bfromcstr(pp_trim_and_unescape((char*)strdup(yytext))); return STRING;
 

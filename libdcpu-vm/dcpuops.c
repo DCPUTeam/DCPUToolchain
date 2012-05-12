@@ -662,15 +662,26 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 
 	VM_SKIP_RESET;
 
-	queried_device = vm_hw_get_device(vm, val_a);
+	if (val_a < vm_hw_count(vm))
+	{
+		queried_device = vm_hw_get_device(vm, val_a);
 
-	if (vm->debug) printf("\nhwq: index %d %08X", val_a, queried_device.id);
+		if (vm->debug) printf("\nhwq: index %d %08X", val_a, queried_device.id);
 
-	*store_a = (queried_device.id & 0x0000FFFF) >>	0;
-	*store_b = (queried_device.id & 0xFFFF0000) >> 16;
-	*store_c = queried_device.version;
-	*store_x = (queried_device.manufacturer & 0x0000FFFF) >>  0;
-	*store_y = (queried_device.manufacturer & 0xFFFF0000) >> 16;
+		*store_a = (queried_device.id & 0x0000FFFF) >>	0;
+		*store_b = (queried_device.id & 0xFFFF0000) >> 16;
+		*store_c = queried_device.version;
+		*store_x = (queried_device.manufacturer & 0x0000FFFF) >>  0;
+		*store_y = (queried_device.manufacturer & 0xFFFF0000) >> 16;
+	}
+	else
+	{
+		*store_a = 0;
+		*store_b = 0;
+		*store_c = 0;
+		*store_x = 0;
+		*store_y = 0;
+	}
 
 	VM_HOOK_FIRE(store_a);
 	VM_HOOK_FIRE(store_b);

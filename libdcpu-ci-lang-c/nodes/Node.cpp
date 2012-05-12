@@ -17,6 +17,6 @@
 AsmBlock Node::getFileAndLineState()
 {
 	AsmBlock result;
-	result << ".LINE " << this->line << " \"" << this->file << "\"";
+	result << ".ULINE " << this->line << " \"" << this->file << "\"";
 	return result;
 }

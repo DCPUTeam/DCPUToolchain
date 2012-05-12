@@ -17,6 +17,8 @@
 
 void ddbg_cycle_hook(vm_t* vm, uint16_t pos);
 void ddbg_load(bstring path);
+void ddbg_load_symbols(bstring path);
+void ddbg_inspect_symbols();
 void ddbg_create_vm();
 void ddbg_flash_vm();
 void ddbg_run_vm();

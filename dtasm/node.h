@@ -89,7 +89,9 @@ struct ast_node_line
 	struct expr* keyword_data_expr_1;
 	struct expr* keyword_data_expr_2;
 	int line;
+	int uline;
 	bstring file;
+	bstring ufile;
 };
 
 // Lines
