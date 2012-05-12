@@ -28,12 +28,13 @@ AsmBlock* NReturnStatement::compile(AsmGenerator& context)
 	*block << *eval;
 	delete eval;
 
-	// Push the size of this function into X so that
-	// _stack_return works.
-	*block <<  "	SET X, " << context.m_CurrentFrame->getSize() << std::endl;
+	// Free locals.
+	*block <<  "	SET X, " << context.m_CurrentFrame->getLocalsSize() << std::endl;
+	*block <<  "	SET PC, _stack_caller_free" << std::endl;
 
 	// Return from this function.
-	*block <<  "	SET PC, _stack_return" << std::endl;
+	*block <<  "	SET X, " << context.m_CurrentFrame->getParametersSize() << std::endl;
+	*block <<  "	SET PC, _stack_caller_return" << std::endl;
 
 	return block;
 }

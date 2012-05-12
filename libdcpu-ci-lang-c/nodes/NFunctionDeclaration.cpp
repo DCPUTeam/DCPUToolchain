@@ -72,18 +72,26 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 	// Output the leading information and immediate jump.
 	*block <<  ":cfunc_" << this->id.name << std::endl;
 	*block <<  "	SET PC, cfunc_" << this->id.name << "_actual" << std::endl;
-	*block <<  "	DAT " << frame->getSize() << std::endl;
+	*block <<  "	DAT " << frame->getParametersSize() << std::endl;
 	*block <<  ":cfunc_" << this->id.name << "_actual" << std::endl;
+
+	// Allocate locals.
+	*block <<  "	SET X, " << frame->getLocalsSize() << std::endl;
+	*block <<  "	SET PC, _stack_caller_init" << std::endl;
 
 	// Now compile the block.
 	AsmBlock* iblock = this->block->compile(context);
 	*block << *iblock;
 	delete iblock;
 
+	// Free locals.
+	*block <<  "	SET X, " << frame->getLocalsSize() << std::endl;
+	*block <<  "	SET PC, _stack_caller_free" << std::endl;
+
 	// Return from this function.
 	*block <<  "	SET A, 0xFFFF" << std::endl;
-	*block <<  "	SET X, " << frame->getSize() << std::endl;
-	*block <<  "	SET PC, _stack_return" << std::endl;
+	*block <<  "	SET X, " << frame->getParametersSize() << std::endl;
+	*block <<  "	SET PC, _stack_caller_return" << std::endl;
 
 	// Clean up frame.
 	context.finishStackFrame(frame);
@@ -96,7 +104,7 @@ AsmBlock* NFunctionDeclaration::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of a function declaration.");
 }
 
-StackMap NFunctionDeclaration::generateStackMap()
+StackMap NFunctionDeclaration::generateLocalsStackMap()
 {
 	StackMap map;
 
@@ -104,16 +112,7 @@ StackMap NFunctionDeclaration::generateStackMap()
 	// that means they were an import and hence have no information
 	// about the variables).
 	if (this->block == NULL)
-		throw new CompilerException("Can not generate a stack frame for a function declaration with no body.");
-
-	// Add stack frame data for arguments.
-	for (VariableList::const_iterator i = this->arguments.begin(); i != this->arguments.end(); i++)
-	{
-		map.insert(map.end(), StackPair((*i)->id.name, (*i)->type));
-		// FIXME: Check to make sure arguments do not clash with any
-		//	  other argument declarations (hint: check the map to
-		//	  see if it already has a match).
-	}
+		throw new CompilerException("Can not generate a locals stack frame for a function declaration with no body.");
 
 	// Add stack frame data for variable declarations.
 	for (StatementList::iterator i = this->block->statements.begin(); i != this->block->statements.end(); i++)
@@ -126,6 +125,22 @@ StackMap NFunctionDeclaration::generateStackMap()
 			//	  or other variable declarations (hint: check the map to
 			//	  see if it already has a match).
 		}
+	}
+
+	return map;
+}
+
+StackMap NFunctionDeclaration::generateParametersStackMap()
+{
+	StackMap map;
+
+	// Add stack frame data for arguments.
+	for (VariableList::const_iterator i = this->arguments.begin(); i != this->arguments.end(); i++)
+	{
+		map.insert(map.end(), StackPair((*i)->id.name, (*i)->type));
+		// FIXME: Check to make sure arguments do not clash with any
+		//	  other argument declarations (hint: check the map to
+		//	  see if it already has a match).
 	}
 
 	return map;

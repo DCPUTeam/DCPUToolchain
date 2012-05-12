@@ -107,7 +107,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
 	*block <<  "	SET X, [X]" << std::endl;
 	*block <<  "	SET Z, " << jmpback << std::endl;
-	*block <<  "	JSR _stack_init" << std::endl;
+	*block <<  "	JSR _stack_caller_init" << std::endl;
 
 	// Now copy each of the evaluated parameter values into
 	// the correct parameter slots.

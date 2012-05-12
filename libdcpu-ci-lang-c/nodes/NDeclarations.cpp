@@ -98,9 +98,9 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 	StackFrame* frame = context.generateStackFrame(main, false);
 
 	// Output assembly for calling main.
-	*block <<  "	SET X, " << frame->getSize() << std::endl;
+	*block <<  "	SET X, " << frame->getParametersSize() << std::endl;
 	*block <<  "	SET Z, _halt" << std::endl;
-	*block <<  "	JSR _stack_init" << std::endl;
+	*block <<  "	JSR _stack_caller_init" << std::endl;
 	*block <<  "	SET PC, cfunc_main" << std::endl;
 
 	// Clean up frame.

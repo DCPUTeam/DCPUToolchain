@@ -18,7 +18,8 @@ TypePosition StackFrame::getPositionOfVariable(std::string name, bool stackStart
 {
 	uint16_t size = 0;
 
-	for (StackMap::iterator i = this->m_StackMap.begin(); i != this->m_StackMap.end(); i++)
+	// Search parameters.
+	for (StackMap::iterator i = this->m_ParametersMap.begin(); i != this->m_ParametersMap.end(); i++)
 	{
 		if ((*i).first == name)
 			return TypePosition(true, this->m_Generator.m_GlobalFrame == this, stackStartAtC, size);
@@ -26,6 +27,16 @@ TypePosition StackFrame::getPositionOfVariable(std::string name, bool stackStart
 			size += (*i).second.getWordSize(this->m_Generator);
 	}
 
+	// Search locals.
+	for (StackMap::iterator i = this->m_LocalsMap.begin(); i != this->m_LocalsMap.end(); i++)
+	{
+		if ((*i).first == name)
+			return TypePosition(true, this->m_Generator.m_GlobalFrame == this, stackStartAtC, size);
+		else
+			size += (*i).second.getWordSize(this->m_Generator);
+	}
+
+	// Search globals.
 	if (this->m_Generator.m_GlobalFrame == NULL || this->m_Generator.m_GlobalFrame == this)
 	{
 		// Also search defined functions.
@@ -43,12 +54,21 @@ TypePosition StackFrame::getPositionOfVariable(std::string name, bool stackStart
 // Gets a pointer to the type of a variable based on it's name.
 IType* StackFrame::getTypeOfVariable(std::string name)
 {
-	for (StackMap::iterator i = this->m_StackMap.begin(); i != this->m_StackMap.end(); i++)
+	// Search parameters.
+	for (StackMap::iterator i = this->m_ParametersMap.begin(); i != this->m_ParametersMap.end(); i++)
 	{
 		if ((*i).first == name)
 			return &((*i).second);
 	}
 
+	// Search locals.
+	for (StackMap::iterator i = this->m_LocalsMap.begin(); i != this->m_LocalsMap.end(); i++)
+	{
+		if ((*i).first == name)
+			return &((*i).second);
+	}
+
+	// Search globals.
 	if (this->m_Generator.m_GlobalFrame == NULL || this->m_Generator.m_GlobalFrame == this)
 	{
 		// Also search defined functions.
@@ -63,12 +83,23 @@ IType* StackFrame::getTypeOfVariable(std::string name)
 		return this->m_Generator.m_GlobalFrame->getTypeOfVariable(name);
 }
 
-// Gets the total size of the stack frame.
-uint16_t StackFrame::getSize()
+// Gets the total size of the parameter-portion of the stack frame.
+uint16_t StackFrame::getParametersSize()
 {
 	uint16_t size = 0;
 
-	for (StackMap::iterator i = this->m_StackMap.begin(); i != this->m_StackMap.end(); i++)
+	for (StackMap::iterator i = this->m_ParametersMap.begin(); i != this->m_ParametersMap.end(); i++)
+		size += (*i).second.getWordSize(this->m_Generator);
+
+	return size;
+}
+
+// Gets the total size of the locals-portion of the stack frame.
+uint16_t StackFrame::getLocalsSize()
+{
+	uint16_t size = 0;
+
+	for (StackMap::iterator i = this->m_ParametersMap.begin(); i != this->m_ParametersMap.end(); i++)
 		size += (*i).second.getWordSize(this->m_Generator);
 
 	return size;

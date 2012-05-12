@@ -15,6 +15,7 @@
 #include <bstring.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <assert.h>
 #include "ppexpr.h"
 
 struct expr* expr_new(struct expr* a, int op, struct expr* b)
@@ -47,6 +48,7 @@ struct expr* expr_new_label(freed_bstring label)
 	n->op = EXPR_OP_INVALID;
 	n->b = NULL;
 	n->data = (void*)label.ref;
+	assert(n->data != NULL);
 	return n;
 }
 

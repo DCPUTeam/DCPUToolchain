@@ -31,7 +31,8 @@ class NFunctionDeclaration : public NDeclaration, public NFunctionSignature, pub
 		~NFunctionDeclaration();
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual StackMap generateStackMap();
+		virtual StackMap generateLocalsStackMap();
+		virtual StackMap generateParametersStackMap();
 		virtual IType* getPointerType();
 };
 

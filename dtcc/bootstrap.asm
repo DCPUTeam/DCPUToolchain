@@ -1,10 +1,9 @@
 .LINE 1 "resource:bootstrap.asm"
+
 ; Immediately jump to _setup.
 SET PC, _setup
 
-; Safety boundary
-;.BOUNDARY
-DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+.BOUNDARY
 
 ; Sets up the stack to hold data of the size
 ; specified in the X register + 2.  It copies
@@ -31,7 +30,7 @@ DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 ; |                     |
 ;  ---------------------
 
-:_stack_init
+:_stack_callee_init
 	SET I, POP
 	SET J, SP
 	SUB SP, X
@@ -52,16 +51,31 @@ DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	ADD Y, 2
 	SET PC, I
 
-; Safety boundary
-;.BOUNDARY
-DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+.BOUNDARY
+
+; Sets up additional stack space for local
+; variables, with an additional size of
+; X being allocated onto the stack.
+:_stack_caller_init
+	SUB SP, X
+
+.BOUNDARY
+
+; Frees additional stack space for local
+; variables, with the additional size of
+; the stack being specified in X.
+:_stack_caller_free
+	ADD SP, X
+	
+
+.BOUNDARY
 
 ; Frees the stack of the size specified in the
 ; X register, placing the position of the next
 ; stack frame into Y.  It then jumps to the
 ; return address that was specified in the just
 ; free'd stack frame by using the Z register.
-:_stack_return
+:_stack_caller_return
 	SET Z, PEEK						; [return] [stack frame]   Z -> return value, Y -> stack frame
 	SET PEEK, 0
 	ADD SP, 1
@@ -79,17 +93,13 @@ DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 								; return value.  Set Y to the value of that.
 	SET PC, Z						; Jump to the address of the original return value.
 
-; Safety boundary
-;.BOUNDARY
-DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+.BOUNDARY
 
 ; Halts the CPU.
 :_halt
 	SET PC, _halt
 
-; Safety boundary
-;.BOUNDARY
-DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+.BOUNDARY
 
 ; Halts the CPU clearing all registers except for
 ; the A register.
@@ -106,8 +116,7 @@ DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	SET PC, _halt
 
 ; Safety boundary
-;.BOUNDARY
-DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+.BOUNDARY
 
 ; Handles initially jumping into the main function
 ; that the user has provided.
@@ -116,5 +125,4 @@ DAT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 ; THE COMPILER MUST GENERATE THE CONTENTS
 ; OF _setup SO THAT THE STACK IS CORRECTLY
 ; INITIALIZED FOR THE main FUNCTION.
-
-; BEGIN USER CODE INSERT HERE.
+; BEGIN CODE APPEND HERE.

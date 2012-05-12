@@ -19,6 +19,7 @@
 #include <bstring.h>
 #include <pp.h>
 #include <ppfind.h>
+#include <assert.h>
 #include "aout.h"
 #include "aerr.h"
 #include "dcpu.h"
@@ -206,6 +207,7 @@ uint16_t aout_get_label_address(bstring name)
 {
 	struct aout_byte* current = start;
 	uint16_t mem_index = code_offset;
+	bool found_import = false;
 
 	while (current != NULL)
 	{
@@ -231,8 +233,10 @@ uint16_t aout_get_label_address(bstring name)
 			// actually imported.
 			if (strcmp(current->label, name->data) == 0)
 			{
-				ahalt(ERR_EXPRESSION_NOT_PERMITTED, name->data);
-				return 0;
+				// Set a temporary variable in case we
+				// define the label later (in which case we'll
+				// use that instead of throwing an error).
+				found_import = true;
 			}
 		}
 
@@ -241,7 +245,10 @@ uint16_t aout_get_label_address(bstring name)
 	}
 
 	// Error if we get to here.
-	ahalt(ERR_LABEL_NOT_FOUND, name->data);
+	if (found_import)
+		ahalt(ERR_EXPRESSION_NOT_PERMITTED, name->data);
+	else
+		ahalt(ERR_LABEL_NOT_FOUND, name->data);
 	return 0;
 }
 
@@ -256,7 +263,8 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 	uint32_t mem_index, out_index;
 	uint16_t inst;
 	FILE* temp = NULL;
-	bstring bname;
+	bstring bname, ename;
+	uint16_t eaddr;
 	bool did_find;
 	bool shown_expr_warning = false;
 
@@ -276,6 +284,26 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 		{
 			// Adjust memory address.
 			out_index = current_outer->opcode;
+		}
+		else if (current_outer->type == AOUT_TYPE_METADATA_EXPORT)
+		{
+			assert(current_outer->label != NULL);
+
+			// We're exporting the address of this label in the
+			// object table.
+			if (!intermediate)
+				ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
+
+			// Resolve label position.
+			ename = bfromcstr(current_outer->label);
+			eaddr = aout_get_label_address(ename);
+			bdestroy(ename);
+
+			// Create linker entry.
+			linker_temp = lprov_create(current_outer->label, eaddr);
+			linker_temp->next = linker_provided;
+			linker_provided = linker_temp;
+			fprintf(stderr, "LINK REPLACE %s -> 0x%04X\n", current_outer->label, eaddr);
 		}
 		else if (current_outer->type == AOUT_TYPE_NORMAL && current_outer->expr != NULL)
 		{
@@ -310,7 +338,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 						// Adjust memory address.
 						mem_index = current_inner->opcode;
 					}
-					else if (current_inner->type == AOUT_TYPE_METADATA_IMPORT && current_outer->type == AOUT_TYPE_NORMAL)
+					else if (current_inner->type == AOUT_TYPE_METADATA_IMPORT)
 					{
 						// An imported label (we don't need to adjust
 						// memory index because the existance of this type
@@ -318,6 +346,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 						if (!intermediate)
 							ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
 
+						assert(current_outer->expr->data != NULL);
 						if (strcmp(current_inner->label, ((bstring)current_outer->expr->data)->data) == 0)
 						{
 							// We don't actually know our position yet;
@@ -333,6 +362,22 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 							break;
 						}
 					}
+					/*else if (current_inner->type == AOUT_TYPE_NORMAL && (bstring)current_outer->expr->data != NULL)
+					{
+						// We're adjusting a label reference in the code
+						// to it's actual value.
+						current_outer->raw = mem_index;
+						current_outer->expr->data = NULL;
+
+						// We also need to add this entry to the adjustment
+						// table for the linker since it also needs to adjust
+						// internal label jumps in files when it concatenates
+						// all of the object code together.
+						linker_temp = lprov_create(NULL, out_index);
+						linker_temp->next = linker_adjustment;
+						linker_adjustment = linker_temp;
+						fprintf(stderr, "LINK ADJUST 0x%04X\n", out_index);
+					}*/
 
 					// Goto next.
 					current_inner = current_inner->next;

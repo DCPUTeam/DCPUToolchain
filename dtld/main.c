@@ -173,6 +173,17 @@ int main(int argc, char* argv[])
 				// Find the position we should change this to.
 				temp = lprov_find_by_label(provided, temp->label);
 
+				// Ensure that temp is not NULL, if it is, then we couldn't
+				// resolve this entry.
+				if (temp == NULL)
+				{
+					temp = lprov_find_by_address(required, mem_index);
+					fprintf(stderr, "NOT FOUND! 0x%04X: 0x%04X -> %s ???\n", mem_index, store, temp->label);
+					fclose(out);
+					arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+					return 1;
+				}
+
 				// We need to set this word to the proper location.
 				fprintf(stderr, "RESOLVED 0x%04X: 0x%04X -> 0x%04X\n", mem_index, store, temp->address);
 				store = temp->address;

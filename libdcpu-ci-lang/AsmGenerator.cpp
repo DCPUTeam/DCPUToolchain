@@ -44,15 +44,16 @@ IFunctionDeclaration* AsmGenerator::getFunction(std::string name)
 // Generates the stack frame for the specified function.
 StackFrame* AsmGenerator::generateStackFrame(IFunctionDeclaration* function, bool referenceOnly)
 {
-	StackMap map = function->generateStackMap();
+	StackMap parameters = function->generateParametersStackMap();
 
 	if (!referenceOnly)
 	{
-		this->m_CurrentFrame = new StackFrame(*this, map);
+		StackMap locals = function->generateLocalsStackMap();
+		this->m_CurrentFrame = new StackFrame(*this, parameters, locals);
 		return this->m_CurrentFrame;
 	}
 	else
-		return new StackFrame(*this, map);
+		return new StackFrame(*this, parameters);
 }
 
 // Generates an incomplete stack frame for the specified function.

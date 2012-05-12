@@ -3,7 +3,7 @@
 	File:		IFunctionDeclaration.h
 
 	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang
+	Component:	LibDCPU-CI-Lang
 
 	Authors:	James Rhodes
 
@@ -19,7 +19,8 @@
 class IFunctionDeclaration
 {
 	public:
-		virtual StackMap generateStackMap() = 0;
+		virtual StackMap generateLocalsStackMap() = 0;
+		virtual StackMap generateParametersStackMap() = 0;
 		virtual IType* getPointerType() = 0;
 };
 
