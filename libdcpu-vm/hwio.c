@@ -85,6 +85,7 @@ void vm_hwio_interrupt(vm_t* vm)
 		case KB_STORE_IN_REG:
 			*store_c = last_key;
 			last_key = 0x0;
+			printf("storing in C: %04X\n", *store_c);
 			break;
 		case KB_COMPARE:
 			*store_c = val_b == last_key ? 1 : 0;
@@ -101,7 +102,7 @@ void vm_hw_io_init(vm_t* vm)
 {
 	hw_t keyboard;
 
-	keyboard.id = 0x7349F615;
+	keyboard.id = 0x30CF7406;
 	keyboard.version = 0x1802;
 	keyboard.manufacturer = 0x1C6C8B36;
 	keyboard.handler = &vm_hwio_interrupt;
