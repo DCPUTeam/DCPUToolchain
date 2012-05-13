@@ -15,6 +15,7 @@ endif("${git_hash}" STREQUAL "")
 
 # Set up some basics.
 set(IS_ROOT 1)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeScripts")
 set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 if(MSVC)
@@ -332,6 +333,9 @@ add_subdirectory(dtdb)
 if("${BUILD_EMULATOR}" MATCHES true)
 	add_subdirectory(dtemu)
 endif("${BUILD_EMULATOR}" MATCHES true)
+
+# Add documentation.
+add_subdirectory(docs)
 
 # Add kernel, using the multi-threading version if available.
 if(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
