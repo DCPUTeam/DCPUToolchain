@@ -87,7 +87,7 @@ void ddbg_cycle_hook(vm_t* vm, uint16_t pos)
 		{
 			vm->halted = true;
 			vm_hook_break(vm); // Required for UI to update correctly.
-			printf("Breakpoint hit at 0x%04X.", breakpoints[i]);
+			printf("Breakpoint hit at 0x%04X.\n", breakpoints[i]);
 		}
 	}
 }
@@ -175,18 +175,7 @@ int32_t ddbg_file_to_address(bstring file, int index)
 	struct dbg_sym* sym;
 	struct dbg_sym_payload_line* payload_line;
 
-	if (biseq(file, bfromcstr("memory")))
-	{
-		// We use the index as memory address.
-		if (index < 0)
-		{
-			printf("Memory address must be greater than 0.\n");
-			return -1;
-		}
-		else
-			return index;
-	}
-	else if (symbols != NULL)
+	if (symbols != NULL)
 	{
 		// Search through our debugging symbols.
 		for (i = 0; i < list_size(symbols); i++)
@@ -216,7 +205,24 @@ int32_t ddbg_file_to_address(bstring file, int index)
 
 void ddbg_add_breakpoint(bstring file, int index)
 {
-	int32_t memory = ddbg_file_to_address(file, index);
+	int32_t memory;
+	
+	if(!biseq(file, bfromcstr("memory")))
+	{
+		memory = ddbg_file_to_address(file, index);
+	}
+	else
+	{
+		if (index < 0)
+		{
+			printf("Memory address must be greater than 0.\n");
+			memory = -1;
+		}
+		else
+		{
+			memory = index;
+		}
+	}
 
 	// Did we get a valid result?
 	if (memory == -1)
@@ -255,6 +261,39 @@ void ddbg_delete_breakpoint(bstring file, int index)
 		printf("Breakpoint removed at 0x%04X.\n", memory);
 	else
 		printf("There was no breakpoint at %s:%d.\n", bstr2cstr(file, 0), index);
+}
+
+void ddbg_step() {
+	uint16_t inst, op_a, op_b, offset = 1, bp;
+	inst = INSTRUCTION_GET_OP(vm->ram[vm->pc]);
+	op_a = INSTRUCTION_GET_A(vm->ram[vm->pc]);
+	op_b = INSTRUCTION_GET_B(vm->ram[vm->pc]);
+	
+	if(op_a == NXT) 
+		offset += 1;
+	if(op_a == NXT_LIT)
+		offset += 1;
+	
+	if(op_b == NXT) 
+		offset += 1;
+	if(op_b == NXT_LIT)
+		offset += 1;
+	
+	if(inst == NBOP_RESERVED)
+	{
+		if(op_b == NBOP_JSR)
+		{
+			bp = op_a;
+		}
+	}
+	else
+	{
+		bp = vm->pc + offset;
+	}
+	
+	ddbg_add_breakpoint(bfromcstr("memory"), bp);
+	vm->halted = false;
+	vm_execute(vm);
 }
 
 void ddbg_breakpoints_list()

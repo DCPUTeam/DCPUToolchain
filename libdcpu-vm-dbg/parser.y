@@ -37,7 +37,7 @@ void yyerror(void* scanner, const char *str);
 // Define our lexical token names.
 %token <token> ID_LOAD ID_BREAKPOINT ID_RUN ID_CONTINUE ID_STOP ID_QUIT ID_ADD ID_DELETE
 %token <token> ID_ATTACH ID_INSPECT ID_HARDWARE ID_CPU ID_DETACH ID_LIST ID_MEMORY ID_HELP
-%token <token> ID_DISASSEMBLE ID_SYMBOLS COLON
+%token <token> ID_DISASSEMBLE ID_SYMBOLS COLON ID_STEP ID_SET ID_DEBUG
 %token <string> PARAM PATH CHARACTER STRING
 %token <number> ADDRESS
 
@@ -87,6 +87,10 @@ general_command:
 			// has already partially started.
 			ddbg_run_vm();
 		} |
+		ID_STEP
+		{
+			ddbg_step();
+		} |
 		ID_CONTINUE
 		{
 			ddbg_continue_vm();
@@ -125,6 +129,10 @@ breakpoint_add_command:
 			// at the specified RAM address.
 			ddbg_add_breakpoint(bfromcstr("memory"), $5);
 		} |
+		ID_BREAKPOINT ID_ADD ID_MEMORY COLON ADDRESS
+		{
+			ddbg_add_breakpoint(bfromcstr("memory"), $5);
+		} | 
 		ID_BREAKPOINT ID_ADD PATH COLON ADDRESS
 		{
 			// Add a breakpoint in the specified file

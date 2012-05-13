@@ -23,6 +23,9 @@
 char* dbg_trim_and_unescape(char* data, int mode);
 
 #define COPY yylval->string = bfromcstr(strdup(yytext));
+#define COPY_HEX yylval->number = strtoul(yytext, NULL, 16);
+#define COPY_DEC yylval->number = strtoul(yytext, NULL, 10);
+#define COPY_UNESCAPE yylval->string = bfromcstr(dbg_trim_and_unescape(strdup(yytext), 1));
 
 %}
 
@@ -59,17 +62,20 @@ char* dbg_trim_and_unescape(char* data, int mode);
 "list"						COPY; return ID_LIST;
 "memory"					COPY; return ID_MEMORY;
 "help"						COPY; return ID_HELP;
-\?						COPY; return ID_HELP;
+"step"						COPY; return ID_STEP;
+"set"						COPY; return ID_STEP;
+"debug"						COPY; return ID_DEBUG;
+\?							COPY; return ID_HELP;
 
 	/* General stuff */
 
-0x[0-9A-Fa-f]+					yylval->number = strtoul(yytext, NULL, 16); return ADDRESS;
-[0-9]+						yylval->number = strtoul(yytext, NULL, 10); return ADDRESS;
-[\.\/A-Za-z0-9-]+				yylval->string = bfromcstr(strdup(yytext)); return PATH;
-[A-Za-z_-]+[A-Za-z0-9_-]*			yylval->string = bfromcstr(strdup(yytext)); return PARAM;
-L?'(\\.|[^\\'])+'				yylval->string = bfromcstr(dbg_trim_and_unescape(strdup(yytext), 1)); return CHARACTER;
-L?\"(\\.|[^\\"])*\"				yylval->string = bfromcstr(dbg_trim_and_unescape(strdup(yytext), 0)); return STRING;
-\:						return COLON;
+0x[0-9A-Fa-f]+					COPY_HEX; return ADDRESS;
+[0-9]+							COPY_DEC; return ADDRESS;
+[\.\/A-Za-z0-9-]+				COPY; return PATH;
+[A-Za-z_-]+[A-Za-z0-9_-]*		COPY; return PARAM;
+L?'(\\.|[^\\'])+'				COPY_UNESCAPE return CHARACTER;
+L?\"(\\.|[^\\"])*\"				COPY_UNESCAPE; return STRING;
+\:								return COLON;
 
 [ \t]+						/* ignore whitespace */;
 
