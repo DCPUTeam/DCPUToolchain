@@ -349,11 +349,14 @@ void ddbg_dump_ram(int start, int difference)
 
 void ddbg_disassemble(int start, int difference)
 {
-	int i = 0;
+	unsigned int i = 0, ii = 0;
+	bool found = false;
 	uint16_t inst, op_a, op_b, val;
 	struct instruction_mapping* map_inst;
 	struct register_mapping* map_op_a;
 	struct register_mapping* map_op_b;
+	struct dbg_sym* sym;
+	struct dbg_sym_payload_line* payload_line;
 
 	if (start < 0 || difference < 0)
 	{
@@ -375,7 +378,30 @@ void ddbg_disassemble(int start, int difference)
 		map_op_a = get_register_by_value(op_a);
 		map_op_b = get_register_by_value(op_b);
 
-		printf("0x%04X (0x%04X): ", start + i, vm->ram[start + i]);
+		if (symbols != NULL)
+		{
+			for (ii = 0; ii < list_size(symbols); ii++)
+			{
+				sym = list_get_at(symbols, ii);
+				switch (sym->type)
+				{
+					case DBGFMT_SYMBOL_LINE:
+						payload_line = (struct dbg_sym_payload_line*)sym->payload;
+						if (payload_line->address == start + i)
+						{
+							found = true;
+							printf("0x%04X (0x%04X) (%s:%d): ", start + i, vm->ram[start + i], payload_line->path->data, payload_line->lineno);
+
+						}
+						break;
+				}
+			}
+			if (!found) printf("0x%04X (0x%04X): ", start + i, vm->ram[start + i]);
+		}
+		else
+		{
+			printf("0x%04X (0x%04X): ", start + i, vm->ram[start + i]);
+		}
 		if (map_inst != NULL)
 		{
 			printf("%s ", map_inst->name);
@@ -386,15 +412,15 @@ void ddbg_disassemble(int start, int difference)
 			else if (map_op_b != NULL)
 				printf("%s ", map_op_b->name);
 			else
-				printf("0x%04X", op_b);
+				printf("0x%04X ", op_b);
 			if (op_a == NXT)
 				printf("[0x%04X] ", vm->ram[start + (++i)]);
 			else if (op_a == NXT_LIT)
-				printf("0x%04X", vm->ram[start + (++i)]);
+				printf("0x%04X ", vm->ram[start + (++i)]);
 			else if (map_op_a != NULL)
 				printf("%s ", map_op_a->name);
 			else
-				printf("0x%04X", op_a);
+				printf("0x%04X ", op_a);
 		}
 		else if (val == 0x0)
 			printf("<null>"); // No data here.
