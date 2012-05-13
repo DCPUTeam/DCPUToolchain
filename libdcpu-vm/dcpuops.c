@@ -39,6 +39,7 @@
 		vm->ex = AR_NOFLOW;
 
 #define VM_SKIP_RESET if(vm->skip) {vm->skip = false; return;}
+#define VM_BRANCHING_SKIP if(vm->skip) { return; }
 
 #define VM_HOOK_FIRE(var) \
 	if (var >= (uint16_t*)&vm->ram && var < (uint16_t*)&vm->ram + 0x10000) \
@@ -410,7 +411,7 @@ void vm_op_ifb(vm_t* vm, uint16_t b, uint16_t a)
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value(vm, b, POS_B);
 
-	VM_SKIP_RESET;
+	VM_BRANCHING_SKIP;
 	vm->skip = !((val_b & val_a) != 0);
 }
 
@@ -420,7 +421,7 @@ void vm_op_ifc(vm_t* vm, uint16_t b, uint16_t a)
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value(vm, b, POS_B);
 
-	VM_SKIP_RESET;
+	VM_BRANCHING_SKIP;
 	vm->skip = !((val_b & val_a) == 0);
 }
 
@@ -430,7 +431,7 @@ void vm_op_ife(vm_t* vm, uint16_t b, uint16_t a)
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value(vm, b, POS_B);
 
-	VM_SKIP_RESET;
+	VM_BRANCHING_SKIP;
 	vm->skip = !(val_b == val_a);
 }
 
@@ -440,7 +441,7 @@ void vm_op_ifn(vm_t* vm, uint16_t b, uint16_t a)
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value(vm, b, POS_B);
 
-	VM_SKIP_RESET;
+	VM_BRANCHING_SKIP;
 	vm->skip = !(val_b != val_a);
 }
 
@@ -450,7 +451,7 @@ void vm_op_ifg(vm_t* vm, uint16_t b, uint16_t a)
 	val_a = vm_resolve_value(vm, a, POS_A);
 	val_b = vm_resolve_value(vm, b, POS_B);
 
-	VM_SKIP_RESET;
+	VM_BRANCHING_SKIP;
 	vm->skip = !(val_b > val_a);
 }
 
@@ -460,7 +461,7 @@ void vm_op_ifa(vm_t* vm, uint16_t b, uint16_t a)
 	val_a = (int16_t)vm_resolve_value(vm, a, POS_A);
 	val_b = (int16_t)vm_resolve_value(vm, b, POS_B);
 
-	VM_SKIP_RESET;
+	VM_BRANCHING_SKIP;
 	vm->skip = !(val_b > val_a);
 }
 
@@ -470,7 +471,7 @@ void vm_op_ifl(vm_t* vm, uint16_t b, uint16_t a)
 	val_b = vm_resolve_value(vm, b, POS_B);
 	val_a = vm_resolve_value(vm, a, POS_A);
 
-	VM_SKIP_RESET;
+	VM_BRANCHING_SKIP;
 	vm->skip = !(val_b < val_a);
 }
 
@@ -480,7 +481,7 @@ void vm_op_ifu(vm_t* vm, uint16_t b, uint16_t a)
 	val_a = (int16_t)vm_resolve_value(vm, a, POS_A);
 	val_b = (int16_t)vm_resolve_value(vm, b, POS_B);
 
-	VM_SKIP_RESET;
+	VM_BRANCHING_SKIP;
 	vm->skip = !(val_b < val_a);
 }
 
