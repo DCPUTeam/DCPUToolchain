@@ -592,7 +592,7 @@ void vm_op_ias(vm_t* vm, uint16_t a)
 {
 	VM_SKIP_RESET;
 
-	if (a != 0)
+	if (a == 0)
 		vm->queue_interrupts = 1;
 
 	vm_op_set(vm, IA, a);
@@ -605,8 +605,9 @@ void vm_op_rfi(vm_t* vm, uint16_t a)
 	VM_SKIP_RESET;
 
 	vm->queue_interrupts = 0;
-	vm->registers[REG_A] = vm->ram[++vm->sp];
-	vm->registers[PC] = vm->ram[++vm->sp];
+
+	vm->registers[REG_A] = vm->ram[vm->sp];
+	vm->pc = vm->ram[++vm->sp];
 	VM_HOOK_FIRE(&vm->registers[REG_A]);
 }
 
