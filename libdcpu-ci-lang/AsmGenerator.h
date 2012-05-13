@@ -39,9 +39,10 @@ class AsmGenerator
 		StackFrame* m_CurrentFrame;
 		StackFrame* m_GlobalFrame;
 		IDeclarations* m_RootNode;
+		bool m_IsEntryPointMode;
 
 	public:
-		AsmGenerator(std::string asmtarget);
+		AsmGenerator(std::string asmtarget, bool entryPointMode);
 
 		IFunctionDeclaration* getFunction(std::string name);
 		StackFrame* generateStackFrame(IFunctionDeclaration* function, bool referenceOnly = true);

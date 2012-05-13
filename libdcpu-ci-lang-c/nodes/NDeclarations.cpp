@@ -26,97 +26,123 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 	// Tell the generator that we are the root.
 	context.m_RootNode = this;
 
-	// First deal with the main setup.
-	NFunctionDeclaration* main = (NFunctionDeclaration*)context.getFunction("main");
-
-	if (main == NULL)
-		throw new CompilerException("Called function was not found 'main'.");
-
-
-	// Output assembly for calling global data initializer.
-	*block <<  "	SET PC, _data_init" << std::endl;
-
-
-	// Create the global data frame.
-	StackMap* map = new StackMap();
-
-	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+	if (context.m_IsEntryPointMode)
 	{
-		if ((*i)->cType != "statement-declaration-variable")
-			continue;
+		// First deal with the main setup.
+		NFunctionDeclaration* main = (NFunctionDeclaration*)context.getFunction("main");
 
-		map->insert(map->end(), StackPair(((NVariableDeclaration*)(*i))->id.name, ((NVariableDeclaration*)(*i))->type));
-	}
+		if (main == NULL)
+			throw new CompilerException("Called function was not found 'main'.");
 
-	context.m_GlobalFrame = new StackFrame(context, *map);
 
-	// Output the global data storage area.
-	*block << std::endl;
-	*block <<  ":_DATA" << std::endl;
+		// Output assembly for calling global data initializer.
+		*block <<  "	SET PC, _data_init" << std::endl;
 
-	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
-	{
-		if ((*i)->cType != "statement-declaration-variable")
-			continue;
+		// Create the global data frame.
+		StackMap* map = new StackMap();
 
-		// Calculate size.
-		unsigned int size = ((NVariableDeclaration*)(*i))->type.getWordSize(context);
+		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+		{
+			if ((*i)->cType != "statement-declaration-variable")
+				continue;
 
-		// We can't have types with 0 word storage in the global scope.
-		if (size <= 0)
-			throw new CompilerException("Unable to store global variable with a type that has size of 0 words.");
+			map->insert(map->end(), StackPair(((NVariableDeclaration*)(*i))->id.name, ((NVariableDeclaration*)(*i))->type));
+		}
 
-		// Output zero'd data sections.
-		*block <<  "	DAT 0";
+		context.m_GlobalFrame = new StackFrame(context, *map);
 
-		for (unsigned int b = 1; b < size; b++)
-			*block <<  ", 0";
+		// Output the global data storage area.
+		*block << std::endl;
+		*block <<  ":_DATA" << std::endl;
+
+		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+		{
+			if ((*i)->cType != "statement-declaration-variable")
+				continue;
+
+			// Calculate size.
+			unsigned int size = ((NVariableDeclaration*)(*i))->type.getWordSize(context);
+
+			// We can't have types with 0 word storage in the global scope.
+			if (size <= 0)
+				throw new CompilerException("Unable to store global variable with a type that has size of 0 words.");
+
+			// Output zero'd data sections.
+			*block <<  "	DAT 0";
+
+			for (unsigned int b = 1; b < size; b++)
+				*block <<  ", 0";
+
+			*block << std::endl;
+		}
 
 		*block << std::endl;
+
+		// Output the block for initializing global data storage.
+		*block <<  ":_data_init" << std::endl;
+		context.m_CurrentFrame = context.m_GlobalFrame; // So that the NVariableDeclaration compiles successfully.
+
+		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+		{
+			if ((*i)->cType != "statement-declaration-variable")
+				continue;
+
+			// Compile initializer.
+			AsmBlock* inner = (*i)->compile(context);
+			*block << *inner;
+
+			if (inner != NULL)
+				delete inner;
+		}
+
+		// Get the stack table of main.
+		StackFrame* frame = context.generateStackFrame(main, false);
+
+		// Output assembly for calling main.
+		*block <<  "	SET X, " << frame->getParametersSize() << std::endl;
+		*block <<  "	SET Z, _halt" << std::endl;
+		*block <<  "	JSR _stack_caller_init" << std::endl;
+		*block <<  "	SET PC, cfunc_main" << std::endl;
+
+		// Clean up frame.
+		context.finishStackFrame(frame);
+
+		// Handle function definitions.
+		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+		{
+			if ((*i)->cType == "statement-declaration-variable")
+				continue;
+
+			AsmBlock* inner = (*i)->compile(context);
+			*block << *inner;
+
+			if (inner != NULL)
+				delete inner;
+		}
 	}
-
-	*block << std::endl;
-
-	// Output the block for initializing global data storage.
-	*block <<  ":_data_init" << std::endl;
-	context.m_CurrentFrame = context.m_GlobalFrame; // So that the NVariableDeclaration compiles successfully.
-
-	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+	else
 	{
-		if ((*i)->cType != "statement-declaration-variable")
-			continue;
-
-		// Compile initializer.
-		AsmBlock* inner = (*i)->compile(context);
-		*block << *inner;
-
-		if (inner != NULL)
-			delete inner;
-	}
-
-	// Get the stack table of main.
-	StackFrame* frame = context.generateStackFrame(main, false);
-
-	// Output assembly for calling main.
-	*block <<  "	SET X, " << frame->getParametersSize() << std::endl;
-	*block <<  "	SET Z, _halt" << std::endl;
-	*block <<  "	JSR _stack_caller_init" << std::endl;
-	*block <<  "	SET PC, cfunc_main" << std::endl;
-
-	// Clean up frame.
-	context.finishStackFrame(frame);
-
-	// Handle function definitions.
-	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
-	{
-		if ((*i)->cType == "statement-declaration-variable")
-			continue;
-
-		AsmBlock* inner = (*i)->compile(context);
-		*block << *inner;
-
-		if (inner != NULL)
-			delete inner;
+		// Ensure we don't have any global variables declared here.
+		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+		{
+			if ((*i)->cType != "statement-declaration-variable")
+				continue;
+			
+			throw new CompilerException("You can't currently define global variables in non-entry-point compilation units.");
+		}
+		
+		// Handle function definitions.
+		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+		{
+			if ((*i)->cType == "statement-declaration-variable")
+				continue;
+			
+			AsmBlock* inner = (*i)->compile(context);
+			*block << *inner;
+			
+			if (inner != NULL)
+				delete inner;
+		}
 	}
 
 	return block;

@@ -41,8 +41,9 @@ int main(int argc, char* argv[])
 	struct arg_str* type_assembler = arg_str0("t", NULL, "<type>", "The type of assembler to output for.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
+	struct arg_lit* gen_entrypoint = arg_lit0("e", "entry-point", "Generate assembly to be used as the entry-point object.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { output_file, show_help, type_assembler, input_file, end };
+	void* argtable[] = { output_file, gen_entrypoint, show_help, type_assembler, input_file, end };
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
@@ -112,7 +113,7 @@ int main(int argc, char* argv[])
 	// Generate assembly using the AST.
 	try
 	{
-		AsmGenerator generator(asmtype);
+		AsmGenerator generator(asmtype, gen_entrypoint->count > 0);
 		AsmBlock* block = program->compile(generator);
 
 		if (strcmp(output_file->filename[0], "-") == 0)

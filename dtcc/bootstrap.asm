@@ -30,6 +30,7 @@ SET PC, _setup
 ; |                     |
 ;  ---------------------
 
+.EXPORT _stack_caller_init
 :_stack_caller_init
 	SET I, POP
 	SET J, SP
@@ -58,6 +59,7 @@ SET PC, _setup
 ; stack frame into Y.  It then jumps to the
 ; return address that was specified in the just
 ; free'd stack frame by using the Z register.
+.EXPORT _stack_callee_return
 :_stack_callee_return
 	SET Z, PEEK						; [return] [stack frame]   Z -> return value, Y -> stack frame
 	SET PEEK, 0
@@ -79,6 +81,7 @@ SET PC, _setup
 .BOUNDARY
 
 ; Halts the CPU.
+.EXPORT _halt
 :_halt
 	SET PC, _halt
 
@@ -86,6 +89,7 @@ SET PC, _setup
 
 ; Halts the CPU clearing all registers except for
 ; the A register.
+.EXPORT _halt_debug
 :_halt_debug
 	SET B, 0
 	SET C, 0
