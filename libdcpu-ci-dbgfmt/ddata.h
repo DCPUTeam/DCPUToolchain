@@ -59,7 +59,7 @@ int dbgfmt_write(bstring path, list_t* symbols);
 list_t* dbgfmt_read(bstring path);
 
 
-void dbgfmt_update_symbol(struct dbg_sym* (*symbols)[4], uint16_t symbols_count, uint16_t address);
+void dbgfmt_update_symbol(struct dbg_sym * (*symbols)[4], uint16_t symbols_count, uint16_t address);
 
 struct dbg_sym* dbgfmt_create_symbol(uint8_t type, void* payload);
 struct dbg_sym_payload_line* dbgfmt_create_symbol_line(bstring path, uint16_t lineno, uint16_t address);

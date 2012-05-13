@@ -195,8 +195,8 @@ IType* NBinaryOperator::getExpressionType(AsmGenerator& context)
 	IType* rType = this->rhs.getExpressionType(context);
 
 	// FIXME: We need a proper type system allowing for implicit
-	//        casts between reasonable values (currently this won't
-	//        even permit you to cast between int and int16_t).
+	//	  casts between reasonable values (currently this won't
+	//	  even permit you to cast between int and int16_t).
 	//if (lType != rType)
 	//	throw new CompilerException("Unable to implicitly cast from " + lType.name + " to " + rType.name + ".");
 

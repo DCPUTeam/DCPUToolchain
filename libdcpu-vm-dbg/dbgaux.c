@@ -206,8 +206,8 @@ int32_t ddbg_file_to_address(bstring file, int index)
 void ddbg_add_breakpoint(bstring file, int index)
 {
 	int32_t memory;
-	
-	if(!biseq(file, bfromcstr("memory")))
+
+	if (!biseq(file, bfromcstr("memory")))
 	{
 		memory = ddbg_file_to_address(file, index);
 	}
@@ -263,25 +263,26 @@ void ddbg_delete_breakpoint(bstring file, int index)
 		printf("There was no breakpoint at %s:%d.\n", bstr2cstr(file, 0), index);
 }
 
-void ddbg_step() {
+void ddbg_step()
+{
 	uint16_t inst, op_a, op_b, offset = 1, bp;
 	inst = INSTRUCTION_GET_OP(vm->ram[vm->pc]);
 	op_a = INSTRUCTION_GET_A(vm->ram[vm->pc]);
 	op_b = INSTRUCTION_GET_B(vm->ram[vm->pc]);
-	
-	if(op_a == NXT) 
+
+	if (op_a == NXT)
 		offset += 1;
-	if(op_a == NXT_LIT)
+	if (op_a == NXT_LIT)
 		offset += 1;
-	
-	if(op_b == NXT) 
+
+	if (op_b == NXT)
 		offset += 1;
-	if(op_b == NXT_LIT)
+	if (op_b == NXT_LIT)
 		offset += 1;
-	
-	if(inst == NBOP_RESERVED)
+
+	if (inst == NBOP_RESERVED)
 	{
-		if(op_b == NBOP_JSR)
+		if (op_b == NBOP_JSR)
 		{
 			bp = op_a;
 		}
@@ -290,7 +291,7 @@ void ddbg_step() {
 	{
 		bp = vm->pc + offset;
 	}
-	
+
 	ddbg_add_breakpoint(bfromcstr("memory"), bp);
 	vm->halted = false;
 	vm_execute(vm);

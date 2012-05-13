@@ -243,7 +243,7 @@ struct aout_byte* aout_emit(struct aout_byte* byte)
 		end->next = byte;
 		end = byte;
 	}
-	
+
 	return byte;
 }
 
@@ -425,7 +425,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 					expr_delete(current_outer->expr);
 					current_outer->expr = NULL;
 					did_find = true;
-					
+
 					// We also need to add this entry to the adjustment
 					// table for the linker since it also needs to adjust
 					// internal label jumps in files when it concatenates
@@ -503,7 +503,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 		{
 			// Update the debugging symbol.
 			dbgfmt_update_symbol(&current_outer->symbols, current_outer->symbols_count, (uint16_t)((ftell(out) - true_origin) / 2));
-			
+
 			// Normal output.
 			if (current_outer->raw_used == true)
 			{

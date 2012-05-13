@@ -27,7 +27,7 @@ AsmBlock* NReturnStatement::compile(AsmGenerator& context)
 	AsmBlock* eval = ((NExpression&)this->result).compile(context);
 	*block << *eval;
 	delete eval;
-	
+
 	// Free locals.
 	*block <<  "	ADD SP, " << context.m_CurrentFrame->getLocalsSize() << std::endl;
 

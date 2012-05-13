@@ -127,19 +127,19 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 		{
 			if ((*i)->cType != "statement-declaration-variable")
 				continue;
-			
+
 			throw new CompilerException("You can't currently define global variables in non-entry-point compilation units.");
 		}
-		
+
 		// Handle function definitions.
 		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
 		{
 			if ((*i)->cType == "statement-declaration-variable")
 				continue;
-			
+
 			AsmBlock* inner = (*i)->compile(context);
 			*block << *inner;
-			
+
 			if (inner != NULL)
 				delete inner;
 		}

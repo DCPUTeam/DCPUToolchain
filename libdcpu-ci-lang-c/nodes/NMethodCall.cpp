@@ -72,7 +72,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		}
 	}
 	*/
-	
+
 	// Get the stack table of this method.
 	StackFrame* frame = context.generateStackFrameIncomplete(funcsig);
 

@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
 
 	// Initialize storage for debugging symbols.
 	list_init(&symbols);
-	
+
 	// Process AST.
 	process_root(&ast_root, &symbols);
 
@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
 	aout_write(img, (gen_relocatable->count > 0), (gen_intermediate->count > 0));
 	fclose(img);
 	fprintf(stderr, "assembler: completed successfully.\n");
-	
+
 	// Save debugging symbols to specified file if provided.
 	if (symbols_file->count > 0)
 	{
@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
 			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 			return 1;
 		}
-		
+
 		// Write symbols.
 		dbgfmt_write(bfromcstr(symbols_file->filename[0]), &symbols);
 		fprintf(stderr, "assembler: wrote debugging symbols.\n");

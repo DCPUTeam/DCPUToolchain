@@ -431,7 +431,7 @@ void process_line(struct ast_node_line* line)
 				if (ppresults.b_label != NULL) ppresults.b = NXT_LIT;
 				if (ppresults.a_label != NULL && ppresults.a_label_bracketed) ppresults.a = NXT;
 				if (ppresults.b_label != NULL && ppresults.b_label_bracketed) ppresults.b = NXT;
-				
+
 				// Output the initial opcode.
 				if (insttype->opcode != OP_NONBASIC)
 					result = aout_emit(aout_create_opcode(insttype->opcode, ppresults.a, ppresults.b));
@@ -460,7 +460,7 @@ void process_line(struct ast_node_line* line)
 			aout_emit(aout_create_label(line->label->name));
 			break;
 	}
-	
+
 	// If we can associate debugging symbols with this instruction...
 	if (result != NULL)
 	{
@@ -472,10 +472,10 @@ void process_line(struct ast_node_line* line)
 			newsym = dbgfmt_create_symbol(DBGFMT_SYMBOL_LINE, dbgfmt_create_symbol_line(line->file, line->line, DBGFMT_UNDETERMINED));
 			result->symbols[result->symbols_count++] = newsym;
 			list_append(assem_dbg_symbols, newsym);
-			
+
 			fprintf(stderr, "Debugging symbol: %i %s\n", line->line, line->file->data);
 		}
-		
+
 		// If the higher-language line information is
 		// provided, output debugging symbols.
 		if (line != NULL && line->ufile != NULL)
@@ -484,7 +484,7 @@ void process_line(struct ast_node_line* line)
 			newsym = dbgfmt_create_symbol(DBGFMT_SYMBOL_LINE, dbgfmt_create_symbol_line(line->ufile, line->uline, DBGFMT_UNDETERMINED));
 			result->symbols[result->symbols_count++] = newsym;
 			list_append(assem_dbg_symbols, newsym);
-			
+
 			fprintf(stderr, "High-level debugging symbol: %i %s\n", line->uline, line->ufile->data);
 		}
 	}
@@ -514,10 +514,10 @@ void process_root(struct ast_node_root* root, list_t* symbols)
 {
 	// Associate the global symbols variable.
 	assem_dbg_symbols = symbols;
-	
+
 	// Process all of the lines.
 	process_lines(root->values);
-	
+
 	// Reset the global symbols variable.
 	assem_dbg_symbols = NULL;
 }
