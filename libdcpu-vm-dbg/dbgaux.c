@@ -349,7 +349,8 @@ void ddbg_dump_ram(int start, int difference)
 
 void ddbg_disassemble(int start, int difference)
 {
-	unsigned int i = 0, ii = 0;
+	int i = 0;
+	unsigned int ii = 0;
 	bool found = false;
 	uint16_t inst, op_a, op_b, val;
 	struct instruction_mapping* map_inst;

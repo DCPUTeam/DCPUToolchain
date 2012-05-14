@@ -75,3 +75,7 @@ CMakeFiles/*
 */lexer.hpp
 */parser.cpp
 */parser.hpp
+
+docs/_build/*
+docs/_doctrees/*
+docs/html/*
