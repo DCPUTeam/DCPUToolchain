@@ -24,7 +24,7 @@ if(SPHINX_EXECUTABLE)
 		"${BINARY_BUILD_DIR}/conf.py"
 		@ONLY)
 	
-	file(GLOB doc_sources *.rst)
+	file(GLOB_RECURSE doc_sources sources/*.rst)
 
 	if(TOOLCHAIN_ON_CYGWIN)	
 		add_custom_target(docs ALL
@@ -32,7 +32,7 @@ if(SPHINX_EXECUTABLE)
 			-q -b html
 			-c "_build"
 			-d "_doctrees"
-			"."
+			"sources"
 			"html"
 			COMMENT "Building HTML documentation with Sphinx (in Cygwin, update shutil.py if errors)"
 			SOURCES ${doc_sources})
@@ -42,7 +42,7 @@ if(SPHINX_EXECUTABLE)
 			-q -b html
 			-c "${BINARY_BUILD_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
-			"${CMAKE_CURRENT_SOURCE_DIR}"
+			"${CMAKE_CURRENT_SOURCE_DIR}/sources"
 			"${SPHINX_HTML_DIR}"
 			COMMENT "Building HTML documentation with Sphinx"
 			SOURCES ${doc_sources})

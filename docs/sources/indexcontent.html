@@ -1,0 +1,32 @@
+{% extends "defindex.html" %}
+{% block tables %}
+  <p><strong>Welcome!</strong></p>
+  <table class="contentstable" align="center"><tr>
+    <td width="50%">
+      <p class="biglink"><a class="biglink" href="{{ pathto("whatsnew/index") }}">What's new in DCPU-16 Toolchain?</a><br/>
+         <span class="linkdescr">or <a href="http://dcputoolcha.in/changelog.htm">the entire changelog</a></span></p>
+    </td><td width="50%">
+       <p class="biglink"><a class="biglink" href="{{ pathto("tutorial/index") }}">Tutorial</a><br/>
+         <span class="linkdescr">start here</span></p>
+    </td></tr>
+  </table>
+
+  <p><strong>The tools:</strong></p>
+  <table class="contentstable" align="center"><tr>
+    <td width="50%">
+      <p class="biglink"><a class="biglink" href="{{ pathto("tools/emulator/index") }}">Emulator</a><br/>
+         <span class="linkdescr">runs DCPU-16 images</span></p>
+      <p class="biglink"><a class="biglink" href="{{ pathto("tools/assembler/index") }}">Assembler</a><br/>
+         <span class="linkdescr">creates object files and images</span></p>
+      <p class="biglink"><a class="biglink" href="{{ pathto("tools/linker/index") }}">Linker</a><br/>
+         <span class="linkdescr">joins multiple object files to produce an image</span></p>
+    </td><td width="50%">
+      <p class="biglink"><a class="biglink" href="{{ pathto("tools/preprocessor/index") }}">Preprocessor</a><br/>
+         <span class="linkdescr">rewrites code before it's processed</span></p>
+      <p class="biglink"><a class="biglink" href="{{ pathto("tools/compiler/index") }}">Compiler</a><br/>
+         <span class="linkdescr">compiles a high-level language into assembly</span></p>
+      <p class="biglink"><a class="biglink" href="{{ pathto("tools/debugger/index") }}">Debugger</a><br/>
+         <span class="linkdescr">find and kill bugs</span></p>
+    </td></tr>
+  </table>
+{% endblock %}
