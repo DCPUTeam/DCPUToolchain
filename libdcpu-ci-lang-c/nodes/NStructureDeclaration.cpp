@@ -27,13 +27,13 @@ AsmBlock* NStructureDeclaration::reference(AsmGenerator& context)
 	throw new CompilerException("Unable to get reference to the result of a structure declaration.");
 }
 
-size_t NStructureDeclaration::getSize(AsmGenerator& context)
+size_t NStructureDeclaration::getBitSize(AsmGenerator& context)
 {
 	// Return the size of each of the fields.
 	size_t s = 0;
 
 	for (VariableList::iterator i = this->fields.begin(); i != this->fields.end(); i++)
-		s += (*i)->type.getWordSize(context);
+		s += (*i)->type.getBitSize(context);
 
 	return s;
 }

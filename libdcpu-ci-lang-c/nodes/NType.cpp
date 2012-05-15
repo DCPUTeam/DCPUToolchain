@@ -61,7 +61,7 @@ size_t NType::getBitSize(AsmGenerator& context)
 	else if (this->isStruct)
 	{
 		this->resolveStruct(context);
-		return this->resolvedStruct->getSize(context);
+		return this->resolvedStruct->getBitSize(context);
 	}
 	else
 	{

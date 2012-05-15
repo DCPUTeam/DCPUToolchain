@@ -14,7 +14,7 @@
 #include "StackFrame.h"
 
 // Gets a relative stack position by the variable name.
-TypePosition StackFrame::getPositionOfVariable(std::string name, bool stackStartAtC)
+TypePosition StackFrame::getPositionOfVariable(std::string name, bool previousStackFrame)
 {
 	uint16_t size = 0;
 
@@ -22,16 +22,19 @@ TypePosition StackFrame::getPositionOfVariable(std::string name, bool stackStart
 	for (StackMap::iterator i = this->m_ParametersMap.begin(); i != this->m_ParametersMap.end(); i++)
 	{
 		if ((*i).first == name)
-			return TypePosition(true, this->m_Generator.m_GlobalFrame == this, stackStartAtC, size);
+			return TypePosition(true, this->m_Generator.m_GlobalFrame == this, true, previousStackFrame, size);
 		else
 			size += (*i).second.getWordSize(this->m_Generator);
 	}
+	
+	// reset count for local stack
+	size = 0;
 
 	// Search locals.
 	for (StackMap::iterator i = this->m_LocalsMap.begin(); i != this->m_LocalsMap.end(); i++)
 	{
 		if ((*i).first == name)
-			return TypePosition(true, this->m_Generator.m_GlobalFrame == this, stackStartAtC, size);
+			return TypePosition(true, this->m_Generator.m_GlobalFrame == this, false, previousStackFrame, this->getLocalsSize() - size);
 		else
 			size += (*i).second.getWordSize(this->m_Generator);
 	}
@@ -45,7 +48,7 @@ TypePosition StackFrame::getPositionOfVariable(std::string name, bool stackStart
 		if (func != NULL)
 			return TypePosition(true, name);
 		else
-			return TypePosition(false, false, false, 0);
+			return TypePosition(false, false, false, false, 0);
 	}
 	else
 		return this->m_Generator.m_GlobalFrame->getPositionOfVariable(name);
