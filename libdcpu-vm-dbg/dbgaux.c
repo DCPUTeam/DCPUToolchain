@@ -333,6 +333,12 @@ void ddbg_dump_ram(int start, int difference)
 	if (difference == 0)
 		difference = 32;
 
+	if((start + difference) > 0xffff)
+	{
+		printf("Memory out of bounds.\n");
+		return;
+	}
+
 	for (i = 0; i < difference; i++)
 	{
 		if (i % 8 == 0)
