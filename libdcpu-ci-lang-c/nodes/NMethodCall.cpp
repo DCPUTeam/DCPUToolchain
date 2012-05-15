@@ -147,6 +147,8 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	}
 	else
 	{
+		// we are referencing the previous stack frame here 
+		// => parameter previousStackFrame=true
 		TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name, true);
 		*block <<  varpos.pushAddress('X');
 		*block <<  "	SET X, [X]" << std::endl;
