@@ -28,21 +28,27 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 	// Add file and line information.
 	*block << this->getFileAndLineState();
 
+	// When an assignment expression is referenced, the memory
+	// address of the target goes into A.
+	AsmBlock* las = this->lhs.reference(context);
+	*block << *las;
+	// push memory address
+	*block <<	"	SET PUSH, A" << std::endl;
+	delete las;
+
 	// We only need to both to push the value of the LHS if we're
 	// doing a relative adjustment.
 	if (this->op != ASSIGN_EQUAL)
 	{
-		// When an expression is evaluated, the result goes into the A register.
-		AsmBlock* lhs = this->lhs.compile(context);
-
-		// Move the value onto the stack.
-		*block <<   *lhs;
+		// get referenced value and push it onto the stack
+		*block <<	"	SET A, [A]" << std::endl;
 		*block <<	"	SET PUSH, A" << std::endl;
-		delete lhs;
 	}
 	else
+	{
 		// We still need to push a value so our POPs work in order.
 		*block <<	"	SET PUSH, 0" << std::endl;
+	}
 
 	// When an expression is evaluated, the result goes into the A register.
 	AsmBlock* rhs = this->rhs.compile(context);
@@ -98,17 +104,24 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 			throw new CompilerException("Unknown assignment operation requested.");
 	}
 
-	// Move the value into register B.
-	*block <<	"	SET B, A" << std::endl;
-
-	// When an assignment expression is referenced, the memory
-	// address of the target goes into A.
-	AsmBlock* las = this->lhs.reference(context);
-	*block << *las;
-	delete las;
+	// Pop reference from stack
+	// If debugging, clear the value as we POP them.
+	if (context.isAssemblerDebug())
+	{
+		// Put the value into B and clear the
+		// stack position as we do so.
+		*block <<	"	SET B, PEEK" << std::endl;
+		*block <<	"	SET PEEK, 0" << std::endl;
+		*block <<	"	ADD SP, 1" << std::endl;
+	}
+	else
+	{
+		// Not debugging, put the values into B.
+		*block <<	"	SET B, POP" << std::endl;
+	}
 
 	// Move the value into the target address.
-	*block <<	"	SET [A], B" << std::endl;
+	*block <<	"	SET [B], A" << std::endl;
 
 	return block;
 }

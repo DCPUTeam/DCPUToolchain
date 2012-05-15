@@ -46,19 +46,22 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		isDirect = false;
 	}
 
-	// FIXME: Again, without implicit type casting this breaks quite a few
-	// things, so it's disabled for now.
-	/*
+
+	
 	// check if the called function matches the signature of this method call
-	// typedef std::vector<NVariableDeclaration*> VariableList; funcsig->arguments
-	// typedef std::vector<NExpression*> ExpressionList for this->arguments
 	// first check if argument length are the same
+	/*
 	if (this->arguments.size() != funcsig->arguments.size())
 	{
 		throw new CompilerException("There is no function with the name "
 					    + this->id.name + " and signature " + this->calculateSignature(context) + "\n"
 					    + "Candidates are:\t" + this->id.name + " with signature " + funcsig->getSignature());
 	}
+	*/
+	
+	// FIXME: Again, without implicit type casting this breaks quite a few
+	// things, so it's disabled for now.
+	/*
 	// now check types of all the arguments
 	for (unsigned int i = 0; i < funcsig->arguments.size(); i++)
 	{
