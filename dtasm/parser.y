@@ -512,6 +512,14 @@ bracketed_register:
 		};
 
 address:
+		address expr /* PICK expr */
+		{
+			$$ = malloc(sizeof(struct ast_node_address));
+			$$->value = $2;
+			$$->bracketed = 1;
+			$$->added = 1;
+			$$->addcmpt = "SP";
+		} |
 		expr
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
