@@ -98,9 +98,11 @@ uint16_t StackFrame::getParametersSize()
 uint16_t StackFrame::getLocalsSize()
 {
 	uint16_t size = 0;
-
-	for (StackMap::iterator i = this->m_ParametersMap.begin(); i != this->m_ParametersMap.end(); i++)
-		size += (*i).second.getWordSize(this->m_Generator);
-
+	
+	if (m_LocalsDefined) {
+		for (StackMap::iterator i = this->m_LocalsMap.begin(); i != this->m_LocalsMap.end(); i++)
+			size += (*i).second.getWordSize(this->m_Generator);
+	}
+	
 	return size;
 }

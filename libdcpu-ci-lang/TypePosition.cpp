@@ -61,10 +61,6 @@ std::string TypePosition::pushAddress(char registr)
 	// TODO rename the member m_StackStartAtC, it now works differently
 	else if (this->m_StackStartAtC)
 	{
-		/*
-		sstr << "	SET " << registr << ", C" << std::endl;
-		sstr << "	ADD " << registr << ", 1" << std::endl;
-		*/
 		// there is one stack-frame allready in lower memory
 		// thus get the address of the next stack via Y (iterate one position down)
 		sstr << "	SET " << registr << ", Y" << std::endl;
@@ -73,9 +69,12 @@ std::string TypePosition::pushAddress(char registr)
 	}
 	else
 		sstr << "	SET " << registr << ", Y" << std::endl;
+		// jumping over next frame pointer and return address
+		sstr << "	SUB " << registr << ", 3" << std::endl;
 
 	if (this->m_Position != 0)
-		sstr << "	ADD " << registr << ", " << this->m_Position << std::endl;
+		// we use the positions from here on _upwards_
+		sstr << "	SUB " << registr << ", " << this->m_Position << std::endl;
 
 	return sstr.str();
 }
