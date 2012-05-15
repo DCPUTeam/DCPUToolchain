@@ -6,10 +6,10 @@ Welcome to the documentation for the DCPU-16 Toolchain.
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
    
-   tutorial/index.rst
-   tools/index.rst
+    tutorial/index.rst
+    tools/index.rst
 
 
 

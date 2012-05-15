@@ -5,10 +5,10 @@
 Compiler
 =============================================
 
-Content for the compiler would go here.
+The compiler allows you to translate (relatively) high-level languages such as C into assembly for the DCPU.  The compile infrastructure is written in such a way that it permits any language to be defined for compilation to the DCPU.
 
 .. toctree::
-   :maxdepth: 3
+    :maxdepth: 3
 
 .. _compiler-command-line:
 
@@ -30,20 +30,20 @@ Generic options
 
 .. cmdoption:: -h
 
-	Shows a list of all currently supported command-line options.
+    Shows a list of all currently supported command-line options.
 
 .. cmdoption:: -o output
-			   --output=output
+            --output=output
 
-	Specifies the file to output the assembly to.  This option
-	can be `-` to indicate that the assembly should be sent to
-	standard output.
+    Specifies the file to output the assembly to.  This option
+    can be `-` to indicate that the assembly should be sent to
+    standard output.
 
 .. cmdoption:: input
 
-	Specifies the input file to compile.  This option
-	can be `-` to indicate that the input should be read from
-	standard input.
+    Specifies the input file to compile.  This option
+    can be `-` to indicate that the input should be read from
+    standard input.
 
 .. _compiler-output-options:
 
@@ -51,18 +51,18 @@ Output options
 ~~~~~~~~~~~~~~~~~~
 
 .. cmdoption:: -t type
-			   --type=type
+            --type=type
 
-	Specifies the output assembler to target.  See the section
-	on :ref:`compiler-targets`.
+    Specifies the output assembler to target.  See the section
+    on :ref:`compiler-targets`.
 
 .. cmdoption:: -e
 
-	Specifies that the output object should be the entry-point
-	of the application.  This is required for the time being
-	while the C standard library is not yet written, but will
-	in future be replaced when the standard library is available.
-	See the section on :ref:`compiler-entry-point`.
+    Specifies that the output object should be the entry-point
+    of the application.  This is required for the time being
+    while the C standard library is not yet written, but will
+    in future be replaced when the standard library is available.
+    See the section on :ref:`compiler-entry-point`.
 
 .. _compiler-targets:
 
