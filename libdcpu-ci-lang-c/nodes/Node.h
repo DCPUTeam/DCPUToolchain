@@ -47,7 +47,7 @@ class Node
 		virtual ~Node() {}
 		virtual AsmBlock* compile(AsmGenerator& context) = 0;
 		virtual AsmBlock* reference(AsmGenerator& context) = 0;
-		AsmBlock getFileAndLineState();
+		AsmBlock getFileAndLineState() const;
 };
 
 #endif

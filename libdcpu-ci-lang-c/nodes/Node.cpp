@@ -14,7 +14,7 @@
 #include "Node.h"
 #include <AsmBlock.h>
 
-AsmBlock Node::getFileAndLineState()
+AsmBlock Node::getFileAndLineState() const
 {
 	AsmBlock result;
 	result << ".ULINE " << this->line << " \"" << this->file << "\"";
