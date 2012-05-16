@@ -11,4 +11,4 @@ Contents:
    :numbered:
    :maxdepth: 2
 
-   01test.rst
+   01gettingstarted.rst

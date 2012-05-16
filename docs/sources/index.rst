@@ -10,8 +10,7 @@ Contents:
    
     tutorial/index.rst
     tools/index.rst
-
-
+    lang/index.rst
 
 
 Indices and tables
