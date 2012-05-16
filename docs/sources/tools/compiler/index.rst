@@ -13,3 +13,4 @@ The compiler allows you to translate (relatively) high-level languages such as C
     cmdline
     targets
     entrypoint
+    c-syntax
