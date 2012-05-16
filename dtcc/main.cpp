@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Assembler type.
-	const char* asmtype = "dcpu16toolchain";
+	const char* asmtype = "toolchain";
 
 	if (type_assembler->count > 0)
 		asmtype = type_assembler->sval[0];
