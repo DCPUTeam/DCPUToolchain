@@ -23,6 +23,7 @@ class NInteger;
 #include <vector>
 #include <AsmGenerator.h>
 #include <CompilerException.h>
+#include "nodes/NArrayAccessOperator.h"
 #include "nodes/NBlock.h"
 #include "nodes/NDeclarations.h"
 #include "nodes/NFunctionDeclaration.h"
@@ -89,7 +90,7 @@ void yyerror(const char *str);
 %token <token> ERROR
 
 /* TOKENS: Identifiers, numbers and basic lexical components */
-%token <token> CURVED_OPEN CURVED_CLOSE BRACE_OPEN BRACE_CLOSE COMMA
+%token <token> CURVED_OPEN CURVED_CLOSE BRACE_OPEN BRACE_CLOSE SQUARE_OPEN SQUARE_CLOSE COMMA
 %token <token> STAR SEMICOLON DOT STRUCT
 %token <number> NUMBER
 %token <string> IDENTIFIER CHARACTER STRING ASSEMBLY
@@ -117,7 +118,7 @@ void yyerror(const char *str);
 /* TYPES */
 %type <type> type
 %type <ident> ident type_base
-%type <expr> expr numeric string character deref fldref addressable
+%type <expr> expr numeric string character deref fldref addressable arrayref
 %type <varvec> func_decl_args struct_decl_args
 %type <exprvec> call_args
 %type <decls> program prog_decl
@@ -412,6 +413,19 @@ fldref:
 				throw new CompilerException("Unable to apply field referencing assignment operation to non-field operator based LHS.");
 		} ;
 
+arrayref:
+		expr SQUARE_OPEN expr SQUARE_CLOSE
+		{
+			$$ = new NArrayAccessOperator(*$1, *$3);
+		} |
+		arrayref assignop expr
+		{
+			if ($1->cType == "expression-arrayaccess") // We can't accept NAssignments as the arrayref in this case.
+				$$ = new NAssignment(*$1, $2, *$3);
+			else
+				throw new CompilerException("Unable to apply array access assignment operation to non-array access operator based LHS.");
+		} ;
+
 deref:
 		STAR ident
 		{
@@ -437,6 +451,10 @@ expr:
 		ident assignop expr
 		{
 			$$ = new NAssignment(*$1, $2, *$3);
+		} |
+		arrayref
+		{
+			$$ = $1;
 		} |
 		deref
 		{

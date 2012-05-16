@@ -142,6 +142,8 @@ extern "C"
 ")"					{ HANDLE; return yylval.token = CURVED_CLOSE; }
 "{"					{ HANDLE; return yylval.token = BRACE_OPEN; }
 "}"					{ HANDLE; return yylval.token = BRACE_CLOSE; }
+"["					{ HANDLE; return yylval.token = SQUARE_OPEN; }
+"]"					{ HANDLE; return yylval.token = SQUARE_CLOSE; }
 ","					{ HANDLE; return yylval.token = COMMA; }
 "*"					{ HANDLE; return yylval.token = STAR; }
 ";"					{ HANDLE; return yylval.token = SEMICOLON; }
