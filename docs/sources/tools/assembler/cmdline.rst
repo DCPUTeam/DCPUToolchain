@@ -7,11 +7,15 @@ Command line
 
 When invoking the assembler, you may specify any of these options
 
-    `dtasm [-rih] [-s symbols] -o output input`
+.. code-block:: bash
+
+    dtasm [-rih] [-s symbols] -o output input
 
 The most common use case is assembling intermediate code for later linking:
 
-    `dtasm -i -s test.dsym16 -o test.dobj16 test.dasm16`
+.. code-block:: bash
+
+    dtasm -i -s test.dsym16 -o test.dobj16 test.dasm16
 
 .. _assembler-generic-options:
 

@@ -17,11 +17,15 @@ Command line
 
 When invoking the compiler, you may specify any of these options
 
-    `dtcc [-eh] -o output [-t type] input`
+.. code-block:: bash
+
+    dtcc [-eh] -o output [-t type] input
 
 The most common use case is compiling a C file into assembler:
 
-    `dtcc -o test.dasm16 test.c`
+.. code-block:: bash
+
+    dtcc -o test.dasm16 test.c
 
 .. _compiler-generic-options:
 
