@@ -80,8 +80,11 @@ void vm_hw_lem1802_write(vm_t* vm, uint16_t pos)
 	// Are we updating a font character?
 	else if (location_font != 0 && pos >= location_font && pos <= location_font + 0x100)
 	{
+		
 		// Work out the position of the character in the font.
+		//if((pos - location_font) % 2 != 0) return; // this is the second character, not the first one!
 		i = (pos - location_font) / 2;
+		printf("i %d\n", i);
 		fx = i / 16 * char_width;
 		fy = i % 16 * char_height;
 
@@ -91,9 +94,9 @@ void vm_hw_lem1802_write(vm_t* vm, uint16_t pos)
 		{
 			// Read value.
 			if (x == 0 || x == 1)
-				val = vm->ram[location_font + (i * 2)];
+				val = vm->ram[pos];
 			else
-				val = vm->ram[location_font + (i * 2) + 1];
+				val = vm->ram[pos + 1];
 
 			// Get upper or lower component of value.
 			if (x == 0 || x == 2)

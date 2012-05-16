@@ -92,6 +92,15 @@ void ddbg_cycle_hook(vm_t* vm, uint16_t pos)
 	}
 }
 
+void ddbg_set(bstring object, bstring value)
+{
+	if(biseq(object, bfromcstr("vm_debug")))
+	{
+		vm->debug = (biseq(value, bfromcstr("on"))) ? true : false;
+		printf("Debugging set to %d.\n", vm->debug);
+	}
+}
+
 void ddbg_load(bstring path)
 {
 	FILE* load;

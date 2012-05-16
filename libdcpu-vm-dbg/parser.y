@@ -105,6 +105,10 @@ general_command:
 			// Stop debugger.
 			exit(0);
 		} |
+		ID_SET param param
+		{
+			ddbg_set($2, $3);
+		} |
 		ID_INSPECT ID_SYMBOLS
 		{
 			// Show a list of all of the loaded symbols.
