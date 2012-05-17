@@ -338,6 +338,9 @@ endif("${BUILD_EMULATOR}" MATCHES true)
 # Add documentation.
 add_subdirectory(docs)
 
+# Add scripts.
+add_subdirectory(scripts)
+
 # Add kernel, using the multi-threading version if available.
 if(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
 #	add_subdirectory(kernel.mt)

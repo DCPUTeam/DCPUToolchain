@@ -124,13 +124,29 @@ int vm_hw_lua_handle_register_set(lua_State* L)
 
 int vm_hw_lua_handle_ram_get(lua_State* L)
 {
-	// TODO
-	return 0;
+	// Table is at 1, key is at 2.
+	struct lua_hardware* hw = vm_hw_lua_extract_hardware(L, 1);
+	if (!lua_isnumber(L, 2))
+	{
+		lua_pushstring(L, "ram access must be by numeric value (use array operator)");
+		lua_error(L);
+		return 0;
+	}
+	lua_pushnumber(L, hw->vm->ram[(uint16_t)lua_tonumber(L, 2)]);
+	return 1;
 }
 
 int vm_hw_lua_handle_ram_set(lua_State* L)
 {
-	// TODO
+	// Table is at 1, key is at 2, value is at 3.
+	struct lua_hardware* hw = vm_hw_lua_extract_hardware(L, 1);
+	if (!lua_isnumber(L, 2) || !lua_isnumber(L, 3))
+	{
+		lua_pushstring(L, "ram write must be by numeric value (use array operator / numeric value)");
+		lua_error(L);
+		return 0;
+	}
+	hw->vm->ram[(uint16_t)lua_tonumber(L, 2)] = (uint16_t)lua_tonumber(L, 3);
 	return 0;
 }
 
