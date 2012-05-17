@@ -15,6 +15,7 @@
 #include <exception>
 #include <stdexcept>
 #include "Assembler.h"
+#include "CompilerException.h"
 
 // We haven't initially loaded anything.
 bool Assembler::m_HasLoaded = false;
@@ -30,7 +31,7 @@ void Assembler::loadAll()
 	// Define assemblers.
 	m_Assemblers.insert(entry("toolchain", new Assembler(true, false, true, true, true, true, true)));
 	m_Assemblers.insert(entry("studio", new Assembler(false, false, true, false, false, false, false)));
-    m_Assemblers.insert(entry("organic", new Assembler(false, false, true, true, true, false, false)));
+	m_Assemblers.insert(entry("organic", new Assembler(false, false, true, true, true, false, false)));
 }
 
 // Gets a reference to an assembler by it's name.
@@ -39,7 +40,7 @@ const Assembler* Assembler::getAssembler(std::string name)
 	std::map<std::string, const Assembler*>::iterator i = Assembler::m_Assemblers.find(name);
 
 	if (i == Assembler::m_Assemblers.end())
-		throw new std::runtime_error("Requested assembler information not found (internal error).");
+		throw new CompilerException("Requested assembler information not found (invalid assembler type).");
 	else
 		return i->second;
 }
