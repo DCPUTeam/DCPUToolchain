@@ -754,5 +754,5 @@ type_base:
 void yyerror(const char *str)
 {
 	assert(yyfilename != NULL);
-	fprintf(stdout,"error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
+	fprintf(stderr,"error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
 }

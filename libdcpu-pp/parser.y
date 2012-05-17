@@ -35,7 +35,7 @@ void handle_uline(int line, bstring file, void* current);
 void handle_line(int line, bstring file, void* current);
 void handle_start(freed_bstring name, FILE* current);
 void handle_output(bstring output, void* scanner);
-void handle_include(bstring fname, void* current);
+int handle_include(bstring fname, void* current);
 bool is_globally_initialized = false;
 
 struct equate_entry
@@ -182,7 +182,10 @@ preprocessor:
 		{
 			/* We must recursively invoke the preprocessor on the new
 			   input, sending to standard output. */
-			handle_include($2, scanner);
+			if (!handle_include($2, scanner))
+			{
+				YYERROR;
+			}
 		} |
 		LINE NUMBER STRING
 		{
@@ -499,7 +502,7 @@ void handle_start(freed_bstring name, FILE* output)
 	bautodestroy(name);
 }
 
-void handle_include(bstring fname, void* current)
+int handle_include(bstring fname, void* current)
 {
 	yyscan_t scanner;
 	FILE* ffnew;
@@ -507,6 +510,7 @@ void handle_include(bstring fname, void* current)
 	bstring path;
 	int origline;
 	bstring origfile;
+	int result;
 	
 	// Search for the file using ppfind.
 	if (fname->data[0] != '/' && fname->data[1] != ':')
@@ -519,8 +523,12 @@ void handle_include(bstring fname, void* current)
 		//       so we can pass errors back like 'include not found'.
 		//       Maybe we can model this off the ahalt() mechanism
 		//       in the assembler.
-		fprintf(stderr, "can't include '%s'.", fname->data);
-		return;
+		bstring fmt = bformat("can't include '%s'.", fname->data);
+		char* fmtc = bstr2cstr(fmt, '0');
+		yyerror(current, fmtc);
+		bcstrfree(fmtc);
+		bdestroy(fmt);
+		return false;
 	}
 	
 	// Calculate the directory that the include
@@ -546,10 +554,14 @@ void handle_include(bstring fname, void* current)
 	pp_yylex_init(&scanner);
 	pp_yyset_in(ffnew, scanner);
 	pp_yyset_out(pp_yyget_out(current), scanner);
-	pp_yyparse(scanner);
+	result = pp_yyparse(scanner);
 	fclose(ffnew);
 	pp_yylex_destroy(scanner);
 	bdestroy(path);
+
+	// Check to see if there were errors.
+	if (result != 0)
+		return false;
 	
 	// Restore the old state and output
 	// a line adjustment.
@@ -560,4 +572,6 @@ void handle_include(bstring fname, void* current)
 	
 	// Remove the include path again.
 	ppfind_remove_path(bautocpy(dir));
+
+	return true;
 }
