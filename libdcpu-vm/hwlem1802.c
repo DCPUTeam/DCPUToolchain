@@ -80,11 +80,13 @@ void vm_hw_lem1802_write(vm_t* vm, uint16_t pos)
 	// Are we updating a font character?
 	else if (location_font != 0 && pos >= location_font && pos <= location_font + 0x100)
 	{
-		
+		// First adjust the position so that it aligns on the start
+		// of a character.
+		if ((pos - location_font) % 2 != 0)
+			pos -= 1;
+
 		// Work out the position of the character in the font.
-		//if((pos - location_font) % 2 != 0) return; // this is the second character, not the first one!
 		i = (pos - location_font) / 2;
-		printf("i %d\n", i);
 		fx = i / 16 * char_width;
 		fy = i % 16 * char_height;
 
@@ -117,7 +119,7 @@ void vm_hw_lem1802_write(vm_t* vm, uint16_t pos)
 					{
 
 						// If bit is true, write to the pixel white.
-						if (((val & (0x1 << (8 - y))) >> (8 - y)) == 0x1)
+						if (((val & (0x1 << (7 - y))) >> (7 - y)) == 0x1)
 							TCOD_image_put_pixel(char_image, (fx + x) * char_width / HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH + ax, (fy + y) * char_height / HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT + ay, color_white);
 						else
 							TCOD_image_put_pixel(char_image, (fx + x) * char_width / HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH + ax, (fy + y) * char_height / HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT + ay, color_black);
