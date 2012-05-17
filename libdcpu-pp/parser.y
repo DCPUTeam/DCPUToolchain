@@ -107,7 +107,7 @@ struct macrodef_entry* active_macro = NULL;
 %token <token> LINE ULINE INCLUDE EQUATE IF IFDEF IFNDEF ELSE ENDIF MACRO
 %token <token> ENDMACRO PARAM_OPEN PARAM_CLOSE COMMA UNDEF MACROCALL
 %token <string> STRING WORD
-%token <any> ANY_CHAR
+%token <any> WHITESPACE NEWLINE TEXT
 %token <number> NUMBER
 
 // Define our types.
@@ -156,8 +156,9 @@ lines:
 		lines line ;
 
 line:
-		preprocessor |
-		text
+		NEWLINE |
+		preprocessor NEWLINE |
+		text NEWLINE
 		{
 			unsigned int i;
 			struct equate_entry* e;
@@ -174,6 +175,7 @@ line:
 			}
 			
 			handle_output($1, scanner);
+			handle_output(bfromcstr("\n"), scanner);
 			bdestroy($1);
 		} ;
 
@@ -389,12 +391,12 @@ preprocessor:
 		} ;
 
 text:
-		ANY_CHAR
+		TEXT
 		{
 			$$ = bfromcstralloc(1, " ");
 			$$->data[0] = $1;
 		} | 
-		text ANY_CHAR
+		text TEXT
 		{
 			bstring s = bfromcstralloc(1, " ");
 			s->data[0] = $2;

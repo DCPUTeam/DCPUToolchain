@@ -63,21 +63,21 @@ char* pp_trim_and_unescape(char* data)
 
 	/* Preprocessor keywords */
 
-<INITIAL>[\.\#][Ll][Ii][Nn][Ee]						BEGIN(PREPROCESSING); return LINE;
-<INITIAL>[\.\#][Uu][Ll][Ii][Nn][Ee]					BEGIN(PREPROCESSING); return ULINE;
-<INITIAL>[\.\#][Ii][Nn][Cc][Ll][Uu][Dd][Ee]				BEGIN(PREPROCESSING); return INCLUDE;
-<INITIAL>[\.\#][Ee][Qq][Uu][Aa][Tt][Ee]					BEGIN(PREPROCESSING); return EQUATE;
-<INITIAL>[\.\#][Ee][Qq][Uu]						BEGIN(PREPROCESSING); return EQUATE;
-<INITIAL>[\.\#][Dd][Ee][Ff][Ii][Nn][Ee]					BEGIN(PREPROCESSING); return EQUATE;
-<INITIAL>[\.\#][Uu][Nn][Dd][Ee][Ff]					BEGIN(PREPROCESSING); return UNDEF;
-<INITIAL>[\.\#][Ii][Ff][Dd][Ee][Ff]					BEGIN(PREPROCESSING); return IFDEF;
-<INITIAL>[\.\#][Ii][Ff][Nn][Dd][Ee][Ff]					BEGIN(PREPROCESSING); return IFNDEF;
-<INITIAL>[\.\#][Ii][Ff]							BEGIN(PREPROCESSING); return IF;
-<INITIAL>[\.\#][Ee][Ll][Ss][Ee]						BEGIN(PREPROCESSING); return ELSE;
-<INITIAL>[\.\#][Ee][Nn][Dd][Ii][Ff]					BEGIN(PREPROCESSING); return ENDIF;
-<INITIAL>[\.\#][Mm][Aa][Cc][Rr][Oo]					BEGIN(MACRODEF); return MACRO;
-<INITIAL,MACROCONTENT>[\.\#][Ee][Nn][Dd][Mm][Aa][Cc][Rr][Oo]		BEGIN(PREPROCESSING); return ENDMACRO;
-<INITIAL>[\.\#][\.\#]							BEGIN(MACROCALLDEF); return MACROCALL;
+<INITIAL>^[ \t]*[\.\#][Ll][Ii][Nn][Ee]						BEGIN(PREPROCESSING); return LINE;
+<INITIAL>^[ \t]*[\.\#][Uu][Ll][Ii][Nn][Ee]					BEGIN(PREPROCESSING); return ULINE;
+<INITIAL>^[ \t]*[\.\#][Ii][Nn][Cc][Ll][Uu][Dd][Ee]				BEGIN(PREPROCESSING); return INCLUDE;
+<INITIAL>^[ \t]*[\.\#][Ee][Qq][Uu][Aa][Tt][Ee]					BEGIN(PREPROCESSING); return EQUATE;
+<INITIAL>^[ \t]*[\.\#][Ee][Qq][Uu]						BEGIN(PREPROCESSING); return EQUATE;
+<INITIAL>^[ \t]*[\.\#][Dd][Ee][Ff][Ii][Nn][Ee]					BEGIN(PREPROCESSING); return EQUATE;
+<INITIAL>^[ \t]*[\.\#][Uu][Nn][Dd][Ee][Ff]					BEGIN(PREPROCESSING); return UNDEF;
+<INITIAL>^[ \t]*[\.\#][Ii][Ff][Dd][Ee][Ff]					BEGIN(PREPROCESSING); return IFDEF;
+<INITIAL>^[ \t]*[\.\#][Ii][Ff][Nn][Dd][Ee][Ff]					BEGIN(PREPROCESSING); return IFNDEF;
+<INITIAL>^[ \t]*[\.\#][Ii][Ff]							BEGIN(PREPROCESSING); return IF;
+<INITIAL>^[ \t]*[\.\#][Ee][Ll][Ss][Ee]						BEGIN(PREPROCESSING); return ELSE;
+<INITIAL>^[ \t]*[\.\#][Ee][Nn][Dd][Ii][Ff]					BEGIN(PREPROCESSING); return ENDIF;
+<INITIAL>^[ \t]*[\.\#][Mm][Aa][Cc][Rr][Oo]					BEGIN(MACRODEF); return MACRO;
+<INITIAL,MACROCONTENT>^[ \t]*[\.\#][Ee][Nn][Dd][Mm][Aa][Cc][Rr][Oo]		BEGIN(PREPROCESSING); return ENDMACRO;
+<INITIAL>^[ \t]*[\.\#][\.\#]							BEGIN(MACROCALLDEF); return MACROCALL;
 
 	/* String and character analysis */
 
@@ -93,16 +93,16 @@ char* pp_trim_and_unescape(char* data)
 <MACROCALLDEF>\)							return PARAM_CLOSE;
 <MACRODEF>\)								BEGIN(MACROCONTENT); return PARAM_CLOSE;
 <MACROCALLDEF,MACRODEF>\,						return COMMA;
-<MACROCALLDEF,MACRODEF>\n						yylval->any = '\n'; BEGIN(INITIAL); return ANY_CHAR;
-<MACROCALLDEF,MACRODEF>[^ \t\n\(\)\,]					yylval->any = yytext[0]; return ANY_CHAR;
+<MACROCALLDEF,MACRODEF>\n						yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
+<MACROCALLDEF,MACRODEF>[^ \t\n\(\)\,]					yylval->any = yytext[0]; return WHITESPACE;
 <MACROCALLDEF,MACRODEF>[ \t]+						/* ignore whitespace */;
 
 	/* Miscellanous */
 
-<PREPROCESSING>\n							yylval->any = '\n'; BEGIN(INITIAL); return ANY_CHAR;
-<PREPROCESSING>[^ \t\n]							yylval->any = yytext[0]; return ANY_CHAR;
+<PREPROCESSING>\n							yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
+<PREPROCESSING>[^ \t\n]							yylval->any = yytext[0]; return WHITESPACE;
 <PREPROCESSING>[ \t]+							/* ignore whitespace */;
-<MACROCONTENT,INITIAL>\n						yylval->any = '\n'; return ANY_CHAR;
-<MACROCONTENT,INITIAL>[^\n]						yylval->any = yytext[0]; return ANY_CHAR;
+<MACROCONTENT,INITIAL>\n						yylval->any = '\n'; return NEWLINE;
+<MACROCONTENT,INITIAL>[^\n]						yylval->any = yytext[0]; return TEXT;
 
 %%
