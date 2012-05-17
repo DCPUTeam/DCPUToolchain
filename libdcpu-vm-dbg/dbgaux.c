@@ -77,7 +77,7 @@ void ddbg_help(bstring section)
 	}
 }
 
-void ddbg_cycle_hook(vm_t* vm, uint16_t pos)
+void ddbg_cycle_hook(vm_t* vm, uint16_t pos, void* ud)
 {
 	int i = 0;
 
@@ -94,7 +94,7 @@ void ddbg_cycle_hook(vm_t* vm, uint16_t pos)
 
 void ddbg_set(bstring object, bstring value)
 {
-	if(biseq(object, bfromcstr("vm_debug")))
+	if (biseq(object, bfromcstr("vm_debug")))
 	{
 		vm->debug = (biseq(value, bfromcstr("on"))) ? true : false;
 		printf("Debugging set to %d.\n", vm->debug);
@@ -142,7 +142,7 @@ void ddbg_load(bstring path)
 void ddbg_create_vm()
 {
 	vm = vm_create();
-	vm_hook_register(vm, &ddbg_cycle_hook, HOOK_ON_CYCLE);
+	vm_hook_register(vm, &ddbg_cycle_hook, HOOK_ON_CYCLE, NULL);
 	printf("Created VM.\n");
 }
 
@@ -342,7 +342,7 @@ void ddbg_dump_ram(int start, int difference)
 	if (difference == 0)
 		difference = 32;
 
-	if((start + difference) > 0xffff)
+	if ((start + difference) > 0xffff)
 	{
 		printf("Memory out of bounds.\n");
 		return;

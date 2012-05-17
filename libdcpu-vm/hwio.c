@@ -33,7 +33,7 @@ uint32_t input_index = 0;
 uint16_t last_key = 0x0;
 uint16_t interrupt_message = 0x0;
 
-void vm_hw_io_cycle(vm_t* vm, uint16_t pos)
+void vm_hw_io_cycle(vm_t* vm, uint16_t pos, void* ud)
 {
 	TCOD_key_t key;
 	uint16_t ascii;
@@ -66,7 +66,7 @@ void vm_hw_io_cycle(vm_t* vm, uint16_t pos)
 	}
 }
 
-void vm_hwio_interrupt(vm_t* vm)
+void vm_hwio_interrupt(vm_t* vm, void* ud)
 {
 	uint16_t requested_action = vm_resolve_value(vm, REG_A, 0);
 	uint16_t val_b = vm_resolve_value(vm, REG_B, 0);
@@ -108,7 +108,7 @@ void vm_hw_io_init(vm_t* vm)
 	keyboard.handler = &vm_hwio_interrupt;
 
 	// Register hooks.
-	vm_cycle_update = vm_hook_register(vm, &vm_hw_io_cycle, HOOK_ON_CYCLE);
+	vm_cycle_update = vm_hook_register(vm, &vm_hw_io_cycle, HOOK_ON_CYCLE, NULL);
 	vm_hw_register(vm, keyboard);
 }
 
@@ -124,7 +124,4 @@ void vm_hw_io_free(vm_t* vm)
 {
 	// Unregister hooks.
 	vm_hook_unregister(vm, vm_cycle_update);
-
-	// Free TCOD memory.
-	TCOD_console_delete(NULL);
 }

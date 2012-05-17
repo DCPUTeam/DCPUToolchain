@@ -180,7 +180,7 @@ void vm_hw_lem1802_mem_set_font(vm_t* vm, uint16_t pos)
 	{
 		// Synchronise the font.
 		for (i = 0; i < 0x100; i++)
-			vm_hw_lem1802_write(vm, font_location + i);
+			vm_hw_lem1802_write(vm, font_location + i, NULL);
 	}
 }
 
@@ -262,7 +262,7 @@ void vm_hw_lem1802_mem_set_screen(vm_t* vm, uint16_t pos)
 	{
 		// Resynchronise with the VM's RAM.
 		for (i = 0; i < screen_location + HW_LEM1802_SCREEN_MEMSIZE; i++)
-			vm_hw_lem1802_write(vm, screen_location + i);
+			vm_hw_lem1802_write(vm, screen_location + i, NULL);
 	}
 }
 

@@ -30,7 +30,7 @@ uint16_t hook_cycle_id;
 uint16_t hook_break_id;
 uint16_t hw_id;
 
-void vm_hw_lem1802_write(vm_t* vm, uint16_t pos)
+void vm_hw_lem1802_write(vm_t* vm, uint16_t pos, void* ud)
 {
 	unsigned int i = 0, x = 0, y = 0, fx = 0, fy = 0;
 	uint16_t val, fore, back, chr;
@@ -163,7 +163,7 @@ void vm_hw_lem1802_set_border(vm_t* vm, uint16_t idx)
 #endif
 }
 
-void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos)
+void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos, void* ud)
 {
 	// Only continue if we have done 2500 ticks.
 	if (screen_tick < 2500)
@@ -195,13 +195,13 @@ void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos)
 	TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
 }
 
-void vm_hw_lem1802_break(vm_t* vm, uint16_t pos)
+void vm_hw_lem1802_break(vm_t* vm, uint16_t pos, void* ud)
 {
 	screen_tick = 2500;
-	vm_hw_lem1802_cycle(vm, pos);
+	vm_hw_lem1802_cycle(vm, pos, ud);
 }
 
-void vm_hw_lem1802_interrupt(vm_t* vm)
+void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 {
 	uint16_t requested_action = vm_resolve_value(vm, REG_A, 0);
 	uint16_t val_b = vm_resolve_value(vm, REG_B, 0);
@@ -247,9 +247,9 @@ void vm_hw_lem1802_init(vm_t* vm)
 	screen.handler = &vm_hw_lem1802_interrupt;
 
 	// Register hooks.
-	hook_write_id = vm_hook_register(vm, &vm_hw_lem1802_write, HOOK_ON_WRITE);
-	hook_cycle_id = vm_hook_register(vm, &vm_hw_lem1802_cycle, HOOK_ON_CYCLE);
-	hook_break_id = vm_hook_register(vm, &vm_hw_lem1802_break, HOOK_ON_BREAK);
+	hook_write_id = vm_hook_register(vm, &vm_hw_lem1802_write, HOOK_ON_WRITE, NULL);
+	hook_cycle_id = vm_hook_register(vm, &vm_hw_lem1802_cycle, HOOK_ON_CYCLE, NULL);
+	hook_break_id = vm_hook_register(vm, &vm_hw_lem1802_break, HOOK_ON_BREAK, NULL);
 	hw_id = vm_hw_register(vm, screen);
 }
 

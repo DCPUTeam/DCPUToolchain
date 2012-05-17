@@ -14,7 +14,6 @@
 
 #define PRIVATE_VM_ACCESS
 
-#include <libtcod.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "dcpubase.h"
@@ -57,7 +56,7 @@ void vm_hw_interrupt(vm_t* vm, uint16_t index)
 	if (vm->debug) printf("\nInterrupting device 0x%04X (0x%08X): %p\n", index, device.id, device.handler);
 
 	if (device.handler != NULL)
-		device.handler(vm);
+		device.handler(vm, device.userdata);
 }
 
 uint16_t vm_hw_count(vm_t* vm)

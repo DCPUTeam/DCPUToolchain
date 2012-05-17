@@ -24,6 +24,7 @@
 
 vm_hook vm_hook_list[HOOK_MAX] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 uint16_t vm_hook_mode[HOOK_MAX] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+void* vm_hook_userdata[HOOK_MAX] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
 void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode)
 {
@@ -31,7 +32,7 @@ void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode)
 
 	for (i = 0; i < HOOK_MAX; i += 1)
 		if (vm_hook_list[i] != NULL && vm_hook_mode[i] == mode)
-			vm_hook_list[i](vm, pos);
+			vm_hook_list[i](vm, pos, vm_hook_userdata[i]);
 }
 
 void vm_hook_break(vm_t* vm)
@@ -39,7 +40,7 @@ void vm_hook_break(vm_t* vm)
 	vm_hook_fire(vm, 0, HOOK_ON_BREAK);
 }
 
-uint16_t vm_hook_register(vm_t* vm, vm_hook hook, uint16_t mode)
+uint16_t vm_hook_register(vm_t* vm, vm_hook hook, uint16_t mode, void* ud)
 {
 	uint16_t id = 0;
 	printf("registering hook\n");
@@ -55,6 +56,7 @@ uint16_t vm_hook_register(vm_t* vm, vm_hook hook, uint16_t mode)
 
 	vm_hook_list[id] = hook;
 	vm_hook_mode[id] = mode;
+	vm_hook_userdata[id] = ud;
 	return id;
 }
 
@@ -62,4 +64,5 @@ void vm_hook_unregister(vm_t* vm, uint16_t id)
 {
 	vm_hook_list[id] = NULL;
 	vm_hook_mode[id] = HOOK_ON_NONE;
+	vm_hook_userdata[id] = NULL;
 }

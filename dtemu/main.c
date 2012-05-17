@@ -28,6 +28,7 @@
 #include <hwtimer.h>
 #include <hwlem1802.h>
 #include <hwlem1802mem.h>
+#include <hwlua.h>
 #include <osutil.h>
 #include <version.h>
 #include <ldata.h>
@@ -148,6 +149,7 @@ int main(int argc, char* argv[])
 	vm_hw_lem1802_init(vm);
 	vm_hw_io_init(vm);
 	vm_hw_timer_init(vm);
+	vm_hw_lua_init(vm);
 	if (legacy_mode->count > 0)
 	{
 		vm_hw_lem1802_mem_set_screen(vm, 0x8000);
@@ -170,6 +172,10 @@ int main(int argc, char* argv[])
 		fprintf(stderr, "EX:  0x%04X	 IA:	0x%04X\n", vm->ex, vm->ia);
 	}
 
+	vm_hw_lua_free(vm);
+	vm_hw_timer_free(vm);
+	vm_hw_io_free(vm);
+	vm_hw_lem1802_free(vm);
 	vm_free(vm);
 
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));

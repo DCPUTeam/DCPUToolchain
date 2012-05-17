@@ -160,7 +160,7 @@ typedef struct
 ///
 /// The function signature of an internal hardware interrupt.
 ///
-typedef void (*hw_interrupt)(vm_t* vm);
+typedef void (*hw_interrupt)(vm_t* vm, void* ud);
 
 ///
 /// Represents a DCPU-16 hardware component.
@@ -171,6 +171,7 @@ typedef struct
 	uint16_t version;		/// The hardware version.
 	uint32_t manufacturer;		/// The hardware manufacturer.
 	hw_interrupt handler;		/// The function which handles interrupts sent to this hardware component.
+	void* userdata;			/// Userdata associated with the hardware.
 } hw_t;
 
 vm_t* vm_create();

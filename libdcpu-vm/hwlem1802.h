@@ -26,8 +26,8 @@
 #define LEM1802_MEM_DUMP_PALETTE	5
 
 void vm_hw_lem1802_init(vm_t* vm);
-void vm_hw_lem1802_write(vm_t* vm, uint16_t pos);
+void vm_hw_lem1802_write(vm_t* vm, uint16_t pos, void* ud);
 void vm_hw_lem1802_free(vm_t* vm);
-void vm_hw_lem1802_interrupt(vm_t* vm);
+void vm_hw_lem1802_interrupt(vm_t* vm, void* ud);
 
 #endif

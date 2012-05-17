@@ -26,10 +26,10 @@
 void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode);
 #endif
 
-typedef void (*vm_hook)(vm_t*, uint16_t pos);
+typedef void (*vm_hook)(vm_t*, uint16_t pos, void* ud);
 
 // Mode should be either HOOK_ON_WRITE, HOOK_ON_CYCLE or HOOK_ON_BREAK.
-uint16_t vm_hook_register(vm_t* vm, vm_hook hook, uint16_t mode);
+uint16_t vm_hook_register(vm_t* vm, vm_hook hook, uint16_t mode, void* ud);
 void vm_hook_unregister(vm_t* vm, uint16_t id);
 void vm_hook_break(vm_t* vm);
 

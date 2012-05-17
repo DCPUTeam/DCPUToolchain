@@ -23,7 +23,7 @@
 #define TIMER_SET_INTERRUPT	2
 
 void vm_hw_timer_init(vm_t* vm);
-void vm_hw_timer_cycle(vm_t* vm, uint16_t pos);
+void vm_hw_timer_cycle(vm_t* vm, uint16_t pos, void* ud);
 void vm_hw_timer_free(vm_t* vm);
 
 #endif

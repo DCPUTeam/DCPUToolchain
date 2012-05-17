@@ -28,7 +28,7 @@ uint16_t clock_elapsed = 0;
 uint16_t hook_id = 0;
 uint16_t hw_id = 0;
 
-void vm_hw_timer_cycle(vm_t* vm, uint16_t pos)
+void vm_hw_timer_cycle(vm_t* vm, uint16_t pos, void* ud)
 {
 	if (clock_enabled == 1)
 	{
@@ -47,7 +47,7 @@ void vm_hw_timer_cycle(vm_t* vm, uint16_t pos)
 	}
 }
 
-void vm_hw_timer_interrupt(vm_t* vm)
+void vm_hw_timer_interrupt(vm_t* vm, void* ud)
 {
 	uint16_t requested_action = vm_resolve_value(vm, REG_A, 0);
 	uint16_t val_b = vm_resolve_value(vm, REG_B, 0);
@@ -87,7 +87,7 @@ void vm_hw_timer_init(vm_t* vm)
 	timer.manufacturer = 0x00000000;
 	timer.handler = &vm_hw_timer_interrupt;
 
-	hook_id = vm_hook_register(vm, &vm_hw_timer_cycle, HOOK_ON_CYCLE);
+	hook_id = vm_hook_register(vm, &vm_hw_timer_cycle, HOOK_ON_CYCLE, NULL);
 	hw_id = vm_hw_register(vm, timer);
 }
 

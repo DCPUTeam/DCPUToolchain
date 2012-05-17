@@ -15,7 +15,6 @@
 #ifndef __DCPUHW_H
 #define __DCPUHW_H
 
-#include <libtcod.h>
 #include "dcpu.h"
 
 uint16_t vm_hw_register(vm_t* vm, hw_t device);
