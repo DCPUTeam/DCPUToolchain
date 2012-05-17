@@ -205,7 +205,7 @@ preprocessor:
 		{
 			handle_uline($2, $3, scanner);
 		} |
-		EQUATE WORD STRING
+		EQUATE WORD text
 		{
 			struct equate_entry* entry = malloc(sizeof(struct equate_entry));
 			entry->name = $2;

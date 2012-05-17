@@ -58,6 +58,9 @@ char* pp_trim_and_unescape(char* data)
 %x MACRODEF
 %x MACROCONTENT
 %x MACROCALLDEF
+%x EQUATEDEF
+%x EQUATESPC
+%x EQUATEVAL
 
 %%
 
@@ -66,9 +69,9 @@ char* pp_trim_and_unescape(char* data)
 <INITIAL>^[ \t]*[\.\#][Ll][Ii][Nn][Ee]						BEGIN(PREPROCESSING); return LINE;
 <INITIAL>^[ \t]*[\.\#][Uu][Ll][Ii][Nn][Ee]					BEGIN(PREPROCESSING); return ULINE;
 <INITIAL>^[ \t]*[\.\#][Ii][Nn][Cc][Ll][Uu][Dd][Ee]				BEGIN(PREPROCESSING); return INCLUDE;
-<INITIAL>^[ \t]*[\.\#][Ee][Qq][Uu][Aa][Tt][Ee]					BEGIN(PREPROCESSING); return EQUATE;
-<INITIAL>^[ \t]*[\.\#][Ee][Qq][Uu]						BEGIN(PREPROCESSING); return EQUATE;
-<INITIAL>^[ \t]*[\.\#][Dd][Ee][Ff][Ii][Nn][Ee]					BEGIN(PREPROCESSING); return EQUATE;
+<INITIAL>^[ \t]*[\.\#][Ee][Qq][Uu][Aa][Tt][Ee][ \t]*				BEGIN(EQUATEDEF); return EQUATE;
+<INITIAL>^[ \t]*[\.\#][Ee][Qq][Uu][ \t]*					BEGIN(EQUATEDEF); return EQUATE;
+<INITIAL>^[ \t]*[\.\#][Dd][Ee][Ff][Ii][Nn][Ee][ \t]*				BEGIN(EQUATEDEF); return EQUATE;
 <INITIAL>^[ \t]*[\.\#][Uu][Nn][Dd][Ee][Ff]					BEGIN(PREPROCESSING); return UNDEF;
 <INITIAL>^[ \t]*[\.\#][Ii][Ff][Dd][Ee][Ff]					BEGIN(PREPROCESSING); return IFDEF;
 <INITIAL>^[ \t]*[\.\#][Ii][Ff][Nn][Dd][Ee][Ff]					BEGIN(PREPROCESSING); return IFNDEF;
@@ -86,6 +89,13 @@ char* pp_trim_and_unescape(char* data)
 <MACROCALLDEF,PREPROCESSING>[1-9]+[0-9]*				yylval->number = strtoul(yytext, NULL, 10); return NUMBER;
 <MACROCALLDEF,PREPROCESSING>0[0-7]+					yylval->number = strtoul(yytext, NULL, 8); return NUMBER;
 <MACROCALLDEF,PREPROCESSING>L?\"(\\.|[^\\"])*\"				yylval->string = bfromcstr(pp_trim_and_unescape((char*)strdup(yytext))); return STRING;
+
+	/* Equate definitions */
+	
+<EQUATEDEF>[A-Za-z_-]+[A-Za-z0-9_-]*					yylval->string = bfromcstr(yytext); BEGIN(EQUATESPC); return WORD;
+<EQUATESPC>[ \t]+							BEGIN(EQUATEVAL);
+<EQUATEVAL>\n								yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
+<EQUATEVAL>[^\n]							yylval->any = yytext[0]; return TEXT;
 
 	/* Macro definitions */
 

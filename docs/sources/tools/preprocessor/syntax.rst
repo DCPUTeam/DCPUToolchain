@@ -35,13 +35,16 @@ interchangably.  The preprocessor provides the following directives:
 
     Includes the specified file recursively.
 
-.. ppdirective:: .EQUATE name "value"
-                  .EQU name "value"
-                  .DEFINE name "value"
+.. ppdirective:: .EQUATE name value
+                  .EQU name value
+                  .DEFINE name value
     
     Defines the specified preprocessor constant with name `name` to
-    evaluate to the specified value `value`.  When `name` is located
-    in the source text from now on, it will be replaced with `value`.
+    evaluate to the specified value `value`.  `value` is from the first
+    character to the end of the line, including whitespace.  The toolchain
+    preprocessor at this stage does not support using `\\` to wrap lines.
+    
+    When `name` is located in the source text from now on, it will be replaced with `value`.
 
 .. ppdirective:: .UNDEF name
 
