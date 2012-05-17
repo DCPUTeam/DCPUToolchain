@@ -8,6 +8,7 @@ Contents:
 .. toctree::
     :maxdepth: 2
    
+    whatsnew/index.rst
     tutorial/index.rst
     tools/index.rst
     lang/index.rst

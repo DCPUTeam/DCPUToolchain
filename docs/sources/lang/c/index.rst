@@ -1,3 +1,7 @@
+.. highlightlang:: c
+
+.. _compiler-lang-c:
+
 C Language Index
 =============================================
 

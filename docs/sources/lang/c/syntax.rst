@@ -1,6 +1,6 @@
 .. highlightlang:: none
 
-.. _compiler-c-syntax:
+.. _compiler-lang-c-syntax:
 
 C Syntax
 =============================================
