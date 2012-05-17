@@ -74,12 +74,13 @@
  * First version.
  *****************************************************************************/
 
-#ifndef _WIN32
-#include <dirent.h>
-#else
 
 #ifndef DIRENT_H
 #define DIRENT_H
+
+#ifndef _WIN32
+#include <dirent.h>
+#else
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

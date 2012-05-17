@@ -14,6 +14,7 @@
 #define PRIVATE_VM_ACCESS
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <bstring.h>
 #include <simclist.h>
 #include <dirent.h>
@@ -396,7 +397,7 @@ void vm_hw_lua_init(vm_t* vm)
 	// Load each file from the hw directory.
 	while ((entry = readdir(dir)) != NULL)
 	{
-		name = blk2bstr(&entry->d_name, entry->d_namlen);
+		name = blk2bstr(&entry->d_name, entry->d_reclen);
 
 		// Check to see whether it is a lua file.
 		if (!binstrr(name, blength(name) - 4, ext))
