@@ -15,22 +15,29 @@
 #define __DCPU_LIBDCC_COMPILEREXCEPTION_H
 
 #include <string>
+#include <sstream>
 
 class CompilerException : public std::exception
 {
 	private:
+		int m_Line;
+		std::string m_File;
 		std::string m_Message;
 
 	public:
-		CompilerException(std::string message) : m_Message(message) { };
+		CompilerException(int line, std::string file, std::string message) : m_Line(line), m_File(file), m_Message(message) { };
 		virtual ~CompilerException() throw() { };
 		virtual const char* what() const throw()
 		{
-			return this->m_Message.c_str();
+			std::stringstream combined;
+			combined << this->m_Line << ":" << this->m_File << ": " << this->m_Message;
+			return combined.str().c_str();
 		}
 		inline std::string getMessage()
 		{
-			return this->m_Message;
+			std::stringstream combined;
+			combined << this->m_Line << ":" << this->m_File << ": " << this->m_Message;
+			return combined.str();
 		}
 };
 

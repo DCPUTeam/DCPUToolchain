@@ -35,19 +35,19 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
 
 		if (!varpos.isFound())
-			throw new CompilerException("Neither a function nor a function pointer was found by the name '" + this->id.name + "'.");
+			throw new CompilerException(this->line, this->file, "Neither a function nor a function pointer was found by the name '" + this->id.name + "'.");
 
 		NType* vartype = (NType*)context.m_CurrentFrame->getTypeOfVariable(this->id.name);
 
 		if (vartype->cType != "expression-identifier-type-function")
-			throw new CompilerException("Unable to call variable '" + this->id.name + "' as it is not a function pointer.");
+			throw new CompilerException(this->line, this->file, "Unable to call variable '" + this->id.name + "' as it is not a function pointer.");
 
 		funcsig = (NFunctionSignature*)((NFunctionPointerType*)vartype);
 		isDirect = false;
 	}
 
 
-	
+
 	// check if the called function matches the signature of this method call
 	// first check if argument length are the same
 	/*
@@ -58,7 +58,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 					    + "Candidates are:\t" + this->id.name + " with signature " + funcsig->getSignature());
 	}
 	*/
-	
+
 	// FIXME: Again, without implicit type casting this breaks quite a few
 	// things, so it's disabled for now.
 	/*
@@ -130,7 +130,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		TypePosition result = frame->getPositionOfVariable((*v)->id.name);
 
 		if (!result.isFound())
-			throw new CompilerException("The argument '" + (*v)->id.name + "' was not found in the argument list (internal error).");
+			throw new CompilerException(this->line, this->file, "The argument '" + (*v)->id.name + "' was not found in the argument list (internal error).");
 
 		// Now copy.
 		*block << result.pushAddress('I');
@@ -147,7 +147,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	}
 	else
 	{
-		// we are referencing the previous stack frame here 
+		// we are referencing the previous stack frame here
 		// => parameter previousStackFrame=true
 		TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name, true);
 		*block <<  varpos.pushAddress('X');
@@ -182,7 +182,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
 AsmBlock* NMethodCall::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of a method call.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a method call.");
 }
 
 IType* NMethodCall::getExpressionType(AsmGenerator& context)
@@ -191,7 +191,7 @@ IType* NMethodCall::getExpressionType(AsmGenerator& context)
 	NFunctionDeclaration* funcdecl = (NFunctionDeclaration*)context.getFunction(this->id.name);
 
 	if (funcdecl == NULL)
-		throw new CompilerException("Called function was not found '" + this->id.name + "'.");
+		throw new CompilerException(this->line, this->file, "Called function was not found '" + this->id.name + "'.");
 
 	return new NType(funcdecl->type);
 }

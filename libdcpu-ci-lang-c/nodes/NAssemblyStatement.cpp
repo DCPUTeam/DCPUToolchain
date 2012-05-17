@@ -31,5 +31,5 @@ AsmBlock* NAssemblyStatement::compile(AsmGenerator& context)
 
 AsmBlock* NAssemblyStatement::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of inline assembly.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of inline assembly.");
 }

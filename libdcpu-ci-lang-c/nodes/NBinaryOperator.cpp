@@ -177,7 +177,7 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 			break;
 
 		default:
-			throw new CompilerException("Unknown binary operations requested.");
+			throw new CompilerException(this->line, this->file, "Unknown binary operations requested.");
 	}
 
 	return block;
@@ -185,7 +185,7 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 
 AsmBlock* NBinaryOperator::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of an binary operator.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an binary operator.");
 }
 
 IType* NBinaryOperator::getExpressionType(AsmGenerator& context)

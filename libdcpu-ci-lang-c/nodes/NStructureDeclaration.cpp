@@ -24,7 +24,7 @@ AsmBlock* NStructureDeclaration::compile(AsmGenerator& context)
 
 AsmBlock* NStructureDeclaration::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of a structure declaration.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a structure declaration.");
 }
 
 size_t NStructureDeclaration::getBitSize(AsmGenerator& context)

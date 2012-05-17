@@ -24,7 +24,7 @@ AsmBlock* NAddressOfOperator::compile(AsmGenerator& context)
 
 AsmBlock* NAddressOfOperator::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of an address-of operator.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an address-of operator.");
 }
 
 IType* NAddressOfOperator::getExpressionType(AsmGenerator& context)

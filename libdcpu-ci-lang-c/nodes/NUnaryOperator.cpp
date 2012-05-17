@@ -65,7 +65,7 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 			break;
 
 		default:
-			throw new CompilerException("Unknown unary operations requested.");
+			throw new CompilerException(this->line, this->file, "Unknown unary operations requested.");
 	}
 
 	return block;
@@ -73,7 +73,7 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 
 AsmBlock* NUnaryOperator::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of an unary operator.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an unary operator.");
 }
 
 IType* NUnaryOperator::getExpressionType(AsmGenerator& context)

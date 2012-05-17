@@ -410,7 +410,7 @@ fldref:
 			if ($1->cType == "expression-field") // We can't accept NAssignments as the fldref in this case.
 				$$ = new NAssignment(*$1, $2, *$3);
 			else
-				throw new CompilerException("Unable to apply field referencing assignment operation to non-field operator based LHS.");
+				throw new CompilerException(yylineno, (const char*)yyfilename->data, "Unable to apply field referencing assignment operation to non-field operator based LHS.");
 		} ;
 
 arrayref:
@@ -423,7 +423,7 @@ arrayref:
 			if ($1->cType == "expression-arrayaccess") // We can't accept NAssignments as the arrayref in this case.
 				$$ = new NAssignment(*$1, $2, *$3);
 			else
-				throw new CompilerException("Unable to apply array access assignment operation to non-array access operator based LHS.");
+				throw new CompilerException(yylineno, (const char*)yyfilename->data, "Unable to apply array access assignment operation to non-array access operator based LHS.");
 		} ;
 
 deref:
@@ -444,7 +444,7 @@ deref:
 			if ($1->cType == "expression-dereference") // We can't accept NAssignments as the deref in this case.
 				$$ = new NAssignment(*$1, $2, *$3);
 			else
-				throw new CompilerException("Unable to apply dereferencing assignment operation to non-dereference operator based LHS.");
+				throw new CompilerException(yylineno, (const char*)yyfilename->data, "Unable to apply dereferencing assignment operation to non-dereference operator based LHS.");
 		} ;
 
 expr:

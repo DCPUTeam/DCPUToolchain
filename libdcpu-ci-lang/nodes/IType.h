@@ -23,7 +23,7 @@ class IType
 	public:
 		virtual uint16_t getWordSize(AsmGenerator& context)
 		{
-			throw new CompilerException("Unable to get word size of unspecified type (internal error).");
+			throw new CompilerException(0, "<internal>", "Unable to get word size of unspecified type (internal error).");
 		}
 };
 

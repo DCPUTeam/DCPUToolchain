@@ -28,7 +28,7 @@ extern "C"
 
 class Node
 {
-	private:
+	protected:
 		int line;
 		std::string file;
 	public:

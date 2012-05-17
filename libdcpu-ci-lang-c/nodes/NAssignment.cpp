@@ -101,7 +101,7 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 			break;
 
 		default:
-			throw new CompilerException("Unknown assignment operation requested.");
+			throw new CompilerException(this->line, this->file, "Unknown assignment operation requested.");
 	}
 
 	// Pop reference from stack
@@ -128,7 +128,7 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 
 AsmBlock* NAssignment::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of an assignment.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an assignment.");
 }
 
 IType* NAssignment::getExpressionType(AsmGenerator& context)

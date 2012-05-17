@@ -31,7 +31,7 @@ AsmBlock* NCharacter::compile(AsmGenerator& context)
 
 AsmBlock* NCharacter::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to a character node.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to a character node.");
 }
 
 IType* NCharacter::getExpressionType(AsmGenerator& context)

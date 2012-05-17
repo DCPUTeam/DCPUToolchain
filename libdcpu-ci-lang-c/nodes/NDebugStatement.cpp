@@ -37,5 +37,5 @@ AsmBlock* NDebugStatement::compile(AsmGenerator& context)
 
 AsmBlock* NDebugStatement::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of a debug statement.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a debug statement.");
 }

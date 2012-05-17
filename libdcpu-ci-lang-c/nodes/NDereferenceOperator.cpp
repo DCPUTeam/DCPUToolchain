@@ -51,7 +51,7 @@ IType* NDereferenceOperator::getExpressionType(AsmGenerator& context)
 	if (t->pointerCount > 0)
 		t->pointerCount -= 1;
 	else
-		throw new CompilerException("Attempting to dereference non-pointer type during type resolution.");
+		throw new CompilerException(this->line, this->file, "Attempting to dereference non-pointer type during type resolution.");
 
 	return t;
 }

@@ -55,5 +55,5 @@ AsmBlock* NWhileStatement::compile(AsmGenerator& context)
 
 AsmBlock* NWhileStatement::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get a reference to the result of a while statement.");
+	throw new CompilerException(this->line, this->file, "Unable to get a reference to the result of a while statement.");
 }

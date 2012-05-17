@@ -32,7 +32,7 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 		NFunctionDeclaration* main = (NFunctionDeclaration*)context.getFunction("main");
 
 		if (main == NULL)
-			throw new CompilerException("Called function was not found 'main'.");
+			throw new CompilerException(this->line, this->file, "Called function was not found 'main'.");
 
 
 		// Output assembly for calling global data initializer.
@@ -65,7 +65,7 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 
 			// We can't have types with 0 word storage in the global scope.
 			if (size <= 0)
-				throw new CompilerException("Unable to store global variable with a type that has size of 0 words.");
+				throw new CompilerException(this->line, this->file, "Unable to store global variable with a type that has size of 0 words.");
 
 			// Output zero'd data sections.
 			*block <<  "	DAT 0";
@@ -128,7 +128,7 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 			if ((*i)->cType != "statement-declaration-variable")
 				continue;
 
-			throw new CompilerException("You can't currently define global variables in non-entry-point compilation units.");
+			throw new CompilerException(this->line, this->file, "You can't currently define global variables in non-entry-point compilation units.");
 		}
 
 		// Handle function definitions.
@@ -150,7 +150,7 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 
 AsmBlock* NDeclarations::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of a list-of-declarations node.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a list-of-declarations node.");
 }
 
 IFunctionDeclaration* NDeclarations::getFunction(std::string name)

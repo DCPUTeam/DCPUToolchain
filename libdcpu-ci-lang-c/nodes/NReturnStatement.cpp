@@ -40,5 +40,5 @@ AsmBlock* NReturnStatement::compile(AsmGenerator& context)
 
 AsmBlock* NReturnStatement::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of an return statement.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an return statement.");
 }

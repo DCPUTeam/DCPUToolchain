@@ -69,5 +69,5 @@ AsmBlock* NIfStatement::compile(AsmGenerator& context)
 
 AsmBlock* NIfStatement::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of an if statement.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an if statement.");
 }

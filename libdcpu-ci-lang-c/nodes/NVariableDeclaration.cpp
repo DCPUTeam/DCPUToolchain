@@ -36,7 +36,7 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
 
 	if (!result.isFound())
-		throw new CompilerException("The variable '" + this->id.name + "' was not found in the scope.");
+		throw new CompilerException(this->line, this->file, "The variable '" + this->id.name + "' was not found in the scope.");
 
 	// Set the value of the variable directly.
 	*block << result.pushAddress('I');
@@ -47,5 +47,5 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 
 AsmBlock* NVariableDeclaration::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of a variable.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a variable.");
 }

@@ -26,10 +26,10 @@ AsmBlock* NIdentifier::compile(AsmGenerator& context)
 	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
 
 	if (!result.isFound())
-		throw new CompilerException("The variable '" + this->name + "' was not found in the scope.");
+		throw new CompilerException(this->line, this->file, "The variable '" + this->name + "' was not found in the scope.");
 
 	if (result.isFunction())
-		throw new CompilerException("Can not get value representation of function '" + this->name + "'; did you want a reference instead?");
+		throw new CompilerException(this->line, this->file, "Can not get value representation of function '" + this->name + "'; did you want a reference instead?");
 
 	// Load the value of the variable into register A.
 	*block << result.pushAddress('I');
@@ -49,7 +49,7 @@ AsmBlock* NIdentifier::reference(AsmGenerator& context)
 	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
 
 	if (!result.isFound())
-		throw new CompilerException("The variable '" + this->name + "' was not found in the scope.");
+		throw new CompilerException(this->line, this->file, "The variable '" + this->name + "' was not found in the scope.");
 
 	// Load the position of the variable into register A.
 	*block << result.pushAddress('A');
@@ -64,7 +64,7 @@ IType* NIdentifier::getExpressionType(AsmGenerator& context)
 	IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
 
 	if (type == NULL)
-		throw new CompilerException("Unable to resolve variable '" + this->name + "' when determining type information (does the variable exist?).");
+		throw new CompilerException(this->line, this->file, "Unable to resolve variable '" + this->name + "' when determining type information (does the variable exist?).");
 	else
 		return type;
 }

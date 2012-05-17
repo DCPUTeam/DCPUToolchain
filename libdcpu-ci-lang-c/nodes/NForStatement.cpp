@@ -64,5 +64,5 @@ AsmBlock* NForStatement::compile(AsmGenerator& context)
 
 AsmBlock* NForStatement::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of a for statement.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a for statement.");
 }

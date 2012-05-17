@@ -46,7 +46,7 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 		if (context.getAssembler().supportsLinkedImportDirective)
 			*block <<  ".IMPORT cfunc_" << this->id.name << std::endl;
 		else
-			throw new CompilerException("Can't declare a function with no body without linker support in the target assembler.");
+			throw new CompilerException(this->line, this->file, "Can't declare a function with no body without linker support in the target assembler.");
 
 		return block;
 	}
@@ -99,7 +99,7 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 
 AsmBlock* NFunctionDeclaration::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of a function declaration.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a function declaration.");
 }
 
 StackMap NFunctionDeclaration::generateLocalsStackMap()
@@ -110,7 +110,7 @@ StackMap NFunctionDeclaration::generateLocalsStackMap()
 	// that means they were an import and hence have no information
 	// about the variables).
 	if (this->block == NULL)
-		throw new CompilerException("Can not generate a locals stack frame for a function declaration with no body.");
+		throw new CompilerException(this->line, this->file, "Can not generate a locals stack frame for a function declaration with no body.");
 
 	// Add stack frame data for variable declarations.
 	for (StatementList::iterator i = this->block->statements.begin(); i != this->block->statements.end(); i++)

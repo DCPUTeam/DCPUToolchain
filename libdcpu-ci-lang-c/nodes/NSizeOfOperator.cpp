@@ -30,5 +30,5 @@ AsmBlock* NSizeOfOperator::compile(AsmGenerator& context)
 
 AsmBlock* NSizeOfOperator::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of the sizeof() operator.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of the sizeof() operator.");
 }

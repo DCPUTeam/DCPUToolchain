@@ -57,7 +57,7 @@ AsmBlock* NInteger::compile(AsmGenerator& context)
 
 AsmBlock* NInteger::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of a numeric literal.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a numeric literal.");
 }
 
 IType* NInteger::getExpressionType(AsmGenerator& context)

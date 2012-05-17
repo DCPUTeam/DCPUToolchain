@@ -25,7 +25,7 @@ AsmBlock* NString::compile(AsmGenerator& context)
 
 	// Stop if the assembler doesn't support DAT.
 	if (!context.getAssembler().supportsDataInstruction)
-		throw new CompilerException("Unable to compile strings without DAT support in assembler.");
+		throw new CompilerException(this->line, this->file, "Unable to compile strings without DAT support in assembler.");
 
 	// Generate a label for the DAT and then output the DAT.
 	std::string strlabel = context.getRandomLabel("cstr");
@@ -40,7 +40,7 @@ AsmBlock* NString::compile(AsmGenerator& context)
 
 AsmBlock* NString::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of a string literal.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a string literal.");
 }
 
 IType* NString::getExpressionType(AsmGenerator& context)

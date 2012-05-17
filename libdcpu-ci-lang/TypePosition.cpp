@@ -53,7 +53,7 @@ std::string TypePosition::pushAddress(char registr)
 	std::stringstream sstr;
 
 	if (!this->m_Found)
-		throw new CompilerException("Attempted to push reference position of unknown type position result (internal error).");
+		throw new CompilerException(0, "<internal>", "Attempted to push reference position of unknown type position result (internal error).");
 
 	if (this->m_Function)
 		sstr << "	SET " << registr << ", cfunc_" << this->m_FunctionName << std::endl;
@@ -64,23 +64,23 @@ std::string TypePosition::pushAddress(char registr)
 			// we use the positions from here on _downwards_
 			sstr << "	ADD " << registr << ", " << this->m_Position << std::endl;
 	}
-	else 
+	else
 	{
 		// two more cases:
 		//  local variables: is in the Stack in Position Y-3-(relative local position)
 		//  function parameter: in Stack in Position Y+(relative local position)
-	
+
 		// get current stack frame address
 		sstr << "	SET " << registr << ", Y" << std::endl;
-		
+
 		// do we want to reference the previous stack frame?
 		if (this->m_PreviousStackFrame)
 		{
 			sstr << "	SUB " << registr << ", 1" << std::endl;
 			sstr << "	SET " << registr << ", [" << registr << "]" << std::endl;
 		}
-		
-		
+
+
 		if (this->m_IsFunctionParameter)
 		{
 			// function parameters in stack position Y+pos

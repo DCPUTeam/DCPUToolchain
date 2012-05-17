@@ -47,7 +47,7 @@ AsmBlock* NPostIncDec::compile(AsmGenerator& context)
 			break;
 
 		default:
-			throw new CompilerException("Unknown Post-Increase-Decrease operation requested.");
+			throw new CompilerException(this->line, this->file, "Unknown Post-Increase-Decrease operation requested.");
 	}
 
 	return block;
@@ -55,7 +55,7 @@ AsmBlock* NPostIncDec::compile(AsmGenerator& context)
 
 AsmBlock* NPostIncDec::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of an Post-Increment.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an Post-Increment.");
 }
 
 IType* NPostIncDec::getExpressionType(AsmGenerator& context)

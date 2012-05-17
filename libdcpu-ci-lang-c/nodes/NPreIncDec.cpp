@@ -46,7 +46,7 @@ AsmBlock* NPreIncDec::compile(AsmGenerator& context)
 			break;
 
 		default:
-			throw new CompilerException("Unknown Pre-Increase-Decrease operation requested.");
+			throw new CompilerException(this->line, this->file, "Unknown Pre-Increase-Decrease operation requested.");
 	}
 
 
@@ -58,7 +58,7 @@ AsmBlock* NPreIncDec::compile(AsmGenerator& context)
 
 AsmBlock* NPreIncDec::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of an Pre-Increment.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an Pre-Increment.");
 }
 
 IType* NPreIncDec::getExpressionType(AsmGenerator& context)

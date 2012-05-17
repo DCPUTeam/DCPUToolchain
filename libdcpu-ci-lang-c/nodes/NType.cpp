@@ -27,12 +27,12 @@ NType& NType::VoidType(internal_VoidType);
 
 AsmBlock* NType::compile(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to compile type AST node.");
+	throw new CompilerException(this->line, this->file, "Unable to compile type AST node.");
 }
 
 AsmBlock* NType::reference(AsmGenerator& context)
 {
-	throw new CompilerException("Unable to get reference to the result of a type.");
+	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a type.");
 }
 
 void NType::resolveStruct(AsmGenerator& context)
@@ -51,7 +51,7 @@ void NType::resolveStruct(AsmGenerator& context)
 				return;
 			}
 
-	throw new CompilerException("Unknown struct type " + this->name + " encountered!");
+	throw new CompilerException(this->line, this->file, "Unknown struct type " + this->name + " encountered!");
 }
 
 size_t NType::getBitSize(AsmGenerator& context)
@@ -79,7 +79,7 @@ size_t NType::getBitSize(AsmGenerator& context)
 		else if (this->name == "uint32_t")	return 32;
 		else if (this->name == "uint64_t")	return 64;
 		else
-			throw new CompilerException("Unknown type " + this->name + " encountered!");
+			throw new CompilerException(this->line, this->file, "Unknown type " + this->name + " encountered!");
 	}
 }
 
@@ -105,7 +105,7 @@ uint16_t NType::getStructFieldPosition(AsmGenerator& context, std::string name)
 	}
 
 	// If the field wasn't found...
-	throw new CompilerException("Unable to lookup field " + name + " in structure " + this->resolvedStruct->id.name + "!");
+	throw new CompilerException(this->line, this->file, "Unable to lookup field " + name + " in structure " + this->resolvedStruct->id.name + "!");
 }
 
 IType* NType::getExpressionType(AsmGenerator& context)
