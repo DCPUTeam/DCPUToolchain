@@ -4,4 +4,9 @@
 Linker
 =============================================
 
-Content for the linker would go here.
+The linker combines multiple object files together to form a single DCPU application.
+
+.. toctree::
+   :maxdepth: 3
+   
+   cmdline

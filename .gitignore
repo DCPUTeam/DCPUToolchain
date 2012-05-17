@@ -79,3 +79,4 @@ CMakeFiles/*
 docs/_build/*
 docs/_doctrees/*
 docs/html/*
+*.pyc

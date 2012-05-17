@@ -1,3 +1,7 @@
+.. highlightlang:: none
+
+.. _emulator:
+
 Emulator
 =============================================
 
