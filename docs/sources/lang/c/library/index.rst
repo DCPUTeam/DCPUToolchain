@@ -18,6 +18,16 @@ modelling our own standard C library is for security.  Quite a few of the standa
 are not secure (susceptable to buffer overflows) and quite a few POSIX functions don't make sense
 on the DCPU at all.
 
+.. _compiler-stdlib-c-modules:
+
+Module List
+-----------------------
+
+.. toctree::
+    :maxdepth: 1
+   
+    bstring.h.rst
+
 .. _compiler-stdlib-c-bootstrap:
 
 Bootstrap
