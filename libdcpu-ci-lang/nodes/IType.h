@@ -31,6 +31,13 @@ class IType
 		virtual uint16_t getWordSize(AsmGenerator& context)
 			INTERNAL_TYPE_EXCEPTION(get word-size of)
 		
+		/*TODO
+		(11:08:52 PM) hachque: also add
+		(11:09:07 PM) hachque: bool implicitCast(const IType& from);
+		(11:09:13 PM) r4d2: yes
+		(11:09:16 PM) hachque: and bool explicitCast(const IType& from);
+		*/
+		
 		/* copy */
 		// direct copy via registers
 		virtual AsmBlock*  copyValue(char from, char to) INTERNAL_TYPE_EXCEPTION(copy value of)
