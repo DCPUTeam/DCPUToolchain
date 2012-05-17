@@ -13,7 +13,7 @@ class TStruct: public IType
 	private:
 		std::string m_name;
 		NStructureDeclaration* m_resolvedStruct;
-		AsmGenerator& m_context;
+		AsmGenerator* m_context;
 	
 		void resolveStruct();
 	public:
@@ -23,20 +23,23 @@ class TStruct: public IType
 		size_t getBitSize();
 		
 		// a struct is context dependent
-		TStruct(const std::string& name, AsmGenerator& context) : m_name(name), m_resolvedStruct(NULL), m_context(context) { }
+		TStruct(const std::string& name) : m_name(name), m_resolvedStruct(NULL), m_context(NULL) { }
+		
+		void initContext(AsmGenerator& context);
 		
 		virtual uint16_t getWordSize();
 		virtual uint16_t getWordSize(AsmGenerator& context);
 		
 		/* copy */
 		// direct copy via registers
-		virtual AsmBlock* copyValue(char from, char to)		{
-			throw new CompilerException(0, "<internal>", 
-			"Unable to copy the value of a struct directly (internal error).");
-		}
-		
+		virtual AsmBlock* copyValue(char from, char to);
 		// indirect copy given references (copies values)
 		virtual AsmBlock* copyByRef(char fromRef, char toRef);
+		// saves value in "from" register into the reference
+		virtual AsmBlock*  saveToRef(char from, char toRef);
+		// load from a reference into a value
+		virtual AsmBlock*  loadFromRef(char fromRef, char to);
+		
 		/* stack ops */
 		virtual AsmBlock* pushStack(char a);
 		// FIXME do i need this? 

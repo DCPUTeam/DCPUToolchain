@@ -20,6 +20,12 @@ class TGenericInt16: public IType
 		virtual AsmBlock* copyValue(char from, char to);
 		// indirect copy given references (copies values)
 		virtual AsmBlock* copyByRef(char fromRef, char toRef);
+		// saves value in "from" register into the reference
+		virtual AsmBlock*  saveToRef(char from, char toRef);
+		// load from a reference into a value
+		virtual AsmBlock*  loadFromRef(char fromRef, char to);
+		
+		
 		/* stack ops */
 		virtual AsmBlock* pushStack(char a);
 		// FIXME do i need this? 

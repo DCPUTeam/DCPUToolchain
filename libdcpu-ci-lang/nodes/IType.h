@@ -43,6 +43,11 @@ class IType
 		virtual AsmBlock*  copyValue(char from, char to) INTERNAL_TYPE_EXCEPTION(copy value of)
 		// indirect copy given references (copies values)
 		virtual AsmBlock*  copyByRef(char fromRef, char toRef) INTERNAL_TYPE_EXCEPTION(copy value of)
+		// saves value in "from" register into the reference
+		virtual AsmBlock*  saveToRef(char from, char toRef) INTERNAL_TYPE_EXCEPTION(copy value of)
+		// load from a reference into a value
+		virtual AsmBlock*  loadFromRef(char fromRef, char to) INTERNAL_TYPE_EXCEPTION(copy value of)
+		
 		/* stack ops */
 		virtual AsmBlock*  pushStack(char a) INTERNAL_TYPE_EXCEPTION(push)
 		// FIXME do i need this? virtual void pushStackByRef(char a);

@@ -23,6 +23,23 @@ AsmBlock* TGenericInt16::copyByRef(char fromRef, char toRef)
 	return block;
 }
 
+
+// saves value in "from" register into the reference
+AsmBlock*  TGenericInt16::saveToRef(char from, char toRef)
+{
+	AsmBlock* block = new AsmBlock();
+	*block <<	"	SET [" << toRef << "], " << from << std::endl;
+	return block;
+}
+
+// load from a reference into a value
+AsmBlock*  TGenericInt16::loadFromRef(char fromRef, char to)
+{
+	AsmBlock* block = new AsmBlock();
+	*block <<	"	SET " << to << ", [" << fromRef << "]" << std::endl;
+	return block;
+}
+
 /*************/
 /* stack ops */
 /*************/

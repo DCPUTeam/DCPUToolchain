@@ -9,9 +9,13 @@ void TStruct::resolveStruct()
 {
 	if (this->m_resolvedStruct != NULL)
 		return;
+		
+	if (this->m_context == NULL)
+		throw new CompilerException(0, "<internal>", 
+		"Context for struct not initialized (internal error).");
 
 	// Search AST for struct nodes.
-	NDeclarations* decls = (NDeclarations*)m_context.m_RootNode;
+	NDeclarations* decls = (NDeclarations*)m_context->m_RootNode;
 
 	for (DeclarationList::iterator i = decls->definitions.begin(); i != decls->definitions.end(); i++)
 		if ((*i)->cType == "statement-declaration-structure")
@@ -21,15 +25,20 @@ void TStruct::resolveStruct()
 				return;
 			}
 
-	//throw new CompilerException(this->line, this->file, "Unknown struct type " + this->name + " encountered!");
+	throw new CompilerException(0, "<internal>", "Unknown struct type " + this->m_name + " encountered!");
 	// TODO throw type exception, which is catched outside the type-system
 	//       from where it is rethrown including line and file information
+}
+
+void TStruct::initContext(AsmGenerator& context)
+{
+	this->m_context = &context;
 }
 
 size_t TStruct::getBitSize()
 {
 	this->resolveStruct();
-	return this->m_resolvedStruct->getBitSize(m_context);
+	return this->m_resolvedStruct->getBitSize(*m_context);
 }
 
 uint16_t TStruct::getWordSize()
@@ -55,11 +64,11 @@ uint16_t TStruct::getStructFieldPosition(std::string name)
 		if ((*i)->id.name == this->m_name)
 			return pos;
 		else
-			pos += (*i)->type.getWordSize(m_context);
+			pos += (*i)->type.getWordSize(*m_context);
 	}
 
 	// If the field wasn't found...
-	//throw new CompilerException(this->line, this->file, "Unable to lookup field " + name + " in structure " + this->resolvedStruct->id.name + "!");
+	throw new CompilerException(0, "<internal>", "Unable to lookup field " + name + " in structure " + this->m_resolvedStruct->id.name + "!");
 	// TODO throw type exception, which is catched outside the type-system
 	//       from where it is rethrown including line and file information
 }
@@ -79,6 +88,25 @@ AsmBlock* TStruct::copyByRef(char fromRef, char toRef)
 	*block <<	"	SUB " << toRef << ", " << this->getWordSize() << std::endl;
 	*block <<	"	SUB " << fromRef << ", " << this->getWordSize() << std::endl;
 	return block;
+}
+
+/* because all structs are referenced and there are no direct values, */
+/* all the following functions map to copyByRef */
+
+// direct copy via registers
+AsmBlock* TStruct::copyValue(char from, char to)
+{
+	return copyByRef(from, to);
+}
+// saves value in "from" register into the reference
+AsmBlock* TStruct::saveToRef(char from, char toRef)
+{
+	return copyByRef(from, toRef);
+}
+// load from a reference into a value
+AsmBlock* TStruct::loadFromRef(char fromRef, char to)
+{
+	return copyByRef(fromRef, to);
 }
 
 /*************/
