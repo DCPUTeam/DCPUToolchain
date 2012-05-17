@@ -7,12 +7,12 @@
 The :mod:`bstring.h` header defines functions used to create, manipulate
 and free strings as needed.
 
-This library is a port of `The Better String Library <http://bstring.sourceforge.net/>`_ and
+This library is `The Better String Library <http://bstring.sourceforge.net/>`_ and
 thus is made available under a BSD license.  See the `attached BSD copyright information <http://bstring.cvs.sourceforge.net/viewvc/bstring/tree/license.txt?pathrev=HEAD>`_
 regarding the string library.
 
-All of the documentation that follows is translated from `The Better String Library documentation <http://bstring.cvs.sourceforge.net/viewvc/bstring/tree/bstrlib.txt?pathrev=HEAD>`_, so credit
-goes to Paul Hsieh for writing all of the description of functionality in this section.
+All of the documentation that follows is translated from `The Better String Library documentation <http://bstring.cvs.sourceforge.net/viewvc/bstring/tree/bstrlib.txt?pathrev=HEAD>`_
+and as such all of the descriptions are written by Paul Hsieh (the author of The Better String Library).
 
     .. warning::
 
