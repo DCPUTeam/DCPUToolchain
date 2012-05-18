@@ -15,6 +15,12 @@ class TGenericInt16: public IType
 	public:
 		virtual uint16_t getWordSize(AsmGenerator& context);
 		
+		virtual std::string getName()
+		{
+			throw new CompilerException(0, "<internal>", 
+			"Unable to get name of generic integer (internal error).");
+		}
+		
 		/* copy */
 		// direct copy via registers
 		virtual AsmBlock* copyValue(char from, char to);
@@ -98,6 +104,8 @@ class TGenericInt16: public IType
 			throw new CompilerException(0, "<internal>", 
 			"Unable to compare generic integer (internal error).");
 		}
+		
+		
 };
 #endif
 

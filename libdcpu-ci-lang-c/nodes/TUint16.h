@@ -15,6 +15,8 @@ class TUint16 : public TGenericInt16
 		
 
 	public:
+		virtual std::string getName() const;
+	
 		// inherits most 16 bit generic integer operations
 		// only implements signed versions of the non generic operations
 			

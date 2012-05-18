@@ -17,9 +17,11 @@ class TStruct: public IType
 	
 		void resolveStruct();
 	public:
+		virtual std::string getName() const;
+		
 		// struct specific functions and members
 		
-		uint16_t getStructFieldPosition(std::string name);
+		uint16_t getStructFieldPosition(std::string name) ;
 		size_t getBitSize();
 		
 		// a struct is context dependent

@@ -17,12 +17,13 @@
 #include <stdint.h>
 #include "NFunctionSignature.h"
 #include "NType.h"
+#include <nodes/IType.h>
 #include "Lists.h"
 
 class NFunctionPointerType : public NType, public NFunctionSignature
 {
 	public:
-		NFunctionPointerType(const NType& returnType, const VariableList& arguments) :
+		NFunctionPointerType(const IType* returnType, const VariableList& arguments) :
 			NType("function", NFunctionSignature::calculateSignature(returnType, arguments), 1, false), NFunctionSignature(returnType, arguments) { }
 };
 

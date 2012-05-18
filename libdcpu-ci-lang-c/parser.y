@@ -48,6 +48,11 @@ class NInteger;
 #include "nodes/NSizeOfOperator.h"
 #include "nodes/NCharacter.h"
 #include "nodes/NString.h"
+#include "nodes/TUint16.h"
+#include "nodes/TInt16.h"
+#include "nodes/TPointer16.h"
+#include "nodes/TStruct.h"
+
 
 // Turn on verbose error messages.
 #define YYERROR_VERBOSE
@@ -69,7 +74,7 @@ void yyerror(const char *str);
 	NStatement* stmt;
 	NIdentifier* ident;
 	NInteger* numeric;
-	NType* type;
+	IType* type;
 	NDeclarations* decls;
 	NFunctionDeclaration* function;
 	NStructureDeclaration* structure;
@@ -116,8 +121,8 @@ void yyerror(const char *str);
 %token <token> TYPE_UINT32_T TYPE_UINT64_T
 
 /* TYPES */
-%type <type> type
-%type <ident> ident type_base
+%type <type> type type_base
+%type <ident> ident
 %type <expr> expr numeric string character deref fldref addressable arrayref
 %type <varvec> func_decl_args struct_decl_args
 %type <exprvec> call_args
@@ -208,12 +213,12 @@ prog_decl:
 func_decl:
 		type ident CURVED_OPEN func_decl_args CURVED_CLOSE block
 		{
-			$$ = new NFunctionDeclaration(*$1, *$2, *$4, $6);
+			$$ = new NFunctionDeclaration($1, *$2, *$4, $6);
 			//delete $4;
 		} |
 		type ident CURVED_OPEN func_decl_args CURVED_CLOSE SEMICOLON
 		{
-			$$ = new NFunctionDeclaration(*$1, *$2, *$4, NULL);
+			$$ = new NFunctionDeclaration($1, *$2, *$4, NULL);
 			//delete $4;
 		} ;
 
@@ -262,19 +267,19 @@ struct_decl_args:
 var_decl:
 		type ident
 		{
-			$$ = new NVariableDeclaration(*$1, *$2);
+			$$ = new NVariableDeclaration($1, *$2);
 		} |
 		type ident ASSIGN_EQUAL expr
 		{
-			$$ = new NVariableDeclaration(*$1, *$2, $4);
+			$$ = new NVariableDeclaration($1, *$2, $4);
 		} |
 		type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE
 		{
-			$$ = new NVariableDeclaration(*(new NFunctionPointerType(*$1, *$7)) /* TODO: free this memory */, *$4);
+			$$ = new NVariableDeclaration((new NFunctionPointerType($1, *$7)) /* TODO: free this memory */, *$4);
 		} |
 		type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE ASSIGN_EQUAL expr
 		{
-			$$ = new NVariableDeclaration(*(new NFunctionPointerType(*$1, *$7)) /* TODO: free this memory */, *$4, $10);
+			$$ = new NVariableDeclaration((new NFunctionPointerType($1, *$7)) /* TODO: free this memory */, *$4, $10);
 		} ;
 		
 ident:
@@ -287,28 +292,25 @@ ident:
 type:
 		type_base
 		{
-			$$ = new NType($<type>1->name, 0, false);
-			delete $1;
+			$$ = $<type>1;
 		} |
 		STRUCT ident
 		{
-			$$ = new NType($<type>2->name, 0, true);
+			$$ = new TStruct($<ident>2->name);
 			delete $2;
 		} |
 		type_base STAR %prec IREF
 		{
-			$$ = new NType($<type>1->name, 1, false);
-			delete $1;
+			$$ = new TPointer16($<type>1);
 		} |
 		STRUCT ident STAR %prec IREF
 		{
-			$$ = new NType($<type>2->name, 1, true);
+			$$ = new TPointer16(new TStruct($<ident>2->name));
 			delete $2;
 		} |
 		type STAR %prec IREF
 		{
-			$$ = new NType($<type>1->name, $<type>1->pointerCount + 1, $<type>1->isStruct);
-			delete $1;
+			$$ = new TPointer16($<type>1);
 		};
 
 block:
@@ -653,7 +655,7 @@ numeric:
 		} |
 		SIZEOF CURVED_OPEN type CURVED_CLOSE
 		{
-			$$ = new NSizeOfOperator(*$3);
+			$$ = new NSizeOfOperator($3);
 		} ;
 
 character:
@@ -695,55 +697,67 @@ assignop:
 type_base:
 		TYPE_VOID
 		{
-			$$ = new NIdentifier("void");
+			$$ = new NType("void", 0, false);
 		} |
 		TYPE_CHAR
 		{
-			$$ = new NIdentifier("char");
+			//$$ = new NType("char", 0, false);
+			$$ = new TInt16();
 		} |
 		TYPE_BYTE
 		{
-			$$ = new NIdentifier("byte");
+			//$$ = new NType("byte", 0, false);
+			$$ = new TInt16();
 		} |
 		TYPE_INT
 		{
-			$$ = new NIdentifier("int");
+			//$$ = new NType("int", 0, false);
+			$$ = new TInt16();
 		} |
 		TYPE_LONG
 		{
-			$$ = new NIdentifier("long");
+			//$$ = new NType("long", 0, false);
+			$$ = new TInt16();
 		} |
 		TYPE_INT8_T
 		{
-			$$ = new NIdentifier("int8_t");
+			//$$ = new NType("int8_t", 0, false);
+			$$ = new TInt16();
 		} |
 		TYPE_INT16_T
 		{
-			$$ = new NIdentifier("int16_t");
+			//$$ = new NType("int16_t", 0, false);
+			$$ = new TInt16();
 		} |
 		TYPE_INT32_T
 		{
-			$$ = new NIdentifier("int32_t");
+			//$$ = new NType("int32_t", 0, false);
+			$$ = new TInt16();
 		} |
 		TYPE_INT64_T
 		{
-			$$ = new NIdentifier("int64_t");
+			//$$ = new NType("int64_t", 0, false);
+			$$ = new TInt16();
 		} |
 		TYPE_UINT8_T
 		{
-			$$ = new NIdentifier("uint8_t");
+			//$$ = new NType("unt8_t", 0, false);
+			$$ = new TUint16();
 		} |
 		TYPE_UINT16_T
 		{
-			$$ = new NIdentifier("uint16_t");
+			//$$ = new NType("uint16_t", 0, false);
+			$$ = new TUint16();
 		} |
 		TYPE_UINT32_T
 		{
-			$$ = new NIdentifier("uint32_t");
+			//$$ = new NType("uint32_t", 0, false);
+			$$ = new TUint16();
 		} |
 		TYPE_UINT64_T
 		{
-			$$ = new NIdentifier("uint64_t");
+			//$$ = new NType("uint64_t", 0, false);
+			$$ = new TUint16();
 		} ;
 
 %%

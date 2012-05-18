@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <CompilerException.h>
 #include <stdint.h>
+#include <string>
 #include <nodes/IType.h>
 #include "TGenericInt16.h"
 
@@ -14,6 +15,8 @@ class TInt16 : public TGenericInt16
 		
 
 	public:
+		virtual std::string getName() const;
+	
 		// inherits most 16 bit generic integer operations
 		// only implements signed versions of the non generic operations
 			

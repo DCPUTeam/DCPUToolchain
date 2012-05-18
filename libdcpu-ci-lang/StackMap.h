@@ -27,9 +27,9 @@ class StackPair
 {
 	public:
 		std::string first;
-		IType& second;
+		IType* second;
 
-		StackPair(std::string key, IType& value) : first(key), second(value) { };
+		StackPair(std::string key, IType* value) : first(key), second(value) { };
 		inline StackPair& operator=(const StackPair& other)
 		{
 			throw new std::runtime_error("Attempt to use assignment operator on partial-const class IType (internal error)!");

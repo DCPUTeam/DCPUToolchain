@@ -193,7 +193,8 @@ IType* NMethodCall::getExpressionType(AsmGenerator& context)
 	if (funcdecl == NULL)
 		throw new CompilerException(this->line, this->file, "Called function was not found '" + this->id.name + "'.");
 
-	return new NType(funcdecl->type);
+	IType* exprType = (IType*) funcdecl->type;
+	return exprType;
 }
 
 

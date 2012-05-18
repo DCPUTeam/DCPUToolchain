@@ -27,7 +27,7 @@ class NStructureDeclaration : public NDeclaration
 			id(id), fields(fields), NDeclaration("structure") { };
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual size_t getBitSize(AsmGenerator& context);
+		virtual size_t getWordSize(AsmGenerator& context);
 };
 
 #endif

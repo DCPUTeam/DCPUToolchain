@@ -31,6 +31,7 @@ class NType : public NIdentifier, public IType
 			pointerCount(pointerCount), isStruct(isStruct), resolvedStruct(NULL), _name(name), NIdentifier(name, "type-" + classifier) { }
 
 	public:
+		std::string getName() const;
 		unsigned int pointerCount;
 		bool isStruct;
 		NStructureDeclaration* resolvedStruct;

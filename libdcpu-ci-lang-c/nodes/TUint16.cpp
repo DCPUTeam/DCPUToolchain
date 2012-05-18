@@ -1,6 +1,12 @@
 
 #include "TUint16.h"
 
+std::string TUint16::getName() const
+{
+	// TODO maybe call it by its real name? (e.g. unsigned int, unsigned char, uint16_t)
+	return "uint16_t";
+}
+
 
 	/* binary operators */
 

@@ -4,6 +4,11 @@
 #include "Lists.h"
 #include <cmath>
 	
+
+std::string TStruct::getName() const
+{
+	return m_name;
+}
 		
 void TStruct::resolveStruct()
 {
@@ -37,13 +42,14 @@ void TStruct::initContext(AsmGenerator& context)
 
 size_t TStruct::getBitSize()
 {
-	this->resolveStruct();
-	return this->m_resolvedStruct->getBitSize(*m_context);
+	
+	
 }
 
 uint16_t TStruct::getWordSize()
 {
-	return (int)std::ceil((double)this->getBitSize() / 16.0);
+	this->resolveStruct();
+	return this->m_resolvedStruct->getWordSize(*m_context);
 }
 
 uint16_t TStruct::getWordSize(AsmGenerator& context)
@@ -64,7 +70,7 @@ uint16_t TStruct::getStructFieldPosition(std::string name)
 		if ((*i)->id.name == this->m_name)
 			return pos;
 		else
-			pos += (*i)->type.getWordSize(*m_context);
+			pos += (*i)->type->getWordSize(*m_context);
 	}
 
 	// If the field wasn't found...

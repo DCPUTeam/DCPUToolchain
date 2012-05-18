@@ -23,7 +23,7 @@ AsmBlock* NSizeOfOperator::compile(AsmGenerator& context)
 	*block << this->getFileAndLineState();
 
 	// Load the size of the type into register A.
-	*block <<	"	SET A, " << (uint16_t)(this->value.getWordSize(context)) << std::endl;
+	*block <<	"	SET A, " << (uint16_t)(this->value->getWordSize(context)) << std::endl;
 
 	return block;
 }

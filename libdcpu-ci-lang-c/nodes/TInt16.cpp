@@ -1,6 +1,12 @@
 
 #include "TInt16.h"
 
+std::string TInt16::getName() const
+{
+	// TODO maybe call it by its real name? (e.g. int, char, int16_t)
+	return "int16_t";
+}
+
 
 	/* binary operators */
 

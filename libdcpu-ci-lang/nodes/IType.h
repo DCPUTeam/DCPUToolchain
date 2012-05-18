@@ -15,6 +15,7 @@
 #define __DCPU_COMP_INTERFACES_TYPE_H
 
 #include <stdint.h>
+#include <string>
 #include "../CompilerException.h"
 #include "../AsmGenerator.h"
 
@@ -30,6 +31,8 @@ class IType
 	public:
 		virtual uint16_t getWordSize(AsmGenerator& context)
 			INTERNAL_TYPE_EXCEPTION(get word-size of)
+		
+		virtual std::string getName() const INTERNAL_TYPE_EXCEPTION(get name of)
 		
 		/*TODO
 		(11:08:52 PM) hachque: also add
