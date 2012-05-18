@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <bstring.h>
 #include <simclist.h>
-#include <dirent.h>
+#include <dirent.portable.h>
 #include <osutil.h>
 #include <lua.h>
 #include <lauxlib.h>

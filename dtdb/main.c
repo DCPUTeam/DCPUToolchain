@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #else
 #include <libgen.h>
+#include <pthread.h>
 #endif
 
 #include <stdio.h>
@@ -26,7 +27,7 @@
 
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <pthread.h>
+
 
 #include <signal.h>
 

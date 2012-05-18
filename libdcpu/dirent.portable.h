@@ -26,7 +26,7 @@
  * Defined FILE_ATTRIBUTE_DEVICE for MSVC 6.0.
  *
  * Aug 11, 2010, Toni Ronkko
- * Added d_type and d_namlen fields to dirent structure.  The former is
+ * Added d_type and d_reclen fields to dirent structure.  The former is
  * especially useful for determining whether directory entry represents a
  * file or a directory.	 For more information, see
  * http://www.delorie.com/gnu/docs/glibc/libc_270.html
@@ -160,7 +160,7 @@ extern "C" {
 	typedef struct dirent
 	{
 		char d_name[MAX_PATH + 1];		       /* File name */
-		size_t d_namlen;			       /* Length of name without \0 */
+		size_t d_reclen;			       /* Length of name without \0 */
 		int d_type;				       /* File type */
 	} dirent;
 
@@ -225,7 +225,7 @@ extern "C" {
 			int error;
 
 			/*
-			 * Convert relative directory name to an absolute one.  This
+			 * Convert relative directory name to an absolute one.	This
 			 * allows rewinddir() to function correctly when the current working
 			 * directory is changed between opendir() and rewinddir().
 			 */
@@ -321,7 +321,7 @@ extern "C" {
 		dirp->curentry.d_name[MAX_PATH] = '\0';
 
 		/* compute the length of name */
-		dirp->curentry.d_namlen = strlen(dirp->curentry.d_name);
+		dirp->curentry.d_reclen = strlen(dirp->curentry.d_name);
 
 		/* determine file type */
 		attr = dirp->find_data.dwFileAttributes;

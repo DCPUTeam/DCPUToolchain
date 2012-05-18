@@ -278,3 +278,4 @@ uint16_t vm_hw_lem1802_mem_get_screen()
 {
 	return screen_location;
 }
+
