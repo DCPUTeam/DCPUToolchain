@@ -28,7 +28,7 @@ class TGenericBasicType: public IType
 		
 		bool isBasicType() const;
 		
-		IType* promoteTypes(IType* typeA, IType* typeB);
+		static IType* promoteTypes(IType* typeA, IType* typeB);
 };
 #endif
 

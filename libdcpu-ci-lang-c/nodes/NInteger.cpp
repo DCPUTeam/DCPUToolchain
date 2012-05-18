@@ -14,7 +14,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NInteger.h"
-#include "TUint16.h"
+#include "TInt16.h"
 
 NType internal_CharType("char", 0, false);
 NType internal_ByteType("byte", 0, false);
@@ -63,6 +63,6 @@ AsmBlock* NInteger::reference(AsmGenerator& context)
 
 IType* NInteger::getExpressionType(AsmGenerator& context)
 {
-	// All literals are currently unsigned 16-bit integers.
-	return new TUint16();
+	// All literals are currently 16-bit integers.
+	return new TInt16();
 }
