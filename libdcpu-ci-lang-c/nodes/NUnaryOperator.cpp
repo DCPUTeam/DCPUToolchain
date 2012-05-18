@@ -31,42 +31,41 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 	// When an expression is evaluated, the result goes into the A register.
 	AsmBlock* rhs = this->rhs.compile(context);
 
-	// Move the value into B
+	// get type
+	IType* rhsType = this->rhs.getExpressionType(context);	
+	
+	// Move the value into A
 	*block <<   *rhs;
-	*block <<	"	SET B, A" << std::endl;
 	delete rhs;
 
 	// Now do the appropriate operation.
+	AsmBlock* compiledOp;
 	switch (this->op)
 	{
 		case ADD:
-			/* TODO not sure why we even have this */
-			*block <<	"	SET A, B" << std::endl;
+			/* TODO integer promotion */
+			compiledOp = rhsType->plus('A');
 			break;
 
 			/* unary negative:  "A = -B" */
 		case SUBTRACT:
-			// A = 0 - B
-			*block <<	"	SET A, 0x0" << std::endl;
-			*block <<	"	SUB A, B" << std::endl;
+			// A = 0 - A
+			compiledOp = rhsType->minus('A');
 			break;
 
 			/* unary bitwise negate:  "A = ~B" */
 		case BITWISE_NEGATE:
-			*block <<	"	SET A, 0xffff" << std::endl;
-			*block <<	"	XOR A, B" << std::endl;
+			compiledOp = rhsType->bnot('A');
 			break;
 			/* boolean negate: A = !B  */
 		case NEGATE:
-			*block <<	"	IFN B, 0x0" << std::endl;
-			*block <<	"		SET B, 0x1" << std::endl;
-			*block <<	"	SET A, 0x1" << std::endl;
-			*block <<	"	XOR A, B" << std::endl;
+			compiledOp = rhsType->lnot('A');
 			break;
 
 		default:
 			throw new CompilerException(this->line, this->file, "Unknown unary operations requested.");
 	}
+	*block << *compiledOp;
 
 	return block;
 }

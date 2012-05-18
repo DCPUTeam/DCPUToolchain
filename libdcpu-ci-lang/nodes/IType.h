@@ -20,10 +20,10 @@
 #include "../AsmGenerator.h"
 
 
-#define INTERNAL_TYPE_EXCEPTION(MSG)					\
+#define INTERNAL_TYPE_EXCEPTION(_msg)					\
 	{								\
 		throw new CompilerException(0, "<internal>", 		\
-		"Unable to MSG unspecified type (internal error).");	\
+		"Unable to" #_msg "unspecified type (internal error).");	\
 	}
 
 class IType
@@ -32,7 +32,7 @@ class IType
 		virtual uint16_t getWordSize(AsmGenerator& context)
 			INTERNAL_TYPE_EXCEPTION(get word-size of)
 		
-		virtual std::string getName() const INTERNAL_TYPE_EXCEPTION(get name of)
+		virtual std::string getName() const INTERNAL_TYPE_EXCEPTION("get name of")
 		
 		/*TODO
 		(11:08:52 PM) hachque: also add
