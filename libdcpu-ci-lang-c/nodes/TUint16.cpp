@@ -24,6 +24,11 @@ bool TUint16::implicitCastable(const IType* toType)
 	{
 		return true;
 	}
+	// FIXME: check for pointer to void here
+	else if (to == "ptr16_t")
+	{
+		return true;
+	}
 	else
 	{
 		return false;

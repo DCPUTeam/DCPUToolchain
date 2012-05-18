@@ -7,6 +7,7 @@
 
 	Authors:	James Rhodes
 			Michael Gerhaeuser
+			Patrick Flick
 
 	Description:	Defines the NBinaryOperator AST class.
 
@@ -105,29 +106,6 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 			+ "' to '" + commonType->getName() + "'");
 		}
 	}
-	
-	/*
-		virtual AsmBlock*  add(char a, char b) INTERNAL_TYPE_EXCEPTION("add")
-		virtual AsmBlock*  sub(char a, char b) INTERNAL_TYPE_EXCEPTION("sub")
-		virtual AsmBlock*  mul(char a, char b) INTERNAL_TYPE_EXCEPTION("mul")
-		virtual AsmBlock*  div(char a, char b) INTERNAL_TYPE_EXCEPTION("div")
-		virtual AsmBlock*  mod(char a, char b) INTERNAL_TYPE_EXCEPTION("mod")
-		virtual AsmBlock*  band(char a, char b) INTERNAL_TYPE_EXCEPTION("band")
-		virtual AsmBlock*  bor(char a, char b) INTERNAL_TYPE_EXCEPTION("bor")
-		virtual AsmBlock*  bxor(char a, char b) INTERNAL_TYPE_EXCEPTION("bxor")
-		virtual AsmBlock*  shl(char a, char b) INTERNAL_TYPE_EXCEPTION("shl")
-		virtual AsmBlock*  shr(char a, char b) INTERNAL_TYPE_EXCEPTION("shr")
-		virtual AsmBlock*  land(char a, char b) INTERNAL_TYPE_EXCEPTION("land")
-		virtual AsmBlock*  lor(char a, char b) INTERNAL_TYPE_EXCEPTION("lor")
-		
-		
-		virtual AsmBlock*  eq(char a, char b) INTERNAL_TYPE_EXCEPTION("compare")
-		virtual AsmBlock*  neq(char a, char b) INTERNAL_TYPE_EXCEPTION("compare")
-		virtual AsmBlock*  gt(char a, char b) INTERNAL_TYPE_EXCEPTION("compare")
-		virtual AsmBlock*  lt(char a, char b) INTERNAL_TYPE_EXCEPTION("compare")
-		virtual AsmBlock*  ge(char a, char b) INTERNAL_TYPE_EXCEPTION("compare")
-		virtual AsmBlock*  le(char a, char b) INTERNAL_TYPE_EXCEPTION("compare")
-	*/
 
 	// Now do the appropriate operation.
 	switch (this->op)

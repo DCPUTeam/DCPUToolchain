@@ -6,6 +6,7 @@
 	Component:	LibDCPU-ci-lang
 
 	Authors:	James Rhodes
+			Patrick Flick
 
 	Description:	Declares the IType AST interface.
 
