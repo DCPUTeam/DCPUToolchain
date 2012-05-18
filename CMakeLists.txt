@@ -60,6 +60,13 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /W3 /wd4273 /wd4065 /wd4996 /wd4005 /D_CRT_SECURE_NO_WARNINGS /DSIMCLIST_NO_DUMPRESTORE")
 elseif(APPLE)
 	# TODO: Set warnings as errors under Mac / XCode.
+elseif(MINGW)
+	# This is a cross of other stuff in here; configured for building under unix, for windows :)
+	# This method of compilation is extrememly advised against; it could work, but you are better off getting official
+	# binaries for windows, ones that have been tested.
+	# A major reason for this is because the -Werror flag has been removed.
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wdeclaration-after-statement -Wno-int-to-pointer-cast -D SIMCLIST_NO_DUMPRESTORE")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D SIMCLIST_NO_DUMPRESTORE") # TODO: Fix code to allow -Werror here.
 else(MSVC)
 	# Assume GNU since there doesn't appear to be
 	# a better way of detecting this.
