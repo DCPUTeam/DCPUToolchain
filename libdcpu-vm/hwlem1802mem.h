@@ -42,3 +42,4 @@ void vm_hw_lem1802_mem_set_screen(vm_t* vm, uint16_t pos);
 uint16_t vm_hw_lem1802_mem_get_screen();
 
 #endif
+
