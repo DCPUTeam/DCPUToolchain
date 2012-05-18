@@ -18,6 +18,17 @@ class TStruct: public IType
 		void resolveStruct();
 	public:
 		virtual std::string getName() const;
+		virtual std::string getInternalName() const;
+		
+		virtual bool isBasicType() const;
+		
+			
+		/* cast operations */
+		virtual bool implicitCastable(const IType* toType);
+		virtual bool explicitCastable(const IType* toType);
+		virtual AsmBlock* implicitCast(const IType* toType, char a);
+		virtual AsmBlock* explicitCast(const IType* toType, char a);
+		
 		
 		// struct specific functions and members
 		

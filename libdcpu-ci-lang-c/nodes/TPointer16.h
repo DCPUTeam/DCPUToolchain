@@ -22,6 +22,13 @@ class TPointer16 : public TUint16
 		IType* getPointerBaseType();
 		
 		virtual std::string getName() const;
+		virtual std::string getInternalName() const;
+		
+		/* cast operations */
+		virtual bool implicitCastable(const IType* toType);
+		virtual bool explicitCastable(const IType* toType);
+		virtual AsmBlock* implicitCast(const IType* toType, char a);
+		virtual AsmBlock* explicitCast(const IType* toType, char a);
 };
 #endif
 

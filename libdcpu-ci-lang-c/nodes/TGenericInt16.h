@@ -6,8 +6,9 @@
 #include <CompilerException.h>
 #include <stdint.h>
 #include <nodes/IType.h>
+#include "TGenericBasicType.h"
 
-class TGenericInt16: public IType
+class TGenericInt16: public TGenericBasicType
 {
 	private:
 		

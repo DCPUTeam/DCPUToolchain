@@ -7,6 +7,74 @@ std::string TUint16::getName() const
 	return "uint16_t";
 }
 
+std::string TUint16::getInternalName() const
+{
+	return "uint16_t";
+}
+
+
+bool TUint16::implicitCastable(const IType* toType)
+{
+	std::string to = toType->getInternalName();
+	if (to == "uint16_t")
+	{
+		return true;
+	}
+	else if (to == "int16_t")
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+bool TUint16::explicitCastable(const IType* toType)
+{
+	std::string to = toType->getInternalName();
+	if (to == "uint16_t")
+	{
+		return true;
+	}
+	else if (to == "int16_t")
+	{
+		return true;
+	}
+	else if (to == "ptr16_t")
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+AsmBlock* TUint16::implicitCast(const IType* toType, char a)
+{
+	if (!this->implicitCastable(toType))
+	{
+		throw new CompilerException(0, "<internal>", 
+		"Unable to implicitly cast integer (internal error).");
+	}
+	// dont do anything (value stays the same)
+	AsmBlock* block = new AsmBlock();
+	return block;
+}
+
+AsmBlock* TUint16::explicitCast(const IType* toType, char a)
+{
+	if (!this->explicitCastable(toType))
+	{
+		throw new CompilerException(0, "<internal>", 
+		"Unable to implicitly cast integer (internal error).");
+	}
+	// TODO if different sizes integers are introduced they have
+	//       to be cast here
+	AsmBlock* block = new AsmBlock();
+	return block;
+}
+
 
 	/* binary operators */
 

@@ -47,17 +47,17 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 			compiledOp = rhsType->plus('A');
 			break;
 
-			/* unary negative:  "A = -B" */
+			/* unary negative:  "A = -A" */
 		case SUBTRACT:
 			// A = 0 - A
 			compiledOp = rhsType->minus('A');
 			break;
 
-			/* unary bitwise negate:  "A = ~B" */
+			/* unary bitwise negate:  "A = ~A" */
 		case BITWISE_NEGATE:
 			compiledOp = rhsType->bnot('A');
 			break;
-			/* boolean negate: A = !B  */
+			/* boolean negate: A = !A  */
 		case NEGATE:
 			compiledOp = rhsType->lnot('A');
 			break;

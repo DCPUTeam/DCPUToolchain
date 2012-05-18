@@ -16,9 +16,17 @@ class TUint16 : public TGenericInt16
 
 	public:
 		virtual std::string getName() const;
+		virtual std::string getInternalName() const;
 	
 		// inherits most 16 bit generic integer operations
 		// only implements signed versions of the non generic operations
+			
+		/* cast operations */
+		virtual bool implicitCastable(const IType* toType);
+		virtual bool explicitCastable(const IType* toType);
+		virtual AsmBlock* implicitCast(const IType* toType, char a);
+		virtual AsmBlock* explicitCast(const IType* toType, char a);
+			
 			
 		/* binary operations (sign dependent) */
 		virtual AsmBlock* mul(char a, char b);

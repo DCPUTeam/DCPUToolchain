@@ -9,6 +9,67 @@ std::string TStruct::getName() const
 {
 	return m_name;
 }
+
+std::string TStruct::getInternalName() const
+{
+	return m_name;
+}
+
+bool TStruct::isBasicType() const
+{
+	return false;
+}
+
+bool TStruct::implicitCastable(const IType* toType)
+{
+	std::string to = toType->getInternalName();
+	if (to == m_name)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+bool TStruct::explicitCastable(const IType* toType)
+{
+	std::string to = toType->getInternalName();
+	if (to == m_name)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+AsmBlock* TStruct::implicitCast(const IType* toType, char a)
+{
+	if (!this->implicitCastable(toType))
+	{
+		throw new CompilerException(0, "<internal>", 
+		"Unable to implicitly cast integer (internal error).");
+	}
+	// dont do anything
+	AsmBlock* block = new AsmBlock();
+	return block;
+}
+
+AsmBlock* TStruct::explicitCast(const IType* toType, char a)
+{
+	if (!this->explicitCastable(toType))
+	{
+		throw new CompilerException(0, "<internal>", 
+		"Unable to implicitly cast integer (internal error).");
+	}
+	// dont do anything
+	AsmBlock* block = new AsmBlock();
+	return block;
+}
+
+
 		
 void TStruct::resolveStruct()
 {
