@@ -12,6 +12,7 @@ Contents:
     tutorial/index.rst
     tools/index.rst
     lang/index.rst
+    modules/index.rst
 
 
 Indices and tables
