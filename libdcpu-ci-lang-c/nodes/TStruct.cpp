@@ -20,6 +20,11 @@ bool TStruct::isBasicType() const
 	return false;
 }
 
+bool TStruct::isStruct() const
+{
+	return true;
+}
+
 bool TStruct::implicitCastable(const IType* toType)
 {
 	std::string to = toType->getInternalName();
@@ -115,6 +120,7 @@ uint16_t TStruct::getWordSize()
 
 uint16_t TStruct::getWordSize(AsmGenerator& context)
 {
+	this->initContext(context);
 	return this->getWordSize();
 }
 
@@ -128,7 +134,7 @@ uint16_t TStruct::getStructFieldPosition(std::string name)
 
 	for (VariableList::iterator i = this->m_resolvedStruct->fields.begin(); i != this->m_resolvedStruct->fields.end(); i++)
 	{
-		if ((*i)->id.name == this->m_name)
+		if ((*i)->id.name == name)
 			return pos;
 		else
 			pos += (*i)->type->getWordSize(*m_context);
@@ -139,6 +145,29 @@ uint16_t TStruct::getStructFieldPosition(std::string name)
 	// TODO throw type exception, which is catched outside the type-system
 	//       from where it is rethrown including line and file information
 }
+
+IType* TStruct::getStructFieldType(std::string name)
+{
+	// Resolve struct if not already done.
+	this->resolveStruct();
+
+	// Count up the position.
+	size_t pos = 0;
+
+	for (VariableList::iterator i = this->m_resolvedStruct->fields.begin(); i != this->m_resolvedStruct->fields.end(); i++)
+	{
+		if ((*i)->id.name == name)
+			return (*i)->type;
+	}
+
+	return NULL;
+
+	// If the field wasn't found...
+	// throw new CompilerException(0, "<internal>", "Unable to lookup field " + name + " in structure " + this->m_resolvedStruct->id.name + "!");
+	// TODO throw type exception, which is catched outside the type-system
+	//       from where it is rethrown including line and file information
+}
+
 		
 /* copy */
 

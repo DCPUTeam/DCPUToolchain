@@ -29,6 +29,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	bool isDirect = true;
 	NFunctionSignature* funcsig = (NFunctionDeclaration*)context.getFunction(this->id.name);
 
+	// FIXME: get rid of the use of NType for function signatures!!
 	if (funcsig == NULL)
 	{
 		// Try and get a variable with matching signature then.

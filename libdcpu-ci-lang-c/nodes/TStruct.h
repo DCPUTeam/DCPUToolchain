@@ -20,7 +20,8 @@ class TStruct: public IType
 		virtual std::string getName() const;
 		virtual std::string getInternalName() const;
 		
-		virtual bool isBasicType() const;
+		bool isBasicType() const;
+		bool isStruct() const;
 		
 			
 		/* cast operations */
@@ -32,7 +33,8 @@ class TStruct: public IType
 		
 		// struct specific functions and members
 		
-		uint16_t getStructFieldPosition(std::string name) ;
+		uint16_t getStructFieldPosition(std::string name);
+		IType* getStructFieldType(std::string name);
 		size_t getBitSize();
 		
 		// a struct is context dependent

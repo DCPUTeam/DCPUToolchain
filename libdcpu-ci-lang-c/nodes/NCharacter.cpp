@@ -15,6 +15,7 @@
 #include <CompilerException.h>
 #include "NCharacter.h"
 #include "NInteger.h"
+#include "TInt16.h"
 
 AsmBlock* NCharacter::compile(AsmGenerator& context)
 {
@@ -36,6 +37,6 @@ AsmBlock* NCharacter::reference(AsmGenerator& context)
 
 IType* NCharacter::getExpressionType(AsmGenerator& context)
 {
-	// A character has the type char.
-	return new NType(NInteger::CharType);
+	// A character has the type int16.
+	return new TInt16();
 }

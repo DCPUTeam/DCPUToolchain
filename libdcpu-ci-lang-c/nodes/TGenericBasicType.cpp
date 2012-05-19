@@ -6,6 +6,11 @@ bool TGenericBasicType::isBasicType() const
 	return true;
 }
 
+bool TGenericBasicType::isStruct() const
+{
+	return false;
+}
+
 IType* TGenericBasicType::promoteTypes(IType* typeA, IType* typeB)
 {
 	std::string A = typeA->getInternalName();

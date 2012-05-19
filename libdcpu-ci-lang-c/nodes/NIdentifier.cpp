@@ -22,8 +22,9 @@ AsmBlock* NIdentifier::compile(AsmGenerator& context)
 	// Add file and line information.
 	*block << this->getFileAndLineState();
 
-	// Get the position of the variable.
+	// Get the position and type of the variable.
 	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
+	IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
 
 	if (!result.isFound())
 		throw new CompilerException(this->line, this->file, "The variable '" + this->name + "' was not found in the scope.");
@@ -33,7 +34,8 @@ AsmBlock* NIdentifier::compile(AsmGenerator& context)
 
 	// Load the value of the variable into register A.
 	*block << result.pushAddress('I');
-	*block <<	"	SET A, [I]" << std::endl;
+	*block << *(type->loadFromRef('I', 'A'));
+	//*block <<	"	SET A, [I]" << std::endl;
 
 	return block;
 }

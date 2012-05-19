@@ -37,6 +37,7 @@ class IType
 		virtual std::string getInternalName() const INTERNAL_TYPE_EXCEPTION("get internal name of")
 		
 		virtual bool isBasicType() const INTERNAL_TYPE_EXCEPTION("get type info of")
+		virtual bool isStruct() const INTERNAL_TYPE_EXCEPTION("get type info of")
 		
 		virtual bool implicitCastable(const IType* toType) INTERNAL_TYPE_EXCEPTION("get cast info of")
 		virtual bool explicitCastable(const IType* toType) INTERNAL_TYPE_EXCEPTION("get cast info of")
