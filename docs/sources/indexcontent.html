@@ -2,10 +2,10 @@
 {% block tables %}
   <p><strong>Welcome!</strong></p>
   <table class="contentstable" align="center"><tr>
-    <td width="50%">
+    <td width="50%" valign="top">
       <p class="biglink"><a class="biglink" href="{{ pathto("whatsnew/index") }}">What's new in DCPU-16 Toolchain?</a><br/>
          <span class="linkdescr">or <a href="http://dcputoolcha.in/changelog.htm">the entire changelog</a></span></p>
-    </td><td width="50%">
+    </td><td width="50%" valign="top">
        <p class="biglink"><a class="biglink" href="{{ pathto("tutorial/index") }}">Tutorial</a><br/>
          <span class="linkdescr">start here</span></p>
     </td></tr>
@@ -13,14 +13,14 @@
 
   <p><strong>The tools:</strong></p>
   <table class="contentstable" align="center"><tr>
-    <td width="50%">
+    <td width="50%" valign="top">
       <p class="biglink"><a class="biglink" href="{{ pathto("tools/emulator/index") }}">Emulator</a><br/>
          <span class="linkdescr">runs DCPU-16 images</span></p>
       <p class="biglink"><a class="biglink" href="{{ pathto("tools/assembler/index") }}">Assembler</a><br/>
          <span class="linkdescr">creates object files and images</span></p>
       <p class="biglink"><a class="biglink" href="{{ pathto("tools/linker/index") }}">Linker</a><br/>
          <span class="linkdescr">joins multiple object files to produce an image</span></p>
-    </td><td width="50%">
+    </td><td width="50%" valign="top">
       <p class="biglink"><a class="biglink" href="{{ pathto("tools/preprocessor/index") }}">Preprocessor</a><br/>
          <span class="linkdescr">rewrites code before it's processed</span></p>
       <p class="biglink"><a class="biglink" href="{{ pathto("tools/compiler/index") }}">Compiler</a><br/>
@@ -32,12 +32,29 @@
 
   <p><strong>C language:</strong></p>
   <table class="contentstable" align="center"><tr>
-    <td width="50%">
+    <td width="50%" valign="top">
       <p class="biglink"><a class="biglink" href="{{ pathto("lang/c/syntax") }}">Syntax</a><br/>
          <span class="linkdescr">what is currently supported</span></p>
-    </td><td width="50%">
+    </td><td width="50%" valign="top">
       <p class="biglink"><a class="biglink" href="{{ pathto("lang/c/library/index") }}">Standard Library</a><br/>
          <span class="linkdescr">all the useful things</span></p>
+    </td></tr>
+  </table>
+
+  <p><strong>Modules and extensions:</strong></p>
+  <table class="contentstable" align="center"><tr>
+    <td width="50%" valign="top">
+      <p class="biglink"><a class="biglink" href="{{ pathto("modules/download") }}">Downloading</a><br/>
+         <span class="linkdescr">how to download modules</span></p>
+      <p class="biglink"><a class="biglink" href="{{ pathto("modules/preprocessor") }}">Preprocessor</a><br/>
+         <span class="linkdescr">handle custom preprocessor directives</span></p>
+      <p class="biglink"><a class="biglink" href="{{ pathto("modules/debugger") }}">Debugger</a><br/>
+         <span class="linkdescr">add your own stateful commands to the debugger</span></p>
+    </td><td width="50%" valign="top">
+      <p class="biglink"><a class="biglink" href="{{ pathto("modules/writing") }}">Writing</a><br/>
+         <span class="linkdescr">writing a basic module / extension</span></p>
+      <p class="biglink"><a class="biglink" href="{{ pathto("modules/hardware") }}">Hardware</a><br/>
+         <span class="linkdescr">define your own custom hardware</span></p>
     </td></tr>
   </table>
 {% endblock %}
