@@ -85,6 +85,9 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
 	// Copy a reference to the current position in
 	// the stack first (by temporarily using register C, ugh!).
+	// FIXME this C register stuff breaks the possibility to call a function
+	//        within calling a function, e.g.:  foo(bar(x))
+	//        which would reset the C register to point somewhere else :(
 	*block <<  "	SET C, SP" << std::endl;
 
 	// Evaluate each of the argument expressions.
@@ -94,9 +97,12 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		AsmBlock* inst = (*i)->compile(context);
 		*block << *inst;
 		delete inst;
+		
+		IType* instType = (*i)->getExpressionType(context);
 
 		// Push the result onto the stack.
-		*block <<  "	SET PUSH, A" << std::endl;
+		//*block <<  "	SET PUSH, A" << std::endl;
+		*block << *(instType->pushStack('A'));
 	}
 
 	// Initialize the stack for this method.
@@ -119,26 +125,29 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
 	// Now copy each of the evaluated parameter values into
 	// the correct parameter slots.
-	uint16_t a = 1;
+	uint16_t a = 0;
 
 	for (VariableList::const_iterator v = funcsig->arguments.begin(); v != funcsig->arguments.end(); v++)
 	{
-		// Get the location of the value.
-		std::stringstream vstr;
-		vstr << "[0x" << std::hex << (0x10000 - a) << "+C]";
-
 		// Get the location of the slot.
 		TypePosition result = frame->getPositionOfVariable((*v)->id.name);
+		IType* resultType = frame->getTypeOfVariable((*v)->id.name);
+		a += resultType->getWordSize(context);
+		
+		// Get the location of the value.
+		std::stringstream vstr;
+		vstr << "0x" << std::hex << (0x10000 - a);
+		*block <<  "	SET A, C" << std::endl;
+		*block <<  "	ADD A, " << vstr.str() << std::endl;
+		
 
 		if (!result.isFound())
 			throw new CompilerException(this->line, this->file, "The argument '" + (*v)->id.name + "' was not found in the argument list (internal error).");
 
 		// Now copy.
 		*block << result.pushAddress('I');
-		*block <<	"	SET [I], " << vstr.str() << std::endl;
-
-		// Increment.
-		a += 1;
+		//*block <<	"	SET [I], " << vstr.str() << std::endl;
+		*block << *(resultType->copyByRef('A', 'I'));
 	}
 
 	// Then call the actual method and insert the return label.
@@ -164,10 +173,17 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	*block <<  ":" << jmpback << std::endl;
 
 	// Clean up all of our C values.
-	for (int b = 0; b < a - 1; b += 1)
+	if (context.isAssemblerDebug())
 	{
-		*block <<  "	SET PEEK, 0" << std::endl;
-		*block <<  "	ADD SP, 1" << std::endl;
+		for (int b = 0; b < a; ++b)
+		{
+			*block <<  "	SET PEEK, 0" << std::endl;
+			*block <<  "	ADD SP, 1" << std::endl;
+		}
+	}
+	else
+	{
+		*block <<  "	SET SP, C" << std::endl;
 	}
 
 	// TODO this has become unnessecary with the new bootstrap stack handleing
