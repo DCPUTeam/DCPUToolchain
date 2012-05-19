@@ -93,6 +93,7 @@ extern "C"
 
 	/* Type keywords */
 
+	/* FIXME the unsigned keyword has to be handled differently */
 "void"					{ HANDLE; return TYPE_VOID; }
 "unsigned char"				{ HANDLE; return TYPE_UCHAR; }
 "char"					{ HANDLE; return TYPE_CHAR; }

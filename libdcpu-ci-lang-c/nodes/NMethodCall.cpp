@@ -6,7 +6,7 @@
 	Component:	LibDCPU-ci-lang-c
 
 	Authors:	James Rhodes
-					Patrick Flick
+			Patrick Flick
 	Description:	Defines the NMethodCall AST class.
 
 **/
@@ -68,15 +68,11 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	// Get a random label for our jump-back point.
 	std::string jmpback = context.getRandomLabel("callback");
 
-	// Copy a reference to the current position in
-	// the stack first (by temporarily using register C, ugh!).
-	// FIXME this C register stuff breaks the possibility to call a function
-	//        within calling a function, e.g.:  foo(bar(x))
-	//        which would reset the C register to point somewhere else :(
-	*block <<  "	SET C, SP" << std::endl;
-
-	// Evaluate each of the argument expressions.
-	for (unsigned int i = 0; i < this->arguments.size(); ++i)
+	// Evaluate each of the argument expressions in reverse
+	// TODO make it depend on the typePosition somehow
+	//      this here has to be exactly reverse to the order in the
+	//      parameter stack frame and thus the TypePosition
+	for (int i = this->arguments.size() - 1; i >= 0; --i)
 	{
 		// Compile the expression.
 		AsmBlock* inst = this->arguments[i]->compile(context);
@@ -104,7 +100,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		}
 
 		// Push the result onto the stack.
-		*block << *(instType->pushStack('A'));
+		*block << *(parameterType->pushStack('A'));
 	}
 
 	// Initialize the stack for this method.
@@ -123,34 +119,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
 	*block <<  "	SET X, [X]" << std::endl;
 	*block <<  "	SET Z, " << jmpback << std::endl;
-	*block <<  "	JSR _stack_caller_init" << std::endl;
-
-	// Now copy each of the evaluated parameter values into
-	// the correct parameter slots.
-	uint16_t a = 0;
-
-	for (VariableList::const_iterator v = funcsig->arguments.begin(); v != funcsig->arguments.end(); v++)
-	{
-		// Get the location of the slot.
-		TypePosition result = frame->getPositionOfVariable((*v)->id.name);
-		IType* resultType = frame->getTypeOfVariable((*v)->id.name);
-		a += resultType->getWordSize(context);
-		
-		// Get the location of the value.
-		std::stringstream vstr;
-		vstr << "0x" << std::hex << (0x10000 - a);
-		*block <<  "	SET A, C" << std::endl;
-		*block <<  "	ADD A, " << vstr.str() << std::endl;
-		
-
-		if (!result.isFound())
-			throw new CompilerException(this->line, this->file, "The argument '" + (*v)->id.name + "' was not found in the argument list (internal error).");
-
-		// Now copy.
-		*block << result.pushAddress('I');
-		//*block <<	"	SET [I], " << vstr.str() << std::endl;
-		*block << *(resultType->copyByRef('A', 'I'));
-	}
+	*block <<  "	JSR _stack_caller_init_overlap" << std::endl;
 
 	// Then call the actual method and insert the return label.
 	if (isDirect)
@@ -173,25 +142,6 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	}
 
 	*block <<  ":" << jmpback << std::endl;
-
-	// Clean up all of our C values.
-	if (context.isAssemblerDebug())
-	{
-		for (int b = 0; b < a; ++b)
-		{
-			*block <<  "	SET PEEK, 0" << std::endl;
-			*block <<  "	ADD SP, 1" << std::endl;
-		}
-	}
-	else
-	{
-		*block <<  "	SET SP, C" << std::endl;
-	}
-
-	// TODO this has become unnessecary with the new bootstrap stack handleing
-	// TODO	 maybe we can get rid of the C register alltogether?? (not sure)
-	// Adjust Y frame by C amount
-	//*block <<  "	ADD Y, " << (a - 1) << std::endl;
 
 	// Clean up frame.
 	context.finishStackFrame(frame);
