@@ -49,33 +49,16 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
 
 
-	// check if the called function matches the signature of this method call
-	// first check if argument length are the same
-	/*
+	// check if the called function matches the signature size of this
+	// method call
 	if (this->arguments.size() != funcsig->arguments.size())
 	{
-		throw new CompilerException("There is no function with the name "
-					    + this->id.name + " and signature " + this->calculateSignature(context) + "\n"
-					    + "Candidates are:\t" + this->id.name + " with signature " + funcsig->getSignature());
-	}
-	*/
-
-	// FIXME: Again, without implicit type casting this breaks quite a few
-	// things, so it's disabled for now.
-	/*
-	// now check types of all the arguments
-	for (unsigned int i = 0; i < funcsig->arguments.size(); i++)
-	{
-		NType* callerType = (NType*) this->arguments[i]->getExpressionType(context);
-		NType& calleeType = funcsig->arguments[i]->type;
-		if (callerType->name != calleeType.name)
-		{
-			throw new CompilerException("There is no function with the name "
-						    + this->id.name + " and signature " + this->calculateSignature(context) + "\n"
-						    + "Candidates are:\t" + this->id.name + " with signature " + funcsig->getSignature());
-		}
-	}
-	*/
+		throw new CompilerException(this->line, this->file, 
+		"There is no function with the name " + this->id.name
+		+ " and signature " + this->calculateSignature(context)
+		+ "\n" + "Candidates are:\t" + this->id.name
+		+ " with signature " + funcsig->getSignature());
+	}	
 
 	// Get the stack table of this method.
 	StackFrame* frame = context.generateStackFrameIncomplete(funcsig);
@@ -91,17 +74,32 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	*block <<  "	SET C, SP" << std::endl;
 
 	// Evaluate each of the argument expressions.
-	for (ExpressionList::iterator i = this->arguments.begin(); i != this->arguments.end(); i++)
+	for (unsigned int i = 0; i < this->arguments.size(); ++i)
 	{
 		// Compile the expression.
-		AsmBlock* inst = (*i)->compile(context);
+		AsmBlock* inst = this->arguments[i]->compile(context);
 		*block << *inst;
 		delete inst;
 		
-		IType* instType = (*i)->getExpressionType(context);
+		IType* instType = this->arguments[i]->getExpressionType(context);
+
+		// check types and cast implicitly
+		IType* parameterType = funcsig->arguments[i]->type;
+		if (instType->implicitCastable(parameterType))
+		{
+			// do cast
+			*block << *(instType->implicitCast(parameterType, 'A'));
+		}
+		else
+		{
+			throw new CompilerException(this->line, this->file, 
+			"There is no function with the name " + this->id.name
+			+ " and signature " + this->calculateSignature(context)
+			+ "\n" + "Candidates are:\t" + this->id.name
+			+ " with signature " + funcsig->getSignature());
+		}
 
 		// Push the result onto the stack.
-		//*block <<  "	SET PUSH, A" << std::endl;
 		*block << *(instType->pushStack('A'));
 	}
 
