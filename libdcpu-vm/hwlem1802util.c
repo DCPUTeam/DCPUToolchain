@@ -32,3 +32,4 @@ TCOD_color_t vm_hw_lem1802_util_get_color(uint16_t raw)
 
 	return result;
 }
+
