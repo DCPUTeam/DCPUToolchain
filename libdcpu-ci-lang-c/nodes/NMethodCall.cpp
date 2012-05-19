@@ -54,10 +54,12 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	if (this->arguments.size() != funcsig->arguments.size())
 	{
 		throw new CompilerException(this->line, this->file, 
-		"There is no function with the name " + this->id.name
-		+ " and signature " + this->calculateSignature(context)
-		+ "\n" + "Candidates are:\t" + this->id.name
-		+ " with signature " + funcsig->getSignature());
+		"Unable to find function\n"
+		  "with singature:                               "
+		+ this->id.name + this->calculateSignature(context)
+		+ "\n"
+		+ "Candidates are:                               "
+		+ this->id.name + funcsig->getSignature());
 	}	
 
 	// Get the stack table of this method.
@@ -93,10 +95,12 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		else
 		{
 			throw new CompilerException(this->line, this->file, 
-			"There is no function with the name " + this->id.name
-			+ " and signature " + this->calculateSignature(context)
-			+ "\n" + "Candidates are:\t" + this->id.name
-			+ " with signature " + funcsig->getSignature());
+			"Unable to find function\n"
+			  "with singature:                               "
+			+ this->id.name + this->calculateSignature(context)
+			+ "\n"
+			+ "Candidates are:                               "
+			+ this->id.name + funcsig->getSignature());
 		}
 
 		// Push the result onto the stack.
@@ -225,8 +229,8 @@ std::string NMethodCall::calculateSignature(AsmGenerator& context)
 		{
 			sig = sig + ",";
 		}
-		NType* type = (NType*)((*i)->getExpressionType(context));
-		sig = sig + type->name;
+		IType* type = (*i)->getExpressionType(context);
+		sig = sig + type->getName();
 	}
 	sig = sig + ")";
 	return sig;

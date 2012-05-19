@@ -94,9 +94,12 @@ extern "C"
 	/* Type keywords */
 
 "void"					{ HANDLE; return TYPE_VOID; }
+"unsigned char"				{ HANDLE; return TYPE_UCHAR; }
 "char"					{ HANDLE; return TYPE_CHAR; }
 "byte"					{ HANDLE; return TYPE_BYTE; }
+"unsigned int"				{ HANDLE; return TYPE_UINT; }
 "int"					{ HANDLE; return TYPE_INT; }
+"unsigned long"				{ HANDLE; return TYPE_ULONG; }
 "long"					{ HANDLE; return TYPE_LONG; }
 "int8_t"				{ HANDLE; return TYPE_INT8_T; }
 "int16_t"				{ HANDLE; return TYPE_INT16_T; }

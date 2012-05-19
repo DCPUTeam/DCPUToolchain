@@ -117,6 +117,7 @@ void yyerror(const char *str);
 
 /* TOKENS: Type keywords */
 %token <token> TYPE_VOID TYPE_CHAR TYPE_BYTE TYPE_INT TYPE_LONG TYPE_INT8_T
+%token <token> TYPE_UCHAR TYPE_UINT TYPE_ULONG
 %token <token> TYPE_INT16_T TYPE_INT32_T TYPE_INT64_T TYPE_UINT8_T TYPE_UINT16_T
 %token <token> TYPE_UINT32_T TYPE_UINT64_T
 
@@ -699,6 +700,11 @@ type_base:
 		{
 			$$ = new NType("void", 0, false);
 		} |
+		TYPE_UCHAR
+		{
+			//$$ = new NType("char", 0, false);
+			$$ = new TUint16();
+		} |
 		TYPE_CHAR
 		{
 			//$$ = new NType("char", 0, false);
@@ -709,10 +715,20 @@ type_base:
 			//$$ = new NType("byte", 0, false);
 			$$ = new TInt16();
 		} |
+		TYPE_UINT
+		{
+			//$$ = new NType("int", 0, false);
+			$$ = new TUint16();
+		} |
 		TYPE_INT
 		{
 			//$$ = new NType("int", 0, false);
 			$$ = new TInt16();
+		} |
+		TYPE_ULONG
+		{
+			//$$ = new NType("long", 0, false);
+			$$ = new TUint16();
 		} |
 		TYPE_LONG
 		{
