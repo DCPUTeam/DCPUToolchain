@@ -95,6 +95,7 @@ char* pp_trim_and_unescape(char* data)
 <EQUATEDEF>[A-Za-z_-]+[A-Za-z0-9_-]*					yylval->string = bfromcstr(yytext); BEGIN(EQUATESPC); return WORD;
 <EQUATESPC>[ \t]+							BEGIN(EQUATEVAL);
 <EQUATEVAL>\n								yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
+<EQUATEVAL><<EOF>>							yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
 <EQUATEVAL>[^\n]							yylval->any = yytext[0]; return TEXT;
 
 	/* Macro definitions */
@@ -104,12 +105,14 @@ char* pp_trim_and_unescape(char* data)
 <MACRODEF>\)								BEGIN(MACROCONTENT); return PARAM_CLOSE;
 <MACROCALLDEF,MACRODEF>\,						return COMMA;
 <MACROCALLDEF,MACRODEF>\n						yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
+<MACROCALLDEF,MACRODEF><<EOF>>						yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
 <MACROCALLDEF,MACRODEF>[^ \t\n\(\)\,]					yylval->any = yytext[0]; return WHITESPACE;
 <MACROCALLDEF,MACRODEF>[ \t]+						/* ignore whitespace */;
 
 	/* Miscellanous */
 
 <PREPROCESSING>\n							yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
+<PREPROCESSING><<EOF>>							yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
 <PREPROCESSING>[^ \t\n]							yylval->any = yytext[0]; return WHITESPACE;
 <PREPROCESSING>[ \t]+							/* ignore whitespace */;
 <MACROCONTENT,INITIAL>\n						yylval->any = '\n'; return NEWLINE;
