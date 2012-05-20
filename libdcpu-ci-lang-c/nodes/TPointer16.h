@@ -1,3 +1,17 @@
+/**
+
+	File:		TPointer16.h
+
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
+
+	Authors:	Patrick Flick
+
+	Description:	Declares the TPointer Type class.
+
+**/
+
+
 #ifndef __DCPU_COMP_TYPES_POINTER16_H
 #define __DCPU_COMP_TYPES_POINTER16_H
 

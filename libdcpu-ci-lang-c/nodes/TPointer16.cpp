@@ -1,3 +1,16 @@
+/**
+
+	File:		TPointer16.cpp
+
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
+
+	Authors:	Patrick Flick
+
+	Description:	Defines the TPointer Type class.
+
+**/
+
 
 #include "TPointer16.h"
 

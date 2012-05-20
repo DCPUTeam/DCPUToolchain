@@ -1,3 +1,15 @@
+/**
+
+	File:		TInt16.cpp
+
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
+
+	Authors:	Patrick Flick
+
+	Description:	Defines the TInt Type class.
+
+**/
 
 #include "TInt16.h"
 

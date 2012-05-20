@@ -1,3 +1,16 @@
+/**
+
+	File:		TUint16.h
+
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
+
+	Authors:	Patrick Flick
+
+	Description:	Declares the TUint16 Type class.
+
+**/
+
 #ifndef __DCPU_COMP_TYPES_UINT16_H
 #define __DCPU_COMP_TYPES_UINT16_H
 

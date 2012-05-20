@@ -1,3 +1,16 @@
+/**
+
+	File:		TGenericInt16.cpp
+
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
+
+	Authors:	Patrick Flick
+
+	Description:	Defines the TGenericInt Type class.
+
+**/
+
 
 #include "TGenericInt16.h"
 

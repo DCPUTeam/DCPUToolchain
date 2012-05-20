@@ -1,3 +1,16 @@
+/**
+
+	File:		TStruct.cpp
+
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
+
+	Authors:	Patrick Flick
+
+	Description:	Defines the TStruct Type class.
+
+**/
+
 
 #include "TStruct.h"
 #include "NDeclarations.h"

@@ -1,3 +1,15 @@
+/**
+
+	File:		TGenericBasicType.cpp
+
+	Project:	DCPU-16 Tools
+	Component:	LibDCPU-ci-lang-c
+
+	Authors:	Patrick Flick
+
+	Description:	Defines the TGenericBasicType Type class.
+
+**/
 
 #include "TGenericBasicType.h"
 
