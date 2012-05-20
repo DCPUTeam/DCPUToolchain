@@ -44,7 +44,7 @@ class NInteger;
 #include "nodes/NPreIncDec.h"
 #include "nodes/NPostIncDec.h"
 #include "nodes/NAddressOfOperator.h"
-#include "nodes/NInteger.h"
+#include "nodes/NIntegerLiteral.h"
 #include "nodes/NSizeOfOperator.h"
 #include "nodes/NCharacter.h"
 #include "nodes/NString.h"
@@ -73,7 +73,7 @@ void yyerror(const char *str);
 	NExpression* expr;
 	NStatement* stmt;
 	NIdentifier* ident;
-	NInteger* numeric;
+	NIntegerLiteral* numeric;
 	IType* type;
 	NDeclarations* decls;
 	NFunctionDeclaration* function;
@@ -644,15 +644,17 @@ addressable:
 numeric:
 		NUMBER
 		{
-			$$ = new NInteger($1);
+			/* TODO implement other unsigned, long,     */
+			/*      and unsigned long (u,l,ul) literals */
+			$$ = new NIntegerLiteral($1);
 		} |
 		TRUE
 		{
-			$$ = new NInteger(1);
+			$$ = new NIntegerLiteral(1);
 		} |
 		FALSE
 		{
-			$$ = new NInteger(0);
+			$$ = new NIntegerLiteral(0);
 		} |
 		SIZEOF CURVED_OPEN type CURVED_CLOSE
 		{

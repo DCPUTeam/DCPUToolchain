@@ -14,7 +14,6 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NCharacter.h"
-#include "NInteger.h"
 #include "TInt16.h"
 
 AsmBlock* NCharacter::compile(AsmGenerator& context)

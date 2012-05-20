@@ -22,7 +22,7 @@
 #include "nodes/NExpression.h"
 #include "nodes/NStatement.h"
 #include "nodes/NIdentifier.h"
-#include "nodes/NInteger.h"
+#include "nodes/NIntegerLiteral.h"
 #include "nodes/NType.h"
 #include "nodes/NDeclarations.h"
 #include "nodes/NFunctionDeclaration.h"

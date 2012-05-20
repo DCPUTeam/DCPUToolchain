@@ -15,7 +15,6 @@
 // the parser header so that we only get the token values.
 #define YYSTYPE int
 
-#include "NInteger.h"
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "../parser.hpp"
