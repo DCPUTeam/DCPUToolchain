@@ -75,7 +75,7 @@ AsmBlock* TGenericInt16::popStack(AsmGenerator& context)
 AsmBlock* TGenericInt16::popStackReturn(AsmGenerator& context, char a)
 {
 	AsmBlock* block = new AsmBlock();
-	*block <<	"	POP SP, " << a << std::endl;
+	*block <<	"	SET " << a << ", POP" << std::endl;
 	return block;
 }
 
