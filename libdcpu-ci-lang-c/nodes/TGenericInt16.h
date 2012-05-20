@@ -90,8 +90,8 @@ class TGenericInt16: public TGenericBasicType
 		virtual AsmBlock* minus(AsmGenerator& context, char a);
 		virtual AsmBlock* bnot(AsmGenerator& context, char a);
 		virtual AsmBlock* lnot(AsmGenerator& context, char a);
-		virtual AsmBlock* inc(AsmGenerator& context, char a);
-		virtual AsmBlock* dec(AsmGenerator& context, char a);
+		virtual AsmBlock* inc(AsmGenerator& context, char ref);
+		virtual AsmBlock* dec(AsmGenerator& context, char ref);
 		
 		/* comparison operators */
 		virtual AsmBlock* eq(AsmGenerator& context, char a, char b);

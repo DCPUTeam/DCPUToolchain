@@ -125,16 +125,16 @@ AsmBlock* TPointer16::sub(AsmGenerator& context, char pointer, char integer)
 	return block;
 }
 
-AsmBlock* TPointer16::inc(AsmGenerator& context, char pointer)
+AsmBlock* TPointer16::inc(AsmGenerator& context, char ref)
 {
 	AsmBlock* block = new AsmBlock();
-	*block <<	"	ADD " << pointer << ", " << this->m_pointingTo->getWordSize(context) << std::endl;
+	*block <<	"	ADD [" << ref << "], " << this->m_pointingTo->getWordSize(context) << std::endl;
 	return block;
 }
-AsmBlock* TPointer16::dec(AsmGenerator& context, char pointer)
+AsmBlock* TPointer16::dec(AsmGenerator& context, char ref)
 {
 	AsmBlock* block = new AsmBlock();
-	*block <<	"	SUB " << pointer << ", " << this->m_pointingTo->getWordSize(context) << std::endl;
+	*block <<	"	SUB [" << ref << "], " << this->m_pointingTo->getWordSize(context) << std::endl;
 	return block;
 }
 

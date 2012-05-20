@@ -213,17 +213,17 @@ AsmBlock* TGenericInt16::lnot(AsmGenerator& context, char a)
 	return block;
 }
 		
-AsmBlock* TGenericInt16::inc(AsmGenerator& context, char a)
+AsmBlock* TGenericInt16::inc(AsmGenerator& context, char ref)
 {
 	AsmBlock* block = new AsmBlock();
-	*block <<	"	ADD " << a << ", 1" << std::endl;
+	*block <<	"	ADD [" << ref << "], 1" << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::dec(AsmGenerator& context, char a)
+AsmBlock* TGenericInt16::dec(AsmGenerator& context, char ref)
 {
 	AsmBlock* block = new AsmBlock();
-	*block <<	"	SUB " << a << ", 1" << std::endl;
+	*block <<	"	SUB [" << ref << "], 1" << std::endl;
 	return block;
 }
 

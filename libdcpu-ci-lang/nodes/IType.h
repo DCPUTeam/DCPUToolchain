@@ -84,8 +84,9 @@ class IType
 		virtual AsmBlock*  minus(AsmGenerator& context, char a) INTERNAL_TYPE_EXCEPTION("invert")
 		virtual AsmBlock*  bnot(AsmGenerator& context, char a) INTERNAL_TYPE_EXCEPTION("bitwise invert")
 		virtual AsmBlock*  lnot(AsmGenerator& context, char a) INTERNAL_TYPE_EXCEPTION("logical invert")
-		virtual AsmBlock*  inc(AsmGenerator& context, char a) INTERNAL_TYPE_EXCEPTION("increase")
-		virtual AsmBlock*  dec(AsmGenerator& context, char a) INTERNAL_TYPE_EXCEPTION("decrease")
+		
+		virtual AsmBlock*  inc(AsmGenerator& context, char ref) INTERNAL_TYPE_EXCEPTION("increase")
+		virtual AsmBlock*  dec(AsmGenerator& context, char ref) INTERNAL_TYPE_EXCEPTION("decrease")
 		
 		/* comparison operators */
 		virtual AsmBlock*  eq(AsmGenerator& context, char a, char b) INTERNAL_TYPE_EXCEPTION("compare")

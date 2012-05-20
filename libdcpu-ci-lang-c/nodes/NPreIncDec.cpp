@@ -30,27 +30,38 @@ AsmBlock* NPreIncDec::compile(AsmGenerator& context)
 	*block <<   *reference;
 	delete reference;
 
+	// get type
+	IType* exprType = this->expr.getExpressionType(context);
+	
+	// Type checking
+	if ((!exprType->isPointer()) && (!exprType->isBasicType()))
+	{
+		throw new CompilerException(this->line, this->file, 
+		"Invalid operand to pre increase/decrease operation. (have '"
+		+ exprType->getName() + "')");
+	}
+
+	
 	*block <<	"	SET B, A" << std::endl;
-	*block <<	"	SET A, [B]" << std::endl;
+
 
 	// Now do the appropriate operation.
 	switch (this->op)
 	{
 		case INCREMENT:
-			*block <<	"	ADD A, 1" << std::endl;
+			*block << *(exprType->inc(context, 'B'));
 			break;
 
 		case DECREMENT:
-			*block <<	"	SUB A, 1" << std::endl;
+			*block << *(exprType->dec(context, 'B'));
 			break;
 
 		default:
 			throw new CompilerException(this->line, this->file, "Unknown Pre-Increase-Decrease operation requested.");
 	}
-
-
-	// Move the value into the target address.
-	*block <<	"	SET [B], A" << std::endl;
+	
+	// return value in A
+	*block << *(exprType->loadFromRef(context, 'B', 'A'));
 
 	return block;
 }

@@ -109,8 +109,8 @@ class TPointer16 : public TUint16
 		}
 		
 		/* unary operators */
-		virtual AsmBlock* inc(AsmGenerator& context, char a);
-		virtual AsmBlock* dec(AsmGenerator& context, char a);
+		virtual AsmBlock* inc(AsmGenerator& context, char ref);
+		virtual AsmBlock* dec(AsmGenerator& context, char ref);
 		
 		/* illegal unary operators */
 		virtual AsmBlock* plus(AsmGenerator& context, char a)
