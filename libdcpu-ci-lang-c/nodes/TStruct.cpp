@@ -121,8 +121,8 @@ void TStruct::initContext(AsmGenerator& context)
 
 size_t TStruct::getBitSize()
 {
-	
-	
+	// TODO count bits
+	return this->getWordSize()*16;
 }
 
 uint16_t TStruct::getWordSize()
