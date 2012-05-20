@@ -31,7 +31,14 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 	AsmBlock* rhs = this->rhs.compile(context);
 
 	// get type
-	IType* rhsType = this->rhs.getExpressionType(context);	
+	IType* rhsType = this->rhs.getExpressionType(context);
+	
+	if (!rhsType->isBasicType())
+	{
+		throw new CompilerException(this->line, this->file, 
+		"Invalid operand to unary operation. (have '"
+		+ rhsType->getName() + "')");
+	}
 	
 	// Move the value into A
 	*block <<   *rhs;
@@ -43,22 +50,22 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 	{
 		case ADD:
 			/* TODO integer promotion */
-			compiledOp = rhsType->plus('A');
+			compiledOp = rhsType->plus(context, 'A');
 			break;
 
 			/* unary negative:  "A = -A" */
 		case SUBTRACT:
 			// A = 0 - A
-			compiledOp = rhsType->minus('A');
+			compiledOp = rhsType->minus(context, 'A');
 			break;
 
 			/* unary bitwise negate:  "A = ~A" */
 		case BITWISE_NEGATE:
-			compiledOp = rhsType->bnot('A');
+			compiledOp = rhsType->bnot(context, 'A');
 			break;
 			/* boolean negate: A = !A  */
 		case NEGATE:
-			compiledOp = rhsType->lnot('A');
+			compiledOp = rhsType->lnot(context, 'A');
 			break;
 
 		default:

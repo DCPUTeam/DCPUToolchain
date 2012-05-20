@@ -35,21 +35,21 @@ class TInt16 : public TGenericInt16
 		// only implements signed versions of the non generic operations
 
 		/* cast operations */
-		virtual bool implicitCastable(const IType* toType);
-		virtual bool explicitCastable(const IType* toType);
-		virtual AsmBlock* implicitCast(const IType* toType, char a);
-		virtual AsmBlock* explicitCast(const IType* toType, char a);
+		virtual bool implicitCastable(AsmGenerator& context, const IType* toType);
+		virtual bool explicitCastable(AsmGenerator& context, const IType* toType);
+		virtual AsmBlock* implicitCast(AsmGenerator& context, const IType* toType, char a);
+		virtual AsmBlock* explicitCast(AsmGenerator& context, const IType* toType, char a);
 
 		/* binary operations (sign dependent) */
-		virtual AsmBlock* mul(char a, char b);
-		virtual AsmBlock* div(char a, char b);
-		virtual AsmBlock* mod(char a, char b);
+		virtual AsmBlock* mul(AsmGenerator& context, char a, char b);
+		virtual AsmBlock* div(AsmGenerator& context, char a, char b);
+		virtual AsmBlock* mod(AsmGenerator& context, char a, char b);
 		
 		/* comparison operators (sign dependent) */
-		virtual AsmBlock* gt(char a, char b);
-		virtual AsmBlock* lt(char a, char b);
-		virtual AsmBlock* ge(char a, char b);
-		virtual AsmBlock* le(char a, char b);
+		virtual AsmBlock* gt(AsmGenerator& context, char a, char b);
+		virtual AsmBlock* lt(AsmGenerator& context, char a, char b);
+		virtual AsmBlock* ge(AsmGenerator& context, char a, char b);
+		virtual AsmBlock* le(AsmGenerator& context, char a, char b);
 };
 #endif
 

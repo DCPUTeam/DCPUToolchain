@@ -33,12 +33,17 @@ bool TStruct::isBasicType() const
 	return false;
 }
 
+bool TStruct::isPointer() const
+{
+	return false;
+}
+
 bool TStruct::isStruct() const
 {
 	return true;
 }
 
-bool TStruct::implicitCastable(const IType* toType)
+bool TStruct::implicitCastable(AsmGenerator& context, const IType* toType)
 {
 	std::string to = toType->getInternalName();
 	if (to == m_name)
@@ -50,7 +55,7 @@ bool TStruct::implicitCastable(const IType* toType)
 		return false;
 	}
 }
-bool TStruct::explicitCastable(const IType* toType)
+bool TStruct::explicitCastable(AsmGenerator& context, const IType* toType)
 {
 	std::string to = toType->getInternalName();
 	if (to == m_name)
@@ -63,9 +68,9 @@ bool TStruct::explicitCastable(const IType* toType)
 	}
 }
 
-AsmBlock* TStruct::implicitCast(const IType* toType, char a)
+AsmBlock* TStruct::implicitCast(AsmGenerator& context, const IType* toType, char a)
 {
-	if (!this->implicitCastable(toType))
+	if (!this->implicitCastable(context, toType))
 	{
 		throw new CompilerException(0, "<internal>", 
 		"Unable to implicitly cast integer (internal error).");
@@ -75,9 +80,9 @@ AsmBlock* TStruct::implicitCast(const IType* toType, char a)
 	return block;
 }
 
-AsmBlock* TStruct::explicitCast(const IType* toType, char a)
+AsmBlock* TStruct::explicitCast(AsmGenerator& context, const IType* toType, char a)
 {
-	if (!this->explicitCastable(toType))
+	if (!this->explicitCastable(context, toType))
 	{
 		throw new CompilerException(0, "<internal>", 
 		"Unable to implicitly cast integer (internal error).");
@@ -185,7 +190,7 @@ IType* TStruct::getStructFieldType(std::string name)
 /* copy */
 
 // indirect copy given references (copies values)
-AsmBlock* TStruct::copyByRef(char fromRef, char toRef)
+AsmBlock* TStruct::copyByRef(AsmGenerator& context, char fromRef, char toRef)
 {
 	AsmBlock* block = new AsmBlock();
 	for (unsigned int pos = 0; pos < this->getWordSize(); ++pos)
@@ -203,26 +208,26 @@ AsmBlock* TStruct::copyByRef(char fromRef, char toRef)
 /* all the following functions map to copyByRef */
 
 // direct copy via registers
-AsmBlock* TStruct::copyValue(char from, char to)
+AsmBlock* TStruct::copyValue(AsmGenerator& context, char from, char to)
 {
-	return copyByRef(from, to);
+	return copyByRef(context, from, to);
 }
 // saves value in "from" register into the reference
-AsmBlock* TStruct::saveToRef(char from, char toRef)
+AsmBlock* TStruct::saveToRef(AsmGenerator& context, char from, char toRef)
 {
-	return copyByRef(from, toRef);
+	return copyByRef(context, from, toRef);
 }
 // load from a reference into a value
-AsmBlock* TStruct::loadFromRef(char fromRef, char to)
+AsmBlock* TStruct::loadFromRef(AsmGenerator& context, char fromRef, char to)
 {
-	return copyByRef(fromRef, to);
+	return copyByRef(context, fromRef, to);
 }
 
 /*************/
 /* stack ops */
 /*************/
 
-AsmBlock* TStruct::pushStack(char a) {
+AsmBlock* TStruct::pushStack(AsmGenerator& context, char a) {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SUB SP, " << this->getWordSize() << std::endl;
 	for (unsigned int pos = 0; pos < this->getWordSize(); ++pos)
@@ -240,14 +245,14 @@ AsmBlock* TStruct::pushStack(char a) {
 // FIXME do i need this? virtual AsmBlock* pushStackByRef(char a);
 
 
-AsmBlock* TStruct::popStack()
+AsmBlock* TStruct::popStack(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	ADD SP, " << this->getWordSize() << std::endl;
 	return block;
 }
 
-AsmBlock* TStruct::popStackClean()
+AsmBlock* TStruct::popStackClean(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
 	for (unsigned int pos = 0; pos < this->getWordSize(); ++pos)

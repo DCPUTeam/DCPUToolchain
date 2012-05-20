@@ -28,11 +28,10 @@ extern "C"
 
 class Node
 {
-	protected:
-		int line;
-		std::string file;
 	public:
 		std::string cType;
+		int line;
+		std::string file;
 	protected:
 		Node(std::string type)
 		{

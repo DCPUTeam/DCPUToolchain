@@ -56,7 +56,7 @@ AsmBlock* NStructureResolutionOperator::compile(AsmGenerator& context)
 
 	// return the value of the field
 	*block <<   *expr;
-	*block <<   *(fieldType->loadFromRef('A', 'A'));
+	*block <<   *(fieldType->loadFromRef(context, 'A', 'A'));
 	delete expr;
 
 	return block;

@@ -36,13 +36,14 @@ class TStruct: public IType
 		
 		bool isBasicType() const;
 		bool isStruct() const;
+		bool isPointer() const;
 		
 			
 		/* cast operations */
-		virtual bool implicitCastable(const IType* toType);
-		virtual bool explicitCastable(const IType* toType);
-		virtual AsmBlock* implicitCast(const IType* toType, char a);
-		virtual AsmBlock* explicitCast(const IType* toType, char a);
+		virtual bool implicitCastable(AsmGenerator& context, const IType* toType);
+		virtual bool explicitCastable(AsmGenerator& context, const IType* toType);
+		virtual AsmBlock* implicitCast(AsmGenerator& context, const IType* toType, char a);
+		virtual AsmBlock* explicitCast(AsmGenerator& context, const IType* toType, char a);
 		
 		
 		// struct specific functions and members
@@ -61,27 +62,27 @@ class TStruct: public IType
 		
 		/* copy */
 		// direct copy via registers
-		virtual AsmBlock* copyValue(char from, char to);
+		virtual AsmBlock* copyValue(AsmGenerator& context, char from, char to);
 		// indirect copy given references (copies values)
-		virtual AsmBlock* copyByRef(char fromRef, char toRef);
+		virtual AsmBlock* copyByRef(AsmGenerator& context, char fromRef, char toRef);
 		// saves value in "from" register into the reference
-		virtual AsmBlock*  saveToRef(char from, char toRef);
+		virtual AsmBlock*  saveToRef(AsmGenerator& context, char from, char toRef);
 		// load from a reference into a value
-		virtual AsmBlock*  loadFromRef(char fromRef, char to);
+		virtual AsmBlock*  loadFromRef(AsmGenerator& context, char fromRef, char to);
 		
 		/* stack ops */
-		virtual AsmBlock* pushStack(char a);
+		virtual AsmBlock* pushStack(AsmGenerator& context, char a);
 		// FIXME do i need this? 
 		// virtual AsmBlock* pushStackByRef(char a);
-		virtual AsmBlock* popStack();
-		virtual AsmBlock* popStackReturn(char a)
+		virtual AsmBlock* popStack(AsmGenerator& context);
+		virtual AsmBlock* popStackReturn(AsmGenerator& context, char a)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Stack pop with return not permitted for structs (internal error).");
 		}
 		// for debugging, cleaning the stack while pop
-		virtual AsmBlock* popStackClean();
-		virtual AsmBlock* popStackCleanReturn(char a)
+		virtual AsmBlock* popStackClean(AsmGenerator& context);
+		virtual AsmBlock* popStackCleanReturn(AsmGenerator& context, char a)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Stack pop with return not permitted for structs (internal error).");
@@ -90,63 +91,63 @@ class TStruct: public IType
 		
 		
 		/* binary operators */
-		virtual AsmBlock* add(char a, char b)
+		virtual AsmBlock* add(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* sub(char a, char b)
+		virtual AsmBlock* sub(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* band(char a, char b)
+		virtual AsmBlock* band(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* bor(char a, char b)
+		virtual AsmBlock* bor(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* bxor(char a, char b)
+		virtual AsmBlock* bxor(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* shl(char a, char b)
+		virtual AsmBlock* shl(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* shr(char a, char b)
+		virtual AsmBlock* shr(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* land(char a, char b)
+		virtual AsmBlock* land(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* lor(char a, char b)
+		virtual AsmBlock* lor(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
 				
-		virtual AsmBlock* mul(char a, char b)
+		virtual AsmBlock* mul(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* div(char a, char b)
+		virtual AsmBlock* div(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* mod(char a, char b)
+		virtual AsmBlock* mod(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
@@ -154,65 +155,65 @@ class TStruct: public IType
 		
 		
 		/* unary operators */
-		virtual AsmBlock* plus(char a)
+		virtual AsmBlock* plus(AsmGenerator& context, char a)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* minus(char a)
+		virtual AsmBlock* minus(AsmGenerator& context, char a)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* bnot(char a)
+		virtual AsmBlock* bnot(AsmGenerator& context, char a)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* lnot(char a)
+		virtual AsmBlock* lnot(AsmGenerator& context, char a)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* inc(char a)
+		virtual AsmBlock* inc(AsmGenerator& context, char a)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* dec(char a)
+		virtual AsmBlock* dec(AsmGenerator& context, char a)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
 		
 		/* comparison operators */
-		virtual AsmBlock* eq(char a, char b)
+		virtual AsmBlock* eq(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* neq(char a, char b)
+		virtual AsmBlock* neq(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
 		
-		virtual AsmBlock* gt(char a, char b)
+		virtual AsmBlock* gt(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* lt(char a, char b)
+		virtual AsmBlock* lt(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* ge(char a, char b)
+		virtual AsmBlock* ge(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");
 		}
-		virtual AsmBlock* le(char a, char b)
+		virtual AsmBlock* le(AsmGenerator& context, char a, char b)
 		{
 			throw new CompilerException(0, "<internal>", 
 			"Operation not permitted for structs (internal error).");

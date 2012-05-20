@@ -19,6 +19,7 @@
 #include <CompilerException.h>
 #include <stdint.h>
 #include <nodes/IType.h>
+#include "NBinaryOperator.h"
 
 class TGenericBasicType: public IType
 {
@@ -41,8 +42,10 @@ class TGenericBasicType: public IType
 		
 		bool isBasicType() const;
 		bool isStruct() const;
+		bool isPointer() const;
 		
 		static IType* promoteTypes(IType* typeA, IType* typeB);
+		static AsmBlock* compileBinaryOperator(NBinaryOperator* binopNode, AsmGenerator& context);
 };
 #endif
 

@@ -38,7 +38,7 @@ AsmBlock* NDereferenceOperator::compile(AsmGenerator& context)
 		baseType = ptr->getPointerBaseType();	
 	}
 	// FIXME: create (better: not create, get static void* type) pointer to void here:
-	else if (i->implicitCastable(new TPointer16(new TUint16())))
+	else if (i->implicitCastable(context, new TPointer16(new TUint16())))
 	{
 		// FIXME return void?
 		baseType= new TUint16();
@@ -50,7 +50,7 @@ AsmBlock* NDereferenceOperator::compile(AsmGenerator& context)
 
 	// Dereference the value.
 	*block <<   *expr;
-	*block <<   *(baseType->loadFromRef('A', 'A')) << std::endl;
+	*block <<   *(baseType->loadFromRef(context, 'A', 'A')) << std::endl;
 	delete expr;
 
 	return block;
@@ -76,7 +76,7 @@ IType* NDereferenceOperator::getExpressionType(AsmGenerator& context)
 		return baseType;	
 	}
 	// FIXME: create (better: not create, get static void* type) pointer to void here:
-	else if (i->implicitCastable(new TPointer16(new TUint16())))
+	else if (i->implicitCastable(context, new TPointer16(new TUint16())))
 	{
 		// FIXME return void?
 		return new TUint16();

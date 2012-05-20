@@ -51,9 +51,9 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 		IType* rhsType = this->rhs.getExpressionType(context);
 		
 		// cast to rhs to lhs type
-		if (rhsType->implicitCastable(lhsType))
+		if (rhsType->implicitCastable(context, lhsType))
 		{
-			*block << *(rhsType->implicitCast(lhsType, 'A'));
+			*block << *(rhsType->implicitCast(context, lhsType, 'A'));
 		}
 		else
 		{
@@ -78,7 +78,7 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 		}
 		
 		// save the value A to [B]
-		*block << *(lhsType->saveToRef('A', 'B'));
+		*block << *(lhsType->saveToRef(context, 'A', 'B'));
 	}
 	else
 	{
@@ -99,9 +99,9 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 		}
 		
 		// cast to rhs to lhs type
-		if (rhsType->implicitCastable(lhsType))
+		if (rhsType->implicitCastable(context, lhsType))
 		{
-			*block << *(rhsType->implicitCast(lhsType, 'A'));
+			*block << *(rhsType->implicitCast(context, lhsType, 'A'));
 		}
 		else
 		{
@@ -115,7 +115,7 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 		
 		// get referenced value and put it in A	
 		*block <<	"	SET A, PEEK" << std::endl;
-		*block << *(lhsType->loadFromRef('A', 'A'));
+		*block << *(lhsType->loadFromRef(context, 'A', 'A'));
 		
 		// Now do the appropriate operation.
 		// TODO a lot of assignment operations are missing !!
@@ -159,7 +159,7 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 		}
 
 		// Move the value into the target address.
-		*block << *(lhsType->saveToRef('A', 'B'));
+		*block << *(lhsType->saveToRef(context, 'A', 'B'));
 	}
 	return block;
 }

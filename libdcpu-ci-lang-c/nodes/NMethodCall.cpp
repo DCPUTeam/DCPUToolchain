@@ -83,10 +83,10 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
 		// check types and cast implicitly
 		IType* parameterType = funcsig->arguments[i]->type;
-		if (instType->implicitCastable(parameterType))
+		if (instType->implicitCastable(context, parameterType))
 		{
 			// do cast
-			*block << *(instType->implicitCast(parameterType, 'A'));
+			*block << *(instType->implicitCast(context, parameterType, 'A'));
 		}
 		else
 		{
@@ -100,7 +100,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		}
 
 		// Push the result onto the stack.
-		*block << *(parameterType->pushStack('A'));
+		*block << *(parameterType->pushStack(context, 'A'));
 	}
 
 	// Initialize the stack for this method.

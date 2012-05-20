@@ -26,7 +26,7 @@ std::string TUint16::getInternalName() const
 }
 
 
-bool TUint16::implicitCastable(const IType* toType)
+bool TUint16::implicitCastable(AsmGenerator& context, const IType* toType)
 {
 	std::string to = toType->getInternalName();
 	if (to == "uint16_t")
@@ -47,7 +47,7 @@ bool TUint16::implicitCastable(const IType* toType)
 		return false;
 	}
 }
-bool TUint16::explicitCastable(const IType* toType)
+bool TUint16::explicitCastable(AsmGenerator& context, const IType* toType)
 {
 	std::string to = toType->getInternalName();
 	if (to == "uint16_t")
@@ -68,9 +68,9 @@ bool TUint16::explicitCastable(const IType* toType)
 	}
 }
 
-AsmBlock* TUint16::implicitCast(const IType* toType, char a)
+AsmBlock* TUint16::implicitCast(AsmGenerator& context, const IType* toType, char a)
 {
-	if (!this->implicitCastable(toType))
+	if (!this->implicitCastable(context, toType))
 	{
 		throw new CompilerException(0, "<internal>", 
 		"Unable to implicitly cast integer (internal error).");
@@ -80,9 +80,9 @@ AsmBlock* TUint16::implicitCast(const IType* toType, char a)
 	return block;
 }
 
-AsmBlock* TUint16::explicitCast(const IType* toType, char a)
+AsmBlock* TUint16::explicitCast(AsmGenerator& context, const IType* toType, char a)
 {
-	if (!this->explicitCastable(toType))
+	if (!this->explicitCastable(context, toType))
 	{
 		throw new CompilerException(0, "<internal>", 
 		"Unable to implicitly cast integer (internal error).");
@@ -97,21 +97,21 @@ AsmBlock* TUint16::explicitCast(const IType* toType, char a)
 	/* binary operators */
 
 
-AsmBlock* TUint16::mul(char a, char b)
+AsmBlock* TUint16::mul(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	MUL " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TUint16::div(char a, char b)
+AsmBlock* TUint16::div(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	DIV " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TUint16::mod(char a, char b)
+AsmBlock* TUint16::mod(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	MOD " << a << ", " << b << std::endl;
@@ -124,7 +124,7 @@ AsmBlock* TUint16::mod(char a, char b)
 
 // FIXME context dependent stack clear with 0	
 
-AsmBlock* TUint16::gt(char a, char b)
+AsmBlock* TUint16::gt(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// stack access is more efficient than using SUB and EX
@@ -135,7 +135,7 @@ AsmBlock* TUint16::gt(char a, char b)
 	return block;
 }
 
-AsmBlock* TUint16::lt(char a, char b)
+AsmBlock* TUint16::lt(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// stack access is more efficient than using SUB and EX
@@ -146,7 +146,7 @@ AsmBlock* TUint16::lt(char a, char b)
 	return block;
 }
 
-AsmBlock* TUint16::ge(char a, char b)
+AsmBlock* TUint16::ge(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// stack access is more efficient than using SUB and EX
@@ -157,7 +157,7 @@ AsmBlock* TUint16::ge(char a, char b)
 	return block;
 }
 
-AsmBlock* TUint16::le(char a, char b)
+AsmBlock* TUint16::le(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// stack access is more efficient than using SUB and EX

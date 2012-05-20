@@ -34,7 +34,7 @@ AsmBlock* NIdentifier::compile(AsmGenerator& context)
 
 	// Load the value of the variable into register A.
 	*block << result.pushAddress('I');
-	*block << *(type->loadFromRef('I', 'A'));
+	*block << *(type->loadFromRef(context, 'I', 'A'));
 	//*block <<	"	SET A, [I]" << std::endl;
 
 	return block;

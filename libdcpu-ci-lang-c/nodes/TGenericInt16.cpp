@@ -22,14 +22,14 @@ uint16_t TGenericInt16::getWordSize(AsmGenerator& context)
 		
 /* copy */
 // direct copy via registers
-AsmBlock* TGenericInt16::copyValue(char from, char to)
+AsmBlock* TGenericInt16::copyValue(AsmGenerator& context, char from, char to)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SET " << to << ", " << from << std::endl;
 	return block;
 }
 // indirect copy given references (copies values)
-AsmBlock* TGenericInt16::copyByRef(char fromRef, char toRef)
+AsmBlock* TGenericInt16::copyByRef(AsmGenerator& context, char fromRef, char toRef)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SET [" << toRef << "], [" << fromRef << "]" << std::endl;
@@ -38,7 +38,7 @@ AsmBlock* TGenericInt16::copyByRef(char fromRef, char toRef)
 
 
 // saves value in "from" register into the reference
-AsmBlock*  TGenericInt16::saveToRef(char from, char toRef)
+AsmBlock*  TGenericInt16::saveToRef(AsmGenerator& context, char from, char toRef)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SET [" << toRef << "], " << from << std::endl;
@@ -46,7 +46,7 @@ AsmBlock*  TGenericInt16::saveToRef(char from, char toRef)
 }
 
 // load from a reference into a value
-AsmBlock*  TGenericInt16::loadFromRef(char fromRef, char to)
+AsmBlock*  TGenericInt16::loadFromRef(AsmGenerator& context, char fromRef, char to)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SET " << to << ", [" << fromRef << "]" << std::endl;
@@ -57,7 +57,7 @@ AsmBlock*  TGenericInt16::loadFromRef(char fromRef, char to)
 /* stack ops */
 /*************/
 
-AsmBlock* TGenericInt16::pushStack(char a) {
+AsmBlock* TGenericInt16::pushStack(AsmGenerator& context, char a) {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SET PUSH, " << a << std::endl;
 	return block;
@@ -65,21 +65,21 @@ AsmBlock* TGenericInt16::pushStack(char a) {
 
 
 // FIXME do i need this? virtual AsmBlock* pushStackByRef(char a);
-AsmBlock* TGenericInt16::popStack()
+AsmBlock* TGenericInt16::popStack(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	ADD SP, 1" << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::popStackReturn(char a)
+AsmBlock* TGenericInt16::popStackReturn(AsmGenerator& context, char a)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	POP SP, " << a << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::popStackClean()
+AsmBlock* TGenericInt16::popStackClean(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SET PEEK, 0" << std::endl;
@@ -87,7 +87,7 @@ AsmBlock* TGenericInt16::popStackClean()
 	return block;
 }
 
-AsmBlock* TGenericInt16::popStackCleanReturn(char a)
+AsmBlock* TGenericInt16::popStackCleanReturn(AsmGenerator& context, char a)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SET " << a << ", PEEK" << std::endl;
@@ -101,51 +101,51 @@ AsmBlock* TGenericInt16::popStackCleanReturn(char a)
 	/* binary operators */
 
 
-AsmBlock* TGenericInt16::add(char a, char b)
+AsmBlock* TGenericInt16::add(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	ADD " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::sub(char a, char b)
+AsmBlock* TGenericInt16::sub(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SUB " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::band(char a, char b){
+AsmBlock* TGenericInt16::band(AsmGenerator& context, char a, char b){
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	AND " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::bor(char a, char b){
+AsmBlock* TGenericInt16::bor(AsmGenerator& context, char a, char b){
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	BOR " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::bxor(char a, char b){
+AsmBlock* TGenericInt16::bxor(AsmGenerator& context, char a, char b){
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	XOR " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::shl(char a, char b){
+AsmBlock* TGenericInt16::shl(AsmGenerator& context, char a, char b){
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SHL " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::shr(char a, char b){
+AsmBlock* TGenericInt16::shr(AsmGenerator& context, char a, char b){
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SHR " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::land(char a, char b)
+AsmBlock* TGenericInt16::land(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// logical normalization to 0x0=false, 0x1=true
@@ -158,7 +158,7 @@ AsmBlock* TGenericInt16::land(char a, char b)
 	return block;
 }
 
-AsmBlock* TGenericInt16::lor(char a, char b)
+AsmBlock* TGenericInt16::lor(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// logical normalization to 0x0=false, 0x1=true
@@ -176,7 +176,7 @@ AsmBlock* TGenericInt16::lor(char a, char b)
 	/* unary operators */
 	
 	
-AsmBlock* TGenericInt16::plus(char a)
+AsmBlock* TGenericInt16::plus(AsmGenerator& context, char a)
 {
 	// TODO integer promotion
 	AsmBlock* block = new AsmBlock();
@@ -185,7 +185,7 @@ AsmBlock* TGenericInt16::plus(char a)
 
 // FIXME context dependent stack clear with 0	
 
-AsmBlock* TGenericInt16::minus(char a)
+AsmBlock* TGenericInt16::minus(AsmGenerator& context, char a)
 {
 	AsmBlock* block = new AsmBlock();
 	// A = 0 - A
@@ -195,7 +195,7 @@ AsmBlock* TGenericInt16::minus(char a)
 	return block;
 }
 
-AsmBlock* TGenericInt16::bnot(char a)
+AsmBlock* TGenericInt16::bnot(AsmGenerator& context, char a)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SET PUSH, " << a << std::endl;
@@ -204,7 +204,7 @@ AsmBlock* TGenericInt16::bnot(char a)
 	return block;
 }
 
-AsmBlock* TGenericInt16::lnot(char a)
+AsmBlock* TGenericInt16::lnot(AsmGenerator& context, char a)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	IFN " << a << ", 0x0" << std::endl;
@@ -213,14 +213,14 @@ AsmBlock* TGenericInt16::lnot(char a)
 	return block;
 }
 		
-AsmBlock* TGenericInt16::inc(char a)
+AsmBlock* TGenericInt16::inc(AsmGenerator& context, char a)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	ADD " << a << ", 1" << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::dec(char a)
+AsmBlock* TGenericInt16::dec(AsmGenerator& context, char a)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SUB " << a << ", 1" << std::endl;
@@ -233,7 +233,7 @@ AsmBlock* TGenericInt16::dec(char a)
 	
 // FIXME context dependent stack clear with 0	
 
-AsmBlock* TGenericInt16::eq(char a, char b)
+AsmBlock* TGenericInt16::eq(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// stack access is more efficient than using SUB and EX
@@ -244,7 +244,7 @@ AsmBlock* TGenericInt16::eq(char a, char b)
 	return block;
 }
 
-AsmBlock* TGenericInt16::neq(char a, char b)
+AsmBlock* TGenericInt16::neq(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// stack access is more efficient than using SUB and EX
