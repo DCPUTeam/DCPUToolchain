@@ -160,6 +160,12 @@ extern "C"
 "-="					{ HANDLE; return yylval.token = ASSIGN_SUBTRACT; }
 "*="					{ HANDLE; return yylval.token = ASSIGN_MULTIPLY; }
 "/="					{ HANDLE; return yylval.token = ASSIGN_DIVIDE; }
+"%="					{ HANDLE; return yylval.token = ASSIGN_MOD; }
+"&="					{ HANDLE; return yylval.token = ASSIGN_BAND; }
+"|="					{ HANDLE; return yylval.token = ASSIGN_BOR; }
+"^="					{ HANDLE; return yylval.token = ASSIGN_BXOR; }
+"<<="					{ HANDLE; return yylval.token = ASSIGN_SHL; }
+">>="					{ HANDLE; return yylval.token = ASSIGN_SHR; }
 "=="					{ HANDLE; return yylval.token = COMPARE_EQUAL; }
 "!="					{ HANDLE; return yylval.token = COMPARE_NOT_EQUAL; }
 "<"					{ HANDLE; return yylval.token = COMPARE_LESS_THAN; }

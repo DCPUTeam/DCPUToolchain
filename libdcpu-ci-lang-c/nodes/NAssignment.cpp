@@ -91,23 +91,38 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 		IType* rhsType = this->rhs.getExpressionType(context);
 		
 		// Check if both types are of a basic type
-		if ((!rhsType->isBasicType()) || (!lhsType->isBasicType()))
+		bool isPointerOp = false;
+		if (lhsType->isPointer() && rhsType->isBasicType())
+		{
+			// pointer op: p += i, or p -= i
+			isPointerOp = true;
+			if (this->op != ASSIGN_ADD && this->op != ASSIGN_SUBTRACT)
+			{
+				throw new CompilerException(this->line, this->file, 
+				"Invalid operands to assign operation. (have '"
+				+ lhsType->getName() + "' and '" + rhsType->getName() + "')");
+			}
+		}
+		else if ((!rhsType->isBasicType()) || (!lhsType->isBasicType()))
 		{
 			throw new CompilerException(this->line, this->file, 
-			"Invalid operands to binary operation. (have '"
+			"Invalid operands to assign operation. (have '"
 			+ lhsType->getName() + "' and '" + rhsType->getName() + "')");
 		}
 		
-		// cast to rhs to lhs type
-		if (rhsType->implicitCastable(context, lhsType))
+		if (!isPointerOp)
 		{
-			*block << *(rhsType->implicitCast(context, lhsType, 'A'));
-		}
-		else
-		{
-			throw new CompilerException(this->line, this->file, 
-			"Unable to implicitly cast '" + rhsType->getName()
-			+ "' to '" + lhsType->getName() + "'");
+			// cast to rhs to lhs type
+			if (rhsType->implicitCastable(context, lhsType))
+			{
+				*block << *(rhsType->implicitCast(context, lhsType, 'A'));
+			}
+			else
+			{
+				throw new CompilerException(this->line, this->file, 
+				"Unable to implicitly cast '" + rhsType->getName()
+				+ "' to '" + lhsType->getName() + "'");
+			}
 		}
 		
 		// move rhs over to register B
@@ -123,21 +138,45 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 		switch (this->op)
 		{
 			case ASSIGN_ADD:
-				*block <<	"	ADD A, B" << std::endl;
+				*block << *(lhsType->add(context, 'A','B'));
 				break;
 
 			case ASSIGN_SUBTRACT:
-				*block <<	"	SUB A, B" << std::endl;
+				*block << *(lhsType->sub(context, 'A','B'));
 				break;
 
 			case ASSIGN_MULTIPLY:
-				*block <<	"	MUL A, B" << std::endl;
+				*block << *(lhsType->mul(context, 'A','B'));
 				break;
 
 			case ASSIGN_DIVIDE:
-				*block <<	"	DIV A, B" << std::endl;
+				*block << *(lhsType->div(context, 'A','B'));
 				break;
-
+				
+			case ASSIGN_MOD:
+				*block << *(lhsType->mod(context, 'A','B'));
+				break;
+				
+			case ASSIGN_BAND:
+				*block << *(lhsType->band(context, 'A','B'));
+				break;
+				
+			case ASSIGN_BOR:
+				*block << *(lhsType->bor(context, 'A','B'));
+				break;
+				
+			case ASSIGN_BXOR:
+				*block << *(lhsType->bxor(context, 'A','B'));
+				break;
+				
+			case ASSIGN_SHL:
+				*block << *(lhsType->shl(context, 'A','B'));
+				break;
+				
+			case ASSIGN_SHR:
+				*block << *(lhsType->shr(context, 'A','B'));
+				break;
+    
 			default:
 				throw new CompilerException(this->line, this->file, "Unknown assignment operation requested.");
 		}
