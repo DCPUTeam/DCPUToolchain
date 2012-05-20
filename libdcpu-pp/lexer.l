@@ -64,7 +64,7 @@ char* pp_trim_and_unescape(char* data)
 
 %%
 
-<<EOF>> 								{static int once = 0; return once++ ? 0 : '\n';}
+<<EOF>> 								{static int once = 0; return once++ ? 0 : NEWLINE;}
 
 	/* Preprocessor keywords */
 
