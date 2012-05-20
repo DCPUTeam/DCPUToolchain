@@ -15,6 +15,7 @@
 #include <CompilerException.h>
 #include "NType.h"
 #include "NAddressOfOperator.h"
+#include "TPointer16.h"
 
 AsmBlock* NAddressOfOperator::compile(AsmGenerator& context)
 {
@@ -31,7 +32,6 @@ IType* NAddressOfOperator::getExpressionType(AsmGenerator& context)
 {
 	// The address of operator has the type of it's expression as a pointer.
 	IType* i = this->expr.getExpressionType(context);
-	NType* t = new NType(*((NType*)i));
-	t->pointerCount += 1;
+	IType* t = new TPointer16(i);
 	return t;
 }
