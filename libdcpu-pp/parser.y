@@ -156,7 +156,10 @@ lines:
 		lines line ;
 
 line:
-		NEWLINE |
+		NEWLINE
+		{
+			handle_output(bfromcstr("\n"), scanner);
+		} |
 		preprocessor NEWLINE |
 		text NEWLINE
 		{
@@ -204,6 +207,13 @@ preprocessor:
 		ULINE NUMBER WORD
 		{
 			handle_uline($2, $3, scanner);
+		} |
+		EQUATE WORD
+		{
+			struct equate_entry* entry = malloc(sizeof(struct equate_entry));
+			entry->name = $2;
+			entry->replace = bfromcstr("");
+			list_append(&equates, entry);
 		} |
 		EQUATE WORD text
 		{
@@ -402,7 +412,7 @@ text:
 			s->data[0] = $2;
 			bconcat($$, s);
 			bdestroy(s);
-		} ;
+		};
 
 macrodef:
 		MACRO WORD PARAM_OPEN macrodefargs PARAM_CLOSE

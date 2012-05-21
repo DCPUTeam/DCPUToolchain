@@ -27,15 +27,17 @@ class NType : public NIdentifier, public IType
 		void resolveStruct(AsmGenerator& context);
 
 	protected:
-		NType(std::string classifier, const std::string& name, unsigned int pointerCount, bool isStruct) :
-			pointerCount(pointerCount), isStruct(isStruct), resolvedStruct(NULL), _name(name), NIdentifier(name, "type-" + classifier) { }
+		NType(std::string classifier, const std::string& name, unsigned int pointerCount, bool isStruct, bool isConstant, bool isSigned) :
+			pointerCount(pointerCount), isStruct(isStruct), isConstant(isConstant), isSigned(isSigned), resolvedStruct(NULL), _name(name), NIdentifier(name, "type-" + classifier) { }
 
 	public:
 		unsigned int pointerCount;
 		bool isStruct;
+		bool isConstant;
+		bool isSigned;
 		NStructureDeclaration* resolvedStruct;
-		NType(const std::string& name, unsigned int pointerCount, bool isStruct) :
-			pointerCount(pointerCount), isStruct(isStruct), resolvedStruct(NULL), _name(name), NIdentifier(name, "type") { }
+		NType(const std::string& name, unsigned int pointerCount, bool isStruct, bool isConstant, bool isSigned) :
+			pointerCount(pointerCount), isStruct(isStruct), isConstant(isConstant), isSigned(isSigned), resolvedStruct(NULL), _name(name), NIdentifier(name, "type") { }
 		uint16_t getStructFieldPosition(AsmGenerator& context, std::string name);
 		size_t getBitSize(AsmGenerator& context);
 		virtual uint16_t getWordSize(AsmGenerator& context);

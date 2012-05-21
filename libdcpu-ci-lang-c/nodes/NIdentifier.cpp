@@ -14,6 +14,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NIdentifier.h"
+#include "NType.h"
 
 AsmBlock* NIdentifier::compile(AsmGenerator& context)
 {
@@ -66,5 +67,10 @@ IType* NIdentifier::getExpressionType(AsmGenerator& context)
 	if (type == NULL)
 		throw new CompilerException(this->line, this->file, "Unable to resolve variable '" + this->name + "' when determining type information (does the variable exist?).");
 	else
-		return type;
+	{
+		// Return a copy of it since all results from
+		// getExpressionType are delete'd by the caller.
+		NType* ntype = (NType*)type;
+		return new NType(*ntype);
+	}
 }

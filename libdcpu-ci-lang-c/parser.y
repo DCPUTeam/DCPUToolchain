@@ -28,6 +28,7 @@ class NInteger;
 #include "nodes/NDeclarations.h"
 #include "nodes/NFunctionDeclaration.h"
 #include "nodes/NStructureDeclaration.h"
+#include "nodes/NEmptyStatement.h"
 #include "nodes/NExpressionStatement.h"
 #include "nodes/NIfStatement.h"
 #include "nodes/NReturnStatement.h"
@@ -111,9 +112,7 @@ void yyerror(const char *str);
 %token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF
 
 /* TOKENS: Type keywords */
-%token <token> TYPE_VOID TYPE_CHAR TYPE_BYTE TYPE_INT TYPE_LONG TYPE_INT8_T
-%token <token> TYPE_INT16_T TYPE_INT32_T TYPE_INT64_T TYPE_UINT8_T TYPE_UINT16_T
-%token <token> TYPE_UINT32_T TYPE_UINT64_T
+%token <token> TYPE_VOID TYPE_CHAR TYPE_SHORT TYPE_INT TYPE_LONG TYPE_FLOAT TYPE_DOUBLE CONST UNSIGNED SIGNED
 
 /* TYPES */
 %type <type> type
@@ -170,10 +169,15 @@ void yyerror(const char *str);
 %%
 
 program:
+		/* No code */
+		{
+			$$ = new NDeclarations();
+			program = $$;
+		} |
 		prog_decl
 		{
-			program = $1;
 			$$ = $1;
+			program = $1;
 		} ;
 
 prog_decl:
@@ -287,27 +291,42 @@ ident:
 type:
 		type_base
 		{
-			$$ = new NType($<type>1->name, 0, false);
+			$$ = new NType($<type>1->name, 0, false, false, false);
 			delete $1;
+		} |
+		CONST type
+		{
+			$$ = $2;
+			$$->isConstant = true;
+		} |
+		SIGNED type
+		{
+			$$ = $2;
+			$$->isSigned = true;
+		} |
+		UNSIGNED type
+		{
+			$$ = $2;
+			$$->isSigned = false;
 		} |
 		STRUCT ident
 		{
-			$$ = new NType($<type>2->name, 0, true);
+			$$ = new NType($<type>2->name, 0, true, false, false);
 			delete $2;
 		} |
 		type_base STAR %prec IREF
 		{
-			$$ = new NType($<type>1->name, 1, false);
+			$$ = new NType($<type>1->name, 1, false, false, false);
 			delete $1;
 		} |
 		STRUCT ident STAR %prec IREF
 		{
-			$$ = new NType($<type>2->name, 1, true);
+			$$ = new NType($<type>2->name, 1, true, false, false);
 			delete $2;
 		} |
 		type STAR %prec IREF
 		{
-			$$ = new NType($<type>1->name, $<type>1->pointerCount + 1, $<type>1->isStruct);
+			$$ = new NType($<type>1->name, $<type>1->pointerCount + 1, $<type>1->isStruct, false, false);
 			delete $1;
 		};
 
@@ -333,6 +352,10 @@ stmts:
 		} ;
 
 stmt:
+		SEMICOLON
+		{
+			$$ = new NEmptyStatement();
+		} |
 		var_decl SEMICOLON
 		{
 			$$ = $1;
@@ -701,9 +724,9 @@ type_base:
 		{
 			$$ = new NIdentifier("char");
 		} |
-		TYPE_BYTE
+		TYPE_SHORT
 		{
-			$$ = new NIdentifier("byte");
+			$$ = new NIdentifier("short");
 		} |
 		TYPE_INT
 		{
@@ -712,38 +735,18 @@ type_base:
 		TYPE_LONG
 		{
 			$$ = new NIdentifier("long");
-		} |
-		TYPE_INT8_T
+		}  |
+		TYPE_FLOAT
 		{
-			$$ = new NIdentifier("int8_t");
-		} |
-		TYPE_INT16_T
+			$$ = new NIdentifier("float");
+		}  |
+		TYPE_DOUBLE
 		{
-			$$ = new NIdentifier("int16_t");
-		} |
-		TYPE_INT32_T
+			$$ = new NIdentifier("double");
+		}  |
+		TYPE_LONG TYPE_DOUBLE
 		{
-			$$ = new NIdentifier("int32_t");
-		} |
-		TYPE_INT64_T
-		{
-			$$ = new NIdentifier("int64_t");
-		} |
-		TYPE_UINT8_T
-		{
-			$$ = new NIdentifier("uint8_t");
-		} |
-		TYPE_UINT16_T
-		{
-			$$ = new NIdentifier("uint16_t");
-		} |
-		TYPE_UINT32_T
-		{
-			$$ = new NIdentifier("uint32_t");
-		} |
-		TYPE_UINT64_T
-		{
-			$$ = new NIdentifier("uint64_t");
+			$$ = new NIdentifier("long double");
 		} ;
 
 %%

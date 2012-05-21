@@ -20,8 +20,8 @@
 #include "NStructureDeclaration.h"
 #include "Lists.h"
 
-NType internal_TypeType("<type>", 0, false);
-NType internal_VoidType("void", 0, false);
+NType internal_TypeType("<type>", 0, false, true, false);
+NType internal_VoidType("void", 0, false, false, false);
 NType& NType::TypeType(internal_TypeType);
 NType& NType::VoidType(internal_VoidType);
 
@@ -65,19 +65,12 @@ size_t NType::getBitSize(AsmGenerator& context)
 	}
 	else
 	{
-		if (this->name == "char")			return 16; // 8
+		if (this->name == "void")		return 0; // for void pointers
+		else if (this->name == "char")		return 16; // 8
 		else if (this->name == "byte")		return 16; // 8
 		else if (this->name == "short")		return 16;
-		else if (this->name == "int")		return 32;
-		else if (this->name == "long")		return 64;
-		else if (this->name == "int8_t")	return 16; // 8
-		else if (this->name == "int16_t")	return 16;
-		else if (this->name == "int32_t")	return 32;
-		else if (this->name == "int64_t")	return 64;
-		else if (this->name == "uint8_t")	return 16; // 8
-		else if (this->name == "uint16_t")	return 16;
-		else if (this->name == "uint32_t")	return 32;
-		else if (this->name == "uint64_t")	return 64;
+		else if (this->name == "int")		return 16;
+		else if (this->name == "long")		return 32;
 		else
 			throw new CompilerException(this->line, this->file, "Unknown type " + this->name + " encountered!");
 	}
@@ -118,6 +111,8 @@ bool NType::operator==(const NType& other) const
 {
 	return (this->name == other.name &&
 		this->isStruct == other.isStruct &&
+		this->isConstant == other.isConstant &&
+		this->isSigned == other.isSigned &&
 		this->pointerCount == other.pointerCount);
 }
 

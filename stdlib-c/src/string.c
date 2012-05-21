@@ -37,7 +37,7 @@ void* memmove(void* destination, const void* source, size_t num)
 char* strcpy(char* destination, const char* source)
 {
 	while (*source != 0)
-		*destination++ = *source++;
+		*(destination++) = *(source++);
 	return destination;
 }
 
@@ -47,9 +47,9 @@ char* strncpy(char* destination, const char* source, size_t num)
 	for (i = 0; i < num; i++)
 	{
 		if (*source == 0)
-			*destination++ = 0;
+			*(destination++) = 0;
 		else
-			*destination++ = *source++;
+			*(destination++) = *(source++);
 	}
 	return destination;
 }
@@ -60,7 +60,7 @@ char* strcat(char* destination, const char* source)
 	size_t len = strlen(destination);
 	destination += len;
 	while (*source != 0)
-		*destination++ = *source++;
+		*(destination++) = *(source++);
 	return destination;
 }
 
@@ -70,7 +70,7 @@ char* strncat(char* destination, char* source, size_t num)
 	size_t i = 0;
 	destination += len;
 	while (*source != 0 && i++ < num)
-		*destination++ = *source++;
+		*(destination++) = *(source++);
 	return destination;
 }
 
@@ -105,7 +105,7 @@ int strcmp(const char* first, const char* second)
 int strncmp(const char* first, const char* second, size_t num)
 {
 	size_t i;
-	for (first[i] != 0 && second[i] != 0 && i++ < num)
+	while (first[i] != 0 && second[i] != 0 && i++ < num)
 	{
 		if (first[i] > second[i])
 			return 1;
@@ -171,13 +171,6 @@ void* memset(void* destination, int value, size_t num)
 	for (i = 0; i < num; i++)
 		destination[i] = value;
 	return destination;
-}
-
-char* _strerror = "Unsupported functionality.";
-
-char* strerror(int errnum)
-{
-	return _strerror;
 }
 
 size_t strlen(const char* str)

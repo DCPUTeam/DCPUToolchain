@@ -28,19 +28,8 @@ class NInteger : public NExpression
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType* getExpressionType(AsmGenerator& context);
 
-		// Specific types for integers.
-		static NType& Int8Type;
-		static NType& Int16Type;
-		static NType& Int32Type;
-		static NType& Int64Type;
-		static NType& UInt8Type;
-		static NType& UInt16Type;
-		static NType& UInt32Type;
-		static NType& UInt64Type;
-
 		// General types for integers.
 		static NType& CharType;
-		static NType& ByteType;
 		static NType& ShortType;
 		static NType& IntegerType;
 		static NType& LongType;

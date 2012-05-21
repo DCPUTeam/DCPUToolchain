@@ -32,8 +32,8 @@
 #include "parser.hpp"
 
 void count();
-void comment_line();
-void comment();
+bool comment_line();
+bool comment();
 char* trim_and_unescape(char* data, int mode);
 int check_type();
 extern int string_return;
@@ -95,17 +95,14 @@ extern "C"
 
 "void"					{ HANDLE; return TYPE_VOID; }
 "char"					{ HANDLE; return TYPE_CHAR; }
-"byte"					{ HANDLE; return TYPE_BYTE; }
+"short"					{ HANDLE; return TYPE_SHORT; }
 "int"					{ HANDLE; return TYPE_INT; }
 "long"					{ HANDLE; return TYPE_LONG; }
-"int8_t"				{ HANDLE; return TYPE_INT8_T; }
-"int16_t"				{ HANDLE; return TYPE_INT16_T; }
-"int32_t"				{ HANDLE; return TYPE_INT32_T; }
-"int64_t"				{ HANDLE; return TYPE_INT64_T; }
-"uint8_t"				{ HANDLE; return TYPE_UINT8_T; }
-"uint16_t"				{ HANDLE; return TYPE_UINT16_T; }
-"uint32_t"				{ HANDLE; return TYPE_UINT32_T; }
-"uint64_t"				{ HANDLE; return TYPE_UINT64_T; }
+"float"					{ HANDLE; return TYPE_FLOAT; }
+"double"				{ HANDLE; return TYPE_DOUBLE; }
+"const"					{ HANDLE; return CONST; }
+"signed"				{ HANDLE; return SIGNED; }
+"unsigned"				{ HANDLE; return UNSIGNED; }
 
 	/* String and character analysis */
 
@@ -182,30 +179,42 @@ extern "C"
 	/* Comments and whitespace */
 
 \n					{ }
-"//"					{ comment_line(); }
-"/*"					{ comment(); }
+"//"					{ if (!comment_line()) return ERROR; }
+"/*"					{ if (!comment()) return ERROR; }
 [ \t]+					/* ignore whitespace */;
 
 %%
 
 int string_return = INITIAL;
 
-void comment()
-{
-	char c, c1;
-
-loop:
-	while ((c = yyinput()) != '*' && c != 0) ;
-
-	if ((c1 = yyinput()) != '/' && c != 0)
-		goto loop;
-}
-
-void comment_line()
+bool comment()
 {
 	char c;
 
-	while ((c = yyinput()) != '\n' && c != 0) ;
+loop:
+	while ((c = yyinput()) != '*' && c != 0 && c != EOF) ;
+
+star_loop:
+	if ((c = yyinput()) != '/' && c != 0 && c != EOF)
+		if (c == '*')
+			goto star_loop;
+		else
+			goto loop;
+	
+	if (c == EOF)
+		return false;
+	return true;
+}
+
+bool comment_line()
+{
+	char c;
+
+	while ((c = yyinput()) != '\n' && c != 0 && c != EOF) ;
+	
+	if (c == EOF)
+		return false;
+	return true;
 }
 
 void count()
@@ -231,17 +240,8 @@ int check_type()
 	std::string data = yytext;
 	if (data == "void")		return TYPE_VOID;
 	else if (data == "char")	return TYPE_CHAR;
-	else if (data == "byte")	return TYPE_BYTE;
 	else if (data == "int")		return TYPE_INT;
 	else if (data == "long")	return TYPE_LONG;
-	else if (data == "int8_t")	return TYPE_INT8_T;
-	else if (data == "int16_t")	return TYPE_INT16_T;
-	else if (data == "int32_t")	return TYPE_INT32_T;
-	else if (data == "int64_t")	return TYPE_INT64_T;
-	else if (data == "uint8_t")	return TYPE_UINT8_T;
-	else if (data == "uint16_t")	return TYPE_UINT16_T;
-	else if (data == "uint32_t")	return TYPE_UINT32_T;
-	else if (data == "uint64_t")	return TYPE_UINT64_T;
 
 	// TODO: When we support typedef's later on, we also
 	// need to check here for those as well.

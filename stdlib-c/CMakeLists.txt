@@ -80,16 +80,16 @@ function(add_dcpu_image target)
 	message("  >> ${target}")
 
 	# Define each of the tools using the files list.
-	define_dcpu_tool(assembler "-i" "Assembling" "${ARGN}" toutputs ".dasm" ".dasm16")
-	define_dcpu_tool(compiler "" "Compiling" "${ARGN}" toutputs ".c")
+	define_dcpu_tool(dtasm "-i" "Assembling" "${ARGN}" toutputs ".dasm" ".dasm16")
+	define_dcpu_tool(dtcc "" "Compiling" "${ARGN}" toutputs ".c")
 
 	# Define the linker.
 	string(STRIP "${toutputs}" toutputs)
 	add_custom_command(
 		OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dcpu16"
-		COMMAND ${KERNEL_TOOLS}/linker${CMAKE_EXECUTABLE_SUFFIX}
-			ARGS -o "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dcpu16" ${toutputs} 2>>./CMakeFiles/dcpu-linker-log
-		DEPENDS linker
+		COMMAND ${KERNEL_TOOLS}/dtld${CMAKE_EXECUTABLE_SUFFIX}
+			ARGS -o "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dcpu16" ${toutputs} 2>>./CMakeFiles/dcpu-dtld-log
+		DEPENDS dtld
 		COMMENT "Linking stdlib.dcpu16 with DCPU-Toolchain...")
 
 	# Define our target.
@@ -109,6 +109,7 @@ endfunction(add_dcpu_image target)
 
 # Define the standard library.
 add_dcpu_image(stdlib-c
+	src/stdlib.c
 	src/string.c
 	src/math.c
 )

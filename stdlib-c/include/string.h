@@ -48,7 +48,7 @@ char* strtok(char* str, const char* delimiters);
 
 // Other:
 void* memset(void* ptr, int value, size_t num);
-char* strerror(int errnum);
+//char* strerror(int errnum);
 size_t strlen(const char* str);
 
 #endif

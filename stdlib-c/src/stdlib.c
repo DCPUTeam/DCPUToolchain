@@ -82,13 +82,13 @@ void abort()
 }
 
 // Searching and sorting:
-void* bsearch(const void* key, const void* base, size_t num, size_t size, int (*comparator)(const void*, const void*))
+void* bsearch(const void* key, const void* base, size_t num, size_t size, int (*comparator)(const void* a, const void* b))
 {
 	// TODO
 	return NULL;
 }
 
-void qsort(void* base, size_t num, size_t size, int (*comparator)(const void*, const void*))
+void qsort(void* base, size_t num, size_t size, int (*comparator)(const void* a, const void* b))
 {
 	// TODO
 }
@@ -102,17 +102,11 @@ int abs(int n)
 		return n;
 }
 
-div_t div(int numerator, int denominator)
+struct div_s div(int numerator, int denominator)
 {
-	div_t result;
+	struct div_s result;
 	result.quot = numerator / denominator;
 	result.rem = numerator % denominator;
 	return result;
 }
 
-// Structures:
-typedef struct
-{
-	int quot;
-	int rem;
-} div_t;

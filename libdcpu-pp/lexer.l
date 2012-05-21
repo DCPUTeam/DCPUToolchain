@@ -93,6 +93,7 @@ char* pp_trim_and_unescape(char* data)
 	/* Equate definitions */
 	
 <EQUATEDEF>[A-Za-z_-]+[A-Za-z0-9_-]*					yylval->string = bfromcstr(yytext); BEGIN(EQUATESPC); return WORD;
+<EQUATESPC>\n								yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
 <EQUATESPC>[ \t]+							BEGIN(EQUATEVAL);
 <EQUATEVAL>\n								yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
 <EQUATEVAL>[^\n]							yylval->any = yytext[0]; return TEXT;

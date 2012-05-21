@@ -23,7 +23,7 @@ class NFunctionPointerType : public NType, public NFunctionSignature
 {
 	public:
 		NFunctionPointerType(const NType& returnType, const VariableList& arguments) :
-			NType("function", NFunctionSignature::calculateSignature(returnType, arguments), 1, false), NFunctionSignature(returnType, arguments) { }
+			NType("function", NFunctionSignature::calculateSignature(returnType, arguments), 1, false, false, false), NFunctionSignature(returnType, arguments) { }
 };
 
 #endif

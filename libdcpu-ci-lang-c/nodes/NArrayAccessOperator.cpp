@@ -63,23 +63,20 @@ AsmBlock* NArrayAccessOperator::reference(AsmGenerator& context)
 IType* NArrayAccessOperator::getExpressionType(AsmGenerator& context)
 {
 	// An array operator has the type of it's "unpointered" first expression.
-	IType* i = this->exprA.getExpressionType(context);
-	NType* t = new NType(*((NType*)i));
+	NType* i = (NType*)this->exprA.getExpressionType(context);
 
-	if (t->pointerCount > 0)
-		t->pointerCount -= 1;
+	if (i->pointerCount > 0)
+		i->pointerCount -= 1;
 	else
 	{
 		// If we are using a literal or non-pointer as the first expression,
 		// then we actually return void* as the type since it's array access
 		// into unspecified memory.
 		delete i;
-		delete t;
-		t = new NType(NType::VoidType);
-		t->pointerCount += 1;
-		return t;
+		i = new NType(NType::VoidType);
+		i->pointerCount += 1;
+		return i;
 	}
 
-	delete i;
-	return t;
+	return i;
 }

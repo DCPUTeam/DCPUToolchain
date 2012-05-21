@@ -22,8 +22,15 @@
 #define NULL 0
 #endif
 #ifndef size_t
-#define size_t uint16_t
+#define size_t unsigned short
 #endif
+
+// Structures:
+struct div_s
+{
+	int quot;
+	int rem;
+};
 
 // String conversion:
 //double atof(const char* str);
@@ -51,21 +58,15 @@ void abort();
 //int system(const char* command);
 
 // Searching and sorting:
-void* bsearch(const void* key, const void* base, size_t num, size_t size, int (*comparator)(const void*, const void*));
-void qsort(void* base, size_t num, size_t size, int (*comparator)(const void*, const void*));
+void* bsearch(const void* key, const void* base, size_t num, size_t size, int (*comparator)(const void* a, const void* b));
+void qsort(void* base, size_t num, size_t size, int (*comparator)(const void* a, const void* b));
 
 // Integer arithmethics:
 int abs(int n);
-div_t div(int numerator, int denominator);
+struct div_s div(int numerator, int denominator);
 //long int labs(long int n);
 //ldiv_t ldiv(long int numerator, long int denominator);
 
-// Structures:
-typedef struct
-{
-	int quot;
-	int rem;
-} div_t;
 //typedef struct
 //{
 //	long int quot;
