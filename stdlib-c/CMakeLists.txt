@@ -17,7 +17,7 @@ set(KERNEL_SRC ${ROOT_DIR}/stdlib-c/src)
 
 # Define a general function that allows us to
 # define tools and their handling of files.
-function(define_dcpu_tool tool toolargs verb files outvar)
+function(define_dcpu_tool tool toolargs verb files runasm outvar)
 	set(tout "")
 	foreach(arg ${ARGN})
 		set(UARGN "${UARGN} ${arg}")
@@ -52,24 +52,52 @@ function(define_dcpu_tool tool toolargs verb files outvar)
 			endif("${fext}" STREQUAL "${e}")
 		endforeach(e ${ARGN})
 		if(${extension_matches} STREQUAL "true")
-			if(DEFINED VERY_VERBOSE)
-				message("       .. adding command")
-				message("          output: ${fpth}/${fbse}.o")
-				message("          command: ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX} ${toolargs} -o \"${fpth}/${fbse}.o\" \"${i}\"")
-				message("          depends: ${tool}")
-			endif(DEFINED VERY_VERBOSE)
-			add_custom_command(
-				OUTPUT ${fpth}/${fbse}.o
-				COMMAND ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX}
-					ARGS ${toolargs} -o "${fpth}/${fbse}.o" "${i}" 2>>./CMakeFiles/dcpu-${tool}-log
-				DEPENDS ${tool}
-				COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
-			if("${tout}" STREQUAL "")
-				set(tout "${fpth}/${fbse}.o")
-			else("${tout}" STREQUAL "")
-				list(APPEND tout "${fpth}/${fbse}.o")
-			endif("${tout}" STREQUAL "")
-			set(${outvar} "${${outvar}} ${tout}" PARENT_SCOPE)	
+			if(${runasm} STREQUAL "true")
+				if(DEFINED VERY_VERBOSE)
+					message("       .. adding command")
+					message("          output: ${fpth}/${fbse}.o")
+					message("          command: ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX} ${toolargs} -o \"${fpth}/${fbse}.oa\" \"${i}\"")
+					message("          command: ${KERNEL_TOOLS}/dtasm${CMAKE_EXECUTABLE_SUFFIX} -i -o \"${fpth}/${fbse}.o\" \"${fpth}/${fbse}.oa\"")
+					message("          depends: ${tool} dtasm ${i}")
+				endif(DEFINED VERY_VERBOSE)
+				add_custom_command(
+					OUTPUT ${fpth}/${fbse}.oa
+					COMMAND ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX}
+						ARGS ${toolargs} -o "${fpth}/${fbse}.oa" "${i}" 2>>./CMakeFiles/dcpu-${tool}-log 
+					DEPENDS ${tool} dtasm "${i}"
+					COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
+				add_custom_command(
+					OUTPUT ${fpth}/${fbse}.o
+					COMMAND ${KERNEL_TOOLS}/dtasm${CMAKE_EXECUTABLE_SUFFIX}
+						ARGS -i -o "${fpth}/${fbse}.o" "${fpth}/${fbse}.oa" 2>>./CMakeFiles/dcpu-${tool}-dtasm-log 
+					DEPENDS ${tool} dtasm "${i}" "${fpth}/${fbse}.oa"
+					COMMENT "Assembling ${fpth}/${fbse}.oa with DCPU-Toolchain...")
+				if("${tout}" STREQUAL "")
+					set(tout "${fpth}/${fbse}.o")
+				else("${tout}" STREQUAL "")
+					list(APPEND tout "${fpth}/${fbse}.o")
+				endif("${tout}" STREQUAL "")
+				set(${outvar} "${${outvar}} ${tout}" PARENT_SCOPE)
+			else(${runasm} STREQUAL "true")
+				if(DEFINED VERY_VERBOSE)
+					message("       .. adding command")
+					message("          output: ${fpth}/${fbse}.o")
+					message("          command: ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX} ${toolargs} -o \"${fpth}/${fbse}.o\" \"${i}\"")
+					message("          depends: ${tool}")
+				endif(DEFINED VERY_VERBOSE)
+				add_custom_command(
+					OUTPUT ${fpth}/${fbse}.o
+					COMMAND ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX}
+						ARGS ${toolargs} -o "${fpth}/${fbse}.o" "${i}" 2>>./CMakeFiles/dcpu-${tool}-log
+					DEPENDS ${tool} "${i}"
+					COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
+				if("${tout}" STREQUAL "")
+					set(tout "${fpth}/${fbse}.o")
+				else("${tout}" STREQUAL "")
+					list(APPEND tout "${fpth}/${fbse}.o")
+				endif("${tout}" STREQUAL "")
+				set(${outvar} "${${outvar}} ${tout}" PARENT_SCOPE)
+			endif(${runasm} STREQUAL "true")
 		endif(${extension_matches} STREQUAL "true")
 	endforeach(i ${files})
 endfunction(define_dcpu_tool tool toolargs files outvar)
@@ -80,28 +108,36 @@ function(add_dcpu_image target)
 	message("  >> ${target}")
 
 	# Define each of the tools using the files list.
-	define_dcpu_tool(dtasm "-i" "Assembling" "${ARGN}" toutputs ".dasm" ".dasm16")
-	define_dcpu_tool(dtcc "" "Compiling" "${ARGN}" toutputs ".c")
+	define_dcpu_tool(dtasm "-i" "Assembling" "${ARGN}" "false" tasmoutputs ".dasm" ".dasm16")
+	define_dcpu_tool(dtcc "" "Compiling" "${ARGN}" "true" tcoutputs ".c")
 
 	# Define the linker.
-	string(STRIP "${toutputs}" toutputs)
+	string(STRIP "${tasmoutputs}" tasmoutputs)
+	string(STRIP "${tcoutputs}" tcoutputs)
 	add_custom_command(
 		OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dcpu16"
 		COMMAND ${KERNEL_TOOLS}/dtld${CMAKE_EXECUTABLE_SUFFIX}
-			ARGS -o "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dcpu16" ${toutputs} 2>>./CMakeFiles/dcpu-dtld-log
-		DEPENDS dtld
+			ARGS -o "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dcpu16" ${tasmoutputs} ${tcoutputs} 2>>./CMakeFiles/dcpu-dtld-log
+		DEPENDS dtld ${tasmoutputs} ${tcoutputs}
 		COMMENT "Linking stdlib.dcpu16 with DCPU-Toolchain...")
 
 	# Define our target.
-	#string(STRIP "${toutputs}" toutputs)
-	foreach(i ${toutputs})
+	foreach(i ${tasmoutputs})
 		if(DEFINED params)
 			list(APPEND params DEPENDS)
 			list(APPEND params ${i})
 		else(DEFINED params)
 			set(params DEPENDS ${i})
 		endif(DEFINED params)
-	endforeach(i ${toutputs})
+	endforeach(i ${tasmoutputs})
+	foreach(i ${tcoutputs})
+		if(DEFINED params)
+			list(APPEND params DEPENDS)
+			list(APPEND params ${i})
+		else(DEFINED params)
+			set(params DEPENDS ${i})
+		endif(DEFINED params)
+	endforeach(i ${tcoutputs})
 	list(APPEND params DEPENDS)
 	list(APPEND params "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dcpu16")
 	add_custom_target(${target} ALL ${params})
@@ -112,6 +148,7 @@ add_dcpu_image(stdlib-c
 	src/stdlib.c
 	src/string.c
 	src/math.c
+	src/bootstrap.dasm16
 )
 
 # We still need to rely on the rest of the DCPU-Toolchain

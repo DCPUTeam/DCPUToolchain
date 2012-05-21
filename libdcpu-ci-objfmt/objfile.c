@@ -19,14 +19,22 @@
 #include "lprov.h"
 #include "objfile.h"
 
+struct lprov_entry* objfile_get_last(struct lprov_entry* first)
+{
+	if (first == NULL) return first;
+	while (first->next != NULL)
+		first = first->next;
+	return first;
+}
+
 void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov_entry** provided, struct lprov_entry** required, struct lprov_entry** adjustment)
 {
 	struct ldata_entry* entry = NULL;
-	struct lprov_entry* prov_last = provided == NULL ? NULL : *provided;
+	struct lprov_entry* prov_last = provided == NULL ? NULL : objfile_get_last(*provided);
 	struct lprov_entry* prov_current = NULL;
-	struct lprov_entry* req_last = required == NULL ? NULL : *required;
+	struct lprov_entry* req_last = required == NULL ? NULL : objfile_get_last(*required);
 	struct lprov_entry* req_current = NULL;
-	struct lprov_entry* adjust_last = adjustment == NULL ? NULL : *adjustment;
+	struct lprov_entry* adjust_last = adjustment == NULL ? NULL : objfile_get_last(*adjustment);
 	struct lprov_entry* adjust_current = NULL;
 	size_t sz;
 

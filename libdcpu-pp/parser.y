@@ -497,12 +497,12 @@ void handle_output(bstring output, void* scanner)
 
 void handle_line(int line, bstring file, void* current)
 {
-	fprintf(pp_yyget_out((yyscan_t)current), "# %i %s", line, file->data);
+	fprintf(pp_yyget_out((yyscan_t)current), "# %i %s\n", line, file->data);
 }
 
 void handle_uline(int line, bstring file, void* current)
 {
-	fprintf(pp_yyget_out((yyscan_t)current), "#U %i %s", line, file->data);
+	fprintf(pp_yyget_out((yyscan_t)current), "#U %i %s\n", line, file->data);
 }
 
 bstring pp_yyfilename = NULL;

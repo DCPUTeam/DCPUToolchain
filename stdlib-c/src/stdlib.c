@@ -42,8 +42,9 @@ void free(void* ptr)
 {
 	__asm
 	{
-		SET A, <ptr>
-		JSR free
+		; The compiler needs to support variable insertion.
+		;SET A, <ptr>
+		;JSR free
 	}
 }
 
@@ -52,9 +53,10 @@ void* malloc(size_t size)
 	void* result;
 	__asm
 	{
-		SET A, <size>
-		JSR malloc
-		SET <&result>, A
+		; The compiler needs to support variable insertion.
+		;SET A, <size>
+		;JSR malloc
+		;SET <&result>, A
 	}
 	return result;
 }
@@ -64,10 +66,11 @@ void* realloc(void* ptr, size_t size)
 	void* result;
 	__asm
 	{
-		SET A, <ptr>
-		SET B, <size>
-		JSR malloc
-		SET <&result>, A
+		; The compiler needs to support variable insertion.
+		;SET A, <ptr>
+		;SET B, <size>
+		;JSR malloc
+		;SET <&result>, A
 	}
 	return result;
 }
