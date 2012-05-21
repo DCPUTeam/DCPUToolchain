@@ -8,4 +8,4 @@ if(NOT DEFINED IS_ROOT)
 endif(NOT DEFINED IS_ROOT)
 
 # Copy files.
-add_custom_command(TARGET dtemu POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/hw ${OUTPUT_DIR}/hw)
+add_custom_command(TARGET dtemu POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/../modules ${OUTPUT_DIR}/modules)

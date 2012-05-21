@@ -1,3 +1,6 @@
 [submodule "kernel"]
 	path = kernel
 	url = git://github.com/DCPUTeam/0x42c.git
+[submodule "modules"]
+	path = modules
+	url = git://github.com/DCPUTeam/DCPUModules.git
