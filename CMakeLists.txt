@@ -348,6 +348,7 @@ add_subdirectory(docs)
 # Add scripts.
 add_subdirectory(scripts)
 
-# Add kernel.
+# Add kernel and standard libraries.
 add_subdirectory(kernel)
+add_subdirectory(stdlib-c)
 
