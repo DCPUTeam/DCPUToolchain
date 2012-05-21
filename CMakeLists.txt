@@ -348,10 +348,6 @@ add_subdirectory(docs)
 # Add scripts.
 add_subdirectory(scripts)
 
-# Add kernel, using the multi-threading version if available.
-if(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
-#	add_subdirectory(kernel.mt)
-else(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
-#	add_subdirectory(kernel)
-endif(EXISTS "kernel.mt" AND IS_DIRECTORY "kernel.mt")
+# Add kernel.
+add_subdirectory(kernel)
 
