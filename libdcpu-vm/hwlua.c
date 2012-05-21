@@ -292,9 +292,9 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
 	// Calculate full path to file.
 	path = osutil_getarg0path();
 #ifdef _WIN32
-	bcatcstr(path, "hw\\");
+	bcatcstr(path, "modules\\");
 #else
-	bcatcstr(path, "hw/");
+	bcatcstr(path, "modules/");
 #endif
 	bconcat(path, name);
 
@@ -332,6 +332,9 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
 		bdestroy(path);
 		return NULL;
 	}
+	
+	// TODO: Check to see whether the module is
+	// a hardware module.
 
 	// Store information into the Lua
 	// hardware structure.
