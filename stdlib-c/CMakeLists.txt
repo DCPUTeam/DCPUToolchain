@@ -115,11 +115,11 @@ function(add_dcpu_image target)
 	string(STRIP "${tasmoutputs}" tasmoutputs)
 	string(STRIP "${tcoutputs}" tcoutputs)
 	add_custom_command(
-		OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dcpu16"
+		OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dlib16"
 		COMMAND ${KERNEL_TOOLS}/dtld${CMAKE_EXECUTABLE_SUFFIX}
-			ARGS -o "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dcpu16" ${tasmoutputs} ${tcoutputs} 2>>./CMakeFiles/dcpu-dtld-log
+			ARGS -l static -o "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dlib16" ${tasmoutputs} ${tcoutputs} 2>>./CMakeFiles/dcpu-dtld-log
 		DEPENDS dtld ${tasmoutputs} ${tcoutputs}
-		COMMENT "Linking stdlib.dcpu16 with DCPU-Toolchain...")
+		COMMENT "Linking stdlib.dlib16 as static library with DCPU-Toolchain...")
 
 	# Define our target.
 	foreach(i ${tasmoutputs})
@@ -139,7 +139,7 @@ function(add_dcpu_image target)
 		endif(DEFINED params)
 	endforeach(i ${tcoutputs})
 	list(APPEND params DEPENDS)
-	list(APPEND params "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dcpu16")
+	list(APPEND params "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dlib16")
 	add_custom_target(${target} ALL ${params})
 endfunction(add_dcpu_image target)
 
