@@ -93,10 +93,10 @@ char* pp_trim_and_unescape(char* data)
 	/* Equate definitions */
 	
 <EQUATEDEF>[A-Za-z_-]+[A-Za-z0-9_-]*					yylval->string = bfromcstr(yytext); BEGIN(EQUATESPC); return WORD;
-<EQUATESPC>\n								yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
+<EQUATESPC>(\r\n|\r|\n)							yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
 <EQUATESPC>[ \t]+							BEGIN(EQUATEVAL);
-<EQUATEVAL>\n								yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
-<EQUATEVAL>[^\n]							yylval->any = yytext[0]; return TEXT;
+<EQUATEVAL>(\r\n|\r|\n)							yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
+<EQUATEVAL>[^\r\n]							yylval->any = yytext[0]; return TEXT;
 
 	/* Macro definitions */
 
@@ -104,16 +104,16 @@ char* pp_trim_and_unescape(char* data)
 <MACROCALLDEF>\)							return PARAM_CLOSE;
 <MACRODEF>\)								BEGIN(MACROCONTENT); return PARAM_CLOSE;
 <MACROCALLDEF,MACRODEF>\,						return COMMA;
-<MACROCALLDEF,MACRODEF>\n						yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
-<MACROCALLDEF,MACRODEF>[^ \t\n\(\)\,]					yylval->any = yytext[0]; return WHITESPACE;
+<MACROCALLDEF,MACRODEF>(\r\n|\r|\n)					yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
+<MACROCALLDEF,MACRODEF>[^ \t\r\n\(\)\,]					yylval->any = yytext[0]; return WHITESPACE;
 <MACROCALLDEF,MACRODEF>[ \t]+						/* ignore whitespace */;
 
 	/* Miscellanous */
 
-<PREPROCESSING>\n							yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
-<PREPROCESSING>[^ \t\n]							yylval->any = yytext[0]; return WHITESPACE;
+<PREPROCESSING>(\r\n|\r|\n)						yylval->any = '\n'; BEGIN(INITIAL); return NEWLINE;
+<PREPROCESSING>[^ \t\r\n]						yylval->any = yytext[0]; return WHITESPACE;
 <PREPROCESSING>[ \t]+							/* ignore whitespace */;
-<MACROCONTENT,INITIAL>\n						yylval->any = '\n'; return NEWLINE;
-<MACROCONTENT,INITIAL>[^\n]						yylval->any = yytext[0]; return TEXT;
+<MACROCONTENT,INITIAL>(\r\n|\r|\n)					yylval->any = '\n'; return NEWLINE;
+<MACROCONTENT,INITIAL>[^\r\n]						yylval->any = yytext[0]; return TEXT;
 
 %%

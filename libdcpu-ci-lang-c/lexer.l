@@ -60,7 +60,7 @@ extern "C"
 
 	/* Line and file directives */
 	
-\#\ [0-9]+\ [^\n]*\n			{ HANDLE; rparse_do(yytext, &yylineno, &yyfilename); }
+\#\ [0-9]+\ [^\r\n]*(\r\n|\r|\n)	{ HANDLE; rparse_do(yytext, &yylineno, &yyfilename); }
 
 	/* Constants */
 	
@@ -178,7 +178,7 @@ extern "C"
 
 	/* Comments and whitespace */
 
-\n					{ }
+(\r\n|\r|\n)				{ }
 "//"					{ if (!comment_line()) return ERROR; }
 "/*"					{ if (!comment()) return ERROR; }
 [ \t]+					/* ignore whitespace */;

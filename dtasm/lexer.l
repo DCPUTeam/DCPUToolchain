@@ -49,8 +49,8 @@ bstring yyfilename = NULL;
 
 	/* Line and file directives */
 	
-\#\ [0-9]+\ [^\n]*\n				rparse_do(yytext, &yylineno, &yyfilename);
-\#U\ [0-9]+\ [^\n]*\n				rparse_do(yytext, &yyulineno, &yyufilename);
+\#\ [0-9]+\ [^\r\n]*(\r\n|\r|\n)		rparse_do(yytext, &yylineno, &yyfilename);
+\#U\ [0-9]+\ [^\r\n]*(\r\n|\r|\n)		rparse_do(yytext, &yyulineno, &yyufilename);
 
 	/* Assembler keywords */
 
@@ -203,7 +203,7 @@ bstring yyfilename = NULL;
 \]				return BRACKET_CLOSE;
 \:				return COLON;
 
-\n				return NEWLINE;
+(\r\n|\r|\n)			return NEWLINE;
 \;[^\r\n]*			/* ignore comments */;
 [ \t]+				/* ignore whitespace */;
 
