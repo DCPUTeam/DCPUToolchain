@@ -42,7 +42,6 @@ ipch/*
 *.a
 Makefile
 
-
 # Other repos #
 ###############
 standards/
@@ -76,7 +75,16 @@ CMakeFiles/*
 */parser.cpp
 */parser.hpp
 
+# Documentation files #
+#######################
 docs/_build/*
 docs/_doctrees/*
 docs/html/*
 *.pyc
+
+# Build artifacts #
+###################
+*.o
+*.oa
+*.dcpu16
+*.dobj16
