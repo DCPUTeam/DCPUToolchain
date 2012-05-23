@@ -31,6 +31,26 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 	AsmBlock* expr = this->initExpr->compile(context);
 	*block << *expr;
 	delete expr;
+	
+	// get variable type
+	IType* varType = context.m_CurrentFrame->getTypeOfVariable(this->id.name);
+	
+	// get type, it may has to be cast
+	IType* exprType = this->initExpr->getExpressionType(context);
+	
+	// cast to rhs to lhs type
+	if (exprType->implicitCastable(context, varType))
+	{
+		*block << *(exprType->implicitCast(context, varType, 'A'));
+	}
+	else
+	{
+		throw new CompilerException(this->line, this->file, 
+		"Unable to implicitly cast '" + exprType->getName()
+		+ "' to '" + varType->getName() + "'");
+	}
+	
+
 
 	// Get the position of the variable.
 	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
@@ -40,7 +60,8 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 
 	// Set the value of the variable directly.
 	*block << result.pushAddress('I');
-	*block <<	"	SET [I], A" << std::endl;
+	// save the value A to [I]
+	*block << *(varType->saveToRef(context, 'A', 'I'));
 
 	return block;
 }
