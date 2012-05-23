@@ -22,12 +22,12 @@
 class NVariableDeclaration : public NDeclaration
 {
 	public:
-		NType& type;
+		IType* type;
 		NIdentifier& id;
 		NExpression* initExpr;
-		NVariableDeclaration(NType& type, NIdentifier& id) :
+		NVariableDeclaration(IType* type, NIdentifier& id) :
 			type(type), id(id), initExpr(NULL), NDeclaration("variable") { }
-		NVariableDeclaration(NType& type, NIdentifier& id, NExpression* initExpr) :
+		NVariableDeclaration(IType* type, NIdentifier& id, NExpression* initExpr) :
 			type(type), id(id), initExpr(initExpr), NDeclaration("variable") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);

@@ -15,9 +15,9 @@
 // the parser header so that we only get the token values.
 #define YYSTYPE int
 
-#include "NInteger.h"
 #include <AsmGenerator.h>
 #include <CompilerException.h>
+#include <nodes/IType.h>
 #include "../parser.hpp"
 #include "NPostIncDec.h"
 
@@ -30,20 +30,31 @@ AsmBlock* NPostIncDec::compile(AsmGenerator& context)
 	AsmBlock* reference = this->expr.reference(context);
 	*block <<   *reference;
 	delete reference;
+	
+	// get type
+	IType* exprType = this->expr.getExpressionType(context);
+	
+	// Type checking
+	if ((!exprType->isPointer()) && (!exprType->isBasicType()))
+	{
+		throw new CompilerException(this->line, this->file, 
+		"Invalid operand to post increase/decrease operation. (have '"
+		+ exprType->getName() + "')");
+	}
 
 	*block <<	"	SET B, A" << std::endl;
 	// return old value in A
-	*block <<	"	SET A, [B]" << std::endl;
+	*block << *(exprType->loadFromRef(context, 'B', 'A'));
 
 	// increment/decrement
 	switch (this->op)
 	{
 		case INCREMENT:
-			*block <<	"	ADD [B], 1" << std::endl;
+			*block << *(exprType->inc(context, 'B'));
 			break;
 
 		case DECREMENT:
-			*block <<	"	SUB [B], 1" << std::endl;
+			*block << *(exprType->dec(context, 'B'));
 			break;
 
 		default:

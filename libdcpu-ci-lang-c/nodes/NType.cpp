@@ -25,6 +25,15 @@ NType internal_VoidType("void", 0, false, false, false);
 NType& NType::TypeType(internal_TypeType);
 NType& NType::VoidType(internal_VoidType);
 
+
+// TODO remove this later, as soon as Type System is implemented
+std::string NType::getName() const
+{
+	// TODO maybe call it by its real name? (e.g. unsigned int, unsigned char, uint16_t)
+	return _name;
+}
+
+
 AsmBlock* NType::compile(AsmGenerator& context)
 {
 	throw new CompilerException(this->line, this->file, "Unable to compile type AST node.");
@@ -61,7 +70,7 @@ size_t NType::getBitSize(AsmGenerator& context)
 	else if (this->isStruct)
 	{
 		this->resolveStruct(context);
-		return this->resolvedStruct->getBitSize(context);
+		return 16*this->resolvedStruct->getWordSize(context);
 	}
 	else
 	{
@@ -94,7 +103,7 @@ uint16_t NType::getStructFieldPosition(AsmGenerator& context, std::string name)
 		if ((*i)->id.name == name)
 			return pos;
 		else
-			pos += (*i)->type.getWordSize(context);
+			pos += (*i)->type->getWordSize(context);
 	}
 
 	// If the field wasn't found...

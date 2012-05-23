@@ -24,7 +24,7 @@ std::string NFunctionSignature::calculateSignature(const VariableList& arguments
 		{
 			sig = sig + ",";
 		}
-		sig = sig + (*i)->type.name;
+		sig = sig + (*i)->type->getName();
 	}
 	sig = sig + ")";
 	return sig;
@@ -32,12 +32,13 @@ std::string NFunctionSignature::calculateSignature(const VariableList& arguments
 
 
 
-std::string NFunctionSignature::calculateSignature(const NType& returnType, const VariableList& arguments)
+std::string NFunctionSignature::calculateSignature(const IType* returnType, const VariableList& arguments)
 {
-	std::string name = returnType.name;
+	IType* returnTypePtr = (IType*) returnType;
+	std::string name = returnTypePtr->getName();
 	std::string argumentsSig = NFunctionSignature::calculateSignature(arguments);
 	name = name + "-" + argumentsSig;
-	return name;
+	return std::string(name);
 }
 
 

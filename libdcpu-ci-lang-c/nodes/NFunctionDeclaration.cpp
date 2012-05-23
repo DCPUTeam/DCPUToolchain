@@ -16,7 +16,7 @@
 #include "NFunctionDeclaration.h"
 #include "NFunctionSignature.h"
 
-NFunctionDeclaration::NFunctionDeclaration(const NType& type, const NIdentifier& id, const VariableList& arguments, NBlock* block)
+NFunctionDeclaration::NFunctionDeclaration(const IType* type, const NIdentifier& id, const VariableList& arguments, NBlock* block)
 	: id(id), block(block), pointerType(NULL), NDeclaration("function"), NFunctionSignature(type, arguments)
 {
 	// We need to generate an NFunctionPointerType for when we are resolved

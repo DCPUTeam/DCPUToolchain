@@ -22,7 +22,7 @@
 #include "nodes/NExpression.h"
 #include "nodes/NStatement.h"
 #include "nodes/NIdentifier.h"
-#include "nodes/NInteger.h"
+#include "nodes/NIntegerLiteral.h"
 #include "nodes/NType.h"
 #include "nodes/NDeclarations.h"
 #include "nodes/NFunctionDeclaration.h"
@@ -92,10 +92,10 @@ extern "C"
 <IN_ASM_BLOCK>[ \t]+			/* ignore whitespace */;
 
 	/* Type keywords */
-
 "void"					{ HANDLE; return TYPE_VOID; }
 "char"					{ HANDLE; return TYPE_CHAR; }
 "short"					{ HANDLE; return TYPE_SHORT; }
+"byte"					{ HANDLE; return TYPE_BYTE; }
 "int"					{ HANDLE; return TYPE_INT; }
 "long"					{ HANDLE; return TYPE_LONG; }
 "float"					{ HANDLE; return TYPE_FLOAT; }
@@ -153,6 +153,12 @@ extern "C"
 "-="					{ HANDLE; return yylval.token = ASSIGN_SUBTRACT; }
 "*="					{ HANDLE; return yylval.token = ASSIGN_MULTIPLY; }
 "/="					{ HANDLE; return yylval.token = ASSIGN_DIVIDE; }
+"%="					{ HANDLE; return yylval.token = ASSIGN_MOD; }
+"&="					{ HANDLE; return yylval.token = ASSIGN_BAND; }
+"|="					{ HANDLE; return yylval.token = ASSIGN_BOR; }
+"^="					{ HANDLE; return yylval.token = ASSIGN_BXOR; }
+"<<="					{ HANDLE; return yylval.token = ASSIGN_SHL; }
+">>="					{ HANDLE; return yylval.token = ASSIGN_SHR; }
 "=="					{ HANDLE; return yylval.token = COMPARE_EQUAL; }
 "!="					{ HANDLE; return yylval.token = COMPARE_NOT_EQUAL; }
 "<"					{ HANDLE; return yylval.token = COMPARE_LESS_THAN; }

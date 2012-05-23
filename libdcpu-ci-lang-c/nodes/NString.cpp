@@ -14,7 +14,8 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NString.h"
-#include "NInteger.h"
+#include "TPointer16.h"
+#include "TInt16.h"
 
 AsmBlock* NString::compile(AsmGenerator& context)
 {
@@ -46,7 +47,7 @@ AsmBlock* NString::reference(AsmGenerator& context)
 IType* NString::getExpressionType(AsmGenerator& context)
 {
 	// A string has the type char*.
-	NType* t = new NType(NInteger::CharType);
-	t->pointerCount += 1;
+	// currently char is mapped to int16_t
+	IType* t = new TPointer16(new TInt16());
 	return t;
 }

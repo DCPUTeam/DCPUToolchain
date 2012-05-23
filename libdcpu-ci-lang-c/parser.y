@@ -45,10 +45,15 @@ class NInteger;
 #include "nodes/NPreIncDec.h"
 #include "nodes/NPostIncDec.h"
 #include "nodes/NAddressOfOperator.h"
-#include "nodes/NInteger.h"
+#include "nodes/NIntegerLiteral.h"
 #include "nodes/NSizeOfOperator.h"
 #include "nodes/NCharacter.h"
 #include "nodes/NString.h"
+#include "nodes/TUint16.h"
+#include "nodes/TInt16.h"
+#include "nodes/TPointer16.h"
+#include "nodes/TStruct.h"
+
 
 // Turn on verbose error messages.
 #define YYERROR_VERBOSE
@@ -69,8 +74,8 @@ void yyerror(const char *str);
 	NExpression* expr;
 	NStatement* stmt;
 	NIdentifier* ident;
-	NInteger* numeric;
-	NType* type;
+	NIntegerLiteral* numeric;
+	IType* type;
 	NDeclarations* decls;
 	NFunctionDeclaration* function;
 	NStructureDeclaration* structure;
@@ -98,6 +103,7 @@ void yyerror(const char *str);
 
 /* TOKENS: Assignment, equivilance and mathematical operators */
 %token <token> ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE
+%token <token> ASSIGN_MOD ASSIGN_BAND ASSIGN_BOR ASSIGN_BXOR ASSIGN_SHL ASSIGN_SHR
 %token <token> COMPARE_EQUAL COMPARE_NOT_EQUAL COMPARE_LESS_THAN COMPARE_LESS_THAN_EQUAL
 %token <token> COMPARE_GREATER_THAN COMPARE_GREATER_THAN_EQUAL
 %token <token> NEGATE BITWISE_NEGATE INCREMENT DECREMENT ADD SUBTRACT SLASH PERCENT
@@ -112,11 +118,11 @@ void yyerror(const char *str);
 %token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF
 
 /* TOKENS: Type keywords */
-%token <token> TYPE_VOID TYPE_CHAR TYPE_SHORT TYPE_INT TYPE_LONG TYPE_FLOAT TYPE_DOUBLE CONST UNSIGNED SIGNED
+%token <token> TYPE_VOID TYPE_CHAR TYPE_BYTE TYPE_SHORT TYPE_INT TYPE_LONG TYPE_FLOAT TYPE_DOUBLE CONST UNSIGNED SIGNED
 
 /* TYPES */
-%type <type> type
-%type <ident> ident type_base
+%type <type> type type_base
+%type <ident> ident
 %type <expr> expr numeric string character deref fldref addressable arrayref
 %type <varvec> func_decl_args struct_decl_args
 %type <exprvec> call_args
@@ -129,27 +135,8 @@ void yyerror(const char *str);
 %type <token> assignop
 
 /* OPERATOR PRECEDENCE (LOWEST -> HIGHEST) */
-/* TODO the precedence might be messed up quite a bit here *
-/*
-%left IPOSTINC IPOSTDEC DOT DEREFDOT
-%right IPREINC IPREDEC IUNARYPLUS IUNARYMINUS NEGATE BITWISE_NEGATE IADDROF
-%left STAR SLASH PERCENT
-%left ADD
-%left SUBTRACT
-%left BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
-%left COMPARE_LESS_THAN COMPARE_LESS_THAN_EQUAL COMPARE_GREATER_THAN COMPARE_GREATER_THAN_EQUAL
-%left COMPARE_EQUAL COMPARE_NOT_EQUAL
-%left BINARY_AND
-%left BINARY_XOR
-%left BINARY_OR
-%left BOOLEAN_AND
-%left BOOLEAN_OR
-%right ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE
 %left COMMA
-*/
-
-%left COMMA
-%right ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE
+%right ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE ASSIGN_MOD ASSIGN_BAND ASSIGN_BOR ASSIGN_BXOR ASSIGN_SHL ASSIGN_SHR
 %left BOOLEAN_OR
 %left BOOLEAN_AND
 %left BINARY_OR
@@ -212,12 +199,12 @@ prog_decl:
 func_decl:
 		type ident CURVED_OPEN func_decl_args CURVED_CLOSE block
 		{
-			$$ = new NFunctionDeclaration(*$1, *$2, *$4, $6);
+			$$ = new NFunctionDeclaration($1, *$2, *$4, $6);
 			//delete $4;
 		} |
 		type ident CURVED_OPEN func_decl_args CURVED_CLOSE SEMICOLON
 		{
-			$$ = new NFunctionDeclaration(*$1, *$2, *$4, NULL);
+			$$ = new NFunctionDeclaration($1, *$2, *$4, NULL);
 			//delete $4;
 		} ;
 
@@ -266,19 +253,19 @@ struct_decl_args:
 var_decl:
 		type ident
 		{
-			$$ = new NVariableDeclaration(*$1, *$2);
+			$$ = new NVariableDeclaration($1, *$2);
 		} |
 		type ident ASSIGN_EQUAL expr
 		{
-			$$ = new NVariableDeclaration(*$1, *$2, $4);
+			$$ = new NVariableDeclaration($1, *$2, $4);
 		} |
 		type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE
 		{
-			$$ = new NVariableDeclaration(*(new NFunctionPointerType(*$1, *$7)) /* TODO: free this memory */, *$4);
+			$$ = new NVariableDeclaration((new NFunctionPointerType($1, *$7)) /* TODO: free this memory */, *$4);
 		} |
 		type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE ASSIGN_EQUAL expr
 		{
-			$$ = new NVariableDeclaration(*(new NFunctionPointerType(*$1, *$7)) /* TODO: free this memory */, *$4, $10);
+			$$ = new NVariableDeclaration((new NFunctionPointerType($1, *$7)) /* TODO: free this memory */, *$4, $10);
 		} ;
 		
 ident:
@@ -291,43 +278,40 @@ ident:
 type:
 		type_base
 		{
-			$$ = new NType($<type>1->name, 0, false, false, false);
-			delete $1;
+			$$ = $<type>1;
 		} |
 		CONST type
 		{
 			$$ = $2;
-			$$->isConstant = true;
+			//$$->isConstant = true;
 		} |
 		SIGNED type
 		{
 			$$ = $2;
-			$$->isSigned = true;
+			//$$->isSigned = true;
 		} |
 		UNSIGNED type
 		{
 			$$ = $2;
-			$$->isSigned = false;
+			//$$->isSigned = false;
 		} |
 		STRUCT ident
 		{
-			$$ = new NType($<type>2->name, 0, true, false, false);
+			$$ = new TStruct($<ident>2->name);
 			delete $2;
 		} |
 		type_base STAR %prec IREF
 		{
-			$$ = new NType($<type>1->name, 1, false, false, false);
-			delete $1;
+			$$ = new TPointer16($<type>1);
 		} |
 		STRUCT ident STAR %prec IREF
 		{
-			$$ = new NType($<type>2->name, 1, true, false, false);
+			$$ = new TPointer16(new TStruct($<ident>2->name));
 			delete $2;
 		} |
 		type STAR %prec IREF
 		{
-			$$ = new NType($<type>1->name, $<type>1->pointerCount + 1, $<type>1->isStruct, false, false);
-			delete $1;
+			$$ = new TPointer16($<type>1);
 		};
 
 block:
@@ -664,19 +648,21 @@ addressable:
 numeric:
 		NUMBER
 		{
-			$$ = new NInteger($1);
+			/* TODO implement other unsigned, long,     */
+			/*      and unsigned long (u,l,ul) literals */
+			$$ = new NIntegerLiteral($1);
 		} |
 		TRUE
 		{
-			$$ = new NInteger(1);
+			$$ = new NIntegerLiteral(1);
 		} |
 		FALSE
 		{
-			$$ = new NInteger(0);
+			$$ = new NIntegerLiteral(0);
 		} |
 		SIZEOF CURVED_OPEN type CURVED_CLOSE
 		{
-			$$ = new NSizeOfOperator(*$3);
+			$$ = new NSizeOfOperator($3);
 		} ;
 
 character:
@@ -713,41 +699,52 @@ assignop:
 		ASSIGN_ADD |
 		ASSIGN_SUBTRACT |
 		ASSIGN_MULTIPLY |
-		ASSIGN_DIVIDE ;
+		ASSIGN_DIVIDE |
+		ASSIGN_MOD |
+		ASSIGN_BAND |
+		ASSIGN_BOR |
+		ASSIGN_BXOR |
+		ASSIGN_SHL |
+		ASSIGN_SHR;
 
 type_base:
 		TYPE_VOID
 		{
-			$$ = new NIdentifier("void");
+			//$$ = new NType("void", 0, false);
+			// TODO Void Type
 		} |
 		TYPE_CHAR
 		{
-			$$ = new NIdentifier("char");
+			//$$ = new NType("char", 0, false);
+			$$ = new TInt16();
 		} |
 		TYPE_SHORT
 		{
-			$$ = new NIdentifier("short");
+			//$$ = new NType("byte", 0, false);
+			$$ = new TInt16();
 		} |
 		TYPE_INT
 		{
-			$$ = new NIdentifier("int");
+			//$$ = new NType("int", 0, false);
+			$$ = new TInt16();
 		} |
 		TYPE_LONG
 		{
-			$$ = new NIdentifier("long");
+			//$$ = new NType("long", 0, false);
+			$$ = new TInt16();
 		}  |
 		TYPE_FLOAT
 		{
-			$$ = new NIdentifier("float");
+			//$$ = new NIdentifier("float");
 		}  |
 		TYPE_DOUBLE
 		{
-			$$ = new NIdentifier("double");
+			//$$ = new NIdentifier("double");
 		}  |
 		TYPE_LONG TYPE_DOUBLE
 		{
-			$$ = new NIdentifier("long double");
-		} ;
+			// $$ = new NIdentifier("long double");
+		};
 
 %%
 

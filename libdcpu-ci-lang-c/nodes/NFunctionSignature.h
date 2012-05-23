@@ -16,17 +16,18 @@
 
 #include <nodes/IFunctionSignature.h>
 #include "NType.h"
+#include <nodes/IType.h>
 #include "Lists.h"
 
 class NFunctionSignature : public IFunctionSignature
 {
 	public:
-		const NType& type;
+		const IType* type;
 		const VariableList arguments;
-		NFunctionSignature(const NType& type, const VariableList& arguments)
+		NFunctionSignature(const IType* type, const VariableList& arguments)
 			: type(type), arguments(arguments) { };
 		std::string getSignature();
-		static std::string calculateSignature(const NType& returnType, const VariableList& arguments);
+		static std::string calculateSignature(const IType* returnType, const VariableList& arguments);
 		static std::string calculateSignature(const VariableList& arguments);
 		virtual StackMap generateStackMap();
 };

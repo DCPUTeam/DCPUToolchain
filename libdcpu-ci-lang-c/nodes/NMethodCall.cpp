@@ -6,7 +6,7 @@
 	Component:	LibDCPU-ci-lang-c
 
 	Authors:	James Rhodes
-					Patrick Flick
+			Patrick Flick
 	Description:	Defines the NMethodCall AST class.
 
 **/
@@ -29,6 +29,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	bool isDirect = true;
 	NFunctionSignature* funcsig = (NFunctionDeclaration*)context.getFunction(this->id.name);
 
+	// FIXME: get rid of the use of NType for function signatures!!
 	if (funcsig == NULL)
 	{
 		// Try and get a variable with matching signature then.
@@ -48,33 +49,18 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
 
 
-	// check if the called function matches the signature of this method call
-	// first check if argument length are the same
-	/*
+	// check if the called function matches the signature size of this
+	// method call
 	if (this->arguments.size() != funcsig->arguments.size())
 	{
-		throw new CompilerException("There is no function with the name "
-					    + this->id.name + " and signature " + this->calculateSignature(context) + "\n"
-					    + "Candidates are:\t" + this->id.name + " with signature " + funcsig->getSignature());
-	}
-	*/
-
-	// FIXME: Again, without implicit type casting this breaks quite a few
-	// things, so it's disabled for now.
-	/*
-	// now check types of all the arguments
-	for (unsigned int i = 0; i < funcsig->arguments.size(); i++)
-	{
-		NType* callerType = (NType*) this->arguments[i]->getExpressionType(context);
-		NType& calleeType = funcsig->arguments[i]->type;
-		if (callerType->name != calleeType.name)
-		{
-			throw new CompilerException("There is no function with the name "
-						    + this->id.name + " and signature " + this->calculateSignature(context) + "\n"
-						    + "Candidates are:\t" + this->id.name + " with signature " + funcsig->getSignature());
-		}
-	}
-	*/
+		throw new CompilerException(this->line, this->file, 
+		"Unable to find function\n"
+		  "with singature:                               "
+		+ this->id.name + this->calculateSignature(context)
+		+ "\n"
+		+ "Candidates are:                               "
+		+ this->id.name + funcsig->getSignature());
+	}	
 
 	// Get the stack table of this method.
 	StackFrame* frame = context.generateStackFrameIncomplete(funcsig);
@@ -82,20 +68,39 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	// Get a random label for our jump-back point.
 	std::string jmpback = context.getRandomLabel("callback");
 
-	// Copy a reference to the current position in
-	// the stack first (by temporarily using register C, ugh!).
-	*block <<  "	SET C, SP" << std::endl;
-
-	// Evaluate each of the argument expressions.
-	for (ExpressionList::iterator i = this->arguments.begin(); i != this->arguments.end(); i++)
+	// Evaluate each of the argument expressions in reverse
+	// TODO make it depend on the typePosition somehow
+	//      this here has to be exactly reverse to the order in the
+	//      parameter stack frame and thus the TypePosition
+	for (int i = this->arguments.size() - 1; i >= 0; --i)
 	{
 		// Compile the expression.
-		AsmBlock* inst = (*i)->compile(context);
+		AsmBlock* inst = this->arguments[i]->compile(context);
 		*block << *inst;
 		delete inst;
+		
+		IType* instType = this->arguments[i]->getExpressionType(context);
+
+		// check types and cast implicitly
+		IType* parameterType = funcsig->arguments[i]->type;
+		if (instType->implicitCastable(context, parameterType))
+		{
+			// do cast
+			*block << *(instType->implicitCast(context, parameterType, 'A'));
+		}
+		else
+		{
+			throw new CompilerException(this->line, this->file, 
+			"Unable to find function\n"
+			  "with singature:                               "
+			+ this->id.name + this->calculateSignature(context)
+			+ "\n"
+			+ "Candidates are:                               "
+			+ this->id.name + funcsig->getSignature());
+		}
 
 		// Push the result onto the stack.
-		*block <<  "	SET PUSH, A" << std::endl;
+		*block << *(parameterType->pushStack(context, 'A'));
 	}
 
 	// Initialize the stack for this method.
@@ -114,31 +119,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
 	*block <<  "	SET X, [X]" << std::endl;
 	*block <<  "	SET Z, " << jmpback << std::endl;
-	*block <<  "	JSR _stack_caller_init" << std::endl;
-
-	// Now copy each of the evaluated parameter values into
-	// the correct parameter slots.
-	uint16_t a = 1;
-
-	for (VariableList::const_iterator v = funcsig->arguments.begin(); v != funcsig->arguments.end(); v++)
-	{
-		// Get the location of the value.
-		std::stringstream vstr;
-		vstr << "[0x" << std::hex << (0x10000 - a) << "+C]";
-
-		// Get the location of the slot.
-		TypePosition result = frame->getPositionOfVariable((*v)->id.name);
-
-		if (!result.isFound())
-			throw new CompilerException(this->line, this->file, "The argument '" + (*v)->id.name + "' was not found in the argument list (internal error).");
-
-		// Now copy.
-		*block << result.pushAddress('I');
-		*block <<	"	SET [I], " << vstr.str() << std::endl;
-
-		// Increment.
-		a += 1;
-	}
+	*block <<  "	JSR _stack_caller_init_overlap" << std::endl;
 
 	// Then call the actual method and insert the return label.
 	if (isDirect)
@@ -162,18 +143,6 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
 	*block <<  ":" << jmpback << std::endl;
 
-	// Clean up all of our C values.
-	for (int b = 0; b < a - 1; b += 1)
-	{
-		*block <<  "	SET PEEK, 0" << std::endl;
-		*block <<  "	ADD SP, 1" << std::endl;
-	}
-
-	// TODO this has become unnessecary with the new bootstrap stack handleing
-	// TODO	 maybe we can get rid of the C register alltogether?? (not sure)
-	// Adjust Y frame by C amount
-	//*block <<  "	ADD Y, " << (a - 1) << std::endl;
-
 	// Clean up frame.
 	context.finishStackFrame(frame);
 
@@ -193,7 +162,8 @@ IType* NMethodCall::getExpressionType(AsmGenerator& context)
 	if (funcdecl == NULL)
 		throw new CompilerException(this->line, this->file, "Called function was not found '" + this->id.name + "'.");
 
-	return new NType(funcdecl->type);
+	IType* exprType = (IType*) funcdecl->type;
+	return exprType;
 }
 
 
@@ -209,8 +179,8 @@ std::string NMethodCall::calculateSignature(AsmGenerator& context)
 		{
 			sig = sig + ",";
 		}
-		NType* type = (NType*)((*i)->getExpressionType(context));
-		sig = sig + type->name;
+		IType* type = (*i)->getExpressionType(context);
+		sig = sig + type->getName();
 	}
 	sig = sig + ")";
 	return sig;

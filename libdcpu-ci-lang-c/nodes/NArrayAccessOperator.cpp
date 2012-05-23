@@ -15,13 +15,18 @@
 #include <CompilerException.h>
 #include "NType.h"
 #include "NArrayAccessOperator.h"
+#include "TPointer16.h"
 
 AsmBlock* NArrayAccessOperator::compile(AsmGenerator& context)
 {
 	// We just use our own reference method and then
 	// implicitly dereference here.
+	
+	// Get our type.
+	IType* baseType = this->getExpressionType(context);
+	
 	AsmBlock* block = this->reference(context);
-	*block << "	SET A, [A]" << std::endl;
+	*block << *(baseType->loadFromRef(context, 'A', 'A'));
 	return block;
 }
 
@@ -33,28 +38,46 @@ AsmBlock* NArrayAccessOperator::reference(AsmGenerator& context)
 	*block << this->getFileAndLineState();
 
 	// Get our type.
-	NType* type = (NType*)this->getExpressionType(context);
+	IType* baseType = this->getExpressionType(context);
+	IType* pointerType = this->exprA.getExpressionType(context);
 
 	// Get a reference to the first component of the array access (result
 	// will end up in A).
 	AsmBlock* exprA = this->exprA.compile(context);
 	*block << *exprA;
-	*block << "	SET PUSH, A" << std::endl;
+	*block << *(pointerType->pushStack(context, 'A'));
 	delete exprA;
+	
+	// type checking exprA
+	if (!pointerType->isPointer())
+	{
+		throw new CompilerException(this->line, this->file, 
+		"Invalid operand as array access name. (have '"
+		+ pointerType->getName() + "')");
+	}
 
 	// Evaluate the second component of the array access (result
-	// will end up in B).
+	// will end up in A).
 	AsmBlock* exprB = this->exprB.compile(context);
 	*block << *exprB;
-	*block << "	MUL A, " << type->getWordSize(context) << std::endl;
-	*block << "	SET PUSH, A" << std::endl;
-	delete type;
 	delete exprB;
+	
+	// get type
+	IType* integralType = this->exprB.getExpressionType(context);
+	
+	if (!integralType->isBasicType())
+	{
+		throw new CompilerException(this->line, this->file, 
+		"Invalid operand as array access offset. (have '"
+		+ integralType->getName() + "')");
+	}
+	
+	*block << "	SET B, A" << std::endl;
+	*block << *(pointerType->popStackReturn(context, 'A'));
+	
 
 	// Add the two together.
-	*block << "	SET B, POP" << std::endl;
-	*block << "	SET A, POP" << std::endl;
-	*block << "	ADD A, B" << std::endl;
+	*block << *(pointerType->add(context, 'A', 'B'));
 
 	// The memory address is now in A, so we can simply return.
 	return block;
@@ -62,21 +85,23 @@ AsmBlock* NArrayAccessOperator::reference(AsmGenerator& context)
 
 IType* NArrayAccessOperator::getExpressionType(AsmGenerator& context)
 {
-	// An array operator has the type of it's "unpointered" first expression.
-	NType* i = (NType*)this->exprA.getExpressionType(context);
-
-	if (i->pointerCount > 0)
-		i->pointerCount -= 1;
+	// An dereference operator has the "unpointered" type of it's expression.
+	IType* i = this->exprA.getExpressionType(context);
+	
+	if (i->getInternalName() == "ptr16_t")
+	{
+		TPointer16* ptr = (TPointer16*) i;
+		IType* baseType = ptr->getPointerBaseType();
+		return baseType;	
+	}
+	// FIXME: create (better: not create, get static void* type) pointer to void here:
+	else if (i->implicitCastable(context, new TPointer16(new TUint16())))
+	{
+		// FIXME return void?
+		return new TUint16();
+	}
 	else
 	{
-		// If we are using a literal or non-pointer as the first expression,
-		// then we actually return void* as the type since it's array access
-		// into unspecified memory.
-		delete i;
-		i = new NType(NType::VoidType);
-		i->pointerCount += 1;
-		return i;
+		throw new CompilerException(this->line, this->file, "Attempting to dereference non-pointer type during array access.");
 	}
-
-	return i;
 }

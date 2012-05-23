@@ -61,7 +61,7 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 				continue;
 
 			// Calculate size.
-			unsigned int size = ((NVariableDeclaration*)(*i))->type.getWordSize(context);
+			unsigned int size = ((NVariableDeclaration*)(*i))->type->getWordSize(context);
 
 			// We can't have types with 0 word storage in the global scope.
 			if (size <= 0)

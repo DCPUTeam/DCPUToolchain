@@ -14,14 +14,14 @@
 #ifndef __DCPU_COMP_NODES_GET_SIZE_FUNCTION_H
 #define __DCPU_COMP_NODES_GET_SIZE_FUNCTION_H
 
-#include "NInteger.h"
+#include "NIntegerLiteral.h"
 #include "NType.h"
 
-class NSizeOfOperator : public NInteger
+class NSizeOfOperator : public NIntegerLiteral
 {
 	public:
-		NType& value;
-		NSizeOfOperator(NType& value) : value(value), NInteger("sizeof") { }
+		IType* value;
+		NSizeOfOperator(IType* value) : value(value), NIntegerLiteral("sizeof") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
 };

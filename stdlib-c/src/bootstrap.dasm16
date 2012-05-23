@@ -54,6 +54,22 @@ SET PC, _setup
 
 .BOUNDARY
 
+; Stack caller Init with _Overlap_
+; same as stack_caller_init, but loads parameter stack as overlap
+; this means, it is assumed that the parameter stack is allready
+;  initialized with X words
+.EXPORT _stack_caller_init_overlap
+:_stack_caller_init_overlap
+	SET I, POP
+	SET J, SP
+	SET PUSH, Y		; we have to save the beginning of the old stack frame
+	SET PUSH, Z
+	SET Y, SP
+	ADD Y, 2
+	SET PC, I	
+
+.BOUNDARY
+
 ; Frees the stack of the size specified in the
 ; X register, placing the position of the next
 ; stack frame into Y.  It then jumps to the

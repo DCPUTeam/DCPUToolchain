@@ -15,7 +15,6 @@
 // the parser header so that we only get the token values.
 #define YYSTYPE int
 
-#include "NInteger.h"
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "../parser.hpp"
@@ -31,42 +30,48 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 	// When an expression is evaluated, the result goes into the A register.
 	AsmBlock* rhs = this->rhs.compile(context);
 
-	// Move the value into B
+	// get type
+	IType* rhsType = this->rhs.getExpressionType(context);
+	
+	if (!rhsType->isBasicType())
+	{
+		throw new CompilerException(this->line, this->file, 
+		"Invalid operand to unary operation. (have '"
+		+ rhsType->getName() + "')");
+	}
+	
+	// Move the value into A
 	*block <<   *rhs;
-	*block <<	"	SET B, A" << std::endl;
 	delete rhs;
 
 	// Now do the appropriate operation.
+	AsmBlock* compiledOp;
 	switch (this->op)
 	{
 		case ADD:
-			/* TODO not sure why we even have this */
-			*block <<	"	SET A, B" << std::endl;
+			/* TODO integer promotion */
+			compiledOp = rhsType->plus(context, 'A');
 			break;
 
-			/* unary negative:  "A = -B" */
+			/* unary negative:  "A = -A" */
 		case SUBTRACT:
-			// A = 0 - B
-			*block <<	"	SET A, 0x0" << std::endl;
-			*block <<	"	SUB A, B" << std::endl;
+			// A = 0 - A
+			compiledOp = rhsType->minus(context, 'A');
 			break;
 
-			/* unary bitwise negate:  "A = ~B" */
+			/* unary bitwise negate:  "A = ~A" */
 		case BITWISE_NEGATE:
-			*block <<	"	SET A, 0xffff" << std::endl;
-			*block <<	"	XOR A, B" << std::endl;
+			compiledOp = rhsType->bnot(context, 'A');
 			break;
-			/* boolean negate: A = !B  */
+			/* boolean negate: A = !A  */
 		case NEGATE:
-			*block <<	"	IFN B, 0x0" << std::endl;
-			*block <<	"		SET B, 0x1" << std::endl;
-			*block <<	"	SET A, 0x1" << std::endl;
-			*block <<	"	XOR A, B" << std::endl;
+			compiledOp = rhsType->lnot(context, 'A');
 			break;
 
 		default:
 			throw new CompilerException(this->line, this->file, "Unknown unary operations requested.");
 	}
+	*block << *compiledOp;
 
 	return block;
 }
