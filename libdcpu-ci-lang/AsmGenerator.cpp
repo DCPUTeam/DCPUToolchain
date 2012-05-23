@@ -40,7 +40,7 @@ AsmGenerator::AsmGenerator(std::string target, bool entryPointMode)
 	else
 	{
 		this->m_Preassembly << ".IMPORT _stack_caller_init" << std::endl;
-		this->m_Preassembly << ".IMPORT _stack_callee_init_overlap" << std::endl;
+		this->m_Preassembly << ".IMPORT _stack_caller_init_overlap" << std::endl;
 		this->m_Preassembly << ".IMPORT _stack_callee_return" << std::endl;
 		this->m_Preassembly << ".IMPORT _halt" << std::endl;
 		this->m_Preassembly << ".IMPORT _halt_debug" << std::endl;
