@@ -50,10 +50,8 @@ Output options
     Specifies the output assembler to target.  See the section
     on :ref:`compiler-targets`.
 
-.. cmdoption:: -e
+.. warning::
 
-    Specifies that the output object should be the entry-point
-    of the application.  This is required for the time being
-    while the C standard library is not yet written, but will
-    in future be replaced when the standard library is available.
-    See the section on :ref:`compiler-entry-point`.
+    The `-e` option is now deprecated in favour of the standard
+    library.  See :ref:`compiler-stdlib-c-linking` on linking usage and
+    equivalent functionality.

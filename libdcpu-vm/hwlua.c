@@ -400,7 +400,7 @@ void vm_hw_lua_init(vm_t* vm)
 	// Load each file from the hw directory.
 	while ((entry = readdir(dir)) != NULL)
 	{
-		name = blk2bstr(&entry->d_name, entry->d_reclen);
+		name = blk2bstr(&entry->d_name, NAME_MAX);
 
 		// Check to see whether it is a lua file.
 		if (!binstrr(name, blength(name) - 4, ext))

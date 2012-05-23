@@ -5,18 +5,7 @@
 C Standard Library
 =============================================
 
-We haven't yet finishing documenting or designing this!
-
-What we can say is there will be two elements to the standard library:
-
-  * The standard library
-  * The compatibility layer
-  
-The compatibility layer will provide the same C functions that are available to applications compiled
-for normal computers.  The reason that we're relegating this as a compatibility layer and instead
-modelling our own standard C library is for security.  Quite a few of the standard ANSI C functions
-are not secure (susceptable to buffer overflows) and quite a few POSIX functions don't make sense
-on the DCPU at all.
+This is a subset of the standard C library.
 
 .. _compiler-stdlib-c-modules:
 
@@ -26,19 +15,26 @@ Module List
 .. toctree::
     :maxdepth: 1
    
-    bstring.h.rst
+    stdlib.h.rst
+    string.h.rst
+    math.h.rst
 
-.. _compiler-stdlib-c-bootstrap:
+.. _compiler-stdlib-c-linking:
 
-Bootstrap
+Linking
 -----------------------
 
-Currently provided is a `bootstrap.asm` file.  While not a standard library in the classic sense, this
-file is essential for providing stack management and halting functions for C code.
+When linking C applications, you should provide `stdlib.dlib16` as the first object to link against.  The
+standard library provides startup mechanisms that must be run before your application starts and thus it
+is essential that it is the entry point for the image.
 
-This file does not expose any usable functions to C code, all of the provided functionality is used
-implicitly by the compiler.  You must use the `-e` option on the compiler to get the bootstrap
-attached to the object code.
+This mechanism will replace the existing `bootstrap.asm` file as the bootstrap assembly is now contained
+inside the standard library.
 
-It should only be included once in a project (i.e. you should only use `-e` on a single file; your main
-entry point file).  See the section on :ref:`compiler-entry-point` for more information.
+The other advantage of merging `bootstrap.asm` into the standard library is that it is no longer necessary
+to provide the `-e` option to the compiler.
+
+.. warning::
+    
+    We encourage people to move to the new standard of linking against `stdlib.dlib16` as `bootstrap.asm`
+    and the `-e` compiler option will be going away soon.

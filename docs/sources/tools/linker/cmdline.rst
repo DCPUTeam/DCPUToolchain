@@ -41,3 +41,22 @@ Generic options
     In C applications it is important that the first input file was
     created using the `-e` option on the compiler.  See :ref:`compiler-entry-point`
     for more information.
+
+Output options
+~~~~~~~~~~~~~~~~~~
+
+.. cmdoption:: -l target
+               --link-as target
+
+    Specifies the type of target output to produce.  Can be either "image"
+    or "static".
+
+    "image" indicates that the linker should produce a final DCPU-16 image for
+    execution in either the emulator or debugger.  This is the functionality that
+    the linker provides by default.
+
+    "static" indicates that the linker should produce a static library that
+    can be used to relink later on.  Essentially this option combines multiple
+    object files into a single object file, although the naming convention for
+    the result of this linking process is to end the file with the ".dlib16"
+    extension instead of ".dobj16" (to signify intended usage).
