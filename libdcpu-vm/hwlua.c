@@ -285,7 +285,7 @@ void vm_hw_lua_interrupt(vm_t* vm, void* ud)
 
 struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
 {
-	bstring path;
+	bstring path, modtype;
 	struct lua_hardware* hw;
 	int module, hwinfo;
 
@@ -311,6 +311,7 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
 		printf("lua error was %s.\n", lua_tostring(hw->state, -1));
 
 		// Return NULL.
+		lua_close(hw->state);
 		free(hw);
 		bdestroy(path);
 		return NULL;
@@ -328,13 +329,28 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
 		printf("failed to load hardware from %s.\n", path->data);
 
 		// Return NULL.
+		lua_close(hw->state);
 		free(hw);
 		bdestroy(path);
 		return NULL;
 	}
-	
-	// TODO: Check to see whether the module is
+
+	// Check to see whether the module is
 	// a hardware module.
+	lua_getfield(hw->state, module, "Type");
+	modtype = bfromcstr(lua_tostring(hw->state, -1));
+	if (!biseqcstrcaseless(modtype, "Hardware"))
+	{
+		// Return NULL.
+		lua_pop(hw->state, 1);
+		lua_close(hw->state);
+		free(hw);
+		bdestroy(modtype);
+		bdestroy(path);
+		return NULL;
+	}
+	lua_pop(hw->state, 1);
+	bdestroy(modtype);
 
 	// Store information into the Lua
 	// hardware structure.
@@ -380,9 +396,9 @@ void vm_hw_lua_init(vm_t* vm)
 	// Work out the name of the hw directory.
 	hwpath = osutil_getarg0path();
 #ifdef _WIN32
-	bcatcstr(hwpath, "\\hw");
+	bcatcstr(hwpath, "\\modules");
 #else
-	bcatcstr(hwpath, "/hw");
+	bcatcstr(hwpath, "/modules");
 #endif
 
 	// Attempt to open the hw directory.
