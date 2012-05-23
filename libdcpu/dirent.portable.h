@@ -81,7 +81,7 @@
 #ifndef _WIN32
 #include <dirent.h>
 #else
-
+#define NAME_MAX (int)(&entry->d_reclen)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <string.h>
