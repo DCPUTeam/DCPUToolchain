@@ -29,7 +29,7 @@ void Assembler::loadAll()
 	else m_HasLoaded = true;
 
 	// Define assemblers.
-	m_Assemblers.insert(entry("toolchain", new Assembler(true, false, true, true, true, true, true)));
+	m_Assemblers.insert(entry("toolchain", new Assembler(true, true, true, true, true, true, true)));
 	m_Assemblers.insert(entry("studio", new Assembler(false, false, true, false, false, false, false)));
 	m_Assemblers.insert(entry("organic", new Assembler(false, false, true, true, true, false, false)));
 }

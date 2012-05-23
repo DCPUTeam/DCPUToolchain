@@ -44,6 +44,7 @@ bstring yyfilename = NULL;
 %x IN_NXT
 %x IN_CHAR
 %x IN_STRING
+%x IN_SECTION
 
 %%
 
@@ -62,9 +63,8 @@ bstring yyfilename = NULL;
 \.[Ee][Xx][Pp][Oo][Rr][Tt]			yylval.number = EXPORT; return KEYWORD;
 \.[Ii][Mm][Pp][Oo][Rr][Tt]			yylval.number = IMPORT; return KEYWORD;
 \.[Ff][Ii][Ll][Ll]				yylval.number = FILL; return FILL;
-\.[Ee][Qq][Uu][Aa][Tt][Ee]			return EQUATE;
-\.[Ee][Qq][Uu]					return EQUATE;
-\.[Dd][Ee][Ff][Ii][Nn][Ee]			return EQUATE;
+\.[Ss][Ee][Cc][Tt][Ii][Oo][Nn]			yylval.number = SECTION; return KEYWORD;
+\.[Oo][Uu][Tt][Pp][Uu][Tt]			yylval.number = OUTPUT; return KEYWORD;
 
 	/* Opcodes as numbers support */
 

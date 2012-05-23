@@ -16,6 +16,3 @@ dt_needs(libdcpu-pp)
 dt_needs(libdcpu-ci-lang)
 dt_needs(libdcpu-ci-lang-c)
 
-# Copy required data files.
-file(COPY ./bootstrap.asm DESTINATION "${ROOT_DIR}/Debug" USE_SOURCE_PERMISSIONS)
-

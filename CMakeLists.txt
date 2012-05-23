@@ -13,6 +13,11 @@ else("${git_hash}" STREQUAL "")
 	add_definitions(-DVERSION_STAGE=${VERSION_STAGE} -DVERSION_GIT=${VERSION_GIT})
 endif("${git_hash}" STREQUAL "")
 
+# Set up options.
+option(BUILD_EMULATOR "Build the emulator and debugger." ON)
+option(BUILD_DOCUMENTATION "Build the documentation with Sphinx." ON)
+option(BUILD_DCPU "Build the kernel and standard libraries." ON)
+
 # Set up some basics.
 set(IS_ROOT 1)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeScripts")
@@ -32,9 +37,6 @@ if(MSVC)
 	# directory in this case.
 	set(FLEX_UNISTD_INCLUDE "${ROOT_DIR}/third-party/flex")
 endif(MSVC)
-if(NOT DEFINED BUILD_EMULATOR)
-	set(BUILD_EMULATOR true)
-endif(NOT DEFINED BUILD_EMULATOR)
 if(NOT DEFINED FLEX_EXECUTABLE)
 	find_program(FLEX_EXECUTABLE NAMES flex.exe flex)
 endif(NOT DEFINED FLEX_EXECUTABLE)
@@ -336,19 +338,22 @@ add_subdirectory(dtpp)
 add_subdirectory(dtcc)
 add_subdirectory(dtasm)
 add_subdirectory(dtld)
-add_subdirectory(dtdb)
-
-if("${BUILD_EMULATOR}" MATCHES true)
+if(${BUILD_EMULATOR})
+	add_subdirectory(dtdb)
 	add_subdirectory(dtemu)
-endif("${BUILD_EMULATOR}" MATCHES true)
+endif(${BUILD_EMULATOR})
 
 # Add documentation.
-add_subdirectory(docs)
+if(${BUILD_DOCUMENTATION})
+	add_subdirectory(docs)
+endif(${BUILD_DOCUMENTATION})
 
 # Add scripts.
 add_subdirectory(scripts)
 
 # Add kernel and standard libraries.
-add_subdirectory(kernel)
-add_subdirectory(stdlib-c)
+if(${BUILD_DCPU})
+	add_subdirectory(kernel)
+	add_subdirectory(stdlib-c)
+endif(${BUILD_DCPU})
 

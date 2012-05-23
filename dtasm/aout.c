@@ -227,6 +227,48 @@ struct aout_byte* aout_create_metadata_import(char* name)
 	return byte;
 }
 
+struct aout_byte* aout_create_metadata_section(char* name)
+{
+	struct aout_byte* byte = malloc(sizeof(struct aout_byte));
+	byte->type = AOUT_TYPE_METADATA_SECTION;
+	byte->opcode = 0;
+	byte->a = 0;
+	byte->b = 0;
+	byte->next = NULL;
+	byte->prev = NULL;
+	byte->expr = NULL;
+	byte->label = name;
+	byte->raw_used = false;
+	byte->raw = 0x0;
+	byte->symbols[0] = NULL;
+	byte->symbols[1] = NULL;
+	byte->symbols[2] = NULL;
+	byte->symbols[3] = NULL;
+	byte->symbols_count = 0;
+	return byte;
+}
+
+struct aout_byte* aout_create_metadata_output(char* name)
+{
+	struct aout_byte* byte = malloc(sizeof(struct aout_byte));
+	byte->type = AOUT_TYPE_METADATA_OUTPUT;
+	byte->opcode = 0;
+	byte->a = 0;
+	byte->b = 0;
+	byte->next = NULL;
+	byte->prev = NULL;
+	byte->expr = NULL;
+	byte->label = name;
+	byte->raw_used = false;
+	byte->raw = 0x0;
+	byte->symbols[0] = NULL;
+	byte->symbols[1] = NULL;
+	byte->symbols[2] = NULL;
+	byte->symbols[3] = NULL;
+	byte->symbols_count = 0;
+	return byte;
+}
+
 struct aout_byte* aout_emit(struct aout_byte* byte)
 {
 	if (start == NULL && end == NULL)
@@ -307,6 +349,8 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 	struct lprov_entry* linker_provided = NULL;
 	struct lprov_entry* linker_required = NULL;
 	struct lprov_entry* linker_adjustment = NULL;
+	struct lprov_entry* linker_section = NULL;
+	struct lprov_entry* linker_output = NULL;
 	struct lprov_entry* linker_temp = NULL;
 	uint32_t mem_index, out_index;
 	uint16_t inst;
@@ -315,6 +359,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 	uint16_t eaddr;
 	bool did_find;
 	bool shown_expr_warning = false;
+	bool has_output = false;
 
 	// Initialize out our extension table.
 	code_offset += textn_init(start);
@@ -332,6 +377,41 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 		{
 			// Adjust memory address.
 			out_index = current_outer->opcode;
+		}
+		else if (current_outer->type == AOUT_TYPE_METADATA_SECTION)
+		{
+			assert(current_outer->label != NULL);
+
+			// We're exporting the current address as the beginning
+			// of a section.
+			if (!intermediate)
+				ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
+
+			// Check to make sure outputs haven't previously been emitted.
+			if (has_output)
+				ahalt(ERR_OUTPUT_BEFORE_SECTION, NULL);
+
+			// Create linker entry.
+			linker_temp = lprov_create(current_outer->label, out_index);
+			linker_temp->next = linker_section;
+			linker_section = linker_temp;
+			fprintf(stderr, "LINK SECTION %s -> 0x%04X\n", current_outer->label, out_index);
+		}
+		else if (current_outer->type == AOUT_TYPE_METADATA_OUTPUT)
+		{
+			assert(current_outer->label != NULL);
+
+			// We're exporting the current address as the beginning
+			// of a section.
+			if (!intermediate)
+				ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
+
+			// Create linker entry.
+			has_output = true;
+			linker_temp = lprov_create(current_outer->label, out_index);
+			linker_temp->next = linker_output;
+			linker_output = linker_temp;
+			fprintf(stderr, "LINK OUTPUT 0x%04X -> %s\n", out_index, current_outer->label);
 		}
 		else if (current_outer->type == AOUT_TYPE_METADATA_EXPORT)
 		{
@@ -449,7 +529,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 	if (intermediate)
 	{
 		fwrite(ldata_objfmt, 1, strlen(ldata_objfmt) + 1, out);
-		objfile_save(out, linker_provided, linker_required, linker_adjustment);
+		objfile_save(out, linker_provided, linker_required, linker_adjustment, linker_section, linker_output);
 
 		// Adjust the "true origin" for .ORIGIN directivies because
 		// the linker table won't exist in the final result when

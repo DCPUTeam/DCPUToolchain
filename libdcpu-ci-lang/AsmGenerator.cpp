@@ -18,32 +18,16 @@
 #include "AsmGenerator.h"
 
 // Sets up the assembly generator.
-AsmGenerator::AsmGenerator(std::string target, bool entryPointMode)
+AsmGenerator::AsmGenerator(std::string target)
 	: m_CurrentFrame(NULL), m_RootNode(NULL)
 {
 	// Get a references to the assembler.
 	Assembler::loadAll();
 	this->m_AssemblerTarget = Assembler::getAssembler(target);
-	this->m_IsEntryPointMode = entryPointMode;
 
 	// Set the global frame to NULL as it doesn't
 	// exist until the NDeclarations root node is processed.
 	this->m_GlobalFrame = NULL;
-
-	// Load bootstrap data.
-	if (this->m_IsEntryPointMode)
-	{
-		std::ifstream bootstrap("bootstrap.asm");
-		this->m_Preassembly << bootstrap;
-		bootstrap.close();
-	}
-	else
-	{
-		this->m_Preassembly << ".IMPORT _stack_caller_init" << std::endl;
-		this->m_Preassembly << ".IMPORT _stack_callee_return" << std::endl;
-		this->m_Preassembly << ".IMPORT _halt" << std::endl;
-		this->m_Preassembly << ".IMPORT _halt_debug" << std::endl;
-	}
 }
 
 // Return the specified function or NULL if none is defined.

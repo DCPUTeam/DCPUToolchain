@@ -19,19 +19,14 @@
 #include "objfile.h"
 #include "lprov.h"
 #include "ldata.h"
+#include "ldbins.h"
 
 int main(int argc, char* argv[])
 {
 	// Define our variables.
-	FILE* in;
-	FILE* out;
+	//FILE* in;
+	//FILE* out;
 	int nerrors, i;
-	char* test;
-	uint16_t offset, current, store, mem_index;
-	struct lprov_entry* required = NULL;
-	struct lprov_entry* provided = NULL;
-	struct lprov_entry* adjustment = NULL;
-	struct lprov_entry* temp = NULL;
 	bstring target;
 
 	// Define arguments.
@@ -58,7 +53,7 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
-	
+
 	// Check to make sure target is correct.
 	if (target_arg->count == 0)
 		target = bfromcstr("image");
@@ -68,7 +63,7 @@ int main(int argc, char* argv[])
 			target = bfromcstr("image");
 		else if (strcmp(target_arg->sval[0], "static") == 0)
 			target = bfromcstr("static");
-		else 
+		else
 		{
 			// Invalid option.
 			fprintf(stderr, "linker: invalid target type, must be 'image' or 'static'.\n");
@@ -76,6 +71,21 @@ int main(int argc, char* argv[])
 			return 1;
 		}
 	}
+
+	// Load all passed objects and use linker bin system to
+	// produce result.
+	bins_init();
+	for (i = 0; i < input_files->count; i++)
+		bins_load(bautofree(bfromcstr(input_files->filename[i])));
+	bins_sectionize();
+	//bins_flatten("output");
+	//bins_adjust();
+	//bins_resolve();
+	//bins_compress();
+
+	return 1;
+
+	/*
 
 	// Open the output file for writing.
 	out = fopen(output_file->filename[0], "wb");
@@ -88,78 +98,8 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	// We initially need to get a list of ALL provided
-	// labels before we can start replacing them.
-	offset = 0;
+	// ############### FIXME: Removed code at this point. ###################
 
-	for (i = 0; i < input_files->count; i++)
-	{
-		// Open the input file.
-		in = fopen(input_files->filename[i], "rb");
-
-		if (in == NULL)
-		{
-			// Handle the error.
-			fprintf(stderr, "linker: unable to read input file '%s'.\n", input_files->filename[i]);
-			fclose(out);
-			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-			return 1;
-		}
-
-		// Is this the object format?
-		test = malloc(strlen(ldata_objfmt) + 1);
-		memset(test, 0, strlen(ldata_objfmt) + 1);
-		fread(test, 1, strlen(ldata_objfmt), in);
-		fseek(in, 1, SEEK_CUR);
-
-		if (strcmp(test, ldata_objfmt) != 0)
-		{
-			// Handle the error.
-			fprintf(stderr, "linker: input file '%s' is not in object format 1.0.\n", input_files->filename[i]);
-			fclose(in);
-			fclose(out);
-			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-			return 1;
-		}
-
-		free(test);
-
-		// Load only the provided label entries into memory.
-		objfile_load(input_files->filename[i], in, &offset, &provided, NULL, NULL);
-
-		// Close the file.
-		fclose(in);
-	}
-	
-	// Now we can load in all of the adjustment and required
-	// labels.
-	offset = 0;
-	
-	for (i = 0; i < input_files->count; i++)
-	{
-		// Open the input file.
-		in = fopen(input_files->filename[i], "rb");
-		
-		if (in == NULL)
-		{
-			// Handle the error.
-			fprintf(stderr, "linker: unable to read input file '%s'.\n", input_files->filename[i]);
-			fclose(out);
-			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-			return 1;
-		}
-		
-		// Skip over the object format label; we already tested
-		// for this in phase 1.
-		fseek(in, strlen(ldata_objfmt) + 1, SEEK_CUR);
-		
-		// Load the required and adjustment entries into memory.
-		objfile_load(input_files->filename[i], in, &offset, NULL, &required, &adjustment);
-		
-		// Close the file.
-		fclose(in);
-	}
-	
 	// If we are generating a static library, we want to generate our linker
 	// table for the static library (so it becomes it's own object file).
 	if (biseqcstr(target, "static"))
@@ -167,9 +107,9 @@ int main(int argc, char* argv[])
 		// Write linker table (except for required values since these
 		// will have already been provided).
 		fwrite(ldata_objfmt, 1, strlen(ldata_objfmt) + 1, out);
-		objfile_save(out, provided, NULL, adjustment);
+		objfile_save(out, provided, NULL, adjustment, NULL, NULL);
 	}
-	
+
 	// Now we can start replacing the labels with the provided values
 	// since we have ALL of the provided labels available.
 	offset = 0;
@@ -194,7 +134,7 @@ int main(int argc, char* argv[])
 
 		// Skip over the linker table.
 		current = offset;
-		objfile_load(input_files->filename[i], in, &offset, NULL, NULL, NULL);
+		objfile_load(input_files->filename[i], in, &offset, NULL, NULL, NULL, NULL, NULL);
 
 		// Copy all of the input file's data into the output
 		// file, word by word.
@@ -272,5 +212,6 @@ int main(int argc, char* argv[])
 
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;
+	*/
 }
 

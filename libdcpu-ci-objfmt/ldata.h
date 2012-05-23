@@ -22,6 +22,8 @@
 #define LABEL_PROVIDED 1
 #define LABEL_REQUIRED 2
 #define LABEL_ADJUSTMENT 3
+#define LABEL_SECTION 4
+#define LABEL_OUTPUT 5
 
 struct ldata_entry
 {
