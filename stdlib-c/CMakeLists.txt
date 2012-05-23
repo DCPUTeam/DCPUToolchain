@@ -60,18 +60,17 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
 					message("          command: ${KERNEL_TOOLS}/dtasm${CMAKE_EXECUTABLE_SUFFIX} -i -o \"${fpth}/${fbse}.o\" \"${fpth}/${fbse}.oa\"")
 					message("          depends: ${tool} dtasm ${i}")
 				endif(DEFINED VERY_VERBOSE)
-				execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/${fpth})
 				add_custom_command(
-					OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.oa
+					OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa
 					COMMAND ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX}
-						ARGS ${toolargs} -o "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.oa" "${CMAKE_CURRENT_SOURCE_DIR}/${i}" 2>>./CMakeFiles/dcpu-${tool}-log 
-					DEPENDS ${tool} dtasm "${i}"
+						ARGS ${toolargs} -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" "${CMAKE_CURRENT_SOURCE_DIR}/${i}" 2>>./CMakeFiles/dcpu-${tool}-log 
+					DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
 					COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
 				add_custom_command(
-					OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o
+					OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
 					COMMAND ${KERNEL_TOOLS}/dtasm${CMAKE_EXECUTABLE_SUFFIX}
-						ARGS -i -o "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.oa" 2>>./CMakeFiles/dcpu-${tool}-dtasm-log 
-					DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}" "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.oa"
+						ARGS -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" 2>>./CMakeFiles/dcpu-${tool}-dtasm-log 
+					DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
 					COMMENT "Assembling ${fpth}/${fbse}.oa with DCPU-Toolchain...")
 				if("${tout}" STREQUAL "")
 					set(tout "${fpth}/${fbse}.o")
@@ -87,10 +86,10 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
 					message("          depends: ${tool}")
 				endif(DEFINED VERY_VERBOSE)
 				add_custom_command(
-					OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o
+					OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
 					COMMAND ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX}
-						ARGS ${toolargs} -o "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${i}" 2>>./CMakeFiles/dcpu-${tool}-log
-					DEPENDS ${tool} "${i}"
+						ARGS ${toolargs} -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${i}" 2>>./CMakeFiles/dcpu-${tool}-log
+					DEPENDS ${tool} "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
 					COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
 				if("${tout}" STREQUAL "")
 					set(tout "${fpth}/${fbse}.o")
@@ -140,7 +139,7 @@ function(add_dcpu_image target)
 		endif(DEFINED params)
 	endforeach(i ${tcoutputs})
 	list(APPEND params DEPENDS)
-	list(APPEND params "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dlib16")
+	list(APPEND params "${OUTPUT_DIR}/stdlib.dlib16")
 	add_custom_target(${target} ALL ${params})
 endfunction(add_dcpu_image target)
 
