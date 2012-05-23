@@ -16,7 +16,7 @@
 #include "NType.h"
 #include "NDereferenceOperator.h"
 #include "TPointer16.h"
-#include "TUint16.h"
+#include "TUnsignedInt16.h"
 
 AsmBlock* NDereferenceOperator::compile(AsmGenerator& context)
 {
@@ -61,10 +61,10 @@ IType* NDereferenceOperator::getExpressionType(AsmGenerator& context)
 		return baseType;	
 	}
 	// FIXME: create (better: not create, get static void* type) pointer to void here:
-	else if (i->implicitCastable(context, new TPointer16(new TUint16())))
+	else if (i->implicitCastable(context, new TPointer16(new TUnsignedInt16())))
 	{
 		// FIXME return void?
-		return new TUint16();
+		return new TUnsignedInt16();
 	}
 	else
 	{

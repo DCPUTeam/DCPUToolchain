@@ -48,6 +48,6 @@ IType* NString::getExpressionType(AsmGenerator& context)
 {
 	// A string has the type char*.
 	// currently char is mapped to int16_t
-	IType* t = new TPointer16(new TInt16());
+	IType* t = new TPointer16(new TInt16("char"));
 	return t;
 }

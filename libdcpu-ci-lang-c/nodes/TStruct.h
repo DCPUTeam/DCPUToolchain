@@ -25,6 +25,8 @@
 class TStruct: public IType
 {
 	private:
+		bool m_isConst;
+		bool m_isSigned;
 		std::string m_name;
 		NStructureDeclaration* m_resolvedStruct;
 		AsmGenerator* m_context;
@@ -37,6 +39,19 @@ class TStruct: public IType
 		bool isBasicType() const;
 		bool isStruct() const;
 		bool isPointer() const;
+		
+		bool isConst() const;
+		void setConst();
+		bool isSigned() const
+		{
+			throw new CompilerException(0, "<internal>", 
+			"Signedness not defined for structs (internal error).");
+		}
+		bool setSigned(bool isSigned)
+		{
+			throw new CompilerException(0, "<internal>", 
+			"Signedness not defined for structs (internal error).");
+		}
 		
 			
 		/* cast operations */

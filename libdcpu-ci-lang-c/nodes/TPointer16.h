@@ -21,11 +21,13 @@
 #include <stdint.h>
 #include <nodes/IType.h>
 
-#include "TUint16.h"
+#include "TUnsignedInt16.h"
 
-class TPointer16 : public TUint16 
+class TPointer16 : public TUnsignedInt16 
 {
 	private:
+		bool m_isConst;
+		bool m_isSigned;
 		IType* m_pointingTo;
 
 	public:
@@ -39,6 +41,19 @@ class TPointer16 : public TUint16
 		
 		bool isBasicType() const;
 		bool isPointer() const;
+		
+		bool isConst() const;
+		void setConst();
+		bool isSigned() const
+		{
+			throw new CompilerException(0, "<internal>", 
+			"Signedness not defined for pointers (internal error).");
+		}
+		bool setSigned(bool isSigned)
+		{
+			throw new CompilerException(0, "<internal>", 
+			"Signedness not defined for pointers (internal error).");
+		}
 		
 		virtual std::string getName() const;
 		virtual std::string getInternalName() const;

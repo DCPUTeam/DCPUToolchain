@@ -70,9 +70,7 @@ IType* NIdentifier::getExpressionType(AsmGenerator& context)
 		throw new CompilerException(this->line, this->file, "Unable to resolve variable '" + this->name + "' when determining type information (does the variable exist?).");
 	else
 	{
-		// Return a copy of it since all results from
-		// getExpressionType are delete'd by the caller.
-		NType* ntype = (NType*)type;
-		return new NType(*ntype);
+		// Return type
+		return type;
 	}
 }

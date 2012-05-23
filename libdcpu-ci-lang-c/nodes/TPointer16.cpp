@@ -28,6 +28,16 @@ bool TPointer16::isPointer() const
 	return true;
 }
 
+bool TPointer16::isConst() const
+{
+	return this->m_isConst;
+}
+
+void TPointer16::setConst()
+{
+	this->m_isConst = true;
+}
+
 std::string TPointer16::getName() const
 {
 	return "(" + m_pointingTo->getName() + ")*";
@@ -198,7 +208,7 @@ AsmBlock* TPointer16::compileBinaryOperator(NBinaryOperator* binopNode, AsmGener
 	}
 	
 	// for comparison use Uint16
-	IType* compareType = new TUint16();
+	IType* compareType = new TUnsignedInt16();
 
 	// Now do the appropriate operation.
 	if (bothPointers)

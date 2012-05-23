@@ -37,5 +37,5 @@ AsmBlock* NIntegerLiteral::reference(AsmGenerator& context)
 IType* NIntegerLiteral::getExpressionType(AsmGenerator& context)
 {
 	// All literals are currently 16-bit integers.
-	return new TInt16();
+	return new TInt16("int");
 }

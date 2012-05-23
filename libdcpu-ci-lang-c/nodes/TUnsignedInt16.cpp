@@ -1,32 +1,32 @@
 /**
 
-	File:		TUint16.cpp
+	File:		TUnsignedInt16.cpp
 
 	Project:	DCPU-16 Tools
 	Component:	LibDCPU-ci-lang-c
 
 	Authors:	Patrick Flick
 
-	Description:	Defines the TUint16 Type class.
+	Description:	Defines the TUnsignedInt16 Type class.
 
 **/
 
 
-#include "TUint16.h"
+#include "TUnsignedInt16.h"
 
-std::string TUint16::getName() const
+std::string TUnsignedInt16::getName() const
 {
 	// TODO maybe call it by its real name? (e.g. unsigned int, unsigned char, uint16_t)
 	return "uint16_t";
 }
 
-std::string TUint16::getInternalName() const
+std::string TUnsignedInt16::getInternalName() const
 {
 	return "uint16_t";
 }
 
 
-bool TUint16::implicitCastable(AsmGenerator& context, const IType* toType)
+bool TUnsignedInt16::implicitCastable(AsmGenerator& context, const IType* toType)
 {
 	std::string to = toType->getInternalName();
 	if (to == "uint16_t")
@@ -47,7 +47,7 @@ bool TUint16::implicitCastable(AsmGenerator& context, const IType* toType)
 		return false;
 	}
 }
-bool TUint16::explicitCastable(AsmGenerator& context, const IType* toType)
+bool TUnsignedInt16::explicitCastable(AsmGenerator& context, const IType* toType)
 {
 	std::string to = toType->getInternalName();
 	if (to == "uint16_t")
@@ -68,7 +68,7 @@ bool TUint16::explicitCastable(AsmGenerator& context, const IType* toType)
 	}
 }
 
-AsmBlock* TUint16::implicitCast(AsmGenerator& context, const IType* toType, char a)
+AsmBlock* TUnsignedInt16::implicitCast(AsmGenerator& context, const IType* toType, char a)
 {
 	if (!this->implicitCastable(context, toType))
 	{
@@ -80,7 +80,7 @@ AsmBlock* TUint16::implicitCast(AsmGenerator& context, const IType* toType, char
 	return block;
 }
 
-AsmBlock* TUint16::explicitCast(AsmGenerator& context, const IType* toType, char a)
+AsmBlock* TUnsignedInt16::explicitCast(AsmGenerator& context, const IType* toType, char a)
 {
 	if (!this->explicitCastable(context, toType))
 	{
@@ -97,21 +97,21 @@ AsmBlock* TUint16::explicitCast(AsmGenerator& context, const IType* toType, char
 	/* binary operators */
 
 
-AsmBlock* TUint16::mul(AsmGenerator& context, char a, char b)
+AsmBlock* TUnsignedInt16::mul(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	MUL " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TUint16::div(AsmGenerator& context, char a, char b)
+AsmBlock* TUnsignedInt16::div(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	DIV " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TUint16::mod(AsmGenerator& context, char a, char b)
+AsmBlock* TUnsignedInt16::mod(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	MOD " << a << ", " << b << std::endl;
@@ -124,7 +124,7 @@ AsmBlock* TUint16::mod(AsmGenerator& context, char a, char b)
 
 // FIXME context dependent stack clear with 0	
 
-AsmBlock* TUint16::gt(AsmGenerator& context, char a, char b)
+AsmBlock* TUnsignedInt16::gt(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// stack access is more efficient than using SUB and EX
@@ -135,7 +135,7 @@ AsmBlock* TUint16::gt(AsmGenerator& context, char a, char b)
 	return block;
 }
 
-AsmBlock* TUint16::lt(AsmGenerator& context, char a, char b)
+AsmBlock* TUnsignedInt16::lt(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// stack access is more efficient than using SUB and EX
@@ -146,7 +146,7 @@ AsmBlock* TUint16::lt(AsmGenerator& context, char a, char b)
 	return block;
 }
 
-AsmBlock* TUint16::ge(AsmGenerator& context, char a, char b)
+AsmBlock* TUnsignedInt16::ge(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// stack access is more efficient than using SUB and EX
@@ -157,7 +157,7 @@ AsmBlock* TUint16::ge(AsmGenerator& context, char a, char b)
 	return block;
 }
 
-AsmBlock* TUint16::le(AsmGenerator& context, char a, char b)
+AsmBlock* TUnsignedInt16::le(AsmGenerator& context, char a, char b)
 {
 	AsmBlock* block = new AsmBlock();
 	// stack access is more efficient than using SUB and EX

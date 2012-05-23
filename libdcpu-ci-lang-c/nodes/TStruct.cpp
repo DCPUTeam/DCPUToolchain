@@ -28,6 +28,17 @@ std::string TStruct::getInternalName() const
 	return m_name;
 }
 
+bool TStruct::isConst() const
+{
+	return this->m_isConst;
+}
+
+void TStruct::setConst()
+{
+	this->m_isConst = true;
+}
+
+
 bool TStruct::isBasicType() const
 {
 	return false;

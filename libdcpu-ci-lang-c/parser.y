@@ -49,7 +49,6 @@ class NInteger;
 #include "nodes/NSizeOfOperator.h"
 #include "nodes/NCharacter.h"
 #include "nodes/NString.h"
-#include "nodes/TUint16.h"
 #include "nodes/TInt16.h"
 #include "nodes/TPointer16.h"
 #include "nodes/TStruct.h"
@@ -118,7 +117,7 @@ void yyerror(const char *str);
 %token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF
 
 /* TOKENS: Type keywords */
-%token <token> TYPE_VOID TYPE_CHAR TYPE_BYTE TYPE_SHORT TYPE_INT TYPE_LONG TYPE_FLOAT TYPE_DOUBLE CONST UNSIGNED SIGNED
+%token <token> TYPE_VOID TYPE_CHAR TYPE_SHORT TYPE_INT TYPE_LONG TYPE_FLOAT TYPE_DOUBLE CONST UNSIGNED SIGNED
 
 /* TYPES */
 %type <type> type type_base
@@ -283,23 +282,39 @@ type:
 		CONST type
 		{
 			$$ = $2;
-			//$$->isConstant = true;
+			$$->setConst();
+		} |
+		type CONST
+		{
+			$$ = $1;
+			$$->setConst();
 		} |
 		SIGNED type
 		{
 			$$ = $2;
-			//$$->isSigned = true;
+			$$->setSigned(true);
+		} |
+		type SIGNED
+		{
+			$$ = $1;
+			$$->setSigned(true);
 		} |
 		UNSIGNED type
 		{
 			$$ = $2;
-			//$$->isSigned = false;
+			$$->setSigned(false);
+		} |
+		type UNSIGNED
+		{
+			$$ = $1;
+			$$->setSigned(false);
 		} |
 		STRUCT ident
 		{
 			$$ = new TStruct($<ident>2->name);
 			delete $2;
 		} |
+		/*
 		type_base STAR %prec IREF
 		{
 			$$ = new TPointer16($<type>1);
@@ -309,9 +324,17 @@ type:
 			$$ = new TPointer16(new TStruct($<ident>2->name));
 			delete $2;
 		} |
+		*/
+		// pointer to type
 		type STAR %prec IREF
 		{
 			$$ = new TPointer16($<type>1);
+		} |
+		// const pointer to type
+		type STAR CONST %prec IREF
+		{
+			$$ = new TPointer16($<type>1);
+			$$->setConst();
 		};
 
 block:
@@ -712,38 +735,42 @@ type_base:
 		{
 			//$$ = new NType("void", 0, false);
 			// TODO Void Type
+			$$ = new TInt16("void");
 		} |
 		TYPE_CHAR
 		{
 			//$$ = new NType("char", 0, false);
-			$$ = new TInt16();
+			$$ = new TInt16("char");
 		} |
 		TYPE_SHORT
 		{
 			//$$ = new NType("byte", 0, false);
-			$$ = new TInt16();
+			$$ = new TInt16("byte");
 		} |
 		TYPE_INT
 		{
 			//$$ = new NType("int", 0, false);
-			$$ = new TInt16();
+			$$ = new TInt16("int");
 		} |
 		TYPE_LONG
 		{
 			//$$ = new NType("long", 0, false);
-			$$ = new TInt16();
+			$$ = new TInt16("long");
 		}  |
 		TYPE_FLOAT
 		{
 			//$$ = new NIdentifier("float");
+			throw new CompilerException(yylineno, (const char*)yyfilename->data, "Data type 'float' not yet supported.");
 		}  |
 		TYPE_DOUBLE
 		{
 			//$$ = new NIdentifier("double");
+			throw new CompilerException(yylineno, (const char*)yyfilename->data, "Data type 'double' not yet supported.");
 		}  |
 		TYPE_LONG TYPE_DOUBLE
 		{
 			// $$ = new NIdentifier("long double");
+			throw new CompilerException(yylineno, (const char*)yyfilename->data, "Data type 'long double' not yet supported.");
 		};
 
 %%

@@ -95,7 +95,6 @@ extern "C"
 "void"					{ HANDLE; return TYPE_VOID; }
 "char"					{ HANDLE; return TYPE_CHAR; }
 "short"					{ HANDLE; return TYPE_SHORT; }
-"byte"					{ HANDLE; return TYPE_BYTE; }
 "int"					{ HANDLE; return TYPE_INT; }
 "long"					{ HANDLE; return TYPE_LONG; }
 "float"					{ HANDLE; return TYPE_FLOAT; }

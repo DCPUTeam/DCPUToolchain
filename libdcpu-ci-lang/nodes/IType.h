@@ -39,6 +39,10 @@ class IType
 		virtual bool isBasicType() const INTERNAL_TYPE_EXCEPTION("get type info of")
 		virtual bool isStruct() const INTERNAL_TYPE_EXCEPTION("get type info of")
 		virtual bool isPointer() const INTERNAL_TYPE_EXCEPTION("get type info of")
+		virtual bool isConst() const INTERNAL_TYPE_EXCEPTION("get type info of")
+		virtual void setConst() INTERNAL_TYPE_EXCEPTION("get type info of")
+		virtual bool isSigned() const INTERNAL_TYPE_EXCEPTION("get type info of")
+		virtual bool setSigned(bool isSigned) INTERNAL_TYPE_EXCEPTION("get type info of")
 		
 		virtual bool implicitCastable(AsmGenerator& context, const IType* toType) INTERNAL_TYPE_EXCEPTION("get cast info of")
 		virtual bool explicitCastable(AsmGenerator& context, const IType* toType) INTERNAL_TYPE_EXCEPTION("get cast info of")
