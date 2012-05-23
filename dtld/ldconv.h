@@ -25,6 +25,7 @@ struct lconv_entry
 	uint16_t address;
 };
 
+list_t* list_create();
 list_t* list_convert(struct lprov_entry* first);
 list_t* list_clone(list_t* original);
 

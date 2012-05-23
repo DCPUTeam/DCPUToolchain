@@ -35,6 +35,15 @@ size_t lconv_entry_comparator(const void* a, const void* b)
 		return 1;
 }
 
+list_t* list_create()
+{
+	list_t* list = malloc(sizeof(list_t));
+	list_init(list);
+	list_attributes_copy(list, &lconv_entry_meter, 1);
+	list_attributes_comparator(list, &lconv_entry_comparator);
+	return list;
+}
+
 list_t* list_convert(struct lprov_entry* first)
 {
 	struct lconv_entry* entry;
