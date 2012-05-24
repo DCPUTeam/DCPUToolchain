@@ -13,6 +13,7 @@
 **/
 
 #include <stdio.h>
+#include "debug.h"
 #include "bstring.h"
 #include "version.h"
 
@@ -37,6 +38,12 @@ bstring version_get()
 void version_print(freed_bstring application)
 {
 	bstring ver = version_get();
+
+	if (debug_getlevel() < LEVEL_VERBOSE)
+	{
+		bautodestroy(application);
+		return;
+	}
 
 	fprintf(stderr, "DCPU-16 Toolchain ");
 	fprintf(stderr, "%s", application.ref->data);

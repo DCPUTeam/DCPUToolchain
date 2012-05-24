@@ -20,6 +20,7 @@
 #include <ldata.h>
 #include <objfile.h>
 #include <assert.h>
+#include <debug.h>
 #include "ldbins.h"
 #include "ldbin.h"
 #include "ldconv.h"
@@ -221,18 +222,18 @@ void bins_sectionize()
 	for (i = 0; i < list_size(&ldbins.bins); i++)
 	{
 		bin = list_get_at(&ldbins.bins, i);
-		printf("start bin: %s\n", bin->name->data);
-		bin->provided != NULL ? printf("  total provided: %u\n", list_size(bin->provided)) : false;
-		bin->required != NULL ? printf("  total required: %u\n", list_size(bin->required)) : false;
-		bin->adjustment != NULL ? printf("  total adjustment: %u\n", list_size(bin->adjustment)) : false;
-		bin->section != NULL ? printf("	 total sections: %u\n", list_size(bin->section)) : false;
-		bin->output != NULL ? printf("	total outputs: %u\n", list_size(bin->output)) : false;
-		printf("  total words: 0x%04X\n", list_size(&bin->words));
+		printd(LEVEL_VERBOSE, "start bin: %s\n", bin->name->data);
+		bin->provided != NULL ? printd(LEVEL_VERBOSE, "	 total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printd(LEVEL_VERBOSE, "	 total required: %u\n", list_size(bin->required)) : false;
+		bin->adjustment != NULL ? printd(LEVEL_VERBOSE, "  total adjustment: %u\n", list_size(bin->adjustment)) : false;
+		bin->section != NULL ? printd(LEVEL_VERBOSE, "	total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printd(LEVEL_VERBOSE, "  total outputs: %u\n", list_size(bin->output)) : false;
+		printd(LEVEL_VERBOSE, "	 total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
 		while (list_iterator_hasnext(&bin->words))
-			printf("    0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_VERBOSE, "	   0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
-		printf("  \n");
+		printd(LEVEL_VERBOSE, "	 \n");
 	}
 
 	// Copy words into appropriate bins.
@@ -324,18 +325,18 @@ void bins_sectionize()
 	for (i = 0; i < list_size(&ldbins.bins); i++)
 	{
 		bin = list_get_at(&ldbins.bins, i);
-		printf("end bin: %s\n", bin->name->data);
-		bin->provided != NULL ? printf("  total provided: %u\n", list_size(bin->provided)) : false;
-		bin->required != NULL ? printf("  total required: %u\n", list_size(bin->required)) : false;
-		bin->adjustment != NULL ? printf("  total adjustment: %u\n", list_size(bin->adjustment)) : false;
-		bin->section != NULL ? printf("	 total sections: %u\n", list_size(bin->section)) : false;
-		bin->output != NULL ? printf("	total outputs: %u\n", list_size(bin->output)) : false;
-		printf("  total words: 0x%04X\n", list_size(&bin->words));
+		printd(LEVEL_VERBOSE, "end bin: %s\n", bin->name->data);
+		bin->provided != NULL ? printd(LEVEL_VERBOSE, "	 total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printd(LEVEL_VERBOSE, "	 total required: %u\n", list_size(bin->required)) : false;
+		bin->adjustment != NULL ? printd(LEVEL_VERBOSE, "  total adjustment: %u\n", list_size(bin->adjustment)) : false;
+		bin->section != NULL ? printd(LEVEL_VERBOSE, "	total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printd(LEVEL_VERBOSE, "  total outputs: %u\n", list_size(bin->output)) : false;
+		printd(LEVEL_VERBOSE, "	 total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
 		while (list_iterator_hasnext(&bin->words))
-			printf("    0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_VERBOSE, "	   0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
-		printf("  \n");
+		printd(LEVEL_VERBOSE, "	 \n");
 	}
 }
 
@@ -369,7 +370,7 @@ void bins_flatten(freed_bstring name)
 		{
 			entry = list_iterator_next(bin->output);
 
-			printf("%s: will output %s at 0x%4X\n", bin->name->data, entry->label->data, entry->address);
+			printd(LEVEL_DEBUG, "%s: will output %s at 0x%4X\n", bin->name->data, entry->label->data, entry->address);
 		}
 		list_iterator_stop(bin->output);
 
@@ -426,18 +427,18 @@ void bins_flatten(freed_bstring name)
 	for (i = 0; i < list_size(&ldbins.bins); i++)
 	{
 		bin = list_get_at(&ldbins.bins, i);
-		printf("flattened bin: %s\n", bin->name->data);
-		bin->provided != NULL ? printf("  total provided: %u\n", list_size(bin->provided)) : false;
-		bin->required != NULL ? printf("  total required: %u\n", list_size(bin->required)) : false;
-		bin->adjustment != NULL ? printf("  total adjustment: %u\n", list_size(bin->adjustment)) : false;
-		bin->section != NULL ? printf("	 total sections: %u\n", list_size(bin->section)) : false;
-		bin->output != NULL ? printf("	total outputs: %u\n", list_size(bin->output)) : false;
-		printf("  total words: 0x%04X\n", list_size(&bin->words));
+		printd(LEVEL_VERBOSE, "flattened bin: %s\n", bin->name->data);
+		bin->provided != NULL ? printd(LEVEL_VERBOSE, "	 total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printd(LEVEL_VERBOSE, "	 total required: %u\n", list_size(bin->required)) : false;
+		bin->adjustment != NULL ? printd(LEVEL_VERBOSE, "  total adjustment: %u\n", list_size(bin->adjustment)) : false;
+		bin->section != NULL ? printd(LEVEL_VERBOSE, "	total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printd(LEVEL_VERBOSE, "  total outputs: %u\n", list_size(bin->output)) : false;
+		printd(LEVEL_VERBOSE, "	 total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
 		while (list_iterator_hasnext(&bin->words))
-			printf("    0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_VERBOSE, "	   0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
-		printf("  \n");
+		printd(LEVEL_VERBOSE, "	 \n");
 	}
 }
 
@@ -472,7 +473,7 @@ void bins_resolve(bool keepProvided)
 		assert(required != NULL);
 		if (provided == NULL)
 		{
-			printf("could not find label %s.\n", required->label->data);
+			printd(LEVEL_ERROR, "could not find label %s.\n", required->label->data);
 			exit(1);
 		}
 
@@ -480,7 +481,7 @@ void bins_resolve(bool keepProvided)
 		word = list_get_at(&bin->words, required->address);
 		*word = provided->address;
 
-		printf("resolve: %s (0x%4X) -> 0x%4X\n", required->label->data, required->address, provided->address);
+		printd(LEVEL_DEBUG, "resolve: %s (0x%4X) -> 0x%4X\n", required->label->data, required->address, provided->address);
 	}
 	list_iterator_stop(bin->required);
 
@@ -507,17 +508,17 @@ void bins_resolve(bool keepProvided)
 	for (i = 0; i < list_size(&ldbins.bins); i++)
 	{
 		bin = list_get_at(&ldbins.bins, i);
-		printf("resolved bin: %s\n", bin->name->data);
-		bin->provided != NULL ? printf("  total provided: %u\n", list_size(bin->provided)) : false;
-		bin->required != NULL ? printf("  total required: %u\n", list_size(bin->required)) : false;
-		bin->adjustment != NULL ? printf("  total adjustment: %u\n", list_size(bin->adjustment)) : false;
-		bin->section != NULL ? printf("	 total sections: %u\n", list_size(bin->section)) : false;
-		bin->output != NULL ? printf("	total outputs: %u\n", list_size(bin->output)) : false;
-		printf("  total words: 0x%04X\n", list_size(&bin->words));
+		printd(LEVEL_VERBOSE, "resolved bin: %s\n", bin->name->data);
+		bin->provided != NULL ? printd(LEVEL_VERBOSE, "	 total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printd(LEVEL_VERBOSE, "	 total required: %u\n", list_size(bin->required)) : false;
+		bin->adjustment != NULL ? printd(LEVEL_VERBOSE, "  total adjustment: %u\n", list_size(bin->adjustment)) : false;
+		bin->section != NULL ? printd(LEVEL_VERBOSE, "	total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printd(LEVEL_VERBOSE, "  total outputs: %u\n", list_size(bin->output)) : false;
+		printd(LEVEL_VERBOSE, "	 total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
 		while (list_iterator_hasnext(&bin->words))
-			printf("    0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_VERBOSE, "	   0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
-		printf("  \n");
+		printd(LEVEL_VERBOSE, "	 \n");
 	}
 }
