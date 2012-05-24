@@ -68,7 +68,7 @@ void bins_init()
 ///
 struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct lprov_entry* required, struct lprov_entry* adjustment, struct lprov_entry* section, struct lprov_entry* output)
 {
-	struct ldbin* bin = bin_create(name);
+	struct ldbin* bin = bin_create(name, false);
 	bin->provided = list_convert(provided);
 	bin->required = list_convert(required);
 	bin->adjustment = list_convert(adjustment);
@@ -173,74 +173,6 @@ bool bins_write(freed_bstring name, uint16_t word)
 }
 
 ///
-/// Adjusts and copies linker information entries from a source bin into a target bin.
-///
-/// When bytes are being moved from a source bin to a target bin, the linker information
-/// entries must also be updated to reflect the new addresses of the bytes relative to
-/// the start of the bin.
-///
-/// @param bin The source bin.
-/// @param target The target bin.
-/// @param binlist The source bin linker information list (provided, required or adjustment).
-/// @param targetlist The target bin linker information list (provided, required or adjustment).
-/// @param index The index in the source bin from which bytes were stolen.
-/// @param dbgname The type of linker information list ("provided", "required" or "adjustment").
-///
-void bins_sectionize_adjust(struct ldbin* bin, struct ldbin* target, list_t* binlist, list_t* targetlist, int index, int base, bool isAdjustment, const char* dbgname)
-{
-	struct lconv_entry* entry;
-	size_t k;
-	uint16_t* word;
-
-	// Find any provided, required or adjustment labels at this memory address
-	// and move them into the target bin as well.
-	list_sort(binlist, 1);
-	for (k = 0; k < list_size(binlist); k++)
-	{
-		entry = (struct lconv_entry*)list_get_at(binlist, k);
-
-		if (entry->address < index)
-			// Prior to the current address, so don't touch it.
-			continue;
-		else if (entry->address == index)
-		{
-			// Found an exact match, move the provided label to
-			// the target bin.
-			if (entry->label != NULL)
-				printf("%s: moving address of %s label %s from 0x%04X to 0x%04X.\n", target->name->data, dbgname, entry->label->data, entry->address, list_size(&target->words) - 1);
-			else
-				printf("%s: moving %s address from 0x%04X to 0x%04X.\n", target->name->data, dbgname, entry->address, list_size(&target->words) - 1);
-
-			// Move entry and re-adjust current loop index.
-			entry->address = list_size(&target->words) - 1;
-			list_append(targetlist, entry);
-			list_delete_at(binlist, k);
-			k--;
-
-			// If this is an adjustment entry, we need to adjust it
-			// immediately (since we have no label to keep track of).
-			if (isAdjustment)
-			{
-				word = (uint16_t*)list_get_at(&target->words, list_size(&target->words) - 1);
-				printf("%s: moving adjustment target from 0x%04X to 0x%04X.\n", target->name->data, *word, *word + (base - index));
-				*word = *word + (base - index);
-			}
-		}
-		else if (entry->address > index)
-		{
-			// Found a provided label after the removed code, re-adjust
-			// it's current address by one word to make up for the
-			// removed code.
-			if (entry->label != NULL)
-				printf("%s: moving address of %s label %s down to 0x%04X.\n", target->name->data, dbgname, entry->label->data, entry->address - 1);
-			else
-				printf("%s: moving %s address 0x%04X down to 0x%04X.\n", target->name->data, dbgname, entry->address, entry->address - 1);
-			entry->address--;
-		}
-	}
-}
-
-///
 /// Splits the currently loaded bins into sectioned bins.
 ///
 void bins_sectionize()
@@ -250,7 +182,7 @@ void bins_sectionize()
 	struct ldbin* target;
 	list_t create;
 	size_t i;
-	int j, steal, stolen, index, base;
+	int /*j, */steal, stolen, index, base;
 	bstring name;
 
 	list_init(&create);
@@ -288,7 +220,7 @@ void bins_sectionize()
 			bconcat(name, entry->label);
 			if (list_seek(&create, name) == NULL)
 			{
-				target = bin_create(bautofree(name));
+				target = bin_create(bautofree(name), false);
 				target->provided = list_create();
 				target->required = list_create();
 				target->adjustment = list_create();
@@ -340,18 +272,8 @@ void bins_sectionize()
 			index = ((struct lconv_entry*)list_get_at(bin->section, i))->address - stolen;
 			base = list_size(&target->words);
 
-			// Steal ALL the words!
-			for (j = 0; j < steal; j++)
-			{
-				list_append(&target->words, list_extract_at(&bin->words, index));
-				stolen++;
-
-				// Adjust and copy each of the linker information tables into the target
-				// based on the current index.
-				bins_sectionize_adjust(bin, target, bin->provided, target->provided, index, base, false, "provided");
-				//bins_sectionize_adjust(bin, target, bin->required, target->required, index, "required");
-				bins_sectionize_adjust(bin, target, bin->adjustment, target->adjustment, index, base, true, "adjustment");
-			}
+			bin_move(target, bin, base, index, steal);
+			stolen += steal;
 		}
 	}
 	list_iterator_stop(&ldbins.bins);
@@ -382,7 +304,25 @@ void bins_sectionize()
 /// Flattens all of the current bins into a single contigious
 /// bin.
 ///
-void bins_flatten()
+void bins_flatten(freed_bstring name)
 {
-	// TODO
+	/*struct ldbin* target;
+	struct ldbin* bin;
+
+	// Create the output bin.
+	target = bin_create(bautofree(name));
+	target->provided = list_create();
+	target->required = list_create();
+	target->adjustment = list_create();
+	target->output = list_create();
+
+	// Loop through all of the current bins and evaluate them.
+	list_iterator_start(&ldbins.bins);
+	while (list_iterator_hasnext(&ldbins.bins))
+	{
+		bin = list_iterator_next(&ldbins.bins);
+
+
+	}
+	list_iterator_stop(&ldbins.bins);*/
 }

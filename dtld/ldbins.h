@@ -26,6 +26,6 @@ struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct 
 bool bins_load(freed_bstring path);
 bool bins_write(freed_bstring name, uint16_t word);
 void bins_sectionize();
-void bins_flatten();
+void bins_flatten(freed_bstring name);
 
 #endif
