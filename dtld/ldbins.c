@@ -155,6 +155,35 @@ bool bins_load(freed_bstring path)
 }
 
 ///
+/// Saves the bin with the specified name to the specified path.
+///
+/// @param name The name of the bin to save.
+/// @param path The path to save the bin to.
+///
+void bins_save(freed_bstring name, freed_bstring path)
+{
+	FILE* out;
+	struct ldbin* bin = list_seek(&ldbins.bins, name.ref);
+	assert(bin != NULL);
+
+	// Open the output file.
+	out = fopen(path.ref->data, "wb");
+
+	// Write each byte from the bin.
+	list_iterator_start(&bin->words);
+	while (list_iterator_hasnext(&bin->words))
+		fwrite(list_iterator_next(&bin->words), sizeof(uint16_t), 1, out);
+	list_iterator_stop(&bin->words);
+
+	// Close the output file.
+	fclose(out);
+
+	// Free strings.
+	bautodestroy(name);
+	bautodestroy(path);
+}
+
+///
 /// Writes a word of data into the specified bin.
 ///
 /// @param path The path to load.
@@ -182,7 +211,7 @@ void bins_sectionize()
 	struct ldbin* target;
 	list_t create;
 	size_t i;
-	int /*j, */steal, stolen, index, base;
+	int steal, stolen, index, base;
 	bstring name;
 
 	list_init(&create);
@@ -306,11 +335,14 @@ void bins_sectionize()
 ///
 void bins_flatten(freed_bstring name)
 {
-	/*struct ldbin* target;
+	struct lconv_entry* entry;
+	struct ldbin* target;
 	struct ldbin* bin;
+	bstring start, desired;
+	size_t i;
 
 	// Create the output bin.
-	target = bin_create(bautofree(name));
+	target = bin_create(name, false);
 	target->provided = list_create();
 	target->required = list_create();
 	target->adjustment = list_create();
@@ -322,7 +354,74 @@ void bins_flatten(freed_bstring name)
 	{
 		bin = list_iterator_next(&ldbins.bins);
 
+		list_iterator_start(bin->output);
+		while (list_iterator_hasnext(bin->output))
+		{
+			entry = list_iterator_next(bin->output);
+
+			printf("%s: will output %s at 0x%4X\n", bin->name->data, entry->label->data, entry->address);
+		}
+		list_iterator_stop(bin->output);
+
+		// Skip if the name begins with SECTION.
+		start = bmidstr(bin->name, 0, 8);
+		if (biseqcstr(start, "SECTION "))
+		{
+			bdestroy(start);
+			continue;
+		}
+		bdestroy(start);
+
+		// Move all of the code from this bin into the
+		// created bin.
+		bin_move(target, bin, list_size(&target->words), 0, list_size(&bin->words));
 
 	}
-	list_iterator_stop(&ldbins.bins);*/
+	list_iterator_stop(&ldbins.bins);
+
+	// Sort the output bins in *reverse* order since we want
+	// to insert the last output first.
+	list_sort(target->output, -1);
+
+	// Search for all of the output entries in the flattened
+	// output bin.
+	list_iterator_start(target->output);
+	while (list_iterator_hasnext(target->output))
+	{
+		entry = list_iterator_next(target->output);
+
+		// Find the section that matches.
+		desired = bfromcstr("SECTION ");
+		bconcat(desired, entry->label);
+		bin = list_seek(&ldbins.bins, desired);
+
+		// TODO: Throw a proper error.
+		assert(bin != NULL);
+
+		// Insert the required code.
+		bin_insert(target, bin, entry->address, 0, list_size(&bin->words));
+	}
+	list_iterator_stop(target->output);
+
+	// Delete all of the bins.
+	// TODO: Free data stored in the list before clearing.
+	//for (i = list_size(&ldbins.bins) - 1; i >= 0; i--)
+	//	bin_destroy(list_get_at(&ldbins.bins, i));
+	list_clear(&ldbins.bins);
+
+	// Add the flattened bin to the list of bins.
+	list_append(&ldbins.bins, target);
+
+	// Print result information.
+	for (i = 0; i < list_size(&ldbins.bins); i++)
+	{
+		bin = list_get_at(&ldbins.bins, i);
+		printf("flattened bin: %s\n", bin->name->data);
+		printf("  total words: 0x%04X\n", list_size(&bin->words));
+		list_iterator_start(&bin->words);
+		while (list_iterator_hasnext(&bin->words))
+			printf("    0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
+		list_iterator_stop(&bin->words);
+		printf("  \n");
+	}
 }

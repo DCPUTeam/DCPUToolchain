@@ -78,7 +78,8 @@ int main(int argc, char* argv[])
 	for (i = 0; i < input_files->count; i++)
 		bins_load(bautofree(bfromcstr(input_files->filename[i])));
 	bins_sectionize();
-	//bins_flatten("output");
+	bins_flatten(bautofree(bfromcstr("output")));
+	bins_save(bautofree(bfromcstr("output")), bautofree(bfromcstr(output_file->filename[0])));
 	//bins_adjust();
 	//bins_resolve();
 	//bins_compress();

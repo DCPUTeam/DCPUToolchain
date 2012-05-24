@@ -23,7 +23,7 @@ size_t lconv_entry_meter(const void* el)
 	return sizeof(struct lconv_entry);
 }
 
-size_t lconv_entry_comparator(const void* a, const void* b)
+int lconv_entry_comparator(const void* a, const void* b)
 {
 	struct lconv_entry* ea = (struct lconv_entry*)a;
 	struct lconv_entry* eb = (struct lconv_entry*)b;
