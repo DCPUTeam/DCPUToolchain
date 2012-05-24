@@ -27,11 +27,37 @@ AsmBlock* NString::compile(AsmGenerator& context)
 	// Stop if the assembler doesn't support DAT.
 	if (!context.getAssembler().supportsDataInstruction)
 		throw new CompilerException(this->line, this->file, "Unable to compile strings without DAT support in assembler.");
-
+	
+	// 
+	std::string s = this->value;
+	std::stringstream outputstr;
+	outputstr << "\"";
+	for (std::string::const_iterator i = s.begin(), end = s.end(); i != end; ++i)
+	{
+		unsigned char c = *i;
+		switch (c)
+		{
+		case '"':  outputstr << "\\\"";  break;
+		case '\'': outputstr << "\\\'";  break;
+		case '\\': outputstr << "\\\\"; break;
+		case '\t': outputstr << "\\t";  break;
+		case '\r': outputstr << "\\r";  break;
+		case '\n': outputstr << "\\n";  break;
+		case '\v': outputstr << "\\v";  break;
+		case '\f': outputstr << "\\f";  break;
+		case '\b': outputstr << "\\b";  break;
+		case '\a': outputstr << "\\a";  break;
+		case '\0': outputstr << "\\0";  break;
+		case '\?': outputstr << "\\\?";  break;
+		default : outputstr << c;
+		}
+	}
+	outputstr << "\"";
+	
 	// Generate a label for the DAT and then output the DAT.
 	std::string strlabel = context.getRandomLabel("cstr");
 	*block <<	"	SET PC, " << strlabel << "_jmpover" << std::endl;
-	*block <<	"	:" << strlabel << " DAT \"" << this->value << "\", 0" << std::endl;
+	*block <<	"	:" << strlabel << " DAT " << outputstr.str() << ", 0" << std::endl;
 
 	// Load the address of the string in register A.
 	*block <<	"	:" << strlabel << "_jmpover SET A, " << strlabel << "" << std::endl;
