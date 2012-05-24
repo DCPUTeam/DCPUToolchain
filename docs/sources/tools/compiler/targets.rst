@@ -12,9 +12,9 @@ under the specified target assembler.
 The following assembler targets are supported (as well as the known list of features they support):
 
 +-----------------------+-----------+----------------+------------------+---------------------+--------------------+-------------------+-------------------+
-| Type                  | .BOUNDARY | .DATA sections | .DAT instruction | Reordered addresses | Character literals | .IMPORT directive | .EXPORT directive |
+| Type                  | .BOUNDARY | .SECTION       | .DAT instruction | Reordered addresses | Character literals | .IMPORT directive | .EXPORT directive |
 +=======================+===========+================+==================+=====================+====================+===================+===================+
-| toolchain             | Yes       | `-`            | Yes              | Yes                 | Yes                | Yes               | Yes               |
+| toolchain             | Yes       | Yes            | Yes              | Yes                 | Yes                | Yes               | Yes               |
 +-----------------------+-----------+----------------+------------------+---------------------+--------------------+-------------------+-------------------+
 | studio                | `-`       | `-`            | Yes              | `-`                 | `-`                | `-`               | `-`               |
 +-----------------------+-----------+----------------+------------------+---------------------+--------------------+-------------------+-------------------+
@@ -46,20 +46,26 @@ Provides a safety boundary for debugging purposes.
 **Affected functionality:** The compiler will fall back to using the .DAT directive to replicate this
 functionality if it is not available.
 
-.DATA section
+.SECTION
 ~~~~~~~~~~~~~~~~~
-Provides a contigious block of data declarations.
+Provides seperated sections of code and data which can then be
+reinserted later on at link stage.
 
 .. code-block:: nasm
 
-    .DATA
+    .SECTION DATA
         myString "something that I want to embed"
         myNumber 45
     
-    .CODE
+    .SECTION CODE
         SET A, 5
 
-**Affected functionality:** No current effect.
+.. code-block:: nasm
+
+    .OUTPUT DATA
+    .OUTPUT CODE
+
+**Affected functionality:** You will be unable to declare initializers on global variable expressions.
 
 DAT instruction
 ~~~~~~~~~~~~~~~~~

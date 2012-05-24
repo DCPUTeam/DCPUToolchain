@@ -33,8 +33,8 @@ class Assembler
 		// Whether the assembler supports the .BOUNDARY directive.
 		bool supportsSafetyBoundary;
 
-		// Whether the assembler supports .DATA and .CODE sections.
-		bool supportsDataSections;
+		// Whether the assembler supports .SECTION and .OUTPUT directives.
+		bool supportsSections;
 
 		// Whether the assembler supports the DAT instruction.
 		bool supportsDataInstruction;
@@ -63,14 +63,14 @@ class Assembler
 		static std::map<std::string, const Assembler*> m_Assemblers;
 		Assembler(
 			bool supportsSafetyBoundary,
-			bool supportsDataSections,
+			bool supportsSections,
 			bool supportsDataInstruction,
 			bool supportsReorderedAddresses,
 			bool supportsDirectCharacters,
 			bool supportsLinkedImportDirective,
 			bool supportsLinkedExportDirective
 		) : supportsSafetyBoundary(supportsSafetyBoundary),
-			supportsDataSections(supportsDataSections),
+			supportsSections(supportsSections),
 			supportsDataInstruction(supportsDataInstruction),
 			supportsReorderedAddresses(supportsReorderedAddresses),
 			supportsDirectCharacters(supportsDirectCharacters),

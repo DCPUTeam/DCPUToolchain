@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include "lprov.h"
 
-void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov_entry** provided, struct lprov_entry** required, struct lprov_entry** adjustment);
-void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* required, struct lprov_entry* adjustment);
+void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov_entry** provided, struct lprov_entry** required, struct lprov_entry** adjustment, struct lprov_entry** section, struct lprov_entry** output);
+void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* required, struct lprov_entry* adjustment, struct lprov_entry* section, struct lprov_entry* output);
 
 #endif

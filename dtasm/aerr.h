@@ -40,6 +40,7 @@
 #define ERR_LABEL_RESOLUTION_NOT_PERMITTED 16
 #define ERR_EXPRESSION_NOT_PERMITTED 17
 #define ERR_EXPRESSION_DIVIDE_BY_ZERO 18
+#define ERR_OUTPUT_BEFORE_SECTION 19
 
 // Variables
 extern const char* err_strings[];

@@ -20,66 +20,63 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
 
+	// Import bootstrap data.
+	*block << ".IMPORT _stack_caller_init" << std::endl;
+	*block << ".IMPORT _stack_callee_return" << std::endl;
+	*block << ".IMPORT _halt" << std::endl;
+	*block << ".IMPORT _halt_debug" << std::endl;
+
 	// Add file and line information.
 	*block << this->getFileAndLineState();
 
 	// Tell the generator that we are the root.
 	context.m_RootNode = this;
 
-	if (context.m_IsEntryPointMode)
+	// Create the global data frame.
+	StackMap* map = new StackMap();
+
+	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
 	{
-		// First deal with the main setup.
-		NFunctionDeclaration* main = (NFunctionDeclaration*)context.getFunction("main");
+		if ((*i)->cType != "statement-declaration-variable")
+			continue;
 
-		if (main == NULL)
-			throw new CompilerException(this->line, this->file, "Called function was not found 'main'.");
+		map->insert(map->end(), StackPair(((NVariableDeclaration*)(*i))->id.name, ((NVariableDeclaration*)(*i))->type));
+	}
 
+	context.m_GlobalFrame = new StackFrame(context, *map);
 
-		// Output assembly for calling global data initializer.
-		*block <<  "	SET PC, _data_init" << std::endl;
+	// Output the global data storage area.
+	*block << std::endl;
+	*block <<  ":_DATA" << std::endl;
 
-		// Create the global data frame.
-		StackMap* map = new StackMap();
+	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+	{
+		if ((*i)->cType != "statement-declaration-variable")
+			continue;
 
-		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
-		{
-			if ((*i)->cType != "statement-declaration-variable")
-				continue;
+		// Calculate size.
+		unsigned int size = ((NVariableDeclaration*)(*i))->type.getWordSize(context);
 
-			map->insert(map->end(), StackPair(((NVariableDeclaration*)(*i))->id.name, ((NVariableDeclaration*)(*i))->type));
-		}
+		// We can't have types with 0 word storage in the global scope.
+		if (size <= 0)
+			throw new CompilerException(this->line, this->file, "Unable to store global variable with a type that has size of 0 words.");
 
-		context.m_GlobalFrame = new StackFrame(context, *map);
+		// Output zero'd data sections.
+		*block <<  "	DAT 0";
 
-		// Output the global data storage area.
-		*block << std::endl;
-		*block <<  ":_DATA" << std::endl;
-
-		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
-		{
-			if ((*i)->cType != "statement-declaration-variable")
-				continue;
-
-			// Calculate size.
-			unsigned int size = ((NVariableDeclaration*)(*i))->type->getWordSize(context);
-
-			// We can't have types with 0 word storage in the global scope.
-			if (size <= 0)
-				throw new CompilerException(this->line, this->file, "Unable to store global variable with a type that has size of 0 words.");
-
-			// Output zero'd data sections.
-			*block <<  "	DAT 0";
-
-			for (unsigned int b = 1; b < size; b++)
-				*block <<  ", 0";
-
-			*block << std::endl;
-		}
+		for (unsigned int b = 1; b < size; b++)
+			*block <<  ", 0";
 
 		*block << std::endl;
+	}
 
+	*block << std::endl;
+
+	// If the assembler supports sections...
+	if (context.getAssembler().supportsSections)
+	{
 		// Output the block for initializing global data storage.
-		*block <<  ":_data_init" << std::endl;
+		*block <<  ".SECTION INIT" << std::endl;
 		context.m_CurrentFrame = context.m_GlobalFrame; // So that the NVariableDeclaration compiles successfully.
 
 		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
@@ -95,6 +92,26 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 				delete inner;
 		}
 
+		// Output the code section.
+		*block <<  ".SECTION CODE" << std::endl;
+	}
+	else
+	{
+		// Ensure we don't have any global variable initializers declared here.
+		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+		{
+			if ((*i)->cType != "statement-declaration-variable")
+				continue;
+
+			if (((NVariableDeclaration*)(*i))->initExpr != NULL)
+				throw new CompilerException(this->line, this->file, "Initializers not permitted on global variables for assemblers that don't support sections.");
+		}
+	}
+
+	// Deal with the main setup.
+	NFunctionDeclaration* main = (NFunctionDeclaration*)context.getFunction("main");
+	if (main != NULL)
+	{
 		// Get the stack table of main.
 		StackFrame* frame = context.generateStackFrame(main, false);
 
@@ -106,43 +123,19 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 
 		// Clean up frame.
 		context.finishStackFrame(frame);
-
-		// Handle function definitions.
-		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
-		{
-			if ((*i)->cType == "statement-declaration-variable")
-				continue;
-
-			AsmBlock* inner = (*i)->compile(context);
-			*block << *inner;
-
-			if (inner != NULL)
-				delete inner;
-		}
 	}
-	else
+
+	// Handle function definitions.
+	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
 	{
-		// Ensure we don't have any global variables declared here.
-		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
-		{
-			if ((*i)->cType != "statement-declaration-variable")
-				continue;
+		if ((*i)->cType == "statement-declaration-variable")
+			continue;
 
-			throw new CompilerException(this->line, this->file, "You can't currently define global variables in non-entry-point compilation units.");
-		}
+		AsmBlock* inner = (*i)->compile(context);
+		*block << *inner;
 
-		// Handle function definitions.
-		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
-		{
-			if ((*i)->cType == "statement-declaration-variable")
-				continue;
-
-			AsmBlock* inner = (*i)->compile(context);
-			*block << *inner;
-
-			if (inner != NULL)
-				delete inner;
-		}
+		if (inner != NULL)
+			delete inner;
 	}
 
 	return block;

@@ -72,7 +72,7 @@ extern bstring	yyufilename;
 %token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT
 %token <token> ADD SUBTRACT MULTIPLY DIVIDE MODULUS EQUALS NOT_EQUALS LESS_THAN LESS_EQUALS GREATER_THAN GREATER_EQUALS
 %token <token> PAREN_OPEN PAREN_CLOSE BITWISE_AND BITWISE_BOR BITWISE_XOR BITWISE_NOT BOOLEAN_OR BOOLEAN_AND BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
-%token <token> KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL
+%token <token> KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL SECTION OUTPUT
 %token <word> WORD
 %token <string> STRING CHARACTER
 %token <number> ADDRESS
@@ -147,42 +147,6 @@ line:
 		NEWLINE
 		{
 			$$ = NULL;
-		} |
-		EQUATE WORD parameters NEWLINE
-		{
-			// Ugh, this is such an ugly hack and really needs to be better.
-			struct ast_node_instruction* linst = malloc(sizeof(struct ast_node_instruction));
-			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
-			struct ast_node_label* lbl = malloc(sizeof(struct ast_node_label));
-
-			// Initialize DAT instruction.
-			linst->instruction = "DAT";
-			linst->parameters = $3;
-
-			// Initialize label.
-			lbl->name = $2;
-
-			// Initialize instruction.
-			lnode->type = type_label;
-			lnode->keyword = 0;
-			lnode->instruction = NULL;
-			lnode->label = lbl;
-			lnode->prev = NULL;
-			lnode->keyword_data_string = NULL;
-			lnode->keyword_data_expr_1 = NULL;
-			lnode->keyword_data_expr_2 = NULL;
-			NODE_SET_GLOBALS(lnode);
-
-			$$ = malloc(sizeof(struct ast_node_line));
-			$$->type = type_instruction;
-			$$->keyword = 0;
-			$$->instruction = linst;
-			$$->label = NULL;
-			$$->prev = lnode;
-			$$->keyword_data_string = NULL;
-			$$->keyword_data_expr_1 = NULL;
-			$$->keyword_data_expr_2 = NULL;
-			NODE_SET_GLOBALS($$);
 		} |
 		FILL expr expr NEWLINE
 		{

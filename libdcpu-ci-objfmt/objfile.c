@@ -27,7 +27,7 @@ struct lprov_entry* objfile_get_last(struct lprov_entry* first)
 	return first;
 }
 
-void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov_entry** provided, struct lprov_entry** required, struct lprov_entry** adjustment)
+void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov_entry** provided, struct lprov_entry** required, struct lprov_entry** adjustment, struct lprov_entry** section, struct lprov_entry** output)
 {
 	struct ldata_entry* entry = NULL;
 	struct lprov_entry* prov_last = provided == NULL ? NULL : objfile_get_last(*provided);
@@ -36,6 +36,10 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 	struct lprov_entry* req_current = NULL;
 	struct lprov_entry* adjust_last = adjustment == NULL ? NULL : objfile_get_last(*adjustment);
 	struct lprov_entry* adjust_current = NULL;
+	struct lprov_entry* section_last = section == NULL ? NULL : objfile_get_last(*section);
+	struct lprov_entry* section_current = NULL;
+	struct lprov_entry* output_last = output == NULL ? NULL : objfile_get_last(*output);
+	struct lprov_entry* output_current = NULL;
 	size_t sz;
 
 	// Read <256 byte label content> <mode> <address>
@@ -81,6 +85,28 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 
 			adjust_last = adjust_current;
 		}
+		else if (entry->mode == LABEL_SECTION && adjustment != NULL)
+		{
+			section_current = lprov_create(entry->label, entry->address + *offset);
+
+			if (section_last == NULL)
+				*section = section_current;
+			else
+				section_last->next = section_current;
+
+			section_last = section_current;
+		}
+		else if (entry->mode == LABEL_OUTPUT && adjustment != NULL)
+		{
+			output_current = lprov_create(entry->label, entry->address + *offset);
+
+			if (output_last == NULL)
+				*output = output_current;
+			else
+				output_last->next = output_current;
+
+			output_last = output_current;
+		}
 
 		entry = ldata_read(in);
 	}
@@ -93,7 +119,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 	fseek(in, sz, SEEK_SET);
 }
 
-void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* required, struct lprov_entry* adjustment)
+void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* required, struct lprov_entry* adjustment, struct lprov_entry* section, struct lprov_entry* output)
 {
 	struct ldata_entry* entry = NULL;
 
@@ -131,6 +157,30 @@ void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* r
 		ldata_write(out, entry);
 
 		adjustment = adjustment->next;
+	}
+
+	// Now write out the section table.
+	while (section != NULL)
+	{
+		entry = malloc(sizeof(struct ldata_entry));
+		entry->mode = LABEL_SECTION;
+		entry->address = section->address;
+		strcpy(entry->label, section->label);
+		ldata_write(out, entry);
+
+		section = section->next;
+	}
+
+	// Now write out the output table.
+	while (output != NULL)
+	{
+		entry = malloc(sizeof(struct ldata_entry));
+		entry->mode = LABEL_OUTPUT;
+		entry->address = output->address;
+		strcpy(entry->label, output->label);
+		ldata_write(out, entry);
+
+		output = output->next;
 	}
 
 	// Now write out the NULL entry.

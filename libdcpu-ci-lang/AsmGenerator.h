@@ -34,15 +34,12 @@ class AsmGenerator
 		static std::string getRandomString(std::string::size_type sz);
 
 	public:
-		AsmBlock m_Preassembly;
-		AsmBlock m_Postassembly;
 		StackFrame* m_CurrentFrame;
 		StackFrame* m_GlobalFrame;
 		IDeclarations* m_RootNode;
-		bool m_IsEntryPointMode;
 
 	public:
-		AsmGenerator(std::string asmtarget, bool entryPointMode);
+		AsmGenerator(std::string asmtarget);
 
 		IFunctionDeclaration* getFunction(std::string name);
 		StackFrame* generateStackFrame(IFunctionDeclaration* function, bool referenceOnly = true);

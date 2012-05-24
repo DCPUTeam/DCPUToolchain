@@ -306,6 +306,22 @@ void process_line(struct ast_node_line* line)
 		case type_keyword:
 			switch (line->keyword)
 			{
+				case SECTION:
+					fprintf(stderr, ".SECTION %s", bstr2cstr(line->keyword_data_string, '0'));
+
+					// Emit section metadata.
+					aout_emit(aout_create_metadata_section(bstr2cstr(line->keyword_data_string, '0')));
+
+					break;
+
+				case OUTPUT:
+					fprintf(stderr, ".OUTPUT %s", bstr2cstr(line->keyword_data_string, '0'));
+
+					// Emit output metadata.
+					aout_emit(aout_create_metadata_output(bstr2cstr(line->keyword_data_string, '0')));
+
+					break;
+
 				case BOUNDARY:
 					fprintf(stderr, ".BOUNDARY");
 
