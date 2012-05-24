@@ -24,8 +24,6 @@
 int main(int argc, char* argv[])
 {
 	// Define our variables.
-	//FILE* in;
-	//FILE* out;
 	int nerrors, i;
 	bstring target;
 
@@ -79,10 +77,9 @@ int main(int argc, char* argv[])
 		bins_load(bautofree(bfromcstr(input_files->filename[i])));
 	bins_sectionize();
 	bins_flatten(bautofree(bfromcstr("output")));
-	bins_save(bautofree(bfromcstr("output")), bautofree(bfromcstr(output_file->filename[0])));
-	//bins_adjust();
-	//bins_resolve();
+	bins_resolve(biseqcstr(target, "static") == true);
 	//bins_compress();
+	bins_save(bautofree(bfromcstr("output")), bautofree(bfromcstr(output_file->filename[0])));
 
 	return 1;
 

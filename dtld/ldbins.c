@@ -222,6 +222,11 @@ void bins_sectionize()
 	{
 		bin = list_get_at(&ldbins.bins, i);
 		printf("start bin: %s\n", bin->name->data);
+		bin->provided != NULL ? printf("  total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printf("  total required: %u\n", list_size(bin->required)) : false;
+		bin->adjustment != NULL ? printf("  total adjustment: %u\n", list_size(bin->adjustment)) : false;
+		bin->section != NULL ? printf("	 total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printf("	total outputs: %u\n", list_size(bin->output)) : false;
 		printf("  total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
 		while (list_iterator_hasnext(&bin->words))
@@ -320,6 +325,11 @@ void bins_sectionize()
 	{
 		bin = list_get_at(&ldbins.bins, i);
 		printf("end bin: %s\n", bin->name->data);
+		bin->provided != NULL ? printf("  total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printf("  total required: %u\n", list_size(bin->required)) : false;
+		bin->adjustment != NULL ? printf("  total adjustment: %u\n", list_size(bin->adjustment)) : false;
+		bin->section != NULL ? printf("	 total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printf("	total outputs: %u\n", list_size(bin->output)) : false;
 		printf("  total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
 		while (list_iterator_hasnext(&bin->words))
@@ -417,6 +427,92 @@ void bins_flatten(freed_bstring name)
 	{
 		bin = list_get_at(&ldbins.bins, i);
 		printf("flattened bin: %s\n", bin->name->data);
+		bin->provided != NULL ? printf("  total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printf("  total required: %u\n", list_size(bin->required)) : false;
+		bin->adjustment != NULL ? printf("  total adjustment: %u\n", list_size(bin->adjustment)) : false;
+		bin->section != NULL ? printf("	 total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printf("	total outputs: %u\n", list_size(bin->output)) : false;
+		printf("  total words: 0x%04X\n", list_size(&bin->words));
+		list_iterator_start(&bin->words);
+		while (list_iterator_hasnext(&bin->words))
+			printf("    0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
+		list_iterator_stop(&bin->words);
+		printf("  \n");
+	}
+}
+
+///
+/// Resolves all of the required and provided labels in a program.  The bins
+/// must be flattened at this point.
+///
+/// @param Whether the provided label entries should be kept in the flattened
+///	   bin for re-exporting (for example in static libraries).
+///
+void bins_resolve(bool keepProvided)
+{
+	struct lconv_entry* required;
+	struct lconv_entry* provided;
+	struct ldbin* bin;
+	uint16_t* word;
+	size_t i;
+
+	// Get the first bin.
+	assert(list_size(&ldbins.bins) == 1);
+	bin = list_get_at(&ldbins.bins, 0);
+
+	// Iterator over all required values.
+	list_iterator_start(bin->required);
+	while (list_iterator_hasnext(bin->required))
+	{
+		// Get the required / provided matching labels.
+		required = list_iterator_next(bin->required);
+		provided = list_seek(bin->provided, required->label);
+
+		// TODO: Throw a proper error.
+		assert(required != NULL);
+		if (provided == NULL)
+		{
+			printf("could not find label %s.\n", required->label->data);
+			exit(1);
+		}
+
+		// Insert the required code.
+		word = list_get_at(&bin->words, required->address);
+		*word = provided->address;
+
+		printf("resolve: %s (0x%4X) -> 0x%4X\n", required->label->data, required->address, provided->address);
+	}
+	list_iterator_stop(bin->required);
+
+	// Delete all of the required entries.
+	while (list_size(bin->required) > 0)
+	{
+		required = list_extract_at(bin->required, 0);
+		bdestroy(required->label);
+		free(required);
+	}
+
+	if (!keepProvided)
+	{
+		// Delete all of the provided entries.
+		while (list_size(bin->provided) > 0)
+		{
+			provided = list_extract_at(bin->provided, 0);
+			bdestroy(provided->label);
+			free(provided);
+		}
+	}
+
+	// Print result information.
+	for (i = 0; i < list_size(&ldbins.bins); i++)
+	{
+		bin = list_get_at(&ldbins.bins, i);
+		printf("resolved bin: %s\n", bin->name->data);
+		bin->provided != NULL ? printf("  total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printf("  total required: %u\n", list_size(bin->required)) : false;
+		bin->adjustment != NULL ? printf("  total adjustment: %u\n", list_size(bin->adjustment)) : false;
+		bin->section != NULL ? printf("	 total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printf("	total outputs: %u\n", list_size(bin->output)) : false;
 		printf("  total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
 		while (list_iterator_hasnext(&bin->words))

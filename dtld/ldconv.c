@@ -12,6 +12,7 @@
 
 **/
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <bstring.h>
 #include <simclist.h>
@@ -35,12 +36,23 @@ int lconv_entry_comparator(const void* a, const void* b)
 		return 1;
 }
 
+int lconv_entry_seeker(const void* e, const void* name)
+{
+	struct lconv_entry* el = (struct lconv_entry*)e;
+	if (el->label == NULL) return 0;
+	if (biseq(el->label, (bstring)name))
+		return 1;
+	else
+		return 0;
+}
+
 list_t* list_create()
 {
 	list_t* list = malloc(sizeof(list_t));
 	list_init(list);
 	list_attributes_copy(list, &lconv_entry_meter, 1);
 	list_attributes_comparator(list, &lconv_entry_comparator);
+	list_attributes_seeker(list, &lconv_entry_seeker);
 	return list;
 }
 
@@ -51,6 +63,7 @@ list_t* list_convert(struct lprov_entry* first)
 	list_init(list);
 	list_attributes_copy(list, &lconv_entry_meter, 1);
 	list_attributes_comparator(list, &lconv_entry_comparator);
+	list_attributes_seeker(list, &lconv_entry_seeker);
 	while (first != NULL)
 	{
 		entry = malloc(sizeof(struct lconv_entry));
@@ -69,6 +82,7 @@ list_t* list_clone(list_t* original)
 	list_init(list);
 	list_attributes_copy(list, &lconv_entry_meter, 1);
 	list_attributes_comparator(list, &lconv_entry_comparator);
+	list_attributes_seeker(list, &lconv_entry_seeker);
 	list_iterator_start(original);
 	while (list_iterator_hasnext(original))
 		list_append(list, list_iterator_next(original));

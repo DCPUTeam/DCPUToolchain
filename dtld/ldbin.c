@@ -170,10 +170,10 @@ void bin_insert(struct ldbin* to, struct ldbin* from, size_t at, size_t offset, 
 	}
 
 	// Perform linker information updates.
-	bin_info_insert(to, to->provided, from, from->provided, false, at, offset, count);
-	bin_info_insert(to, to->required, from, from->required, false, at, offset, count);
-	bin_info_insert(to, to->adjustment, from, from->adjustment, true, at, offset, count);
-	bin_info_insert(to, to->output, from, from->output, false, at, offset, count);
+	bin_info_insert(to, to->provided, from, from->provided, false, false, at, offset, count);
+	bin_info_insert(to, to->required, from, from->required, false, false, at, offset, count);
+	bin_info_insert(to, to->adjustment, from, from->adjustment, true, false, at, offset, count);
+	bin_info_insert(to, to->output, from, from->output, false, true, at, offset, count);
 }
 
 ///
@@ -219,7 +219,7 @@ void bin_remove(struct ldbin* bin, size_t offset, size_t count)
 /// @param offset The address in the source bin where words were copied from.
 /// @param count The number of words that were inserted.
 ///
-void bin_info_insert(struct ldbin* to, list_t* tolist, struct ldbin* from, list_t* fromlist, bool isAdjustment, size_t at, size_t offset, size_t count)
+void bin_info_insert(struct ldbin* to, list_t* tolist, struct ldbin* from, list_t* fromlist, bool isAdjustment, bool isOutput, size_t at, size_t offset, size_t count)
 {
 	struct lconv_entry* entry;
 	struct lconv_entry* copy;
@@ -233,7 +233,36 @@ void bin_info_insert(struct ldbin* to, list_t* tolist, struct ldbin* from, list_
 	// Sort the list by addresses.
 	list_sort(fromlist, 1);
 
-	// Go through all of the information entries in the list.
+	// Skip shifting if this is the output linker info list because
+	// that causes the output addresses to be shifted up when we're
+	// flattening bins.
+	if (!isOutput)
+	{
+		// Adjust all of the memory addresses for linker entries in the
+		// bin that was written to and shift them up.
+		for (k = 0; k < list_size(tolist); k++)
+		{
+			entry = (struct lconv_entry*)list_get_at(tolist, k);
+
+			if (entry->address >= offset + count)
+			{
+				// Shift the address up.
+				entry->address += count;
+
+				// If this is an adjustment entry, we need to adjust it
+				// immediately (since we have no label to keep track of).
+				if (isAdjustment)
+				{
+					word = (uint16_t*)list_get_at(&to->words, entry->address);
+					if (*word >= offset)
+						*word = *word + count;
+				}
+			}
+		}
+	}
+
+	// Copy all of the new linker information entries
+	// across into the correct place.
 	for (k = 0; k < list_size(fromlist); k++)
 	{
 		entry = (struct lconv_entry*)list_get_at(fromlist, k);
@@ -255,6 +284,9 @@ void bin_info_insert(struct ldbin* to, list_t* tolist, struct ldbin* from, list_
 			if (isAdjustment)
 			{
 				word = (uint16_t*)list_get_at(&to->words, copy->address);
+				// TODO: Proper error message for when adjustment values are
+				//	 currently outside the code that's being copied across.
+				assert(*word >= offset && *word < offset + count);
 				*word = *word + (copy->address - entry->address);
 			}
 		}

@@ -28,5 +28,6 @@ void bins_save(freed_bstring name, freed_bstring path);
 bool bins_write(freed_bstring name, uint16_t word);
 void bins_sectionize();
 void bins_flatten(freed_bstring name);
+void bins_resolve(bool keepProvided);
 
 #endif
