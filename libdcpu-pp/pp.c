@@ -29,6 +29,7 @@ bstring pp_do(freed_bstring path)
 	bstring temp;
 	yyscan_t scanner;
 	freed_bstring friendly;
+	int parse_error;
 
 	// Open and set up the temporary output areas.
 	temp = bfromcstr(tempnam(".", "pp."));
@@ -66,7 +67,11 @@ bstring pp_do(freed_bstring path)
 	pp_yyset_out(out, scanner);
 	pp_yyset_in(in, scanner);
 	handle_start(friendly, out);
-	pp_yyparse(scanner);
+	parse_error = pp_yyparse(scanner);
+	if (parse_error != 0)
+	{
+		return NULL;
+	}
 	pp_yylex_destroy(scanner);
 
 	// Now do some cleanup.
