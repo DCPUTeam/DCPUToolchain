@@ -29,9 +29,9 @@ NArrayDeclaration::NArrayDeclaration(IType* type, NIdentifier& id, DimensionsLis
 		t->setConst();
 		numElements *= (*i);
 		// if not last element
-		if ((i-dims->begin())+1 < dims->size())
+		if ((int32_t)(i - dims->begin()) + 1 < (int32_t)dims->size())
 		{
-			numPointers += numPointers*(*i);
+			numPointers += numPointers * (*i);
 		}
 	}
 	if (dims->size() < 2)
@@ -39,7 +39,7 @@ NArrayDeclaration::NArrayDeclaration(IType* type, NIdentifier& id, DimensionsLis
 		numPointers = 0;
 	}
 	std::cout << "num pointers " << numPointers << " and num els " << numElements << std::endl;
-	
+
 	this->m_pointerType = t;
 	this->m_numElements = numElements;
 	this->m_memAreaType = new TArrayMemArea(type, numElements, numPointers);
@@ -67,24 +67,24 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 	TypePosition variablePos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
 	if (!variablePos.isFound())
 		throw new CompilerException(this->line, this->file, "The variable '" + this->id.name + "' was not found in the scope.");
-	
+
 	// Get the position of the mem area
 	// TODO maybe move the "<arraymem>" internal tag into some unified variable
 	TypePosition memPos = context.m_CurrentFrame->getPositionOfVariable("<arraymem>_" + this->id.name);
 	if (!memPos.isFound())
 		throw new CompilerException(this->line, this->file, "The space for the array '" + this->id.name + "' was not allocated.");
-	
+
 	// set up the pointer and the pointer table (for multi dims)
-	
+
 	// set the pointer that is the array variable
 	*block << memPos.pushAddress('A');
 	*block << variablePos.pushAddress('I');
 	// save the value A to [I]
 	*block << *(this->m_pointerType->saveToRef(context, 'A', 'I'));
-	
+
 	// if this is a multidimensional array, init the pointer table
 	uint16_t acc_size = 1;
-	for (int i = 0; i < this->m_dims->size() - 1; ++i)
+	for (unsigned int i = 0; i < this->m_dims->size() - 1; ++i)
 	{
 		// size of table row on current level
 		acc_size *= (*this->m_dims)[i];
@@ -97,19 +97,19 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 			// to [curPos+j] = curPos+ACC_SIZE[i]+j*LOCAL_SIZE[i+1]
 			// where ACC_SIZE[i] = dims[0]*dims[1]*...*dims[i]
 			// and LOCAL_SIZE[i+1] = dims[i+1]
-			
+
 			// TODO ops dependend on pointer type !?
 			*block <<   "	SET [A], B" << std::endl;
 			*block <<   "	ADD A, 1" << std::endl;
-			if (i+1 != this->m_dims->size() - 1)
+			if (i + 1 != this->m_dims->size() - 1)
 			{
 				// dimension i+1 is still pointers
-				*block <<   "	ADD B, " << (*this->m_dims)[i+1] << std::endl;
+				*block <<   "	ADD B, " << (*this->m_dims)[i + 1] << std::endl;
 			}
 			else
 			{
 				// dimension i+1 is the last, use base type word size!
-				*block <<   "	ADD B, " << this->m_baseType->getWordSize(context)*(*this->m_dims)[i+1] << std::endl;
+				*block <<   "	ADD B, " << this->m_baseType->getWordSize(context)*(*this->m_dims)[i + 1] << std::endl;
 			}
 		}
 	}
@@ -120,13 +120,13 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 
 	// push data address onto stack
 	*block <<   "	SET PUSH, A" << std::endl;
-	
+
 	if (this->m_initExprs->size() > this->m_numElements)
 		throw new CompilerException(this->line, this->file,
-			"Excess elements in array initializer of array '"
-			+ this->id.name + "'");
-	
-	for (int i = 0; i < this->m_numElements; ++i)
+					    "Excess elements in array initializer of array '"
+					    + this->id.name + "'");
+
+	for (uint16_t i = 0; i < this->m_numElements; ++i)
 	{
 		if (i < this->m_initExprs->size())
 		{
@@ -134,7 +134,7 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 			AsmBlock* expr = (*this->m_initExprs)[i]->compile(context);
 			*block << *expr;
 			delete expr;
-			
+
 			// get type, it may has to be cast
 			IType* exprType = (*this->m_initExprs)[i]->getExpressionType(context);
 			// cast to expr to array base type
@@ -144,11 +144,11 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 			}
 			else
 			{
-				throw new CompilerException(this->line, this->file, 
-				"Unable to implicitly cast '" + exprType->getName()
-				+ "' to '" + this->m_baseType->getName() + "'");
+				throw new CompilerException(this->line, this->file,
+							    "Unable to implicitly cast '" + exprType->getName()
+							    + "' to '" + this->m_baseType->getName() + "'");
 			}
-			
+
 			// init in memory
 			*block <<   "	SET B, POP" << std::endl;
 			*block << *(this->m_baseType->saveToRef(context, 'A', 'B'));
@@ -171,7 +171,7 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 			*block <<   "	SET PUSH, B" << std::endl;
 		}
 	}
-	
+
 	// pop value
 	*block <<   "	ADD SP, 1" << std::endl;
 

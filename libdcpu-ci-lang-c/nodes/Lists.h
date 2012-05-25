@@ -15,6 +15,7 @@
 #ifndef __DCPU_COMP_NODES_LISTS_H
 #define __DCPU_COMP_NODES_LISTS_H
 
+#include <stdint.h>
 #include <string>
 #include <vector>
 
@@ -27,7 +28,7 @@ typedef std::vector<NStatement*> StatementList;
 typedef std::vector<NExpression*> ExpressionList;
 typedef std::vector<NDeclaration*> DeclarationList;
 typedef std::vector<NVariableDeclaration*> VariableList;
-typedef std::vector<long> DimensionsList;
+typedef std::vector<uint16_t> DimensionsList;
 
 #include "NStatement.h"
 #include "NExpression.h"

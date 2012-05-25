@@ -67,7 +67,7 @@ bool TPointer16::implicitCastable(AsmGenerator& context, const IType* toType)
 		TPointer16* otherType = (TPointer16*) toType;
 		IType* otherBaseType = otherType->getPointerBaseType();
 		IType* myBaseType = this->m_pointingTo;
-		
+
 		// recursively check pointed to types
 		return myBaseType->implicitCastable(context, otherBaseType);
 	}
@@ -98,8 +98,8 @@ AsmBlock* TPointer16::implicitCast(AsmGenerator& context, const IType* toType, c
 {
 	if (!this->implicitCastable(context, toType))
 	{
-		throw new CompilerException(0, "<internal>", 
-		"Unable to implicitly cast integer (internal error).");
+		throw new CompilerException(0, "<internal>",
+					    "Unable to implicitly cast integer (internal error).");
 	}
 	// dont do anything (value stays the same)
 	AsmBlock* block = new AsmBlock();
@@ -110,11 +110,11 @@ AsmBlock* TPointer16::explicitCast(AsmGenerator& context, const IType* toType, c
 {
 	if (!this->explicitCastable(context, toType))
 	{
-		throw new CompilerException(0, "<internal>", 
-		"Unable to implicitly cast integer (internal error).");
+		throw new CompilerException(0, "<internal>",
+					    "Unable to implicitly cast integer (internal error).");
 	}
 	// TODO if different sizes integers are introduced they have
-	//       to be cast here
+	//	 to be cast here
 	AsmBlock* block = new AsmBlock();
 	return block;
 }
@@ -152,7 +152,7 @@ AsmBlock* TPointer16::dec(AsmGenerator& context, char ref)
 AsmBlock* TPointer16::compileBinaryOperator(NBinaryOperator* binopNode, AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-	
+
 	// get types
 	IType* lhsType = binopNode->lhs.getExpressionType(context);
 	IType* rhsType = binopNode->rhs.getExpressionType(context);
@@ -164,7 +164,7 @@ AsmBlock* TPointer16::compileBinaryOperator(NBinaryOperator* binopNode, AsmGener
 	{
 		pointerType = lhsType;
 		if (rhsType->isPointer()) bothPointers = true;
-		
+
 		// If debugging, clear the values as we POP them.
 		if (context.isAssemblerDebug())
 		{
@@ -183,7 +183,7 @@ AsmBlock* TPointer16::compileBinaryOperator(NBinaryOperator* binopNode, AsmGener
 	else if (rhsType->isPointer() && binopNode->op == ADD)
 	{
 		// reverse pop
-		
+
 		pointerType = rhsType;
 		// If debugging, clear the values as we POP them.
 		if (context.isAssemblerDebug())
@@ -202,11 +202,11 @@ AsmBlock* TPointer16::compileBinaryOperator(NBinaryOperator* binopNode, AsmGener
 	}
 	else
 	{
-		throw new CompilerException(binopNode->line, binopNode->file, 
-		"Invalid operands to binary operation. (have '"
-		+ lhsType->getName() + "' and '" + rhsType->getName() + "')");
+		throw new CompilerException(binopNode->line, binopNode->file,
+					    "Invalid operands to binary operation. (have '"
+					    + lhsType->getName() + "' and '" + rhsType->getName() + "')");
 	}
-	
+
 	// for comparison use Uint16
 	IType* compareType = new TUnsignedInt16();
 
@@ -216,33 +216,33 @@ AsmBlock* TPointer16::compileBinaryOperator(NBinaryOperator* binopNode, AsmGener
 		switch (binopNode->op)
 		{
 			case COMPARE_EQUAL:
-				*block << *(compareType->eq(context, 'A','B'));
+				*block << *(compareType->eq(context, 'A', 'B'));
 				break;
 
 			case COMPARE_NOT_EQUAL:
-				*block << *(compareType->neq(context, 'A','B'));
+				*block << *(compareType->neq(context, 'A', 'B'));
 				break;
 
 			case COMPARE_LESS_THAN:
-				*block << *(compareType->lt(context, 'A','B'));
+				*block << *(compareType->lt(context, 'A', 'B'));
 				break;
 
 			case COMPARE_LESS_THAN_EQUAL:
-				*block << *(compareType->le(context, 'A','B'));
+				*block << *(compareType->le(context, 'A', 'B'));
 				break;
 
 			case COMPARE_GREATER_THAN:
-				*block << *(compareType->gt(context, 'A','B'));
+				*block << *(compareType->gt(context, 'A', 'B'));
 				break;
 
 			case COMPARE_GREATER_THAN_EQUAL:
-				*block << *(compareType->ge(context, 'A','B'));
+				*block << *(compareType->ge(context, 'A', 'B'));
 				break;
 
 			default:
-				throw new CompilerException(binopNode->line, binopNode->file, 
-				"Invalid operands to binary operation. (have '"
-				+ lhsType->getName() + "' and '" + rhsType->getName() + "')");
+				throw new CompilerException(binopNode->line, binopNode->file,
+							    "Invalid operands to binary operation. (have '"
+							    + lhsType->getName() + "' and '" + rhsType->getName() + "')");
 		}
 	}
 	else
@@ -250,18 +250,20 @@ AsmBlock* TPointer16::compileBinaryOperator(NBinaryOperator* binopNode, AsmGener
 		switch (binopNode->op)
 		{
 			case ADD:
-				*block << *(pointerType->add(context, 'A','B'));
+				*block << *(pointerType->add(context, 'A', 'B'));
 				break;
 
 			case SUBTRACT:
-				*block << *(pointerType->sub(context, 'A','B'));
+				*block << *(pointerType->sub(context, 'A', 'B'));
 				break;
 
 			default:
-				throw new CompilerException(binopNode->line, binopNode->file, 
-				"Invalid operands to binary operation. (have '"
-				+ lhsType->getName() + "' and '" + rhsType->getName() + "')");
+				throw new CompilerException(binopNode->line, binopNode->file,
+							    "Invalid operands to binary operation. (have '"
+							    + lhsType->getName() + "' and '" + rhsType->getName() + "')");
 		}
 	}
+
+	throw new CompilerException(binopNode->line, binopNode->file, "Binary operator not handled by pointer (internal error).");
 }
 

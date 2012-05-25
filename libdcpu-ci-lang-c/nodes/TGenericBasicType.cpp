@@ -37,33 +37,40 @@ IType* TGenericBasicType::promoteTypes(IType* typeA, IType* typeB)
 {
 	std::string A = typeA->getInternalName();
 	std::string B = typeB->getInternalName();
-	if (A == B) {
+	if (A == B)
+	{
 		return typeA;
-	/* Casting according to ANSI C $3.2.1.5 	*/
-	/* Searching in order:		    (in DCPU?)	*/
-	/*    - long double			o	*/
-	/*    - double				o	*/
-	/*    - float				o	*/
-	/*    - long long unsigned int		o	*/
-	/*    - long long int			o	*/
-	/*    - long unsigned int		o	*/
-	/*    - long int			o	*/
-	/*    - unsigned int			x	*/
-	/*    - int				x	*/
-	
-	} else if (A == "uint16_t" || B == "uint16_t") {
+		/* Casting according to ANSI C $3.2.1.5		*/
+		/* Searching in order:		    (in DCPU?)	*/
+		/*    - long double			o	*/
+		/*    - double				o	*/
+		/*    - float				o	*/
+		/*    - long long unsigned int		o	*/
+		/*    - long long int			o	*/
+		/*    - long unsigned int		o	*/
+		/*    - long int			o	*/
+		/*    - unsigned int			x	*/
+		/*    - int				x	*/
+
+	}
+	else if (A == "uint16_t" || B == "uint16_t")
+	{
 		if (A == "uint16_t")
 			return typeA;
 		else
 			return typeB;
-	} else if (A == "int16_t" || B == "int16_t") {
+	}
+	else if (A == "int16_t" || B == "int16_t")
+	{
 		if (A == "int16_t")
 			return typeA;
 		else
 			return typeB;
-	} else {
-		throw new CompilerException(0, "<internal>", 
-		"Unable to promote unknown basic type (internal error)."); 
+	}
+	else
+	{
+		throw new CompilerException(0, "<internal>",
+					    "Unable to promote unknown basic type (internal error).");
 	}
 }
 
@@ -71,7 +78,7 @@ IType* TGenericBasicType::promoteTypes(IType* typeA, IType* typeB)
 AsmBlock* TGenericBasicType::compileBinaryOperator(NBinaryOperator* binopNode, AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-	
+
 	// get types
 	IType* lhsType = binopNode->lhs.getExpressionType(context);
 	IType* rhsType = binopNode->rhs.getExpressionType(context);
@@ -102,9 +109,9 @@ AsmBlock* TGenericBasicType::compileBinaryOperator(NBinaryOperator* binopNode, A
 		}
 		else
 		{
-			throw new CompilerException(binopNode->line, binopNode->file, 
-			"Unable to implicitly cast '" + lhsType->getName()
-			+ "' to '" + commonType->getName() + "'");
+			throw new CompilerException(binopNode->line, binopNode->file,
+						    "Unable to implicitly cast '" + lhsType->getName()
+						    + "' to '" + commonType->getName() + "'");
 		}
 	}
 	else if (rhsType != commonType)
@@ -116,9 +123,9 @@ AsmBlock* TGenericBasicType::compileBinaryOperator(NBinaryOperator* binopNode, A
 		}
 		else
 		{
-			throw new CompilerException(binopNode->line, binopNode->file, 
-			"Unable to implicitly cast '" + rhsType->getName()
-			+ "' to '" + commonType->getName() + "'");
+			throw new CompilerException(binopNode->line, binopNode->file,
+						    "Unable to implicitly cast '" + rhsType->getName()
+						    + "' to '" + commonType->getName() + "'");
 		}
 	}
 
@@ -126,79 +133,81 @@ AsmBlock* TGenericBasicType::compileBinaryOperator(NBinaryOperator* binopNode, A
 	switch (binopNode->op)
 	{
 		case ADD:
-			*block << *(commonType->add(context, 'A','B'));
+			*block << *(commonType->add(context, 'A', 'B'));
 			break;
 
 		case SUBTRACT:
-			*block << *(commonType->sub(context, 'A','B'));
+			*block << *(commonType->sub(context, 'A', 'B'));
 			break;
 
 		case STAR:
-			*block << *(commonType->mul(context, 'A','B'));
+			*block << *(commonType->mul(context, 'A', 'B'));
 			break;
 
 		case SLASH:
-			*block << *(commonType->div(context, 'A','B'));
+			*block << *(commonType->div(context, 'A', 'B'));
 			break;
 
 		case PERCENT:
-			*block << *(commonType->mod(context, 'A','B'));
+			*block << *(commonType->mod(context, 'A', 'B'));
 			break;
 
 		case BOOLEAN_AND:
-			*block << *(commonType->land(context, 'A','B'));
+			*block << *(commonType->land(context, 'A', 'B'));
 			break;
 
 		case BOOLEAN_OR:
-			*block << *(commonType->lor(context, 'A','B'));
+			*block << *(commonType->lor(context, 'A', 'B'));
 			break;
 
 		case BINARY_AND:
-			*block << *(commonType->band(context, 'A','B'));
+			*block << *(commonType->band(context, 'A', 'B'));
 			break;
 
 		case BINARY_OR:
-			*block << *(commonType->bor(context, 'A','B'));
+			*block << *(commonType->bor(context, 'A', 'B'));
 			break;
 
 		case BINARY_XOR:
-			*block << *(commonType->bxor(context, 'A','B'));
+			*block << *(commonType->bxor(context, 'A', 'B'));
 			break;
 
 		case BINARY_LEFT_SHIFT:
-			*block << *(commonType->shl(context, 'A','B'));
+			*block << *(commonType->shl(context, 'A', 'B'));
 			break;
 
 		case BINARY_RIGHT_SHIFT:
-			*block << *(commonType->shr(context, 'A','B'));
+			*block << *(commonType->shr(context, 'A', 'B'));
 			break;
 
 		case COMPARE_EQUAL:
-			*block << *(commonType->eq(context, 'A','B'));
+			*block << *(commonType->eq(context, 'A', 'B'));
 			break;
 
 		case COMPARE_NOT_EQUAL:
-			*block << *(commonType->neq(context, 'A','B'));
+			*block << *(commonType->neq(context, 'A', 'B'));
 			break;
 
 		case COMPARE_LESS_THAN:
-			*block << *(commonType->lt(context, 'A','B'));
+			*block << *(commonType->lt(context, 'A', 'B'));
 			break;
 
 		case COMPARE_LESS_THAN_EQUAL:
-			*block << *(commonType->le(context, 'A','B'));
+			*block << *(commonType->le(context, 'A', 'B'));
 			break;
 
 		case COMPARE_GREATER_THAN:
-			*block << *(commonType->gt(context, 'A','B'));
+			*block << *(commonType->gt(context, 'A', 'B'));
 			break;
 
 		case COMPARE_GREATER_THAN_EQUAL:
-			*block << *(commonType->ge(context, 'A','B'));
+			*block << *(commonType->ge(context, 'A', 'B'));
 			break;
 
 		default:
 			throw new CompilerException(binopNode->line, binopNode->file, "Unknown binary operations requested.");
 	}
+
+	throw new CompilerException(binopNode->line, binopNode->file, "Binary operator not handled by generic basic type (internal error).");
 }
 
