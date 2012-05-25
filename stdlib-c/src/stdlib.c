@@ -93,7 +93,7 @@ void* bsearch(const void* key, const void* base, size_t num, size_t size, int (*
 
 void qsort(void* base, size_t num, size_t size, int (*comparator)(const void* a, const void* b))
 {
-	// TODO
+	// TODO 
 }
 
 // Integer arithmethics:
