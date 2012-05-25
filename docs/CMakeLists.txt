@@ -17,14 +17,18 @@ if(SPHINX_EXECUTABLE)
 	set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
 	
 	# HTML output directory
-	set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
+	set(SPHINX_HTML_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/html")
+	
+	set(SPHINX_EXT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/sphinxext)
+	
+	set(SPHINX_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/sources)
 	
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in"
 		"${BINARY_BUILD_DIR}/conf.py"
 		@ONLY)
 	
-	file(GLOB_RECURSE doc_sources sources/*.rst)
+	file(GLOB_RECURSE doc_sources ${CMAKE_CURRENT_SOURCE_DIR}/sources/*.rst)
 
 	if(TOOLCHAIN_ON_CYGWIN)	
 		add_custom_target(docs ALL

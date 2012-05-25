@@ -9,7 +9,7 @@ When invoking the compiler, you may specify any of these options
 
 .. code-block:: bash
 
-    dtcc [-eh] -o output [-t type] input
+    dtcc [-eh] -o output [-t type] [-I directory] input
 
 The most common use case is compiling a C file into assembler:
 
@@ -38,6 +38,11 @@ Generic options
     Specifies the input file to compile.  This option
     can be `-` to indicate that the input should be read from
     standard input.
+    
+.. cmdoption:: -I dir
+
+    Adds the directory `dir` to the directories to
+    be searched for header files.
 
 .. _compiler-output-options:
 
