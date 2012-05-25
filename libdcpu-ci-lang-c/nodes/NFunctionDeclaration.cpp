@@ -15,6 +15,7 @@
 #include <CompilerException.h>
 #include "NFunctionDeclaration.h"
 #include "NFunctionSignature.h"
+#include "NArrayDeclaration.h"
 
 NFunctionDeclaration::NFunctionDeclaration(const IType* type, const NIdentifier& id, const VariableList& arguments, NBlock* block)
 	: id(id), block(block), pointerType(NULL), NDeclaration("function"), NFunctionSignature(type, arguments)
@@ -119,6 +120,21 @@ StackMap NFunctionDeclaration::generateLocalsStackMap()
 		{
 			NVariableDeclaration* nvd = (NVariableDeclaration*)(*i);
 			map.insert(map.end(), StackPair(nvd->id.name, nvd->type));
+			// FIXME: Check to make sure variables do not clash with arguments
+			//	  or other variable declarations (hint: check the map to
+			//	  see if it already has a match).
+		}
+		else if ((*i)->cType == "statement-declaration-array")
+		{
+			// for arrays we have to push
+			NArrayDeclaration* nad = (NArrayDeclaration*)(*i);
+			std::string pointerName = nad->id.name;
+			std::string memAreaName = "<arraymem>_" + pointerName;
+			IType* pointerType = nad->getPointerType();
+			IType* memAreaType = nad->getMemAreaType();
+			// insert the array pointer and the mem area into the map
+			map.insert(map.end(), StackPair(pointerName, pointerType));
+			map.insert(map.end(), StackPair(memAreaName, memAreaType));
 			// FIXME: Check to make sure variables do not clash with arguments
 			//	  or other variable declarations (hint: check the map to
 			//	  see if it already has a match).

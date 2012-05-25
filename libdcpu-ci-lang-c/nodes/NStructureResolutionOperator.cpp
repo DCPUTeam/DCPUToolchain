@@ -27,7 +27,8 @@ void NStructureResolutionOperator::initStructType(AsmGenerator& context)
 		if (this->lhs.cType != "expression-methodcall" &&
 				this->lhs.cType != "expression-dereference" &&
 				this->lhs.cType != "expression-identifier" &&
-				this->lhs.cType != "expression-field")
+				this->lhs.cType != "expression-field" &&
+				this->lhs.cType != "expression-arrayaccess")
 			throw new CompilerException(this->line, this->file, "Unable to use AST node " + this->lhs.cType + " as part of the structure resolution operator; it is not a suitable left-value.");
 	
 		// Ensure the LHS expression is actually a structure type.

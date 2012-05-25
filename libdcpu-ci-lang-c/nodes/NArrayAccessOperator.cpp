@@ -22,6 +22,8 @@ AsmBlock* NArrayAccessOperator::compile(AsmGenerator& context)
 	// We just use our own reference method and then
 	// implicitly dereference here.
 	
+	std::cout << "compiling array access" << std::endl;
+	
 	// Get our type.
 	IType* baseType = this->getExpressionType(context);
 	

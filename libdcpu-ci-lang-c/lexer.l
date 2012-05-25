@@ -28,6 +28,7 @@
 #include "nodes/NFunctionDeclaration.h"
 #include "nodes/NStructureDeclaration.h"
 #include "nodes/NVariableDeclaration.h"
+#include "nodes/NArrayDeclaration.h"
 #include "nodes/Lists.h"
 #include "parser.hpp"
 

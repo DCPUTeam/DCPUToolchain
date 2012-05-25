@@ -26,6 +26,7 @@ class NInteger;
 #include "nodes/NArrayAccessOperator.h"
 #include "nodes/NBlock.h"
 #include "nodes/NDeclarations.h"
+#include "nodes/NArrayDeclaration.h"
 #include "nodes/NFunctionDeclaration.h"
 #include "nodes/NStructureDeclaration.h"
 #include "nodes/NEmptyStatement.h"
@@ -79,9 +80,11 @@ void yyerror(const char *str);
 	NFunctionDeclaration* function;
 	NStructureDeclaration* structure;
 	NVariableDeclaration *variable;
+	NArrayDeclaration *array;
 	std::vector<NExpression*> *exprvec;
 	std::vector<NDeclaration*> *declvec;
 	std::vector<NVariableDeclaration*> *varvec;
+	std::vector<long> *dimvec;
 	std::string* string;
 	const char* data;
 	long number;
@@ -124,11 +127,13 @@ void yyerror(const char *str);
 %type <ident> ident
 %type <expr> expr numeric string character deref fldref addressable arrayref
 %type <varvec> func_decl_args struct_decl_args
-%type <exprvec> call_args
+%type <exprvec> call_args array_init_list
+%type <dimvec> array_dims
 %type <decls> program prog_decl
 %type <function> func_decl
 %type <structure> struct_decl
 %type <variable> var_decl
+%type <array> array_decl
 %type <block> block stmts block_or_stmt
 %type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm
 %type <token> assignop
@@ -182,6 +187,11 @@ prog_decl:
 			$$ = new NDeclarations();
 			$$->definitions.push_back($<variable>1);
 		} |
+		array_decl SEMICOLON
+		{
+			$$ = new NDeclarations();
+			$$->definitions.push_back($<array>1);
+		} |
 		prog_decl func_decl
 		{
 			$1->definitions.push_back($<function>2);
@@ -193,7 +203,11 @@ prog_decl:
 		prog_decl var_decl SEMICOLON
 		{
 			$1->definitions.push_back($<variable>2);
-		} ;
+		} |
+		prog_decl array_decl SEMICOLON
+		{
+			$1->definitions.push_back($<array>2);
+		};
 
 func_decl:
 		type ident CURVED_OPEN func_decl_args CURVED_CLOSE block
@@ -223,6 +237,7 @@ func_decl_args:
 		} ;
 
 struct_decl:
+		/* TODO arrays (and function pointers) within structs */
 		STRUCT ident BRACE_OPEN struct_decl_args SEMICOLON BRACE_CLOSE SEMICOLON
 		{
 			$$ = new NStructureDeclaration(*$2, *$4);
@@ -266,7 +281,51 @@ var_decl:
 		{
 			$$ = new NVariableDeclaration((new NFunctionPointerType($1, *$7)) /* TODO: free this memory */, *$4, $10);
 		} ;
-		
+
+array_decl:
+		/* array declarations */
+		type ident array_dims
+		{
+			$$ = new NArrayDeclaration($1, *$2, $3, NULL);
+		} |
+		type ident array_dims ASSIGN_EQUAL BRACE_OPEN array_init_list BRACE_CLOSE
+		{
+			$$ = new NArrayDeclaration($1, *$2, $3, $6);
+		} ;
+
+array_dims:
+		SQUARE_OPEN NUMBER SQUARE_CLOSE
+		{
+			$$ = new DimensionsList();
+			$$->push_back($2);
+		} |
+		array_dims SQUARE_OPEN NUMBER SQUARE_CLOSE
+		{
+			$$ = $1;
+			$$->push_back($3);
+		} ;
+
+array_init_list:
+			/* empty */
+		{
+			$$ = new ExpressionList();
+		} |
+		expr
+		{
+			$$ = new ExpressionList();
+			$$->push_back($1);
+		} |
+		/* ignore further Braces */
+		BRACE_OPEN array_init_list BRACE_CLOSE
+		{
+			$$ = $2;
+		} |
+		array_init_list COMMA array_init_list
+		{
+			$1->insert( $1->end(), $3->begin(), $3->end() );
+			$$ = $1;
+		} ;
+
 ident:
 		IDENTIFIER
 		{
@@ -364,6 +423,10 @@ stmt:
 			$$ = new NEmptyStatement();
 		} |
 		var_decl SEMICOLON
+		{
+			$$ = $1;
+		} |
+		array_decl SEMICOLON
 		{
 			$$ = $1;
 		} |

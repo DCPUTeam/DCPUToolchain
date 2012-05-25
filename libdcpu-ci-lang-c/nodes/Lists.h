@@ -27,6 +27,7 @@ typedef std::vector<NStatement*> StatementList;
 typedef std::vector<NExpression*> ExpressionList;
 typedef std::vector<NDeclaration*> DeclarationList;
 typedef std::vector<NVariableDeclaration*> VariableList;
+typedef std::vector<long> DimensionsList;
 
 #include "NStatement.h"
 #include "NExpression.h"
