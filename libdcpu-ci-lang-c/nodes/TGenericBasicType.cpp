@@ -208,6 +208,6 @@ AsmBlock* TGenericBasicType::compileBinaryOperator(NBinaryOperator* binopNode, A
 			throw new CompilerException(binopNode->line, binopNode->file, "Unknown binary operations requested.");
 	}
 
-	throw new CompilerException(binopNode->line, binopNode->file, "Binary operator not handled by generic basic type (internal error).");
+	return block;
 }
 

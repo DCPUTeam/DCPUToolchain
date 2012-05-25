@@ -253,6 +253,6 @@ AsmBlock* TPointer16::compileBinaryOperator(NBinaryOperator* binopNode, AsmGener
 		}
 	}
 
-	throw new CompilerException(binopNode->line, binopNode->file, "Binary operator not handled by pointer (internal error).");
+	return block;
 }
 
