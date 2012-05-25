@@ -30,7 +30,7 @@ AsmBlock* NDereferenceOperator::compile(AsmGenerator& context)
 
 	// An dereference operator has the "unpointered" type of it's expression.
 	IType* i = this->expr.getExpressionType(context);
-	
+
 	IType* baseType = this->getExpressionType(context);
 
 	// Dereference the value.
@@ -53,12 +53,12 @@ IType* NDereferenceOperator::getExpressionType(AsmGenerator& context)
 {
 	// An dereference operator has the "unpointered" type of it's expression.
 	IType* i = this->expr.getExpressionType(context);
-	
+
 	if (i->getInternalName() == "ptr16_t")
 	{
 		TPointer16* ptr = (TPointer16*) i;
 		IType* baseType = ptr->getPointerBaseType();
-		return baseType;	
+		return baseType;
 	}
 	// FIXME: create (better: not create, get static void* type) pointer to void here:
 	else if (i->implicitCastable(context, new TPointer16(new TUnsignedInt16())))

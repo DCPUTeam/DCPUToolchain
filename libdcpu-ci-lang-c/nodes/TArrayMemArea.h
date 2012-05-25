@@ -24,7 +24,7 @@
  *  This class is used as a simple type with the given word size
  *  and is used for allocating enough space on the local stack or global memory
  *  for array data.
- */ 
+ */
 class TArrayMemArea: public IType
 {
 	private:
@@ -35,7 +35,7 @@ class TArrayMemArea: public IType
 	public:
 		// this just returns the given word size
 		uint16_t getWordSize(AsmGenerator& context);
-		
+
 		TArrayMemArea(IType* baseType, uint16_t length, uint16_t numPointers) :
 			m_baseType(baseType), m_length(length), m_numPointers(numPointers) {}
 };

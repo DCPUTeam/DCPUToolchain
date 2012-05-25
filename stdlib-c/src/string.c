@@ -1,14 +1,14 @@
 /**
- * 
+ *
  *	File:		string.c
- * 
+ *
  *	Project:	DCPU-16 Toolchain
  *	Component:	C Standard Library
- * 
+ *
  *	Authors:	James Rhodes
- * 
+ *
  *	Description:	Provides string manipulation functions.
- * 
+ *
  **/
 
 #include "stdlib.h"

@@ -72,8 +72,8 @@ AsmBlock* TSignedInt16::implicitCast(AsmGenerator& context, const IType* toType,
 {
 	if (!this->implicitCastable(context, toType))
 	{
-		throw new CompilerException(0, "<internal>", 
-		"Unable to implicitly cast integer (internal error).");
+		throw new CompilerException(0, "<internal>",
+					    "Unable to implicitly cast integer (internal error).");
 	}
 	// dont do anything (value stays the same)
 	AsmBlock* block = new AsmBlock();
@@ -84,17 +84,17 @@ AsmBlock* TSignedInt16::explicitCast(AsmGenerator& context, const IType* toType,
 {
 	if (!this->explicitCastable(context, toType))
 	{
-		throw new CompilerException(0, "<internal>", 
-		"Unable to implicitly cast integer (internal error).");
+		throw new CompilerException(0, "<internal>",
+					    "Unable to implicitly cast integer (internal error).");
 	}
 	// TODO if different sizes integers are introduced they have
-	//       to be cast here
+	//	 to be cast here
 	AsmBlock* block = new AsmBlock();
 	return block;
 }
 
 
-	/* binary operators */
+/* binary operators */
 
 
 AsmBlock* TSignedInt16::mul(AsmGenerator& context, char a, char b)
@@ -119,8 +119,8 @@ AsmBlock* TSignedInt16::mod(AsmGenerator& context, char a, char b)
 }
 
 
-		
-	/* comparison operators */
+
+/* comparison operators */
 
 AsmBlock* TSignedInt16::gt(AsmGenerator& context, char a, char b)
 {

@@ -53,14 +53,14 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 	// method call
 	if (this->arguments.size() != funcsig->arguments.size())
 	{
-		throw new CompilerException(this->line, this->file, 
-		"Unable to find function\n"
-		  "with singature:                               "
-		+ this->id.name + this->calculateSignature(context)
-		+ "\n"
-		+ "Candidates are:                               "
-		+ this->id.name + funcsig->getSignature());
-	}	
+		throw new CompilerException(this->line, this->file,
+					    "Unable to find function\n"
+					    "with singature:				 "
+					    + this->id.name + this->calculateSignature(context)
+					    + "\n"
+					    + "Candidates are:				 "
+					    + this->id.name + funcsig->getSignature());
+	}
 
 	// Get the stack table of this method.
 	StackFrame* frame = context.generateStackFrameIncomplete(funcsig);
@@ -70,15 +70,15 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
 	// Evaluate each of the argument expressions in reverse
 	// TODO make it depend on the typePosition somehow
-	//      this here has to be exactly reverse to the order in the
-	//      parameter stack frame and thus the TypePosition
+	//	this here has to be exactly reverse to the order in the
+	//	parameter stack frame and thus the TypePosition
 	for (int i = this->arguments.size() - 1; i >= 0; --i)
 	{
 		// Compile the expression.
 		AsmBlock* inst = this->arguments[i]->compile(context);
 		*block << *inst;
 		delete inst;
-		
+
 		IType* instType = this->arguments[i]->getExpressionType(context);
 
 		// check types and cast implicitly
@@ -90,13 +90,13 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 		}
 		else
 		{
-			throw new CompilerException(this->line, this->file, 
-			"Unable to find function\n"
-			  "with singature:                               "
-			+ this->id.name + this->calculateSignature(context)
-			+ "\n"
-			+ "Candidates are:                               "
-			+ this->id.name + funcsig->getSignature());
+			throw new CompilerException(this->line, this->file,
+						    "Unable to find function\n"
+						    "with singature:				 "
+						    + this->id.name + this->calculateSignature(context)
+						    + "\n"
+						    + "Candidates are:				 "
+						    + this->id.name + funcsig->getSignature());
 		}
 
 		// Push the result onto the stack.

@@ -1,14 +1,14 @@
 /**
- * 
+ *
  *	File:		stdlib.c
- * 
+ *
  *	Project:	DCPU-16 Toolchain
  *	Component:	C Standard Library
- * 
+ *
  *	Authors:	James Rhodes
- * 
+ *
  *	Description:	Provides standard library functions.
- * 
+ *
  **/
 
 #include "stdlib.h"
@@ -24,7 +24,7 @@ int atoi(const char* str)
 int rand()
 {
 	return 4;	// Chosen by fair dice roll.
-			// Guaranteed to be random.
+	// Guaranteed to be random.
 }
 
 void srand(unsigned int seed)
@@ -42,9 +42,12 @@ void free(void* ptr)
 {
 	__asm
 	{
-		; The compiler needs to support variable insertion.
-		;SET A, <ptr>
-		;JSR free
+		;
+		The compiler needs to support variable insertion.
+		;
+		SET A, <ptr>
+		;
+		JSR free
 	}
 }
 
@@ -53,10 +56,14 @@ void* malloc(size_t size)
 	void* result;
 	__asm
 	{
-		; The compiler needs to support variable insertion.
-		;SET A, <size>
-		;JSR malloc
-		;SET <&result>, A
+		;
+		The compiler needs to support variable insertion.
+		;
+		SET A, <size>
+		;
+		JSR malloc
+		;
+		SET <&result>, A
 	}
 	return result;
 }
@@ -66,11 +73,16 @@ void* realloc(void* ptr, size_t size)
 	void* result;
 	__asm
 	{
-		; The compiler needs to support variable insertion.
-		;SET A, <ptr>
-		;SET B, <size>
-		;JSR malloc
-		;SET <&result>, A
+		;
+		The compiler needs to support variable insertion.
+		;
+		SET A, <ptr>
+		;
+		SET B, <size>
+		;
+		JSR malloc
+		;
+		SET <&result>, A
 	}
 	return result;
 }

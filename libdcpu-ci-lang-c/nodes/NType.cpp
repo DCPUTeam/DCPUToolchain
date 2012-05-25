@@ -70,7 +70,7 @@ size_t NType::getBitSize(AsmGenerator& context)
 	else if (this->isStruct)
 	{
 		this->resolveStruct(context);
-		return 16*this->resolvedStruct->getWordSize(context);
+		return 16 * this->resolvedStruct->getWordSize(context);
 	}
 	else
 	{

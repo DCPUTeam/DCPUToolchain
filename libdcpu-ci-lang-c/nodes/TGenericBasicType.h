@@ -24,26 +24,26 @@
 class TGenericBasicType: public IType
 {
 	private:
-		
+
 
 	public:
-		
-		virtual std::string getName() const 
+
+		virtual std::string getName() const
 		{
-			throw new CompilerException(0, "<internal>", 
-			"Unable to get name of generic basic type (internal error).");
+			throw new CompilerException(0, "<internal>",
+						    "Unable to get name of generic basic type (internal error).");
 		}
-		
-		virtual std::string getInternalName() const 
+
+		virtual std::string getInternalName() const
 		{
-			throw new CompilerException(0, "<internal>", 
-			"Unable to get internal name of generic basic type (internal error).");
+			throw new CompilerException(0, "<internal>",
+						    "Unable to get internal name of generic basic type (internal error).");
 		}
-		
+
 		bool isBasicType() const;
 		bool isStruct() const;
 		bool isPointer() const;
-		
+
 		static IType* promoteTypes(IType* typeA, IType* typeB);
 		static AsmBlock* compileBinaryOperator(NBinaryOperator* binopNode, AsmGenerator& context);
 };

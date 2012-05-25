@@ -32,14 +32,14 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 
 	// get type
 	IType* rhsType = this->rhs.getExpressionType(context);
-	
+
 	if (!rhsType->isBasicType())
 	{
-		throw new CompilerException(this->line, this->file, 
-		"Invalid operand to unary operation. (have '"
-		+ rhsType->getName() + "')");
+		throw new CompilerException(this->line, this->file,
+					    "Invalid operand to unary operation. (have '"
+					    + rhsType->getName() + "')");
 	}
-	
+
 	// Move the value into A
 	*block <<   *rhs;
 	delete rhs;

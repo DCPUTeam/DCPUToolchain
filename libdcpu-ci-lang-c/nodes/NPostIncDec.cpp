@@ -30,16 +30,16 @@ AsmBlock* NPostIncDec::compile(AsmGenerator& context)
 	AsmBlock* reference = this->expr.reference(context);
 	*block <<   *reference;
 	delete reference;
-	
+
 	// get type
 	IType* exprType = this->expr.getExpressionType(context);
-	
+
 	// Type checking
 	if ((!exprType->isPointer()) && (!exprType->isBasicType()))
 	{
-		throw new CompilerException(this->line, this->file, 
-		"Invalid operand to post increase/decrease operation. (have '"
-		+ exprType->getName() + "')");
+		throw new CompilerException(this->line, this->file,
+					    "Invalid operand to post increase/decrease operation. (have '"
+					    + exprType->getName() + "')");
 	}
 
 	*block <<	"	SET B, A" << std::endl;

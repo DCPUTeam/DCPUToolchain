@@ -24,17 +24,17 @@
 class TGenericInt16: public TGenericBasicType
 {
 	private:
-		
+
 
 	public:
 		virtual uint16_t getWordSize(AsmGenerator& context);
-		
+
 		virtual std::string getName()
 		{
-			throw new CompilerException(0, "<internal>", 
-			"Unable to get name of generic integer (internal error).");
+			throw new CompilerException(0, "<internal>",
+						    "Unable to get name of generic integer (internal error).");
 		}
-		
+
 		/* copy */
 		// direct copy via registers
 		virtual AsmBlock* copyValue(AsmGenerator& context, char from, char to);
@@ -44,18 +44,18 @@ class TGenericInt16: public TGenericBasicType
 		virtual AsmBlock*  saveToRef(AsmGenerator& context, char from, char toRef);
 		// load from a reference into a value
 		virtual AsmBlock*  loadFromRef(AsmGenerator& context, char fromRef, char to);
-		
-		
+
+
 		/* stack ops */
 		virtual AsmBlock* pushStack(AsmGenerator& context, char a);
-		// FIXME do i need this? 
+		// FIXME do i need this?
 		// virtual AsmBlock* pushStackByRef(char a);
 		virtual AsmBlock* popStack(AsmGenerator& context);
 		virtual AsmBlock* popStackReturn(AsmGenerator& context, char a);
 		// for debugging, cleaning the stack while pop
 		virtual AsmBlock* popStackClean(AsmGenerator& context);
 		virtual AsmBlock* popStackCleanReturn(AsmGenerator& context, char a);
-		
+
 		/* binary operators */
 		virtual AsmBlock* add(AsmGenerator& context, char a, char b);
 		virtual AsmBlock* sub(AsmGenerator& context, char a, char b);
@@ -66,25 +66,25 @@ class TGenericInt16: public TGenericBasicType
 		virtual AsmBlock* shr(AsmGenerator& context, char a, char b);
 		virtual AsmBlock* land(AsmGenerator& context, char a, char b);
 		virtual AsmBlock* lor(AsmGenerator& context, char a, char b);
-				
+
 		// non generic binary operations:
 		virtual AsmBlock* mul(AsmGenerator& context, char a, char b)
 		{
-			throw new CompilerException(0, "<internal>", 
-			"Unable to multiply generic integer (internal error).");
+			throw new CompilerException(0, "<internal>",
+						    "Unable to multiply generic integer (internal error).");
 		}
 		virtual AsmBlock* div(AsmGenerator& context, char a, char b)
 		{
-			throw new CompilerException(0, "<internal>", 
-			"Unable to divide generic integer (internal error).");
+			throw new CompilerException(0, "<internal>",
+						    "Unable to divide generic integer (internal error).");
 		}
 		virtual AsmBlock* mod(AsmGenerator& context, char a, char b)
 		{
-			throw new CompilerException(0, "<internal>", 
-			"Unable to modulo generic integer (internal error).");
+			throw new CompilerException(0, "<internal>",
+						    "Unable to modulo generic integer (internal error).");
 		}
-		
-		
+
+
 		/* unary operators */
 		virtual AsmBlock* plus(AsmGenerator& context, char a);
 		virtual AsmBlock* minus(AsmGenerator& context, char a);
@@ -92,34 +92,34 @@ class TGenericInt16: public TGenericBasicType
 		virtual AsmBlock* lnot(AsmGenerator& context, char a);
 		virtual AsmBlock* inc(AsmGenerator& context, char ref);
 		virtual AsmBlock* dec(AsmGenerator& context, char ref);
-		
+
 		/* comparison operators */
 		virtual AsmBlock* eq(AsmGenerator& context, char a, char b);
 		virtual AsmBlock* neq(AsmGenerator& context, char a, char b);
-		
+
 		// non generic comparison operators:
 		virtual AsmBlock* gt(AsmGenerator& context, char a, char b)
 		{
-			throw new CompilerException(0, "<internal>", 
-			"Unable to compare generic integer (internal error).");
+			throw new CompilerException(0, "<internal>",
+						    "Unable to compare generic integer (internal error).");
 		}
 		virtual AsmBlock* lt(AsmGenerator& context, char a, char b)
 		{
-			throw new CompilerException(0, "<internal>", 
-			"Unable to compare generic integer (internal error).");
+			throw new CompilerException(0, "<internal>",
+						    "Unable to compare generic integer (internal error).");
 		}
 		virtual AsmBlock* ge(AsmGenerator& context, char a, char b)
 		{
-			throw new CompilerException(0, "<internal>", 
-			"Unable to compare generic integer (internal error).");
+			throw new CompilerException(0, "<internal>",
+						    "Unable to compare generic integer (internal error).");
 		}
 		virtual AsmBlock* le(AsmGenerator& context, char a, char b)
 		{
-			throw new CompilerException(0, "<internal>", 
-			"Unable to compare generic integer (internal error).");
+			throw new CompilerException(0, "<internal>",
+						    "Unable to compare generic integer (internal error).");
 		}
-		
-		
+
+
 };
 #endif
 

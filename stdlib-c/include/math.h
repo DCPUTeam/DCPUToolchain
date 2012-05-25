@@ -1,14 +1,14 @@
 /**
- * 
+ *
  *	File:		math.h
- * 
+ *
  *	Project:	DCPU-16 Toolchain
  *	Component:	C Standard Library
- * 
+ *
  *	Authors:	James Rhodes
- * 
+ *
  *	Description:	Provides mathematical functions.
- * 
+ *
  **/
 
 #ifndef __STDLIB_MATH_H

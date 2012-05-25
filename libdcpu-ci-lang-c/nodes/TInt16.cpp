@@ -22,7 +22,7 @@ std::string TInt16::getInternalName() const
 {
 	return "int16_t";
 }
-	
+
 bool TInt16::isConst() const
 {
 	return this->m_isConst;
@@ -50,8 +50,8 @@ bool TInt16::setSigned(bool isSigned)
 				delete this->m_underlyingType;
 				this->m_underlyingType = new TUnsignedInt16();
 			}
-		}	
-			
+		}
+
 		this->m_multipleSignedQualifiers = true;
 		return true;
 	}
@@ -64,11 +64,11 @@ bool TInt16::setSigned(bool isSigned)
 
 bool TInt16::implicitCastable(AsmGenerator& context, const IType* toType)
 {
-	this->m_underlyingType->implicitCastable(context, toType);
+	return this->m_underlyingType->implicitCastable(context, toType);
 }
 bool TInt16::explicitCastable(AsmGenerator& context, const IType* toType)
 {
-	this->m_underlyingType->explicitCastable(context, toType);
+	return this->m_underlyingType->explicitCastable(context, toType);
 }
 
 AsmBlock* TInt16::implicitCast(AsmGenerator& context, const IType* toType, char a)
@@ -82,7 +82,7 @@ AsmBlock* TInt16::explicitCast(AsmGenerator& context, const IType* toType, char 
 }
 
 
-	/* binary operators */
+/* binary operators */
 
 
 AsmBlock* TInt16::mul(AsmGenerator& context, char a, char b)
@@ -101,8 +101,8 @@ AsmBlock* TInt16::mod(AsmGenerator& context, char a, char b)
 }
 
 
-		
-	/* comparison operators */
+
+/* comparison operators */
 
 AsmBlock* TInt16::gt(AsmGenerator& context, char a, char b)
 {

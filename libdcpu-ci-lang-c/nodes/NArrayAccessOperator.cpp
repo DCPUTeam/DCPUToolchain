@@ -21,12 +21,12 @@ AsmBlock* NArrayAccessOperator::compile(AsmGenerator& context)
 {
 	// We just use our own reference method and then
 	// implicitly dereference here.
-	
+
 	std::cout << "compiling array access" << std::endl;
-	
+
 	// Get our type.
 	IType* baseType = this->getExpressionType(context);
-	
+
 	AsmBlock* block = this->reference(context);
 	*block << *(baseType->loadFromRef(context, 'A', 'A'));
 	return block;
@@ -49,13 +49,13 @@ AsmBlock* NArrayAccessOperator::reference(AsmGenerator& context)
 	*block << *exprA;
 	*block << *(pointerType->pushStack(context, 'A'));
 	delete exprA;
-	
+
 	// type checking exprA
 	if (!pointerType->isPointer())
 	{
-		throw new CompilerException(this->line, this->file, 
-		"Invalid operand as array access name. (have '"
-		+ pointerType->getName() + "')");
+		throw new CompilerException(this->line, this->file,
+					    "Invalid operand as array access name. (have '"
+					    + pointerType->getName() + "')");
 	}
 
 	// Evaluate the second component of the array access (result
@@ -63,20 +63,20 @@ AsmBlock* NArrayAccessOperator::reference(AsmGenerator& context)
 	AsmBlock* exprB = this->exprB.compile(context);
 	*block << *exprB;
 	delete exprB;
-	
+
 	// get type
 	IType* integralType = this->exprB.getExpressionType(context);
-	
+
 	if (!integralType->isBasicType())
 	{
-		throw new CompilerException(this->line, this->file, 
-		"Invalid operand as array access offset. (have '"
-		+ integralType->getName() + "')");
+		throw new CompilerException(this->line, this->file,
+					    "Invalid operand as array access offset. (have '"
+					    + integralType->getName() + "')");
 	}
-	
+
 	*block << "	SET B, A" << std::endl;
 	*block << *(pointerType->popStackReturn(context, 'A'));
-	
+
 
 	// Add the two together.
 	*block << *(pointerType->add(context, 'A', 'B'));
@@ -89,12 +89,12 @@ IType* NArrayAccessOperator::getExpressionType(AsmGenerator& context)
 {
 	// An dereference operator has the "unpointered" type of it's expression.
 	IType* i = this->exprA.getExpressionType(context);
-	
+
 	if (i->getInternalName() == "ptr16_t")
 	{
 		TPointer16* ptr = (TPointer16*) i;
 		IType* baseType = ptr->getPointerBaseType();
-		return baseType;	
+		return baseType;
 	}
 	// FIXME: create (better: not create, get static void* type) pointer to void here:
 	else if (i->implicitCastable(context, new TPointer16(new TUnsignedInt16())))

@@ -1,14 +1,14 @@
 /**
- * 
+ *
  *	File:		stdint.h
- * 
+ *
  *	Project:	DCPU-16 Toolchain
  *	Component:	C Standard Library
- * 
+ *
  *	Authors:	James Rhodes
- * 
+ *
  *	Description:	Provides definitions for sized-integers functions.
- * 
+ *
  **/
 
 #ifndef __STDLIB_STDINT_H

@@ -84,7 +84,7 @@ void yyerror(const char *str);
 	std::vector<NExpression*> *exprvec;
 	std::vector<NDeclaration*> *declvec;
 	std::vector<NVariableDeclaration*> *varvec;
-	std::vector<long> *dimvec;
+	std::vector<uint16_t> *dimvec;
 	std::string* string;
 	const char* data;
 	long number;
@@ -297,12 +297,12 @@ array_dims:
 		SQUARE_OPEN NUMBER SQUARE_CLOSE
 		{
 			$$ = new DimensionsList();
-			$$->push_back($2);
+			$$->push_back((uint16_t)$2);
 		} |
 		array_dims SQUARE_OPEN NUMBER SQUARE_CLOSE
 		{
 			$$ = $1;
-			$$->push_back($3);
+			$$->push_back((uint16_t)$3);
 		} ;
 
 array_init_list:

@@ -32,16 +32,16 @@ AsmBlock* NPreIncDec::compile(AsmGenerator& context)
 
 	// get type
 	IType* exprType = this->expr.getExpressionType(context);
-	
+
 	// Type checking
 	if ((!exprType->isPointer()) && (!exprType->isBasicType()))
 	{
-		throw new CompilerException(this->line, this->file, 
-		"Invalid operand to pre increase/decrease operation. (have '"
-		+ exprType->getName() + "')");
+		throw new CompilerException(this->line, this->file,
+					    "Invalid operand to pre increase/decrease operation. (have '"
+					    + exprType->getName() + "')");
 	}
 
-	
+
 	*block <<	"	SET B, A" << std::endl;
 
 
@@ -59,7 +59,7 @@ AsmBlock* NPreIncDec::compile(AsmGenerator& context)
 		default:
 			throw new CompilerException(this->line, this->file, "Unknown Pre-Increase-Decrease operation requested.");
 	}
-	
+
 	// return value in A
 	*block << *(exprType->loadFromRef(context, 'B', 'A'));
 

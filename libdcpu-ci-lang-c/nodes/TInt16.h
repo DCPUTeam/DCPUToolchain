@@ -36,19 +36,19 @@ class TInt16 : public TGenericInt16
 	public:
 		virtual std::string getName() const;
 		virtual std::string getInternalName() const;
-	
+
 		virtual bool isConst() const;
 		virtual void setConst();
 		virtual bool isSigned() const;
 		virtual bool setSigned(bool isSigned);
-		
+
 		TInt16(std::string name) : m_isConst(false), m_isSigned(true),
 			m_multipleSignedQualifiers(false), m_name(name),
 			m_underlyingType(new TSignedInt16()) {}
-	
+
 		// inherits most 16 bit generic integer operations
 		// only implements signed or unsigned versions of the non generic operations
-		
+
 
 		/* cast operations */
 		virtual bool implicitCastable(AsmGenerator& context, const IType* toType);
@@ -60,7 +60,7 @@ class TInt16 : public TGenericInt16
 		virtual AsmBlock* mul(AsmGenerator& context, char a, char b);
 		virtual AsmBlock* div(AsmGenerator& context, char a, char b);
 		virtual AsmBlock* mod(AsmGenerator& context, char a, char b);
-		
+
 		/* comparison operators (sign dependent) */
 		virtual AsmBlock* gt(AsmGenerator& context, char a, char b);
 		virtual AsmBlock* lt(AsmGenerator& context, char a, char b);

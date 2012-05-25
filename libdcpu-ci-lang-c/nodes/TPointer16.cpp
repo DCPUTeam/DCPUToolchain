@@ -148,7 +148,6 @@ AsmBlock* TPointer16::dec(AsmGenerator& context, char ref)
 	return block;
 }
 
-
 AsmBlock* TPointer16::compileBinaryOperator(NBinaryOperator* binopNode, AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
@@ -218,27 +217,21 @@ AsmBlock* TPointer16::compileBinaryOperator(NBinaryOperator* binopNode, AsmGener
 			case COMPARE_EQUAL:
 				*block << *(compareType->eq(context, 'A', 'B'));
 				break;
-
 			case COMPARE_NOT_EQUAL:
 				*block << *(compareType->neq(context, 'A', 'B'));
 				break;
-
 			case COMPARE_LESS_THAN:
 				*block << *(compareType->lt(context, 'A', 'B'));
 				break;
-
 			case COMPARE_LESS_THAN_EQUAL:
 				*block << *(compareType->le(context, 'A', 'B'));
 				break;
-
 			case COMPARE_GREATER_THAN:
 				*block << *(compareType->gt(context, 'A', 'B'));
 				break;
-
 			case COMPARE_GREATER_THAN_EQUAL:
 				*block << *(compareType->ge(context, 'A', 'B'));
 				break;
-
 			default:
 				throw new CompilerException(binopNode->line, binopNode->file,
 							    "Invalid operands to binary operation. (have '"
@@ -252,15 +245,11 @@ AsmBlock* TPointer16::compileBinaryOperator(NBinaryOperator* binopNode, AsmGener
 			case ADD:
 				*block << *(pointerType->add(context, 'A', 'B'));
 				break;
-
 			case SUBTRACT:
 				*block << *(pointerType->sub(context, 'A', 'B'));
 				break;
-
 			default:
-				throw new CompilerException(binopNode->line, binopNode->file,
-							    "Invalid operands to binary operation. (have '"
-							    + lhsType->getName() + "' and '" + rhsType->getName() + "')");
+				throw new CompilerException(binopNode->line, binopNode->file, "Invalid operands to binary operation. (have '" + lhsType->getName() + "' and '" + rhsType->getName() + "')");
 		}
 	}
 

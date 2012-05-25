@@ -16,7 +16,7 @@
 #include "NDeclarations.h"
 #include "Lists.h"
 #include <cmath>
-	
+
 
 std::string TStruct::getName() const
 {
@@ -83,8 +83,8 @@ AsmBlock* TStruct::implicitCast(AsmGenerator& context, const IType* toType, char
 {
 	if (!this->implicitCastable(context, toType))
 	{
-		throw new CompilerException(0, "<internal>", 
-		"Unable to implicitly cast integer (internal error).");
+		throw new CompilerException(0, "<internal>",
+					    "Unable to implicitly cast integer (internal error).");
 	}
 	// dont do anything
 	AsmBlock* block = new AsmBlock();
@@ -95,8 +95,8 @@ AsmBlock* TStruct::explicitCast(AsmGenerator& context, const IType* toType, char
 {
 	if (!this->explicitCastable(context, toType))
 	{
-		throw new CompilerException(0, "<internal>", 
-		"Unable to implicitly cast integer (internal error).");
+		throw new CompilerException(0, "<internal>",
+					    "Unable to implicitly cast integer (internal error).");
 	}
 	// dont do anything
 	AsmBlock* block = new AsmBlock();
@@ -104,15 +104,15 @@ AsmBlock* TStruct::explicitCast(AsmGenerator& context, const IType* toType, char
 }
 
 
-		
+
 void TStruct::resolveStruct()
 {
 	if (this->m_resolvedStruct != NULL)
 		return;
-		
+
 	if (this->m_context == NULL)
-		throw new CompilerException(0, "<internal>", 
-		"Context for struct not initialized (internal error).");
+		throw new CompilerException(0, "<internal>",
+					    "Context for struct not initialized (internal error).");
 
 	// Search AST for struct nodes.
 	NDeclarations* decls = (NDeclarations*)m_context->m_RootNode;
@@ -127,7 +127,7 @@ void TStruct::resolveStruct()
 
 	throw new CompilerException(0, "<internal>", "Unknown struct type " + this->m_name + " encountered!");
 	// TODO throw type exception, which is catched outside the type-system
-	//       from where it is rethrown including line and file information
+	//	 from where it is rethrown including line and file information
 }
 
 void TStruct::initContext(AsmGenerator& context)
@@ -138,7 +138,7 @@ void TStruct::initContext(AsmGenerator& context)
 size_t TStruct::getBitSize()
 {
 	// TODO count bits
-	return this->getWordSize()*16;
+	return this->getWordSize() * 16;
 }
 
 uint16_t TStruct::getWordSize()
@@ -172,7 +172,7 @@ uint16_t TStruct::getStructFieldPosition(std::string name)
 	// If the field wasn't found...
 	throw new CompilerException(0, "<internal>", "Unable to lookup field " + name + " in structure " + this->m_resolvedStruct->id.name + "!");
 	// TODO throw type exception, which is catched outside the type-system
-	//       from where it is rethrown including line and file information
+	//	 from where it is rethrown including line and file information
 }
 
 IType* TStruct::getStructFieldType(std::string name)
@@ -194,10 +194,10 @@ IType* TStruct::getStructFieldType(std::string name)
 	// If the field wasn't found...
 	// throw new CompilerException(0, "<internal>", "Unable to lookup field " + name + " in structure " + this->m_resolvedStruct->id.name + "!");
 	// TODO throw type exception, which is catched outside the type-system
-	//       from where it is rethrown including line and file information
+	//	 from where it is rethrown including line and file information
 }
 
-		
+
 /* copy */
 
 // indirect copy given references (copies values)
@@ -238,7 +238,8 @@ AsmBlock* TStruct::loadFromRef(AsmGenerator& context, char fromRef, char to)
 /* stack ops */
 /*************/
 
-AsmBlock* TStruct::pushStack(AsmGenerator& context, char a) {
+AsmBlock* TStruct::pushStack(AsmGenerator& context, char a)
+{
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SUB SP, " << this->getWordSize() << std::endl;
 	for (unsigned int pos = 0; pos < this->getWordSize(); ++pos)

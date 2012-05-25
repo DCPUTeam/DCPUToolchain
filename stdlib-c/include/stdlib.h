@@ -1,14 +1,14 @@
 /**
- * 
+ *
  *	File:		stdlib.h
- * 
+ *
  *	Project:	DCPU-16 Toolchain
  *	Component:	C Standard Library
- * 
+ *
  *	Authors:	James Rhodes
- * 
+ *
  *	Description:	Provides standard library functions.
- * 
+ *
  **/
 
 #ifndef __STDLIB_H

@@ -25,27 +25,27 @@
 class TUnsignedInt16 : public TGenericInt16
 {
 	private:
-		
+
 
 	public:
 		virtual std::string getName() const;
 		virtual std::string getInternalName() const;
-	
+
 		// inherits most 16 bit generic integer operations
 		// only implements signed versions of the non generic operations
-			
+
 		/* cast operations */
 		virtual bool implicitCastable(AsmGenerator& context, const IType* toType);
 		virtual bool explicitCastable(AsmGenerator& context, const IType* toType);
 		virtual AsmBlock* implicitCast(AsmGenerator& context, const IType* toType, char a);
 		virtual AsmBlock* explicitCast(AsmGenerator& context, const IType* toType, char a);
-			
-			
+
+
 		/* binary operations (sign dependent) */
 		virtual AsmBlock* mul(AsmGenerator& context, char a, char b);
 		virtual AsmBlock* div(AsmGenerator& context, char a, char b);
 		virtual AsmBlock* mod(AsmGenerator& context, char a, char b);
-		
+
 		/* comparison operators (sign dependent) */
 		virtual AsmBlock* gt(AsmGenerator& context, char a, char b);
 		virtual AsmBlock* lt(AsmGenerator& context, char a, char b);

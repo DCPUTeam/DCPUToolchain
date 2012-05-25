@@ -19,7 +19,7 @@ uint16_t TGenericInt16::getWordSize(AsmGenerator& context)
 	// any 16 bit type has word size 1
 	return 1;
 }
-		
+
 /* copy */
 // direct copy via registers
 AsmBlock* TGenericInt16::copyValue(AsmGenerator& context, char from, char to)
@@ -57,7 +57,8 @@ AsmBlock*  TGenericInt16::loadFromRef(AsmGenerator& context, char fromRef, char 
 /* stack ops */
 /*************/
 
-AsmBlock* TGenericInt16::pushStack(AsmGenerator& context, char a) {
+AsmBlock* TGenericInt16::pushStack(AsmGenerator& context, char a)
+{
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SET PUSH, " << a << std::endl;
 	return block;
@@ -98,7 +99,7 @@ AsmBlock* TGenericInt16::popStackCleanReturn(AsmGenerator& context, char a)
 
 
 
-	/* binary operators */
+/* binary operators */
 
 
 AsmBlock* TGenericInt16::add(AsmGenerator& context, char a, char b)
@@ -115,31 +116,36 @@ AsmBlock* TGenericInt16::sub(AsmGenerator& context, char a, char b)
 	return block;
 }
 
-AsmBlock* TGenericInt16::band(AsmGenerator& context, char a, char b){
+AsmBlock* TGenericInt16::band(AsmGenerator& context, char a, char b)
+{
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	AND " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::bor(AsmGenerator& context, char a, char b){
+AsmBlock* TGenericInt16::bor(AsmGenerator& context, char a, char b)
+{
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	BOR " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::bxor(AsmGenerator& context, char a, char b){
+AsmBlock* TGenericInt16::bxor(AsmGenerator& context, char a, char b)
+{
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	XOR " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::shl(AsmGenerator& context, char a, char b){
+AsmBlock* TGenericInt16::shl(AsmGenerator& context, char a, char b)
+{
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SHL " << a << ", " << b << std::endl;
 	return block;
 }
 
-AsmBlock* TGenericInt16::shr(AsmGenerator& context, char a, char b){
+AsmBlock* TGenericInt16::shr(AsmGenerator& context, char a, char b)
+{
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SHR " << a << ", " << b << std::endl;
 	return block;
@@ -172,10 +178,10 @@ AsmBlock* TGenericInt16::lor(AsmGenerator& context, char a, char b)
 }
 
 
-		
-	/* unary operators */
-	
-	
+
+/* unary operators */
+
+
 AsmBlock* TGenericInt16::plus(AsmGenerator& context, char a)
 {
 	// TODO integer promotion
@@ -183,7 +189,7 @@ AsmBlock* TGenericInt16::plus(AsmGenerator& context, char a)
 	return block;
 }
 
-// FIXME context dependent stack clear with 0	
+// FIXME context dependent stack clear with 0
 
 AsmBlock* TGenericInt16::minus(AsmGenerator& context, char a)
 {
@@ -212,7 +218,7 @@ AsmBlock* TGenericInt16::lnot(AsmGenerator& context, char a)
 	*block <<	"	XOR " << a << ", 0x1" << std::endl;
 	return block;
 }
-		
+
 AsmBlock* TGenericInt16::inc(AsmGenerator& context, char ref)
 {
 	AsmBlock* block = new AsmBlock();
@@ -228,10 +234,10 @@ AsmBlock* TGenericInt16::dec(AsmGenerator& context, char ref)
 }
 
 
-		
-	/* comparison operators */
-	
-// FIXME context dependent stack clear with 0	
+
+/* comparison operators */
+
+// FIXME context dependent stack clear with 0
 
 AsmBlock* TGenericInt16::eq(AsmGenerator& context, char a, char b)
 {

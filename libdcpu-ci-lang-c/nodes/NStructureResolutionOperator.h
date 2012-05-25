@@ -30,7 +30,7 @@ class NStructureResolutionOperator : public NExpression
 		NIdentifier& rhs;
 		bool isDereference;
 		NStructureResolutionOperator(NExpression& lhs, NIdentifier& rhs, bool isDereference) :
-			 m_structType(NULL), lhs(lhs), rhs(rhs), isDereference(isDereference), NExpression("field") { }
+			m_structType(NULL), lhs(lhs), rhs(rhs), isDereference(isDereference), NExpression("field") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
 		virtual IType* getExpressionType(AsmGenerator& context);

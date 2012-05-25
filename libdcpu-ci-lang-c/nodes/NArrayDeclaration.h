@@ -25,9 +25,9 @@ class NArrayDeclaration : public NDeclaration
 {
 		DimensionsList* m_dims;
 		ExpressionList* m_initExprs;
-		
+
 		uint16_t m_numElements;
-		
+
 		IType* m_baseType;
 		IType* m_pointerType;
 		IType* m_memAreaType;
@@ -37,7 +37,7 @@ class NArrayDeclaration : public NDeclaration
 		NIdentifier& id;
 
 		IType* getPointerType();
-		IType* getMemAreaType();		
+		IType* getMemAreaType();
 
 		NArrayDeclaration(IType* type, NIdentifier& id, DimensionsList* dims, ExpressionList* initExprList);
 		virtual AsmBlock* compile(AsmGenerator& context);

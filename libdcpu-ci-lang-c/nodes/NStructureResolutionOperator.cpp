@@ -30,13 +30,13 @@ void NStructureResolutionOperator::initStructType(AsmGenerator& context)
 				this->lhs.cType != "expression-field" &&
 				this->lhs.cType != "expression-arrayaccess")
 			throw new CompilerException(this->line, this->file, "Unable to use AST node " + this->lhs.cType + " as part of the structure resolution operator; it is not a suitable left-value.");
-	
+
 		// Ensure the LHS expression is actually a structure type.
 		IType* lhsType = this->lhs.getExpressionType(context);
 
 		if (!lhsType->isStruct())
 			throw new CompilerException(this->line, this->file, "Unable to use AST node " + this->lhs.cType + " as part of the structure resolution operator; the resulting type is not a structure.");
-	
+
 		this->m_structType = this->m_structType = (TStruct*) lhsType;
 		this->m_structType->initContext(context);
 	}
@@ -52,7 +52,7 @@ AsmBlock* NStructureResolutionOperator::compile(AsmGenerator& context)
 
 	// Use our reference function to generate the location.
 	AsmBlock* expr = this->reference(context);
-	
+
 	IType* fieldType = this->m_structType->getStructFieldType(this->rhs.name);
 
 	// return the value of the field
@@ -93,14 +93,14 @@ IType* NStructureResolutionOperator::getExpressionType(AsmGenerator& context)
 {
 	// init variables, and check types
 	this->initStructType(context);
-	
+
 	// get field type
 	IType* fieldType = this->m_structType->getStructFieldType(this->rhs.name);
-	
+
 	if (fieldType == NULL)
 		// Field not found
 		throw new CompilerException(this->line, this->file,
-			"Struct field '" + this->m_structType->getName() + "."
-			+ this->rhs.name + "' not found.");
+					    "Struct field '" + this->m_structType->getName() + "."
+					    + this->rhs.name + "' not found.");
 	return fieldType;
 }

@@ -47,12 +47,12 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 
 	// get rhs type
 	IType* rhsType = this->rhs.getExpressionType(context);
-	
+
 	// Move the value onto the stack.
 	*block <<   *rhs;
 	*block <<   *(rhsType->pushStack(context, 'A'));
 	delete rhs;
-	
+
 	// Binary Operations are either possible on two basic types
 	// or a pointer and a basic type
 	// Check if both types are of a basic type
@@ -63,11 +63,11 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 	}
 	else if ((!rhsType->isBasicType()) || (!lhsType->isBasicType()))
 	{
-		throw new CompilerException(this->line, this->file, 
-		"Invalid operands to binary operation. (have '"
-		+ lhsType->getName() + "' and '" + rhsType->getName() + "')");
+		throw new CompilerException(this->line, this->file,
+					    "Invalid operands to binary operation. (have '"
+					    + lhsType->getName() + "' and '" + rhsType->getName() + "')");
 	}
-	
+
 	if (!isPointerOp)
 	{
 		*block << *(TGenericBasicType::compileBinaryOperator(this, context));
