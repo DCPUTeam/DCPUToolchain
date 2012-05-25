@@ -63,13 +63,13 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
 				add_custom_command(
 					OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa
 					COMMAND ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX}
-						ARGS ${toolargs} -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" "${CMAKE_CURRENT_SOURCE_DIR}/${i}" 2>>./CMakeFiles/dcpu-${tool}-log 
+						ARGS ${toolargs} -I "${CMAKE_CURRENT_SOURCE_DIR}/include" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" "${CMAKE_CURRENT_SOURCE_DIR}/${i}" 2>>./CMakeFiles/dcpu-${tool}-log 
 					DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
 					COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
 				add_custom_command(
 					OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
 					COMMAND ${KERNEL_TOOLS}/dtasm${CMAKE_EXECUTABLE_SUFFIX}
-						ARGS -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" 2>>./CMakeFiles/dcpu-${tool}-dtasm-log 
+						ARGS -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" 2>>./CMakeFiles/dcpu-${tool}-dtasm-log
 					DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
 					COMMENT "Assembling ${fpth}/${fbse}.oa with DCPU-Toolchain...")
 				if("${tout}" STREQUAL "")

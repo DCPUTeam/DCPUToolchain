@@ -41,8 +41,11 @@ int main(int argc, char* argv[])
 	struct arg_str* type_assembler = arg_str0("t", NULL, "<type>", "The type of assembler to output for.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
+	// FIXME I couldn't find any possibility for making the maximum amount
+	// un-fixed (any positive integer), adding 20 now (should suffice :) )
+	struct arg_file* include_dirs = arg_filen("I", NULL, "<directory>", 0, 20, "Adds the directory <dir> to the directories to be searched for header files.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { output_file, show_help, type_assembler, input_file, end };
+	void* argtable[] = { output_file, show_help, type_assembler, include_dirs, input_file, end };
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
@@ -62,9 +65,16 @@ int main(int argc, char* argv[])
 	}
 
 	// Run the preprocessor.
+	// add directories ., ./include, path-to-c-file/
 	ppfind_add_path(bautofree(bfromcstr(".")));
 	ppfind_add_path(bautofree(bfromcstr("include")));
 	ppfind_add_autopath(bautofree(bfromcstr(input_file->filename[0])));
+	// add directories from -I option
+	for (int i = 0; i < include_dirs->count; ++i)
+	{
+		ppfind_add_path(bautofree(bfromcstr(include_dirs->filename[i])));
+	}
+	
 	bstring pp_result_name = pp_do(bautofree(bfromcstr(input_file->filename[0])));
 
 	if (pp_result_name == NULL)
