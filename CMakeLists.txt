@@ -353,7 +353,7 @@ add_subdirectory(scripts)
 
 # Add kernel and standard libraries.
 if(${BUILD_DCPU})
-	add_subdirectory(kernel)
+	#add_subdirectory(kernel)
 	add_subdirectory(stdlib-c)
 endif(${BUILD_DCPU})
 

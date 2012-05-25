@@ -29,7 +29,7 @@ int _current = LEVEL_DEFAULT;
 ///
 void printd(int level, const char* message, ...)
 {
-	va_list argptr = NULL;
+	va_list argptr;
 	va_start(argptr, message);
 	if (_current >= level && _current != LEVEL_SILENT)
 		vfprintf(stderr, message, argptr);
