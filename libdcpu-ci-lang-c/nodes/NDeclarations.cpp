@@ -22,6 +22,7 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 
 	// Import bootstrap data.
 	*block << ".IMPORT _stack_caller_init" << std::endl;
+	*block << ".IMPORT _stack_caller_init_overlap" << std::endl;
 	*block << ".IMPORT _stack_callee_return" << std::endl;
 	*block << ".IMPORT _halt" << std::endl;
 	*block << ".IMPORT _halt_debug" << std::endl;
