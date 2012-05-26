@@ -157,3 +157,6 @@ add_dcpu_image(stdlib-c
 dt_needs_exe(compiler)
 dt_needs_exe(assembler)
 dt_needs_exe(linker)
+
+# Copy standard library include files.
+file(COPY ./include DESTINATION "${ROOT_DIR}/Debug" USE_SOURCE_PERMISSIONS)
