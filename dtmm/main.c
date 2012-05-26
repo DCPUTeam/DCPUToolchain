@@ -14,7 +14,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <bstring.h>
+#include <simclist.h>
 #include <version.h>
+#include <dirent.portable.h>
 #include <argtable2.h>
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -33,21 +35,30 @@ size_t read_data(void* buff, size_t elsize, size_t nelem, void* param)
 
 bool do_search(CURL* curl, bstring name)
 {
+	DIR* dir;
 	bool printed;
 	CURLcode res;
 	FILE* fp;
+	list_t installed;
 	struct bStream* stream;
-	bstring buffer;
+	bstring buffer, fname, sstr;
+	bstring ext = bfromcstr(".lua");
 	bstring url = bfromcstr("http://dms.dcputoolcha.in/modules/search?q=");
 	bstring modpath = osutil_getmodulepath();
-	// TODO: Search existing module path to see
-	//	 if there is a match already in the
-	//	 module folder.
-	
+	struct dirent* entry;
+	list_init(&installed);
+	list_attributes_copy(&installed, list_meter_string, 1);
+	list_attributes_comparator(&installed, list_comparator_string);
+
+	// Attempt to open the modules directory.
+	dir = opendir(modpath->data);
+	if (dir == NULL)
+	{
+		printd(LEVEL_ERROR, "unable to query local repository.\n");
+		return 1;
+	}
+
 	// Append the temporary search file name.
-	// FIXME: Is there a better way to do this?  Can
-	//	  we write into a temporary buffer instead
-	//	  for the search results?
 	bcatcstr(modpath, "/.search");
 	bconcat(url, name);
 
@@ -68,19 +79,44 @@ bool do_search(CURL* curl, bstring name)
 	}
 	fclose(fp);
 
-	// Print the results.
+	// Print the local results.
 	printd(LEVEL_DEFAULT, "search results for %s:\n", name->data);
+	while ((entry = readdir(dir)) != NULL)
+	{
+		fname = bfromcstr(&entry->d_name[0]);
+		if (binstr(fname, blength(fname) - 4, ext) == BSTR_ERR)
+		{
+			bdestroy(fname);
+			continue;
+		}
+		if (entry->d_type != DT_REG)
+		{
+			bdestroy(fname);
+			continue;
+		}
+		sstr = bmidstr(fname, 0, blength(fname) - 4);
+		printd(LEVEL_DEFAULT, "	 %s (installed)\n", sstr->data);
+		list_append(&installed, sstr->data);
+		bdestroy(sstr);
+		bdestroy(fname);
+	}
+
+	// Print the online results.
 	fp = fopen(modpath->data, "r");
 	stream = bsopen(&read_data, fp);
 	buffer = bfromcstr("");
 	printed = false;
 	while (bsreadln(buffer, stream, '\n') != BSTR_ERR)
 	{
-		printd(LEVEL_DEFAULT, "	 %s", buffer->data);
+		btrimws(buffer);
+		sstr = bmidstr(buffer, 0, blength(buffer) - 4);
+		if (!list_contains(&installed, sstr->data))
+			printd(LEVEL_DEFAULT, "	 %s\n", sstr->data);
 		printed = true;
+		bdestroy(sstr);
 	}
 	if (!printed)
-		printd(LEVEL_DEFAULT, "	 <no results>\n");
+		printd(LEVEL_DEFAULT, "	 <no online results>\n");
 	bsclose(stream);
 	fclose(fp);
 	
@@ -89,16 +125,79 @@ bool do_search(CURL* curl, bstring name)
 	return 0;
 }
 
-bool do_install(bstring name)
+bool do_install(CURL* curl, bstring name)
 {
-	printd(LEVEL_ERROR, "not implemented.\n");
-	return 1;
+	FILE* fp;
+	CURLcode res;
+	struct stat buffer;
+	bstring url = bfromcstr("http://dms.dcputoolcha.in/modules/download?name=");
+	bstring modpath = osutil_getmodulepath();
+
+	// Append the file name.
+	bconchar(modpath, '/');
+	bconcat(modpath, name);
+	bcatcstr(modpath, ".lua");
+	bconcat(url, name);
+	bcatcstr(url, ".lua");
+
+	// Check to see if the module is already installed.
+	if (stat(modpath->data, &buffer) == 0)
+	{
+		if (unlink(modpath->data) == 0)
+			printd(LEVEL_WARNING, "removed existing %s module.\n", name->data);
+		else
+		{
+			printd(LEVEL_ERROR, "unable to remove existing %s module.\n", name->data);
+			return 1;
+		}
+	}
+
+	// Open the file and do the cURL transfer.
+	printd(LEVEL_DEFAULT, "querying module repository...\n");
+	fp = fopen(modpath->data, "wb");
+	curl_easy_setopt(curl, CURLOPT_URL, url->data);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+	res = curl_easy_perform(curl);
+	if (res != 0)
+	{
+		bdestroy(url);
+		bdestroy(name);
+		bdestroy(modpath);
+		printd(LEVEL_ERROR, "curl failed with error code %i.\n", res);
+		return 1;
+	}
+	fclose(fp);
+	printd(LEVEL_DEFAULT, "module %s installed.\n", name->data);
+
+	return 0;
 }
 
-bool do_uninstall(bstring name)
+bool do_uninstall(CURL* curl, bstring name)
 {
-	printd(LEVEL_ERROR, "not implemented.\n");
-	return 1;
+	bstring modpath = osutil_getmodulepath();
+	struct stat buffer;
+
+	// Append the file name.
+	bconchar(modpath, '/');
+	bconcat(modpath, name);
+	bcatcstr(modpath, ".lua");
+	
+	// Check to see if the module is installed.
+	if (stat(modpath->data, &buffer) == 0)
+	{
+		if (unlink(modpath->data) == 0)
+			printd(LEVEL_DEFAULT, "removed existing %s module.\n", name->data);
+		else
+		{
+			printd(LEVEL_ERROR, "unable to remove existing %s module.\n", name->data);
+			return 1;
+		}
+	}
+	else
+		printd(LEVEL_WARNING, "module %s is not installed.\n", name->data);
+
+	return 0;
 }
 
 int main(int argc, char* argv[])
@@ -154,37 +253,17 @@ int main(int argc, char* argv[])
 	}
 	bdestroy(modpath);
 
-	// Command: search (se)
 	if (biseqcstrcaseless(command, "search") || biseqcstrcaseless(command, "se"))
-		return do_search(curl, name);	
+		return do_search(curl, name);
+	else if (biseqcstrcaseless(command, "install") || biseqcstrcaseless(command, "in"))
+		return do_install(curl, name);
+	else if (biseqcstrcaseless(command, "uninstall") || biseqcstrcaseless(command, "rm"))
+		return do_uninstall(curl, name);
 	else
 	{
 		printd(LEVEL_ERROR, "unknown command (must be search, install or uninstall).");
 		return 1;
 	}
 
-/*
-	printf("initializing curl...\n");
-	curl = curl_easy_init();
-	if (curl)
-	{
-		printf("opening file...\n");
-		fp = fopen("test.txt", "wb");
-		printf("setting curl options...\n");
-		curl_easy_setopt(curl, CURLOPT_URL, "http://dms.dcputoolcha.in/modules/download?name=rng.lua");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-		printf("performing curl download...\n");
-		res = curl_easy_perform(curl);
-		// TODO: Do something with result.
-		printf("cleaning up...\n");
-		curl_easy_cleanup(curl);
-		printf("closing file...\n");
-		fclose(fp);
-		printf("done.\n");
-	}
-	else
-		printf("unable to initialize.\n");
-*/
 	return 0;
 }

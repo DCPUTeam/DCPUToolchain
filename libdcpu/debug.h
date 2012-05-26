@@ -19,10 +19,11 @@
 #include "dcpu.h"
 #include "bstring.h"
 
-#define LEVEL_EVERYTHING 6
-#define LEVEL_DEBUG 5
-#define LEVEL_VERBOSE 4
-#define LEVEL_DEFAULT 3
+#define LEVEL_EVERYTHING 7
+#define LEVEL_DEBUG 6
+#define LEVEL_VERBOSE 5
+#define LEVEL_DEFAULT 4
+#define LEVEL_WARNING 3
 #define LEVEL_ERROR 2
 #define LEVEL_CRITICAL 1
 #define LEVEL_SILENT 0
