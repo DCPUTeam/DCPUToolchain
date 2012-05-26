@@ -19,6 +19,10 @@
 #else
 #include <libgen.h>
 #endif
+// FIXME: How portable are these headers?  Do they work on
+//        both Windows and Linux?
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <assert.h>
 #include "osutil.h"
@@ -145,4 +149,44 @@ bstring osutil_getarg0path()
 #endif
 	bdestroy(arg0);
 	return path;
+}
+
+///
+/// Retrieves the directory that contains toolchain modules.
+///
+/// Retrieves the directory that contains toolchain modules based on the existance of the
+/// TOOLCHAIN_MODULES environment variable or defaulting to the modules/ folder in the
+/// same directory as the current application.  This requires osutil_setarg0 to have been
+/// previously called.
+///
+/// @return The path of the directory holding toolchain modules.  The result must be freed manually.
+///
+bstring osutil_getmodulepath()
+{
+	// FIXME: This function should return NULL
+	//        if the path does not exist or is
+	//        not a directory.
+	bstring tmp;
+	int result;
+	struct stat buffer;
+	char* env = getenv("TOOLCHAIN_MODULES");
+	if (env == NULL)
+	{
+		tmp = osutil_getarg0path();
+		bcatcstr(tmp, "/modules");
+	}
+	else
+	{
+		tmp = bfromcstr(env);
+	}
+
+	// Check if path exists.
+	result = stat(tmp->data, &buffer);
+	if (result != 0 || !S_ISDIR(buffer.st_mode))
+	{
+		bdestroy(tmp);
+		return NULL;
+	}
+	else
+		return tmp;
 }

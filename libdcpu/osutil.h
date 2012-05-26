@@ -24,5 +24,6 @@ void osutil_makebinary(FILE* fd);
 void osutil_setarg0(freed_bstring arg0);
 bstring osutil_getarg0();
 bstring osutil_getarg0path();
+bstring osutil_getmodulepath();
 
 #endif

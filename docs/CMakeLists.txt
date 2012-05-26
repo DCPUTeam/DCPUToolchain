@@ -18,10 +18,14 @@ if(SPHINX_EXECUTABLE)
 	
 	# HTML output directory
 	set(SPHINX_HTML_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/html")
-	
-	set(SPHINX_EXT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/sphinxext)
-	
-	set(SPHINX_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/sources)
+	if(TOOLCHAIN_ON_CYGWIN)
+		# Out-of-source build configuration does not work under Cygwin.
+		set(SPHINX_EXT_PATH "../sphinxext")
+		set(SPHINX_SOURCE_PATH "sources")
+	else(TOOLCHAIN_ON_CYGWIN)
+		set(SPHINX_EXT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/sphinxext")
+		set(SPHINX_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/sources")
+	endif(TOOLCHAIN_ON_CYGWIN)
 	
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in"
