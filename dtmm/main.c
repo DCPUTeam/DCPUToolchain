@@ -41,13 +41,13 @@ bool do_search(CURL* curl, bstring name)
 	bstring url = bfromcstr("http://dms.dcputoolcha.in/modules/search?q=");
 	bstring modpath = osutil_getmodulepath();
 	// TODO: Search existing module path to see
-	//       if there is a match already in the
-	//       module folder.
+	//	 if there is a match already in the
+	//	 module folder.
 	
 	// Append the temporary search file name.
 	// FIXME: Is there a better way to do this?  Can
-	//        we write into a temporary buffer instead
-	//        for the search results?
+	//	  we write into a temporary buffer instead
+	//	  for the search results?
 	bcatcstr(modpath, "/.search");
 	bconcat(url, name);
 
@@ -76,11 +76,11 @@ bool do_search(CURL* curl, bstring name)
 	printed = false;
 	while (bsreadln(buffer, stream, '\n') != BSTR_ERR)
 	{
-		printd(LEVEL_DEFAULT, "  %s", buffer->data);
+		printd(LEVEL_DEFAULT, "	 %s", buffer->data);
 		printed = true;
 	}
 	if (!printed)
-		printd(LEVEL_DEFAULT, "  <no results>\n");
+		printd(LEVEL_DEFAULT, "	 <no results>\n");
 	bsclose(stream);
 	fclose(fp);
 	
@@ -91,6 +91,8 @@ bool do_search(CURL* curl, bstring name)
 
 bool do_install(bstring name)
 {
+	printd(LEVEL_ERROR, "not implemented.\n");
+	return 1;
 }
 
 bool do_uninstall(bstring name)
@@ -101,9 +103,7 @@ bool do_uninstall(bstring name)
 
 int main(int argc, char* argv[])
 {
-	FILE* fp;
 	CURL* curl;
-	CURLcode res;
 	bstring command;
 	bstring name;
 	bstring modpath;
