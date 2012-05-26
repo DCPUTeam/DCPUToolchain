@@ -47,7 +47,7 @@ When using Cygwin, then there are some important notes:
 First install a few required packages with
 
 ```
-$ sudo apt-get install bison flex cmake build-essential libreadline-dev libsdl1.2-dev
+$ sudo apt-get install bison flex cmake build-essential libreadline-dev libsdl1.2-dev libcurl4-openssl-dev
 ```
 
 Download [libtcod](http://doryen.eptalys.net/libtcod/download/) and copy
@@ -77,6 +77,8 @@ If everything went well the binaries are in ```dcputoolchain/Debug```
 #### Fedora 16
 First install a few required packages with
 
+**IMPORTANT NOTICE: Build Instructions outdated** libcurl dev headers need to be
+installed aswell
 ```
 $ sudo yum install bison flex cmake mesa-lib* zlib-devel libpng-devel
 $ sudo yum groupinstall "Development Tools"
@@ -114,6 +116,8 @@ Next, you'll need to install a few other things, I'll be using homebrew for this
 
 You will need to install cmake, git, hg and sdl.
 
+**IMPORTANT NOTICE: Build Instructions outdated** libcurl dev headers need to be
+installed aswell
 ```
 $ brew install cmake
 $ brew install git
