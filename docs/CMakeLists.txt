@@ -17,7 +17,8 @@ if(SPHINX_EXECUTABLE)
 	set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
 	
 	# HTML output directory
-	set(SPHINX_HTML_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/html")
+	set(SPHINX_HTML_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/docs")
+	
 	if(TOOLCHAIN_ON_CYGWIN)
 		# Out-of-source build configuration does not work under Cygwin.
 		set(SPHINX_EXT_PATH "../sphinxext")
