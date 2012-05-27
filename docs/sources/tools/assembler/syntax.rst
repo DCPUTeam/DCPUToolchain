@@ -51,16 +51,11 @@ by the :ref:`preprocessor`.
     Outputs `character`, `total` times into the result.  Acts as a
     repeated :asminst:`DAT` directive.
 
-.. asmdirective:: .IMPORT label
+.. note::
 
-    Imports the specified label from an external object at link
-    time.  The label will only be correctly imported if it was
-    exported from another object file using the .EXPORT directive.
-
-.. asmdirective:: .EXPORT label
-
-    Exports the specified label from the the current file, making
-    it available to other objects at link time.
+    There are also assembler directives which affect the operation of the
+    linker.  See :ref:`linker-directives` for a list of supported linker
+    directives.
 
 .. _assembler-instructions:
 
