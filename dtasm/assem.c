@@ -21,6 +21,7 @@
 #include <ppexpr.h>
 #include <simclist.h>
 #include <ddata.h>
+#include <debug.h>
 #include "node.h"
 #include "dcpu.h"
 #include "imap.h"
@@ -115,17 +116,17 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 		if (registr == NULL)
 		{
 			// Attempt to use a label in brackets that can't be.
-			fprintf(stderr, "\n");
+			printd(LEVEL_VERBOSE, "\n");
 			ahalt(ERR_NEXTED_LABEL_UNSUPPORTED, param->addcmpt);
 		}
 		else if (registr->value == VALUE_NEXT_UNSUPPORTED)
 		{
 			// Attempt to use a register in brackets that can't be.
-			fprintf(stderr, "\n");
+			printd(LEVEL_VERBOSE, "\n");
 			ahalt(ERR_NEXTED_REGISTER_UNSUPPORTED, param->addcmpt);
 		}
 
-		fprintf(stderr, "[%s+%s]", btmp->data, registr->name);
+		printd(LEVEL_VERBOSE, "[%s+%s]", btmp->data, registr->name);
 		result.v = registr->value;
 		result.v_extra = param->value;
 		result.v_extra_used = true;
@@ -136,12 +137,12 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 		// This is either the form 0x1000 or [0x1000].
 		if (param->bracketed)
 		{
-			fprintf(stderr, "[%s]", btmp->data);
+			printd(LEVEL_VERBOSE, "[%s]", btmp->data);
 			result.v = NXT;
 		}
 		else
 		{
-			fprintf(stderr, "%s", btmp->data);
+			printd(LEVEL_VERBOSE, "%s", btmp->data);
 			result.v = NXT_LIT;
 		}
 
@@ -162,9 +163,9 @@ struct process_parameter_results process_register(struct ast_node_register* para
 	struct register_mapping* registr;
 
 	if (param->bracketed)
-		fprintf(stderr, "[%s]", param->value);
+		printd(LEVEL_VERBOSE, "[%s]", param->value);
 	else
-		fprintf(stderr, "%s", param->value);
+		printd(LEVEL_VERBOSE, "%s", param->value);
 
 	registr = get_register_by_name(param->value, param->bracketed);
 
@@ -181,7 +182,7 @@ struct process_parameter_results process_register(struct ast_node_register* para
 	else if (registr->value == BRACKETS_UNSUPPORTED)
 	{
 		// Attempt to use a register in brackets that can't be.
-		fprintf(stderr, "\n");
+		printd(LEVEL_VERBOSE, "\n");
 		ahalt(ERR_BRACKETED_REGISTER_UNSUPPORTED, param->value);
 	}
 	else
@@ -207,7 +208,7 @@ struct process_parameter_results process_parameter(struct ast_node_parameter* pa
 	result.v_label = NULL;
 	result.v_label_bracketed = false;
 	result.v_raw = NULL;
-	fprintf(stderr, " ");
+	printd(LEVEL_VERBOSE, " ");
 
 	switch (param->type)
 	{
@@ -237,7 +238,7 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 
 		if (t.v_raw)
 		{
-			fprintf(stderr, "\n");
+			printd(LEVEL_VERBOSE, "\n");
 			ahalt(ERR_GEN_UNSUPPORTED_PARAMETER, NULL);
 		}
 
@@ -253,7 +254,7 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 
 			if (t.v_raw)
 			{
-				fprintf(stderr, "\n");
+				printd(LEVEL_VERBOSE, "\n");
 				ahalt(ERR_GEN_UNSUPPORTED_PARAMETER, NULL);
 			}
 
@@ -307,7 +308,7 @@ void process_line(struct ast_node_line* line)
 			switch (line->keyword)
 			{
 				case SECTION:
-					fprintf(stderr, ".SECTION %s", bstr2cstr(line->keyword_data_string, '0'));
+					printd(LEVEL_VERBOSE, ".SECTION %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit section metadata.
 					aout_emit(aout_create_metadata_section(bstr2cstr(line->keyword_data_string, '0')));
@@ -315,7 +316,7 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case OUTPUT:
-					fprintf(stderr, ".OUTPUT %s", bstr2cstr(line->keyword_data_string, '0'));
+					printd(LEVEL_VERBOSE, ".OUTPUT %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit output metadata.
 					aout_emit(aout_create_metadata_output(bstr2cstr(line->keyword_data_string, '0')));
@@ -323,7 +324,7 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case BOUNDARY:
-					fprintf(stderr, ".BOUNDARY");
+					printd(LEVEL_VERBOSE, ".BOUNDARY");
 
 					// Emit safety boundary of 16 NULL words.
 					for (i = 0; i < 16; i += 1)
@@ -332,7 +333,7 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case FILL:
-					fprintf(stderr, ".FILL");
+					printd(LEVEL_VERBOSE, ".FILL");
 
 					// Emit N words with value X
 					flimit = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
@@ -343,7 +344,7 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case EXTENSION:
-					fprintf(stderr, ".EXTENSION %s", bstr2cstr(line->keyword_data_string, '0'));
+					printd(LEVEL_VERBOSE, ".EXTENSION %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit extension metadata.
 					aout_emit(aout_create_metadata_extension(bstr2cstr(line->keyword_data_string, '0')));
@@ -351,7 +352,7 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case INCBIN:
-					fprintf(stderr, ".INCBIN %s", bstr2cstr(line->keyword_data_string, '0'));
+					printd(LEVEL_VERBOSE, ".INCBIN %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit binary include metadata.
 					aout_emit(aout_create_metadata_incbin(bstr2cstr(line->keyword_data_string, '0')));
@@ -360,7 +361,7 @@ void process_line(struct ast_node_line* line)
 
 				case ORIGIN:
 					opos = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
-					fprintf(stderr, ".ORIGIN 0x%04X", opos);
+					printd(LEVEL_VERBOSE, ".ORIGIN 0x%04X", opos);
 
 					// Emit origin set metadata.
 					aout_emit(aout_create_metadata_origin(opos));
@@ -368,7 +369,7 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case EXPORT:
-					fprintf(stderr, ".EXPORT %s", bstr2cstr(line->keyword_data_string, '0'));
+					printd(LEVEL_VERBOSE, ".EXPORT %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit export metadata.
 					aout_emit(aout_create_metadata_export(bstr2cstr(line->keyword_data_string, '0')));
@@ -376,7 +377,7 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case IMPORT:
-					fprintf(stderr, ".IMPORT %s", bstr2cstr(line->keyword_data_string, '0'));
+					printd(LEVEL_VERBOSE, ".IMPORT %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit export metadata.
 					aout_emit(aout_create_metadata_import(bstr2cstr(line->keyword_data_string, '0')));
@@ -384,11 +385,11 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				default:
-					fprintf(stderr, "\n");
+					printd(LEVEL_VERBOSE, "\n");
 					ahalt(ERR_UNSUPPORTED_KEYWORD, NULL);
 			}
 
-			fprintf(stderr, "\n");
+			printd(LEVEL_VERBOSE, "\n");
 			break;
 
 		case type_instruction:
@@ -397,7 +398,7 @@ void process_line(struct ast_node_line* line)
 			if (strcmp(line->instruction->instruction, "DAT") == 0)
 			{
 				// Handle data.
-				fprintf(stderr, "EMIT DAT");
+				printd(LEVEL_VERBOSE, "EMIT DAT");
 
 				// Process parameters as data.
 				reverse_parameters(line->instruction->parameters);
@@ -413,7 +414,7 @@ void process_line(struct ast_node_line* line)
 						aout_emit(aout_create_expr(expr_new_label(bautofree(bfromcstr(dparam.v_label)))));
 					else if (dparam.v_raw != NULL) // If the raw field is not null, get each character and output it.
 					{
-						fprintf(stderr, " \"%s\"", dparam.v_raw->data);
+						printd(LEVEL_VERBOSE, " \"%s\"", dparam.v_raw->data);
 
 						for (dchrproc = 0; dchrproc < (uint32_t)blength(dparam.v_raw); dchrproc++)
 							aout_emit(aout_create_raw(dparam.v_raw->data[dchrproc]));
@@ -422,7 +423,7 @@ void process_line(struct ast_node_line* line)
 						aout_emit(aout_create_expr(dparam.v_extra));
 					else // Something that isn't handled by DAT.
 					{
-						fprintf(stderr, "\n");
+						printd(LEVEL_VERBOSE, "\n");
 						ahalt(ERR_DAT_UNSUPPORTED_PARAMETER, NULL);
 					}
 
@@ -437,7 +438,7 @@ void process_line(struct ast_node_line* line)
 				if (insttype == NULL)
 					ahalt(ERR_UNKNOWN_OPCODE, line->instruction->instruction);
 
-				fprintf(stderr, "EMIT %s", insttype->name);
+				printd(LEVEL_VERBOSE, "EMIT %s", insttype->name);
 
 				// Process parameters normally.
 				ppresults = process_parameters(line->instruction->parameters);
@@ -467,12 +468,12 @@ void process_line(struct ast_node_line* line)
 
 			}
 
-			fprintf(stderr, "\n");
+			printd(LEVEL_VERBOSE, "\n");
 			break;
 
 		case type_label:
 			// Handle label definition.
-			fprintf(stderr, ":%s\n", line->label->name);
+			printd(LEVEL_VERBOSE, ":%s\n", line->label->name);
 			aout_emit(aout_create_label(line->label->name));
 			break;
 	}
@@ -489,7 +490,7 @@ void process_line(struct ast_node_line* line)
 			result->symbols[result->symbols_count++] = newsym;
 			list_append(assem_dbg_symbols, newsym);
 
-			fprintf(stderr, "Debugging symbol: %i %s\n", line->line, line->file->data);
+			printd(LEVEL_DEBUG, "Debugging symbol: %i %s\n", line->line, line->file->data);
 		}
 
 		// If the higher-language line information is
@@ -501,7 +502,7 @@ void process_line(struct ast_node_line* line)
 			result->symbols[result->symbols_count++] = newsym;
 			list_append(assem_dbg_symbols, newsym);
 
-			fprintf(stderr, "High-level debugging symbol: %i %s\n", line->uline, line->ufile->data);
+			printd(LEVEL_DEBUG, "High-level debugging symbol: %i %s\n", line->uline, line->ufile->data);
 		}
 	}
 }

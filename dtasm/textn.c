@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <debug.h>
 #include "posix.h"
 #include "textn.h"
 #include "aout.h"
@@ -46,7 +47,7 @@ uint16_t textn_init(struct aout_byte* start)
 				ahalt(ERR_EXTENSION_UNKNOWN, current->label);
 
 			extension_data[extension_count] = ext_name;
-			fprintf(stderr, "EXTENSION [0x%04X] %s\n", extension_offset, ext_name);
+			printd(LEVEL_VERBOSE, "EXTENSION [0x%04X] %s\n", extension_offset, ext_name);
 			extension_count += 1;
 			extension_offset += strlen(ext_name) + 1;
 

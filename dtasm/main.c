@@ -23,6 +23,7 @@
 #include <version.h>
 #include <simclist.h>
 #include <ddata.h>
+#include <debug.h>
 #include "assem.h"
 #include "node.h"
 #include "aerr.h"
@@ -36,12 +37,14 @@ char* fileloc = NULL;
 
 int main(int argc, char* argv[])
 {
+	FILE* out = NULL;
 	FILE* img = NULL;
 	FILE* sym = NULL;
 	int nerrors;
 	bstring pp_result_name;
 	struct errinfo* errval;
 	list_t symbols;
+	bstring temp = NULL;
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
@@ -62,9 +65,9 @@ int main(int argc, char* argv[])
 		if (show_help->count != 0)
 			arg_print_errors(stdout, end, "assembler");
 
-		fprintf(stderr, "syntax:\n    dtasm");
+		printd(LEVEL_DEFAULT, "syntax:\n    dtasm");
 		arg_print_syntax(stderr, argtable, "\n");
-		fprintf(stderr, "options:\n");
+		printd(LEVEL_DEFAULT, "options:\n");
 		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
@@ -76,11 +79,13 @@ int main(int argc, char* argv[])
 	if (errval != NULL)
 	{
 		// Handle the error.
-		fprintf(stderr, "assembler: error occurred.\n");
-		fprintf(stderr, err_strings[errval->errid], errval->errdata);
+		printd(LEVEL_ERROR, "assembler: error occurred.\n");
+		printd(LEVEL_ERROR, err_strings[errval->errid], errval->errdata);
 
 		if (img != NULL)
 			fclose(img);
+		if (temp != NULL)
+			unlink(temp->data);
 
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
@@ -92,7 +97,7 @@ int main(int argc, char* argv[])
 
 	if (pp_result_name == NULL)
 	{
-		fprintf(stderr, "assembler: invalid result returned from preprocessor.\n");
+		printd(LEVEL_ERROR, "assembler: invalid result returned from preprocessor.\n");
 		pp_cleanup(bautofree(pp_result_name));
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
@@ -118,7 +123,7 @@ int main(int argc, char* argv[])
 
 	if (&ast_root == NULL || ast_root.values == NULL)
 	{
-		fprintf(stderr, "assembler: syntax error, see above.\n");
+		printd(LEVEL_ERROR, "assembler: syntax error, see above.\n");
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
@@ -129,15 +134,54 @@ int main(int argc, char* argv[])
 	// Process AST.
 	process_root(&ast_root, &symbols);
 
-	// Save to either file or stdout.
+	// Initially save to a temporary file.
+	temp = bfromcstr(tempnam(".", "asm."));
+	img = fopen(temp->data, "wb");
+	if (img == NULL)
+	{
+		printd(LEVEL_ERROR, "assembler: temporary file not writable.\n");
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+		return 1;
+	}
+
+	// Write content.
+	aout_write(img, (gen_relocatable->count > 0), (gen_intermediate->count > 0));
+	fclose(img);
+	printd(LEVEL_VERBOSE, "assembler: completed successfully.\n");
+
+	// Save debugging symbols to specified file if provided.
+	if (symbols_file->count > 0)
+	{
+		if (strcmp(symbols_file->filename[0], "-") == 0)
+		{
+			printd(LEVEL_ERROR, "assembler: debugging symbols can not be written to stdout.\n");
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+			return 1;
+		}
+
+		// Write symbols.
+		dbgfmt_write(bfromcstr(symbols_file->filename[0]), &symbols);
+		printd(LEVEL_VERBOSE, "assembler: wrote debugging symbols.\n");
+	}
+
+	// Re-open the temporary file for reading.
+	img = fopen(temp->data, "rb");
+	if (img == NULL)
+	{
+		printd(LEVEL_ERROR, "assembler: temporary file not readable.\n");
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+		return 1;
+	}
+
+	// Open the output file.
 	if (strcmp(output_file->filename[0], "-") != 0)
 	{
 		// Write to file.
-		img = fopen(output_file->filename[0], "wb");
+		out = fopen(output_file->filename[0], "wb");
 
 		if (img == NULL)
 		{
-			fprintf(stderr, "assembler: output file not writable.\n");
+			printd(LEVEL_ERROR, "assembler: output file not writable.\n");
 			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 			return 1;
 		}
@@ -148,28 +192,17 @@ int main(int argc, char* argv[])
 		osutil_makebinary(stdout);
 
 		// Set img to stdout.
-		img = stdout;
+		out = stdout;
 	}
 
-	// Write content.
-	aout_write(img, (gen_relocatable->count > 0), (gen_intermediate->count > 0));
+	// Copy data.
+	while (!feof(img))
+		fputc(fgetc(img), out);
+
+	// Close files and delete temporary.
 	fclose(img);
-	fprintf(stderr, "assembler: completed successfully.\n");
-
-	// Save debugging symbols to specified file if provided.
-	if (symbols_file->count > 0)
-	{
-		if (strcmp(symbols_file->filename[0], "-") == 0)
-		{
-			fprintf(stderr, "assembler: debugging symbols can not be written to stdout.\n");
-			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-			return 1;
-		}
-
-		// Write symbols.
-		dbgfmt_write(bfromcstr(symbols_file->filename[0]), &symbols);
-		fprintf(stderr, "assembler: wrote debugging symbols.\n");
-	}
+	fclose(out);
+	unlink(temp->data);
 
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;

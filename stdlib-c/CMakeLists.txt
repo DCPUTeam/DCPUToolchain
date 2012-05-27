@@ -63,13 +63,13 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
 				add_custom_command(
 					OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa
 					COMMAND ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX}
-						ARGS ${toolargs} -I "${CMAKE_CURRENT_SOURCE_DIR}/include" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" "${CMAKE_CURRENT_SOURCE_DIR}/${i}" 2>>./CMakeFiles/dcpu-${tool}-log 
+						ARGS ${toolargs} -I "${CMAKE_CURRENT_SOURCE_DIR}/include" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
 					DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
 					COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
 				add_custom_command(
 					OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
 					COMMAND ${KERNEL_TOOLS}/dtasm${CMAKE_EXECUTABLE_SUFFIX}
-						ARGS -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" 2>>./CMakeFiles/dcpu-${tool}-dtasm-log
+						ARGS -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
 					DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
 					COMMENT "Assembling ${fpth}/${fbse}.oa with DCPU-Toolchain...")
 				if("${tout}" STREQUAL "")
@@ -88,7 +88,7 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
 				add_custom_command(
 					OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
 					COMMAND ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX}
-						ARGS ${toolargs} -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${i}" 2>>./CMakeFiles/dcpu-${tool}-log
+						ARGS ${toolargs} -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
 					DEPENDS ${tool} "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
 					COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
 				if("${tout}" STREQUAL "")
@@ -117,7 +117,7 @@ function(add_dcpu_image target)
 	add_custom_command(
 		OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dlib16"
 		COMMAND ${KERNEL_TOOLS}/dtld${CMAKE_EXECUTABLE_SUFFIX}
-			ARGS -l static -o "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dlib16" ${tasmoutputs} ${tcoutputs} 2>>./CMakeFiles/dcpu-dtld-log
+			ARGS -l static -o "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dlib16" ${tasmoutputs} ${tcoutputs}
 		DEPENDS dtld ${tasmoutputs} ${tcoutputs}
 		COMMENT "Linking stdlib.dlib16 as static library with DCPU-Toolchain...")
 
