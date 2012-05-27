@@ -24,7 +24,7 @@ class AsmGenerator;
 
 class StackFrame
 {
-	private:
+	public:
 		AsmGenerator& m_Generator;
 		StackMap m_ParametersMap;
 		StackMap m_LocalsMap;

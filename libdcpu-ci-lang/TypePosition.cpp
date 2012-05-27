@@ -48,6 +48,29 @@ bool TypePosition::isFunction()
 	return this->m_Function;
 }
 
+std::string TypePosition::getAddress()
+{
+	std::stringstream sstr;
+
+	if (!this->m_Found)
+		throw new CompilerException(0, "<internal>", "Attempted to get reference position of unknown type position result (internal error).");
+	
+	if (this->m_Function)
+		sstr << "cfunc_" << this->m_FunctionName;
+	else if (this->m_Global)
+		sstr << "_DATA+" << this->m_Position;
+	else if (this->m_PreviousStackFrame && this->m_IsFunctionParameter)
+		sstr << "[Y+1]+" << this->m_Position;
+	else if (this->m_PreviousStackFrame)
+		sstr << "[Y+1]+" << (0x10000 - (this->m_Position + 2));
+	else if (this->m_IsFunctionParameter)
+		sstr << "Y+" << this->m_Position;
+	else
+		sstr << "Y+" << (0x10000 - (this->m_Position + 2));
+
+	return sstr.str();
+}
+
 std::string TypePosition::pushAddress(char registr)
 {
 	std::stringstream sstr;
