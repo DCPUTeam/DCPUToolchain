@@ -113,9 +113,6 @@ int main(int argc, char* argv[])
 	if (type_assembler->count > 0)
 		asmtype = type_assembler->sval[0];
 
-	// Spacing.
-	std::cerr << std::endl;
-
 	// Generate assembly using the AST.
 	try
 	{

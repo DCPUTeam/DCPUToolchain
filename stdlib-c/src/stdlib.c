@@ -42,6 +42,7 @@ void free(void* ptr)
 {
 	__asm
 	{
+		.IMPORT free
 		SET A, <ptr>
 		JSR free
 	}
@@ -53,6 +54,7 @@ void* malloc(size_t size)
 	void** store = &result;
 	__asm
 	{
+		.IMPORT malloc
 		SET A, <size>
 		JSR malloc
 		SET <store>, A
@@ -66,9 +68,10 @@ void* realloc(void* ptr, size_t size)
 	void** store = &result;
 	__asm
 	{
+		.IMPORT realloc
 		SET A, <ptr>
 		SET B, <size>
-		JSR malloc
+		JSR realloc
 		SET <store>, A
 	}
 	return result;
