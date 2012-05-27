@@ -42,6 +42,7 @@ bool do_search(CURL* curl, bstring name)
 	FILE* fp;
 	list_t installed;
 	struct bStream* stream;
+	long httpcode;
 	bstring buffer, fname, sstr;
 	bstring ext = bfromcstr(".lua");
 	bstring url = bfromcstr("http://dms.dcputoolcha.in/modules/search?q=");
@@ -67,10 +68,11 @@ bool do_search(CURL* curl, bstring name)
 	printd(LEVEL_DEFAULT, "querying module repository...\n");
 	fp = fopen(modpath->data, "wb");
 	curl_easy_setopt(curl, CURLOPT_URL, url->data);
+	curl_easy_setopt(curl, CURLINFO_HTTP_CODE, &httpcode);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 	res = curl_easy_perform(curl);
-	if (res != 0)
+	if (res != 0 || httpcode != 200)
 	{
 		bdestroy(url);
 		bdestroy(name);
@@ -130,6 +132,7 @@ bool do_install(CURL* curl, bstring name)
 {
 	FILE* fp;
 	CURLcode res;
+	long httpcode;
 	struct stat buffer;
 	bstring url = bfromcstr("http://dms.dcputoolcha.in/modules/download?name=");
 	bstring modpath = osutil_getmodulepath();
@@ -157,10 +160,11 @@ bool do_install(CURL* curl, bstring name)
 	printd(LEVEL_DEFAULT, "querying module repository...\n");
 	fp = fopen(modpath->data, "wb");
 	curl_easy_setopt(curl, CURLOPT_URL, url->data);
+	curl_easy_setopt(curl, CURLINFO_HTTP_CODE, &httpcode);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 	res = curl_easy_perform(curl);
-	if (res != 0)
+	if (res != 0 && httpcode != 200)
 	{
 		bdestroy(url);
 		bdestroy(name);
