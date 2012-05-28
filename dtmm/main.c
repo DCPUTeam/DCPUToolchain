@@ -216,8 +216,10 @@ int main(int argc, char* argv[])
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_str* cmdopt = arg_str1(NULL, NULL, "<command>", "The command; either 'search', 'install' or 'uninstall'.");
 	struct arg_str* nameopt = arg_str1(NULL, NULL, "<name>", "The name of the module to search for, install or uninstall.");
+	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
+	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, cmdopt, nameopt, end };
+	void* argtable[] = { show_help, cmdopt, nameopt, verbose, quiet, end };
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
@@ -235,6 +237,9 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
+	
+	// Set verbosity level.
+	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 
 	// Set argument 0 and convert parameters.
 	osutil_setarg0(bautofree(bfromcstr(argv[0])));

@@ -32,6 +32,7 @@
 #include <osutil.h>
 #include <version.h>
 #include <ldata.h>
+#include <debug.h>
 
 #ifdef __APPLE__
 #define main SDL_main
@@ -56,8 +57,10 @@ int main(int argc, char* argv[])
 	struct arg_lit* debug_mode = arg_lit0("d", "debug", "Show each executed instruction.");
 	struct arg_lit* terminate_mode = arg_lit0("t", "show-on-terminate", "Show state of machine when program is terminated.");
 	struct arg_lit* legacy_mode = arg_lit0("l", "legacy", "Automatically initialize hardware to legacy values.");
+	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
+	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { input_file, debug_mode, terminate_mode, legacy_mode, end };
+	void* argtable[] = { input_file, debug_mode, terminate_mode, legacy_mode, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -75,6 +78,9 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
+	
+	// Set verbosity level.
+	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 
 	// Set global path variable.
 	osutil_setarg0(bautofree(bfromcstr(argv[0])));

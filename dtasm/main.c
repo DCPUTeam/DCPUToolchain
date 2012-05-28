@@ -53,8 +53,10 @@ int main(int argc, char* argv[])
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	struct arg_file* symbols_file = arg_file0("s", "debug-symbols", "<file>", "The debugging symbol output file.");
+	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
+	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { output_file, symbols_file, gen_relocatable, gen_intermediate, show_help, input_file, end };
+	void* argtable[] = { output_file, symbols_file, gen_relocatable, gen_intermediate, show_help, input_file, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -62,7 +64,7 @@ int main(int argc, char* argv[])
 	version_print(bautofree(bfromcstr("Assembler")));
 	if (nerrors != 0 || show_help->count != 0)
 	{
-		if (show_help->count != 0)
+		if (nerrors != 0)
 			arg_print_errors(stdout, end, "assembler");
 
 		printd(LEVEL_DEFAULT, "syntax:\n    dtasm");
@@ -72,6 +74,9 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
+	
+	// Set verbosity level.
+	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 
 	// Set up error handling.
 	errval = (struct errinfo*)setjmp(errjmp);

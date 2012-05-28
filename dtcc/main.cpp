@@ -44,8 +44,10 @@ int main(int argc, char* argv[])
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	// 20 is maxcount for include directories, this has to be set to some constant number.
 	struct arg_file* include_dirs = arg_filen("I", NULL, "<directory>", 0, 20, "Adds the directory <dir> to the directories to be searched for header files.");
+	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
+	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { output_file, show_help, type_assembler, include_dirs, input_file, end };
+	void* argtable[] = { output_file, show_help, type_assembler, include_dirs, input_file, verbose, quiet, end };
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
@@ -53,7 +55,7 @@ int main(int argc, char* argv[])
 	version_print(bautofree(bfromcstr("Compiler")));
 	if (nerrors != 0 || show_help->count != 0)
 	{
-		if (show_help->count != 0)
+		if (nerrors != 0)
 			arg_print_errors(stderr, end, "compiler");
 
 		fprintf(stderr, "syntax:\n    dtcc");
@@ -63,16 +65,16 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
+	
+	// Set verbosity level.
+	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 
 	// Run the preprocessor.
-	// add directories ., ./include, path-to-c-file/
 	ppfind_add_path(bautofree(bfromcstr(".")));
 	ppfind_add_path(bautofree(bfromcstr("include")));
 	ppfind_add_autopath(bautofree(bfromcstr(input_file->filename[0])));
-	// add directories from -I option
 	for (int i = 0; i < include_dirs->count; ++i)
 		ppfind_add_path(bautofree(bfromcstr(include_dirs->filename[i])));
-	
 	bstring pp_result_name = pp_do(bautofree(bfromcstr(input_file->filename[0])));
 
 	if (pp_result_name == NULL)
