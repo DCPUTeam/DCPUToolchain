@@ -20,6 +20,7 @@
 #include <argtable2.h>
 #include <curl/curl.h>
 #include <curl/easy.h>
+#include <sys/stat.h>
 #include <osutil.h>
 #include <debug.h>
 
@@ -41,6 +42,7 @@ bool do_search(CURL* curl, bstring name)
 	FILE* fp;
 	list_t installed;
 	struct bStream* stream;
+	long httpcode;
 	bstring buffer, fname, sstr;
 	bstring ext = bfromcstr(".lua");
 	bstring url = bfromcstr("http://dms.dcputoolcha.in/modules/search?q=");
@@ -66,10 +68,11 @@ bool do_search(CURL* curl, bstring name)
 	printd(LEVEL_DEFAULT, "querying module repository...\n");
 	fp = fopen(modpath->data, "wb");
 	curl_easy_setopt(curl, CURLOPT_URL, url->data);
+	curl_easy_setopt(curl, CURLINFO_HTTP_CODE, &httpcode);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 	res = curl_easy_perform(curl);
-	if (res != 0)
+	if (res != 0 || httpcode != 200)
 	{
 		bdestroy(url);
 		bdestroy(name);
@@ -134,6 +137,7 @@ bool do_install(CURL* curl, bstring name)
 {
 	FILE* fp;
 	CURLcode res;
+	long httpcode;
 	struct stat buffer;
 	bstring url = bfromcstr("http://dms.dcputoolcha.in/modules/download?name=");
 	bstring modpath = osutil_getmodulepath();
@@ -161,10 +165,11 @@ bool do_install(CURL* curl, bstring name)
 	printd(LEVEL_DEFAULT, "querying module repository...\n");
 	fp = fopen(modpath->data, "wb");
 	curl_easy_setopt(curl, CURLOPT_URL, url->data);
+	curl_easy_setopt(curl, CURLINFO_HTTP_CODE, &httpcode);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 	res = curl_easy_perform(curl);
-	if (res != 0)
+	if (res != 0 && httpcode != 200)
 	{
 		bdestroy(url);
 		bdestroy(name);
@@ -216,8 +221,10 @@ int main(int argc, char* argv[])
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_str* cmdopt = arg_str1(NULL, NULL, "<command>", "The command; either 'search', 'install' or 'uninstall'.");
 	struct arg_str* nameopt = arg_str1(NULL, NULL, "<name>", "The name of the module to search for, install or uninstall.");
+	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
+	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, cmdopt, nameopt, end };
+	void* argtable[] = { show_help, cmdopt, nameopt, verbose, quiet, end };
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
@@ -235,6 +242,9 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
+	
+	// Set verbosity level.
+	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 
 	// Set argument 0 and convert parameters.
 	osutil_setarg0(bautofree(bfromcstr(argv[0])));

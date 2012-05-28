@@ -21,6 +21,7 @@
 #include <ppfind.h>
 #include <assert.h>
 #include <ddata.h>
+#include <debug.h>
 #include "aout.h"
 #include "aerr.h"
 #include "dcpu.h"
@@ -395,7 +396,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 			linker_temp = lprov_create(current_outer->label, out_index);
 			linker_temp->next = linker_section;
 			linker_section = linker_temp;
-			fprintf(stderr, "LINK SECTION %s -> 0x%04X\n", current_outer->label, out_index);
+			printd(LEVEL_VERBOSE, "LINK SECTION %s -> 0x%04X\n", current_outer->label, out_index);
 		}
 		else if (current_outer->type == AOUT_TYPE_METADATA_OUTPUT)
 		{
@@ -411,7 +412,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 			linker_temp = lprov_create(current_outer->label, out_index);
 			linker_temp->next = linker_output;
 			linker_output = linker_temp;
-			fprintf(stderr, "LINK OUTPUT 0x%04X -> %s\n", out_index, current_outer->label);
+			printd(LEVEL_VERBOSE, "LINK OUTPUT 0x%04X -> %s\n", out_index, current_outer->label);
 		}
 		else if (current_outer->type == AOUT_TYPE_METADATA_EXPORT)
 		{
@@ -431,7 +432,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 			linker_temp = lprov_create(current_outer->label, eaddr);
 			linker_temp->next = linker_provided;
 			linker_provided = linker_temp;
-			fprintf(stderr, "LINK REPLACE %s -> 0x%04X\n", current_outer->label, eaddr);
+			printd(LEVEL_VERBOSE, "LINK REPLACE %s -> 0x%04X\n", current_outer->label, eaddr);
 		}
 		else if (current_outer->type == AOUT_TYPE_NORMAL && current_outer->expr != NULL)
 		{
@@ -441,8 +442,8 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 				// evaluate it using the preprocessor expression engine.
 				if ((relocatable || intermediate) && !shown_expr_warning)
 				{
-					fprintf(stderr, "warning: expressions will not be adjusted at link or relocation time.\n");
-					fprintf(stderr, "	  ensure labels are not used as part of expressions.\n");
+					printd(LEVEL_WARNING, "warning: expressions will not be adjusted at link or relocation time.\n");
+					printd(LEVEL_WARNING, "         ensure labels are not used as part of expressions.\n");
 					shown_expr_warning = true;
 				}
 				current_outer->raw_used = true;
@@ -485,7 +486,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 							linker_temp = lprov_create(current_inner->label, out_index);
 							linker_temp->next = linker_required;
 							linker_required = linker_temp;
-							fprintf(stderr, "LINK REPLACE 0x%04X -> %s\n", out_index, current_inner->label);
+							printd(LEVEL_VERBOSE, "LINK REPLACE 0x%04X -> %s\n", out_index, current_inner->label);
 							did_find = true;
 							break;
 						}
@@ -513,7 +514,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 					linker_temp = lprov_create(NULL, out_index);
 					linker_temp->next = linker_adjustment;
 					linker_adjustment = linker_temp;
-					fprintf(stderr, "LINK ADJUST 0x%04X\n", out_index);
+					printd(LEVEL_VERBOSE, "LINK ADJUST 0x%04X\n", out_index);
 				}
 			}
 		}

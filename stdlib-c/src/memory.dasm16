@@ -1,0 +1,149 @@
+.ULINE 2 "memory.dasm16"
+
+.EXPORT malloc
+.EXPORT free
+.EXPORT kernel_boot
+.IMPORT kernel_boot
+
+.SECTION INIT
+JSR kernel_boot
+
+.SECTION CODE
+:mempointer DAT 0x6000
+:userspacemem DAT 0x6000
+:userspaceend DAT 0x7FFF
+
+:kernel_boot
+	SET A, [userspacemem]
+	SET B, [userspaceend]
+	JSR set_initial_blocks
+	SET PC, POP
+
+:free
+	SUB A, 2
+	SET [A], 0xFFFF
+	SET PUSH, A
+	
+	:free_check_forward
+		ADD A, 1
+		SET B, [A]
+		SET A, B
+		SET A, 2
+		IFE [A], 0xFFFF
+			SET PC, free_merge_forward
+
+	:free_check_backwards
+		SET A, PEEK
+		SUB A, 1
+		IFG A, [userspacemem]
+			SET PC, free_check_backwards_continue
+		SET PC, free_end
+	
+	:free_check_backwards_continue
+		IFE [A], 0x0
+			SET PC, free_end
+		SET B, [A]
+		SET A, B
+		IFN [A], 0xFFFF
+			SET PC, free_end
+		SET PEEK, A
+		ADD A, 1
+		SET B, [A]
+		ADD A, B
+		ADD A, 2
+		SET PC, free_merge_forward
+
+	:free_merge_forward
+		SET [A], 0x0
+		ADD A, 1
+		SET B, [A]
+		SET C, B
+		SET [A], 0x0
+		ADD A, B
+		IFN A, [userspaceend]
+			ADD A, 1
+		SET B, POP
+		SET PUSH, B
+		SET [A], B
+		SET A, B
+		ADD A, 1
+		SET B, [A]
+		ADD B, C
+		ADD B, 3
+		SET [A], B
+		SET PC, free_end
+
+	:free_end
+		SET A, POP
+		SET PC, POP
+
+:malloc
+	SET PUSH, I
+	SET I, [mempointer]
+	
+	:malloc_loop
+		IFE [I], 0xFFFF
+			SET PC, malloc_found_free
+		ADD I, 1
+		ADD I, [I]
+		ADD I, 2
+		SET PC, malloc_loop
+	
+	:malloc_found_free
+		IFE I, [userspacemem]
+			SET PC, malloc_allocate
+		ADD I, 1
+
+	:malloc_check_overhead
+		SET PUSH, B
+		SET B, [I]
+		SUB B, A
+		IFG B, 3
+			SET PC, malloc_check_end
+		SUB I, 1
+		SET B, POP
+		SET [I], B
+		SET PUSH, I
+		SET PC, malloc_end
+		
+		:malloc_check_end
+			SET B, POP
+			SET PC, malloc_prepare
+	
+	:malloc_prepare
+		SUB I, 1
+		SET PC, malloc_allocate
+	
+	:malloc_allocate
+		SET PUSH, I
+		SET PUSH, I
+		SET [I], B
+		ADD I, 1
+		SET [I], A
+		ADD I, 1
+		ADD I, A
+		SET B, POP
+		SET [I], B
+		ADD I, 1
+		SET A, I
+		SET B, [userspaceend]
+		JSR set_initial_blocks
+		SET PC, malloc_end
+	
+	:malloc_end
+		SET A, POP
+		SET A, 2
+		SET I, POP
+		SET PC, POP
+
+:set_initial_blocks
+	SET PUSH, B
+	SET [A], 0xFFFF
+	ADD A, 1
+	SUB B, A
+	SET [A], B
+	SET B, POP
+	SUB A, 1
+	SET [B], A
+	SET PC, POP
+

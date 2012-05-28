@@ -32,6 +32,7 @@ class TypePosition
 		TypePosition(bool isFound, std::string funcName);
 		bool isFound();
 		bool isFunction();
+		std::string getAddress();
 		std::string pushAddress(char registr);
 };
 

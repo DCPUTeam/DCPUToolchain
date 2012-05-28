@@ -113,7 +113,7 @@ void ddbg_load(bstring path)
 	if (load == NULL)
 	{
 		printf("Unable to load %s from disk.\n", path->data);
-		exit(1);
+		return;
 	}
 
 	for (i = 0; i < 0x20000; i++)

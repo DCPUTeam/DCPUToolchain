@@ -608,10 +608,11 @@ expr:
 %%
 
 #include "lexer.h"
+#include <debug.h>
 #include <assert.h>
 
 void yyerror(const char *str)
 {
 	assert(yyfilename != NULL);
-	fprintf(stderr,"error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
+	printd(LEVEL_ERROR, "error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
 }

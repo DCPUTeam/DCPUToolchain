@@ -28,6 +28,7 @@ extern "C"
 #include <version.h>
 #include <pp.h>
 #include <ppfind.h>
+#include <debug.h>
 }
 
 extern int yyparse();
@@ -43,8 +44,10 @@ int main(int argc, char* argv[])
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	// 20 is maxcount for include directories, this has to be set to some constant number.
 	struct arg_file* include_dirs = arg_filen("I", NULL, "<directory>", 0, 20, "Adds the directory <dir> to the directories to be searched for header files.");
+	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
+	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { output_file, show_help, type_assembler, include_dirs, input_file, end };
+	void* argtable[] = { output_file, show_help, type_assembler, include_dirs, input_file, verbose, quiet, end };
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
@@ -52,7 +55,7 @@ int main(int argc, char* argv[])
 	version_print(bautofree(bfromcstr("Compiler")));
 	if (nerrors != 0 || show_help->count != 0)
 	{
-		if (show_help->count != 0)
+		if (nerrors != 0)
 			arg_print_errors(stderr, end, "compiler");
 
 		fprintf(stderr, "syntax:\n    dtcc");
@@ -62,16 +65,16 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
+	
+	// Set verbosity level.
+	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 
 	// Run the preprocessor.
-	// add directories ., ./include, path-to-c-file/
 	ppfind_add_path(bautofree(bfromcstr(".")));
 	ppfind_add_path(bautofree(bfromcstr("include")));
 	ppfind_add_autopath(bautofree(bfromcstr(input_file->filename[0])));
-	// add directories from -I option
 	for (int i = 0; i < include_dirs->count; ++i)
 		ppfind_add_path(bautofree(bfromcstr(include_dirs->filename[i])));
-	
 	bstring pp_result_name = pp_do(bautofree(bfromcstr(input_file->filename[0])));
 
 	if (pp_result_name == NULL)
@@ -113,8 +116,8 @@ int main(int argc, char* argv[])
 	if (type_assembler->count > 0)
 		asmtype = type_assembler->sval[0];
 
-	// Spacing.
-	std::cerr << std::endl;
+	// Initially save to a temporary file.
+	std::string temp = std::string(tempnam(".", "cc."));
 
 	// Generate assembly using the AST.
 	try
@@ -122,14 +125,15 @@ int main(int argc, char* argv[])
 		AsmGenerator generator(asmtype);
 		AsmBlock* block = program->compile(generator);
 
-		if (strcmp(output_file->filename[0], "-") == 0)
-			std::cout << *block << std::endl;
-		else
+		std::ofstream output(temp.c_str(), std::ios::out | std::ios::trunc);
+		if (output.bad() || output.fail())
 		{
-			std::ofstream output(output_file->filename[0], std::ios::out | std::ios::trunc);
-			output << *block << std::endl;
-			output.close();
+			printd(LEVEL_ERROR, "compiler: temporary file not writable.\n");
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+			return 1;
 		}
+		output << *block << std::endl;
+		output.close();
 
 		delete block;
 	}
@@ -141,6 +145,47 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
+	
+	// Re-open the temporary file for reading.
+	std::ifstream input(temp.c_str(), std::ios::in);
+	if (input.bad() || input.fail())
+	{
+		printd(LEVEL_ERROR, "compiler: temporary file not readable.\n");
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+		return 1;
+	}
+
+	// Open the output file.
+	std::ostream* output;
+	if (strcmp(output_file->filename[0], "-") != 0)
+	{
+		// Write to file.
+		output = new std::ofstream(output_file->filename[0], std::ios::out | std::ios::trunc);
+		
+		if (output->bad() || output->fail())
+		{
+			printd(LEVEL_ERROR, "compiler: output file not readable.\n");
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+			return 1;
+		}
+	}
+	else
+	{
+		// Set output to cout.
+		output = &std::cout;
+	}
+
+	// Copy data.
+	std::copy(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>(), std::ostreambuf_iterator<char>(*output));
+
+	// Close files and delete temporary.
+	if (strcmp(output_file->filename[0], "-") != 0)
+	{
+		((std::ofstream*)output)->close();
+		delete output;
+	}
+	input.close();
+	unlink(temp.c_str());
 
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;
