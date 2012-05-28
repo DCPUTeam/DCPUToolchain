@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <debug.h>
 #include "ldata.h"
 #include "lprov.h"
 #include "objfile.h"
@@ -40,6 +41,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 	struct lprov_entry* section_current = NULL;
 	struct lprov_entry* output_last = output == NULL ? NULL : objfile_get_last(*output);
 	struct lprov_entry* output_current = NULL;
+	uint16_t section_last_address = 0;
 	size_t sz;
 
 	// Read <256 byte label content> <mode> <address>
@@ -87,6 +89,14 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 		}
 		else if (entry->mode == LABEL_SECTION && adjustment != NULL)
 		{
+			if (section_current != NULL && entry->address + *offset == section_last_address)
+			{
+				printd(LEVEL_WARNING, "warning: skipped empty section %s on load.\n", entry->label);
+				entry = ldata_read(in);
+				continue;
+			}
+			section_last_address = entry->address + *offset;
+			
 			section_current = lprov_create(entry->label, entry->address + *offset);
 
 			if (section_last == NULL)

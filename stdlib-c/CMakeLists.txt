@@ -146,6 +146,7 @@ endfunction(add_dcpu_image target)
 # Define the standard library.
 add_dcpu_image(stdlib-c
 	src/bootstrap.dasm16
+	src/memory.dasm16
 	src/stdlib.c
 	src/string.c
 	src/math.c
