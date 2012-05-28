@@ -28,6 +28,7 @@ extern "C"
 #include <version.h>
 #include <pp.h>
 #include <ppfind.h>
+#include <debug.h>
 }
 
 extern int yyparse();
@@ -113,20 +114,24 @@ int main(int argc, char* argv[])
 	if (type_assembler->count > 0)
 		asmtype = type_assembler->sval[0];
 
+	// Initially save to a temporary file.
+	std::string temp = std::string(tempnam(".", "cc."));
+
 	// Generate assembly using the AST.
 	try
 	{
 		AsmGenerator generator(asmtype);
 		AsmBlock* block = program->compile(generator);
 
-		if (strcmp(output_file->filename[0], "-") == 0)
-			std::cout << *block << std::endl;
-		else
+		std::ofstream output(temp.c_str(), std::ios::out | std::ios::trunc);
+		if (output.bad() || output.fail())
 		{
-			std::ofstream output(output_file->filename[0], std::ios::out | std::ios::trunc);
-			output << *block << std::endl;
-			output.close();
+			printd(LEVEL_ERROR, "compiler: temporary file not writable.\n");
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+			return 1;
 		}
+		output << *block << std::endl;
+		output.close();
 
 		delete block;
 	}
@@ -138,6 +143,47 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
+	
+	// Re-open the temporary file for reading.
+	std::ifstream input(temp.c_str(), std::ios::in);
+	if (input.bad() || input.fail())
+	{
+		printd(LEVEL_ERROR, "compiler: temporary file not readable.\n");
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+		return 1;
+	}
+
+	// Open the output file.
+	std::ostream* output;
+	if (strcmp(output_file->filename[0], "-") != 0)
+	{
+		// Write to file.
+		output = new std::ofstream(output_file->filename[0], std::ios::out | std::ios::trunc);
+		
+		if (output->bad() || output->fail())
+		{
+			printd(LEVEL_ERROR, "compiler: output file not readable.\n");
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+			return 1;
+		}
+	}
+	else
+	{
+		// Set output to cout.
+		output = &std::cout;
+	}
+
+	// Copy data.
+	std::copy(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>(), std::ostreambuf_iterator<char>(*output));
+
+	// Close files and delete temporary.
+	if (strcmp(output_file->filename[0], "-") != 0)
+	{
+		((std::ofstream*)output)->close();
+		delete output;
+	}
+	input.close();
+	unlink(temp.c_str());
 
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;
