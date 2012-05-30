@@ -92,6 +92,11 @@ bool do_search(CURL* curl, bstring name)
 			bdestroy(fname);
 			continue;
 		}
+		if (binstr(fname, 0, name) == BSTR_ERR)
+		{
+			bdestroy(fname);
+			continue;
+		}
 		if (entry->d_type != DT_REG)
 		{
 			bdestroy(fname);
@@ -122,7 +127,7 @@ bool do_search(CURL* curl, bstring name)
 		printd(LEVEL_DEFAULT, "	 <no online results>\n");
 	bsclose(stream);
 	fclose(fp);
-	
+
 	// Clean up.
 	curl_easy_cleanup(curl);
 	return 0;
@@ -187,7 +192,7 @@ bool do_uninstall(CURL* curl, bstring name)
 	bconchar(modpath, '/');
 	bconcat(modpath, name);
 	bcatcstr(modpath, ".lua");
-	
+
 	// Check to see if the module is installed.
 	if (stat(modpath->data, &buffer) == 0)
 	{
