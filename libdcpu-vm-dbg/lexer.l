@@ -63,6 +63,7 @@ char* dbg_trim_and_unescape(char* data, int mode);
 "memory"					COPY; return ID_MEMORY;
 "help"						COPY; return ID_HELP;
 "step"						COPY; return ID_STEP;
+"next"						COPY; return ID_NEXT;
 "set"						COPY; return ID_SET;
 "debug"						COPY; return ID_DEBUG;
 \?							COPY; return ID_HELP;

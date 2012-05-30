@@ -108,7 +108,10 @@ int main(int argc, char** argv)
 	
 	// Load file if filename is specified.
 	if (input_file->count > 0)
+	{
 		ddbg_load(bfromcstr(input_file->filename[0]));
+		ddbg_flash_vm();
+	}
 
 	// Create SDP thread if supported.
 #ifdef FEATURE_SDP

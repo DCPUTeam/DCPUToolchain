@@ -17,6 +17,7 @@
 #include <string.h>
 #include <bstrlib.h>
 #include <dcpu.h>
+#include <dcpubase.h>
 #include <dcpuhook.h>
 #include <hwio.h>
 #include <hwlem1802.h>
@@ -29,6 +30,7 @@
 uint16_t flash_size = 0;
 uint16_t flash[0x10000];
 uint16_t breakpoints[MAX_BREAKPOINTS];
+bool breakpoints_temporary[MAX_BREAKPOINTS];
 uint16_t breakpoints_num;
 extern vm_t* vm;
 list_t* symbols;
@@ -87,7 +89,10 @@ void ddbg_cycle_hook(vm_t* vm, uint16_t pos, void* ud)
 		{
 			vm->halted = true;
 			vm_hook_break(vm); // Required for UI to update correctly.
-			printf("Breakpoint hit at 0x%04X.\n", breakpoints[i]);
+			if (breakpoints_temporary[i])
+				breakpoints[i] = 0xFFFF;
+			else
+				printf("Breakpoint hit at 0x%04X.\n", breakpoints[i]);
 		}
 	}
 }
@@ -240,7 +245,8 @@ void ddbg_add_breakpoint(bstring file, int index)
 		return;
 	}
 
-	breakpoints[breakpoints_num++] = memory;
+	breakpoints[breakpoints_num] = memory;
+	breakpoints_temporary[breakpoints_num++] = false;
 	printf("Breakpoint added at 0x%04X.\n", memory);
 }
 
@@ -272,7 +278,12 @@ void ddbg_delete_breakpoint(bstring file, int index)
 		printf("There was no breakpoint at %s:%d.\n", bstr2cstr(file, 0), index);
 }
 
-void ddbg_step()
+void ddbg_step_into()
+{
+	vm_cycle(vm);
+}
+
+void ddbg_step_over()
 {
 	uint16_t inst, op_a, op_b, offset = 1, bp;
 	inst = INSTRUCTION_GET_OP(vm->ram[vm->pc]);
@@ -301,7 +312,8 @@ void ddbg_step()
 		bp = vm->pc + offset;
 	}
 
-	ddbg_add_breakpoint(bfromcstr("memory"), bp);
+	breakpoints[breakpoints_num] = bp;
+	breakpoints_temporary[breakpoints_num++] = true;
 	vm->halted = false;
 	vm_execute(vm);
 }
