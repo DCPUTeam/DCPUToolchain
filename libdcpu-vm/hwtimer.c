@@ -87,7 +87,7 @@ void vm_hw_timer_init(vm_t* vm)
 	timer.manufacturer = 0x00000000;
 	timer.handler = &vm_hw_timer_interrupt;
 
-	hook_id = vm_hook_register(vm, &vm_hw_timer_cycle, HOOK_ON_CYCLE, NULL);
+	hook_id = vm_hook_register(vm, &vm_hw_timer_cycle, HOOK_ON_POST_CYCLE, NULL);
 	hw_id = vm_hw_register(vm, timer);
 }
 

@@ -46,6 +46,8 @@ char* dbg_trim_and_unescape(char* data, int mode);
 "symbols"					COPY; return ID_SYMBOLS;
 "breakpoint"					COPY; return ID_BREAKPOINT;
 "break"						COPY; return ID_BREAKPOINT;
+"bt"						COPY; return ID_BACKTRACE;
+"backtrace"					COPY; return ID_BACKTRACE;
 "disassemble"					COPY; return ID_DISASSEMBLE;
 "disasm"					COPY; return ID_DISASSEMBLE;
 "run"						COPY; return ID_RUN;

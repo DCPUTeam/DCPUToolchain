@@ -370,7 +370,7 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
 	vm_hw_register(vm, hw->device);
 
 	// Register the hooks.
-	hw->cycle_id = vm_hook_register(vm, &vm_hw_lua_cycle, HOOK_ON_CYCLE, hw);
+	hw->cycle_id = vm_hook_register(vm, &vm_hw_lua_cycle, HOOK_ON_POST_CYCLE, hw);
 	hw->write_id = vm_hook_register(vm, &vm_hw_lua_write, HOOK_ON_WRITE, hw);
 
 	// Pop tables from stack.

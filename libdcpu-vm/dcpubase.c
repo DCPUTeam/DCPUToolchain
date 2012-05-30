@@ -173,6 +173,8 @@ void vm_cycle(vm_t* vm)
 		vm->sleep_cycles--;
 		return;
 	}
+	
+	vm_hook_fire(vm, 0, HOOK_ON_PRE_CYCLE);
 
 	instruction = vm_consume_word(vm);
 	op = INSTRUCTION_GET_OP(instruction);
@@ -381,5 +383,5 @@ void vm_cycle(vm_t* vm)
 	if (vm->debug)
 		printf("\n");
 
-	vm_hook_fire(vm, 0, HOOK_ON_CYCLE);
+	vm_hook_fire(vm, 0, HOOK_ON_POST_CYCLE);
 }

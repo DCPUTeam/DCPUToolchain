@@ -248,7 +248,7 @@ void vm_hw_lem1802_init(vm_t* vm)
 
 	// Register hooks.
 	hook_write_id = vm_hook_register(vm, &vm_hw_lem1802_write, HOOK_ON_WRITE, NULL);
-	hook_cycle_id = vm_hook_register(vm, &vm_hw_lem1802_cycle, HOOK_ON_CYCLE, NULL);
+	hook_cycle_id = vm_hook_register(vm, &vm_hw_lem1802_cycle, HOOK_ON_POST_CYCLE, NULL);
 	hook_break_id = vm_hook_register(vm, &vm_hw_lem1802_break, HOOK_ON_BREAK, NULL);
 	hw_id = vm_hw_register(vm, screen);
 }

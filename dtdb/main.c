@@ -111,6 +111,9 @@ int main(int argc, char** argv)
 	{
 		ddbg_load(bfromcstr(input_file->filename[0]));
 		ddbg_flash_vm();
+		ddbg_attach(bfromcstr("lem1802"));
+		ddbg_attach(bfromcstr("keyboard"));
+		ddbg_attach(bfromcstr("clock"));
 	}
 
 	// Create SDP thread if supported.

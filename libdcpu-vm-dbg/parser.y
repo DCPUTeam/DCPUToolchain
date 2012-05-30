@@ -37,7 +37,7 @@ void yyerror(void* scanner, const char *str);
 // Define our lexical token names.
 %token <token> ID_LOAD ID_BREAKPOINT ID_RUN ID_CONTINUE ID_STOP ID_QUIT ID_ADD ID_DELETE
 %token <token> ID_ATTACH ID_INSPECT ID_HARDWARE ID_CPU ID_DETACH ID_LIST ID_MEMORY ID_HELP
-%token <token> ID_DISASSEMBLE ID_SYMBOLS COLON ID_STEP ID_SET ID_DEBUG ID_NEXT
+%token <token> ID_DISASSEMBLE ID_SYMBOLS COLON ID_STEP ID_SET ID_DEBUG ID_NEXT ID_BACKTRACE
 %token <string> PARAM PATH CHARACTER STRING
 %token <number> ADDRESS
 
@@ -94,6 +94,10 @@ general_command:
 		ID_NEXT
 		{
 			ddbg_step_over();
+		} |
+		ID_BACKTRACE
+		{
+			ddbg_backtrace();
 		} |
 		ID_CONTINUE
 		{
