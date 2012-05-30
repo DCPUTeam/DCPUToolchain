@@ -17,6 +17,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <time.h>
+#include <debug.h>
 #include "dcpu.h"
 #include "dcpubase.h"
 #include "dcpuhook.h"
@@ -86,7 +88,22 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 
 void vm_execute(vm_t* vm)
 {
+	double cycles = 0;
+	int start = clock();
+
 	// Execute the memory using DCPU-16 specifications.
 	while (!vm->halted)
+	{
 		vm_cycle(vm);
+		cycles++;
+
+		if (cycles >= 100000.f / CLOCKS_PER_SEC)
+		{
+			//printd(LEVEL_DEFAULT, "clock is %u, will wait until %u\n", clock(), start + (1.0f / CLOCKS_PER_SEC));
+			while (clock() < start + 1) ;
+			start += 1;
+			cycles -= 100000.f / CLOCKS_PER_SEC;
+			//printd(LEVEL_DEFAULT, "executed %f cycles (waited %u clocks)", (100000.f / CLOCKS_PER_SEC), 1);
+		}
+	}
 }
