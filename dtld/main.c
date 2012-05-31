@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
-	
+
 	// Set verbosity level.
 	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 
@@ -81,6 +81,7 @@ int main(int argc, char* argv[])
 	bins_init();
 	for (i = 0; i < input_files->count; i++)
 		bins_load(bautofree(bfromcstr(input_files->filename[i])));
+	bins_associate();
 	bins_sectionize();
 	bins_flatten(bautofree(bfromcstr("output")));
 	// TODO: This is where we would perform short literal optimizations

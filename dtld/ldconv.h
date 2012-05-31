@@ -22,6 +22,7 @@
 struct lconv_entry
 {
 	bstring label;
+	bstring bin;
 	uint16_t address;
 };
 

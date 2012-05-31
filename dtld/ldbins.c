@@ -203,6 +203,36 @@ bool bins_write(freed_bstring name, uint16_t word)
 }
 
 ///
+/// Updates adjustment targets to associate their bin target information.
+///
+void bins_associate()
+{
+	struct ldbin* bin;
+	struct lconv_entry* entry;
+
+	// Apply to all bins.
+	list_iterator_start(&ldbins.bins);
+	while (list_iterator_hasnext(&ldbins.bins))
+	{
+		bin = list_iterator_next(&ldbins.bins);
+		if (bin->adjustment == NULL) continue;
+
+		// Search all of the sections in this bin.
+		list_iterator_start(bin->adjustment);
+		while (list_iterator_hasnext(bin->adjustment))
+		{
+			entry = list_iterator_next(bin->adjustment);
+
+			// Associate the entry's bin name with the name
+			// of the current bin.
+			entry->bin = bin->name; // TODO: Should we copy the bstring?
+		}
+		list_iterator_stop(bin->adjustment);
+	}
+	list_iterator_stop(&ldbins.bins);
+}
+
+///
 /// Splits the currently loaded bins into sectioned bins.
 ///
 void bins_sectionize()
@@ -211,7 +241,7 @@ void bins_sectionize()
 	struct ldbin* bin;
 	struct ldbin* target;
 	list_t create;
-	size_t i;
+	size_t i, dk;
 	int steal, stolen, index, base;
 	bstring name;
 
@@ -230,9 +260,24 @@ void bins_sectionize()
 		bin->output != NULL ? printd(LEVEL_VERBOSE,   "	   total outputs: %u\n", list_size(bin->output)) : false;
 		printd(LEVEL_VERBOSE, "	   total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
+		dk = 0;
 		while (list_iterator_hasnext(&bin->words))
-			printd(LEVEL_EVERYTHING, "	  0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
+		printd(LEVEL_EVERYTHING, "	  ------: ------\n");
+		if (bin->adjustment != NULL)
+		{
+			list_iterator_start(bin->adjustment);
+			while (list_iterator_hasnext(bin->adjustment))
+			{
+				entry = list_iterator_next(bin->adjustment);
+				if (list_get_at(&bin->words, entry->address) == NULL)
+					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x???? (%s)\n", entry->address, entry->bin->data);
+				else
+					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+			}
+			list_iterator_stop(bin->adjustment);
+		}
 		printd(LEVEL_VERBOSE, "	 \n");
 	}
 
@@ -309,7 +354,7 @@ void bins_sectionize()
 			base = list_size(&target->words);
 
 			printd(LEVEL_DEBUG, "taking 0x%04X words to %s from 0x%04X to 0x%04X in %s\n", steal, target->name->data, index, base, bin->name->data);
-			bin_move(target, bin, base, index, steal);
+			bin_move(&ldbins.bins, target, bin, base, index, steal);
 			stolen += steal;
 		}
 	}
@@ -335,9 +380,24 @@ void bins_sectionize()
 		bin->output != NULL ? printd(LEVEL_VERBOSE, "	 total outputs: %u\n", list_size(bin->output)) : false;
 		printd(LEVEL_VERBOSE, "	   total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
+		dk = 0;
 		while (list_iterator_hasnext(&bin->words))
-			printd(LEVEL_EVERYTHING, "	  0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
+		printd(LEVEL_EVERYTHING, "	  ------: ------\n");
+		if (bin->adjustment != NULL)
+		{
+			list_iterator_start(bin->adjustment);
+			while (list_iterator_hasnext(bin->adjustment))
+			{
+				entry = list_iterator_next(bin->adjustment);
+				if (list_get_at(&bin->words, entry->address) == NULL)
+					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x???? (%s)\n", entry->address, entry->bin->data);
+				else
+					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+			}
+			list_iterator_stop(bin->adjustment);
+		}
 		printd(LEVEL_VERBOSE, "\n");
 	}
 }
@@ -352,7 +412,7 @@ void bins_flatten(freed_bstring name)
 	struct ldbin* target;
 	struct ldbin* bin;
 	bstring start, desired;
-	size_t i;
+	size_t i, dk;
 
 	// Create the output bin.
 	target = bin_create(name, false);
@@ -361,20 +421,14 @@ void bins_flatten(freed_bstring name)
 	target->adjustment = list_create();
 	target->output = list_create();
 
-	// Loop through all of the current bins and evaluate them.
+	// Loop through all of the current file bins and copy their
+	// remaining (non-section) code into the output.  Since the bins
+	// have already been sectioned, the remaining code in each file
+	// bin will only be non-section code.
 	list_iterator_start(&ldbins.bins);
 	while (list_iterator_hasnext(&ldbins.bins))
 	{
 		bin = list_iterator_next(&ldbins.bins);
-
-		list_iterator_start(bin->output);
-		while (list_iterator_hasnext(bin->output))
-		{
-			entry = list_iterator_next(bin->output);
-
-			printd(LEVEL_DEBUG, "%s: will output %s at 0x%04X\n", bin->name->data, entry->label->data, entry->address);
-		}
-		list_iterator_stop(bin->output);
 
 		// Skip if the name begins with SECTION.
 		start = bmidstr(bin->name, 0, 8);
@@ -387,7 +441,8 @@ void bins_flatten(freed_bstring name)
 
 		// Move all of the code from this bin into the
 		// created bin.
-		bin_move(target, bin, list_size(&target->words), 0, list_size(&bin->words));
+		printd(LEVEL_DEBUG, "moving 0x%04X words from 0x%04X in %s to 0x%04X in %s\n", list_size(&bin->words), 0, bin->name->data, list_size(&target->words), target->name->data);
+		bin_move(&ldbins.bins, target, bin, list_size(&target->words), 0, list_size(&bin->words));
 
 	}
 	list_iterator_stop(&ldbins.bins);
@@ -412,7 +467,8 @@ void bins_flatten(freed_bstring name)
 		assert(bin != NULL);
 
 		// Insert the required code.
-		bin_insert(target, bin, entry->address, 0, list_size(&bin->words));
+		printd(LEVEL_DEBUG, "copying 0x%04X words from 0x%04X in %s to 0x%04X in %s\n", list_size(&bin->words), 0, bin->name->data, entry->address, target->name->data);
+		bin_insert(&ldbins.bins, target, bin, entry->address, 0, list_size(&bin->words));
 	}
 	list_iterator_stop(target->output);
 
@@ -437,9 +493,24 @@ void bins_flatten(freed_bstring name)
 		bin->output != NULL ? printd(LEVEL_VERBOSE, "	 total outputs: %u\n", list_size(bin->output)) : false;
 		printd(LEVEL_VERBOSE, "	   total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
+		dk = 0;
 		while (list_iterator_hasnext(&bin->words))
-			printd(LEVEL_EVERYTHING, "	  0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
+		printd(LEVEL_EVERYTHING, "	  ------: ------\n");
+		if (bin->adjustment != NULL)
+		{
+			list_iterator_start(bin->adjustment);
+			while (list_iterator_hasnext(bin->adjustment))
+			{
+				entry = list_iterator_next(bin->adjustment);
+				if (list_get_at(&bin->words, entry->address) == NULL)
+					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x???? (%s)\n", entry->address, entry->bin->data);
+				else
+					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+			}
+			list_iterator_stop(bin->adjustment);
+		}
 		printd(LEVEL_VERBOSE, "\n");
 	}
 }
@@ -453,11 +524,12 @@ void bins_flatten(freed_bstring name)
 ///
 void bins_resolve(bool keepProvided)
 {
+	struct lconv_entry* entry;
 	struct lconv_entry* required;
 	struct lconv_entry* provided;
 	struct ldbin* bin;
 	uint16_t* word;
-	size_t i;
+	size_t i, dk;
 
 	// Get the first bin.
 	assert(list_size(&ldbins.bins) == 1);
@@ -518,9 +590,24 @@ void bins_resolve(bool keepProvided)
 		bin->output != NULL ? printd(LEVEL_VERBOSE, "	 total outputs: %u\n", list_size(bin->output)) : false;
 		printd(LEVEL_VERBOSE, "	   total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
+		dk = 0;
 		while (list_iterator_hasnext(&bin->words))
-			printd(LEVEL_EVERYTHING, "	  0x%04X\n", *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
+		printd(LEVEL_EVERYTHING, "	  ------: ------\n");
+		if (bin->adjustment != NULL)
+		{
+			list_iterator_start(bin->adjustment);
+			while (list_iterator_hasnext(bin->adjustment))
+			{
+				entry = list_iterator_next(bin->adjustment);
+				if (list_get_at(&bin->words, entry->address) == NULL)
+					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x???? (%s)\n", entry->address, entry->bin->data);
+				else
+					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+			}
+			list_iterator_stop(bin->adjustment);
+		}
 		printd(LEVEL_VERBOSE, "\n");
 	}
 }

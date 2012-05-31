@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <debug.h>
 #include "ldbin.h"
 #include "ldconv.h"
 
@@ -91,16 +92,17 @@ void bin_write(struct ldbin* bin, uint16_t word)
 /// offset and transferring up to count words.	Linker information
 /// is automatically adjusted as part of this process.
 ///
+/// @param all The list of all current bins.
 /// @param to The target bin to write the words into.
 /// @param from The source bin to read words from.
 /// @param at The address in the target bin where writing should occur.
 /// @param offset The address in the source bin where reading should occur.
 /// @param count The number of words to be moved.
 ///
-void bin_move(struct ldbin* to, struct ldbin* from, size_t at, size_t offset, size_t count)
+void bin_move(list_t* all, struct ldbin* to, struct ldbin* from, size_t at, size_t offset, size_t count)
 {
-	bin_insert(to, from, at, offset, count);
-	bin_remove(from, offset, count);
+	bin_insert(all, to, from, at, offset, count);
+	bin_remove(all, from, offset, count);
 }
 
 ///
@@ -110,6 +112,7 @@ void bin_move(struct ldbin* to, struct ldbin* from, size_t at, size_t offset, si
 /// offset and transferring up to count words.	Linker information
 /// is automatically adjusted as part of this process.
 ///
+/// @param all The list of all current bins.
 /// @param to The target bin to write the words into.
 /// @param from The source bin to read words from.
 /// @param at The address in the target bin where writing should occur.
@@ -117,10 +120,10 @@ void bin_move(struct ldbin* to, struct ldbin* from, size_t at, size_t offset, si
 /// @param offset The address in the source bin where reading should occur.
 /// @param count The number of words to be written.
 ///
-void bin_replace(struct ldbin* to, struct ldbin* from, size_t at, size_t erase, size_t offset, size_t count)
+void bin_replace(list_t* all, struct ldbin* to, struct ldbin* from, size_t at, size_t erase, size_t offset, size_t count)
 {
-	bin_remove(to, at, erase);
-	bin_insert(to, from, at, offset, count);
+	bin_remove(all, to, at, erase);
+	bin_insert(all, to, from, at, offset, count);
 }
 
 ///
@@ -130,14 +133,15 @@ void bin_replace(struct ldbin* to, struct ldbin* from, size_t at, size_t erase, 
 /// offset and transferring up to count words.	Linker information
 /// is automatically adjusted as part of this process.
 ///
+/// @param all The list of all current bins.
 /// @param to The target bin to write the words into.
 /// @param from The source bin to read words from.
 /// @param offset The address in the source bin where reading should occur.
 /// @param count The number of words to be written.
 ///
-void bin_append(struct ldbin* to, struct ldbin* from, size_t offset, size_t count)
+void bin_append(list_t* all, struct ldbin* to, struct ldbin* from, size_t offset, size_t count)
 {
-	bin_insert(to, from, list_size(&to->words), offset, count);
+	bin_insert(all, to, from, list_size(&to->words), offset, count);
 }
 
 ///
@@ -147,13 +151,14 @@ void bin_append(struct ldbin* to, struct ldbin* from, size_t offset, size_t coun
 /// offset and transferring up to count words.	Linker information
 /// is automatically adjusted as part of this process.
 ///
+/// @param all The list of all current bins.
 /// @param to The target bin to write the words into.
 /// @param from The source bin to read words from.
 /// @param at The address in the target bin where writing should occur.
 /// @param offset The address in the source bin where reading should occur.
 /// @param count The number of words to be written.
 ///
-void bin_insert(struct ldbin* to, struct ldbin* from, size_t at, size_t offset, size_t count)
+void bin_insert(list_t* all, struct ldbin* to, struct ldbin* from, size_t at, size_t offset, size_t count)
 {
 	size_t i;
 
@@ -170,10 +175,10 @@ void bin_insert(struct ldbin* to, struct ldbin* from, size_t at, size_t offset, 
 	}
 
 	// Perform linker information updates.
-	bin_info_insert(to, to->provided, from, from->provided, false, false, at, offset, count);
-	bin_info_insert(to, to->required, from, from->required, false, false, at, offset, count);
-	bin_info_insert(to, to->adjustment, from, from->adjustment, true, false, at, offset, count);
-	bin_info_insert(to, to->output, from, from->output, false, true, at, offset, count);
+	bin_info_insert(all, to, to->provided, from, from->provided, false, false, at, offset, count);
+	bin_info_insert(all, to, to->required, from, from->required, false, false, at, offset, count);
+	bin_info_insert(all, to, to->adjustment, from, from->adjustment, true, false, at, offset, count);
+	bin_info_insert(all, to, to->output, from, from->output, false, true, at, offset, count);
 }
 
 ///
@@ -183,11 +188,12 @@ void bin_insert(struct ldbin* to, struct ldbin* from, size_t at, size_t offset, 
 /// offset and transferring up to count words.	Linker information
 /// is automatically removed as part of this process.
 ///
+/// @param all The list of all current bins.
 /// @param bin The bin to remove words from.
 /// @param offset The address to start removal from.
 /// @param count The number of words to be removed.
 ///
-void bin_remove(struct ldbin* bin, size_t offset, size_t count)
+void bin_remove(list_t* all, struct ldbin* bin, size_t offset, size_t count)
 {
 	size_t i;
 
@@ -202,15 +208,16 @@ void bin_remove(struct ldbin* bin, size_t offset, size_t count)
 	}
 
 	// Perform linker information updates.
-	bin_info_remove(bin, bin->provided, offset, count);
-	bin_info_remove(bin, bin->required, offset, count);
-	bin_info_remove(bin, bin->adjustment, offset, count);
-	bin_info_remove(bin, bin->output, offset, count);
+	bin_info_remove(all, bin, bin->provided, offset, count);
+	bin_info_remove(all, bin, bin->required, offset, count);
+	bin_info_remove(all, bin, bin->adjustment, offset, count);
+	bin_info_remove(all, bin, bin->output, offset, count);
 }
 
 ///
 /// Copies references from the specified linker information list to another linker information list.
 ///
+/// @param all The list of all current bins.
 /// @param to The target bin that words were inserted into.
 /// @param tolist The target linker information list to adjust.
 /// @param from The source bin that words were read from.
@@ -219,11 +226,12 @@ void bin_remove(struct ldbin* bin, size_t offset, size_t count)
 /// @param offset The address in the source bin where words were copied from.
 /// @param count The number of words that were inserted.
 ///
-void bin_info_insert(struct ldbin* to, list_t* tolist, struct ldbin* from, list_t* fromlist, bool isAdjustment, bool isOutput, size_t at, size_t offset, size_t count)
+void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin* from, list_t* fromlist, bool isAdjustment, bool isOutput, size_t at, size_t offset, size_t count)
 {
+	struct ldbin* abin;
 	struct lconv_entry* entry;
 	struct lconv_entry* copy;
-	size_t k;
+	size_t k, j;
 	uint16_t* word;
 
 	// Skip if the from list is NULL.
@@ -233,61 +241,172 @@ void bin_info_insert(struct ldbin* to, list_t* tolist, struct ldbin* from, list_
 	// Sort the list by addresses.
 	list_sort(fromlist, 1);
 
-	// Skip shifting if this is the output linker info list because
-	// that causes the output addresses to be shifted up when we're
-	// flattening bins.
-	if (!isOutput)
+	if (!isAdjustment)
 	{
-		// Adjust all of the memory addresses for linker entries in the
-		// bin that was written to and shift them up.
-		for (k = 0; k < list_size(tolist); k++)
+		// Skip shifting if this is the output linker info list because
+		// that causes the output addresses to be shifted up when we're
+		// flattening bins.
+		if (!isOutput)
 		{
-			entry = (struct lconv_entry*)list_get_at(tolist, k);
-
-			if (entry->address >= offset + count)
+			// Adjust all of the memory addresses for linker entries in the
+			// bin that was written to and shift them up.
+			for (k = 0; k < list_size(tolist); k++)
 			{
-				// Shift the address up.
-				entry->address += count;
+				entry = (struct lconv_entry*)list_get_at(tolist, k);
 
-				// If this is an adjustment entry, we need to adjust it
-				// immediately (since we have no label to keep track of).
-				if (isAdjustment)
+				if (entry->address >= offset + count)
 				{
-					word = (uint16_t*)list_get_at(&to->words, entry->address);
-					if (*word >= offset)
-						*word = *word + count;
+					// Shift the address up.
+					entry->address += count;
+
+					// If this is an adjustment entry, we need to adjust it
+					// immediately (since we have no label to keep track of).
+					if (isAdjustment)
+					{
+						word = (uint16_t*)list_get_at(&to->words, entry->address);
+						if (*word >= offset)
+							*word = *word + count;
+					}
 				}
 			}
 		}
-	}
 
-	// Copy all of the new linker information entries
-	// across into the correct place.
-	for (k = 0; k < list_size(fromlist); k++)
-	{
-		entry = (struct lconv_entry*)list_get_at(fromlist, k);
-
-		if (entry->address >= offset && entry->address < offset + count)
+		// Copy all of the new linker information entries
+		// across into the correct place.
+		for (k = 0; k < list_size(fromlist); k++)
 		{
-			// Copy this linker information entry.
-			copy = malloc(sizeof(struct lconv_entry));
-			copy->address = entry->address;
-			copy->label = bfromcstr("");
-			bassign(copy->label, entry->label);
+			entry = (struct lconv_entry*)list_get_at(fromlist, k);
 
-			// Adjust the copy.
-			copy->address = at + (entry->address - offset);
-			list_append(tolist, copy);
-
-			// If this is an adjustment entry, we need to adjust it
-			// immediately (since we have no label to keep track of).
-			if (isAdjustment)
+			if (entry->address >= offset && (entry->address < offset + count || (entry->address >= list_size(&from->words) && offset + count + 1 >= list_size(&from->words))))
 			{
-				word = (uint16_t*)list_get_at(&to->words, copy->address);
-				// TODO: Proper error message for when adjustment values are
-				//	 currently outside the code that's being copied across.
-				assert(*word >= offset && *word < offset + count);
-				*word = *word + (copy->address - entry->address);
+				// Copy this linker information entry.
+				copy = malloc(sizeof(struct lconv_entry));
+				copy->address = entry->address;
+				copy->bin = entry->bin;
+				copy->label = bfromcstr("");
+				bassign(copy->label, entry->label);
+
+				// Adjust the copy.
+				copy->address = at + (entry->address - offset);
+				copy->bin = entry->bin;
+				list_append(tolist, copy);
+			}
+		}
+	}
+	// If this is the adjustment list, then go through all of the bins
+	// and make appropriate changes.
+	else
+	{
+		// Copy all of the new linker information entries
+		// across into the correct place.
+		for (k = 0; k < list_size(fromlist); k++)
+		{
+			entry = (struct lconv_entry*)list_get_at(fromlist, k);
+
+			if (entry->address >= offset && (entry->address < offset + count || (entry->address >= list_size(&from->words) && offset + count + 1 >= list_size(&from->words))))
+			{
+				// Copy this linker information entry.
+				copy = malloc(sizeof(struct lconv_entry));
+				copy->address = entry->address;
+				copy->bin = entry->bin;
+				copy->label = bfromcstr("");
+				bassign(copy->label, entry->label);
+
+				// Adjust the copy.
+				copy->address = at + (entry->address - offset);
+				copy->bin = entry->bin;
+				list_append(tolist, copy);
+			}
+		}
+
+		// Loop through all of the bins.
+		for (k = 0; k < list_size(all); k++)
+		{
+			abin = list_get_at(all, k);
+			if (abin->adjustment == NULL) continue;
+
+			// Skip the target bin since we'll handle that outside
+			// the loop (the reason for this is that in some cases, such
+			// as flattening, the target bin isn't yet in the list of bins
+			// yet, but we still need to handle it).
+			if (abin == to)
+				continue;
+
+			// Loop through all of the adjustments and modify them
+			// if they are targetting the from bin.
+			for (j = 0; j < list_size(abin->adjustment); j++)
+			{
+				entry = (struct lconv_entry*)list_get_at(abin->adjustment, j);
+
+				// Get the existing value of the adjustment.
+				word = (uint16_t*)list_get_at(&abin->words, entry->address);
+				if (word == NULL)
+				{
+					printd(LEVEL_WARNING, "skipping invalid address adjustment!\n");
+					continue;
+				}
+
+				// Check to see if this adjustment entry is pointing into
+				// the old bin.
+				if (*word >= offset && *word < offset + count && biseq(entry->bin, from->name))
+				{
+					printd(LEVEL_DEBUG, "repointing internal adjustment at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+					       entry->address, abin->name->data,
+					       *word, entry->bin->data,
+					       *word - offset + at, to->name->data);
+
+					*word = *word - offset + at;
+					entry->bin = to->name;
+				}
+				else if (*word >= offset + count && biseq(entry->bin, to->name))
+				{
+					printd(LEVEL_DEBUG, "repointing (to) internal adjustment at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+					       entry->address, abin->name->data,
+					       *word, entry->bin->data,
+					       *word - offset + count, to->name->data);
+
+					*word = *word - offset + count;
+					entry->bin = to->name;
+				}
+			}
+		}
+		abin = NULL;
+
+		// Loop through all of the adjustments and modify them
+		// if they are targetting the from bin.
+		for (j = 0; j < list_size(to->adjustment); j++)
+		{
+			entry = (struct lconv_entry*)list_get_at(to->adjustment, j);
+
+			// Get the existing value of the adjustment.
+			word = (uint16_t*)list_get_at(&to->words, entry->address);
+			if (word == NULL)
+			{
+				printd(LEVEL_WARNING, "skipping invalid address adjustment!\n");
+				continue;
+			}
+
+			// Check to see if this adjustment entry is pointing into
+			// the old bin.
+			if (*word >= offset && *word < offset + count && biseq(entry->bin, from->name))
+			{
+				printd(LEVEL_DEBUG, "repointing (from) internal adjustment at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+				       entry->address, to->name->data,
+				       *word, entry->bin->data,
+				       *word - offset + at, to->name->data);
+
+				*word = *word - offset + at;
+				entry->bin = to->name;
+			}
+			else if (*word >= offset + count && biseq(entry->bin, to->name))
+			{
+				printd(LEVEL_DEBUG, "repointing (to) internal adjustment at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+				       entry->address, to->name->data,
+				       *word, entry->bin->data,
+				       *word - offset + count, to->name->data);
+
+				*word = *word - offset + count;
+				entry->bin = to->name;
 			}
 		}
 	}
@@ -296,13 +415,14 @@ void bin_info_insert(struct ldbin* to, list_t* tolist, struct ldbin* from, list_
 ///
 /// Removes references in the specified linker information list.
 ///
+/// @param all The list of all current bins.
 /// @param bin The bin that this linker information list belongs to.
 /// @param list The linker information list to adjust.
 /// @param isAdjustment Whether the linker information list is an adjustment list.
 /// @param offset The address that words were removed from.
 /// @param count The number of words that were removed.
 ///
-void bin_info_remove(struct ldbin* bin, list_t* list, size_t offset, size_t count)
+void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, size_t offset, size_t count)
 {
 	struct lconv_entry* entry;
 	size_t k;
@@ -324,7 +444,7 @@ void bin_info_remove(struct ldbin* bin, list_t* list, size_t offset, size_t coun
 		else if (entry->address >= offset && entry->address < offset + count)
 		{
 			// Remove this linker information entry.
-			list_delete_at(list, k);
+			assert(list_delete_at(list, k) == 0);
 			k--;
 		}
 		else if (entry->address >= offset + count)

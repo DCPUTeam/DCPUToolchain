@@ -68,6 +68,7 @@ list_t* list_convert(struct lprov_entry* first)
 	{
 		entry = malloc(sizeof(struct lconv_entry));
 		entry->address = first->address;
+		entry->bin = NULL;
 		entry->label = bfromcstr(first->label);
 		list_append(list, entry);
 		free(entry);
