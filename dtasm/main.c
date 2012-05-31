@@ -17,6 +17,7 @@
 #include <setjmp.h>
 #include <argtable2.h>
 #include <bstring.h>
+#include <bfile.h>
 #include <osutil.h>
 #include <pp.h>
 #include <ppfind.h>
@@ -37,8 +38,9 @@ char* fileloc = NULL;
 
 int main(int argc, char* argv[])
 {
-	FILE* out = NULL;
+	BFILE* out = NULL;
 	FILE* img = NULL;
+	BFILE* imgb = NULL;
 	FILE* sym = NULL;
 	int nerrors;
 	bstring pp_result_name;
@@ -74,7 +76,7 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
-	
+
 	// Set verbosity level.
 	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 
@@ -170,8 +172,8 @@ int main(int argc, char* argv[])
 	}
 
 	// Re-open the temporary file for reading.
-	img = fopen(temp->data, "rb");
-	if (img == NULL)
+	imgb = bopen(temp->data, "rb");
+	if (imgb == NULL)
 	{
 		printd(LEVEL_ERROR, "assembler: temporary file not readable.\n");
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
@@ -182,9 +184,9 @@ int main(int argc, char* argv[])
 	if (strcmp(output_file->filename[0], "-") != 0)
 	{
 		// Write to file.
-		out = fopen(output_file->filename[0], "wb");
+		out = bopen(output_file->filename[0], "wb");
 
-		if (img == NULL)
+		if (imgb == NULL)
 		{
 			printd(LEVEL_ERROR, "assembler: output file not writable.\n");
 			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
@@ -197,16 +199,16 @@ int main(int argc, char* argv[])
 		osutil_makebinary(stdout);
 
 		// Set img to stdout.
-		out = stdout;
+		out = bwrap(stdout, "w");
 	}
 
 	// Copy data.
-	while (!feof(img))
-		fputc(fgetc(img), out);
+	while (!beof(imgb))
+		bputc(bgetc(imgb), out);
 
 	// Close files and delete temporary.
-	fclose(img);
-	fclose(out);
+	bclose(imgb);
+	bclose(out);
 	unlink(temp->data);
 
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));

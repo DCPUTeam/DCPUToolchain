@@ -17,6 +17,7 @@
 #include <string.h>
 #include <setjmp.h>
 #include <bstring.h>
+#include <bfile.h>
 #include <pp.h>
 #include <ppfind.h>
 #include <assert.h>
@@ -355,7 +356,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 	struct lprov_entry* linker_temp = NULL;
 	uint32_t mem_index, out_index;
 	uint16_t inst;
-	FILE* temp = NULL;
+	BFILE* temp = NULL;
 	bstring bname, ename;
 	uint16_t eaddr;
 	bool did_find;
@@ -443,7 +444,7 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 				if ((relocatable || intermediate) && !shown_expr_warning)
 				{
 					printd(LEVEL_WARNING, "warning: expressions will not be adjusted at link or relocation time.\n");
-					printd(LEVEL_WARNING, "         ensure labels are not used as part of expressions.\n");
+					printd(LEVEL_WARNING, "		ensure labels are not used as part of expressions.\n");
 					shown_expr_warning = true;
 				}
 				current_outer->raw_used = true;
@@ -563,21 +564,21 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 			if (bname == NULL)
 				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
 
-			temp = fopen((const char*)(bname->data), "rb");
+			temp = bopen((const char*)(bname->data), "rb");
 
 			if (temp == NULL)
 				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
 
 			// Copy binary data.
-			while (!feof(temp))
+			while (!beof(temp))
 			{
 				// TODO: This could be faster if we didn't do it character
 				// by character.
-				fputc(fgetc(temp), out);
+				fputc(bgetc(temp), out);
 			}
 
 			// Finalize.
-			fclose(temp);
+			bclose(temp);
 			bdestroy(bname);
 		}
 		else if (current_outer->type == AOUT_TYPE_NORMAL)

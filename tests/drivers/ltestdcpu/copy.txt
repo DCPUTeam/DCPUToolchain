@@ -1,0 +1,2 @@
+This is my test file.  It is used to
+test the buffered reading library.

@@ -377,4 +377,6 @@ endif(${BUILD_STDLIB})
 
 # Add test suite.
 enable_testing()
+add_subdirectory(tests/drivers/ltestdcpu)
+add_subdirectory(tests/drivers/testasm)
 add_subdirectory(tests/drivers/testld)
