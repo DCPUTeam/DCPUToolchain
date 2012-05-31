@@ -375,3 +375,6 @@ if(${BUILD_STDLIB})
 	add_subdirectory(stdlib-c)
 endif(${BUILD_STDLIB})
 
+# Add test suite.
+enable_testing()
+add_subdirectory(tests/drivers/testld)

@@ -1,0 +1,13 @@
+;
+; import-02
+;
+; Description:
+;
+;	The linker should fail when a label is specified as imported
+;	even if the label is declared within the program.
+;
+
+.IMPORT nonexistant
+
+:nonexistant
+	SET PC, nonexistant

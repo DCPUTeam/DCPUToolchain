@@ -1,0 +1,12 @@
+;
+; import-01
+;
+; Description:
+;
+;	The linker should fail when it needs to replace a
+;	parameter with an imported value that doesn't exist.
+;
+
+.IMPORT nonexistant
+
+SET PC, nonexistant

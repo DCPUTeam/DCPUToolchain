@@ -169,6 +169,11 @@ void bins_save(freed_bstring name, freed_bstring path)
 
 	// Open the output file.
 	out = fopen(path.ref->data, "wb");
+	if (out == NULL)
+	{
+		printd(LEVEL_ERROR, "error: unable to open output path to save bins.");
+		exit(1);
+	}
 
 	// Write each byte from the bin.
 	list_iterator_start(&bin->words);

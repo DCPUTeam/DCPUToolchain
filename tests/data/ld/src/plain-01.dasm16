@@ -1,0 +1,20 @@
+;
+; plain-01
+;
+; Description:
+;
+;	The linker should correctly link programs which make
+;	no references to linker-based systems.
+;
+
+SET PC, execute
+
+:data
+	DAT "this is my string data"
+
+:execute
+	SET [0x8000], 'a'
+	ADD [0x8000], 0x7000
+
+:halt
+	SET PC, halt

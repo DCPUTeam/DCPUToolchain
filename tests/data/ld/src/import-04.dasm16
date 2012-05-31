@@ -1,0 +1,14 @@
+;
+; import-04
+;
+; Description:
+;
+;	The linker should succeed when a label was declared as
+;	imported but never used, even if the label does not
+;	exist at link time.
+;
+
+.IMPORT nonexistant
+
+:nonexistant2
+	SET PC, nonexistant2

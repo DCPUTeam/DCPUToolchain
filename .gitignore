@@ -61,9 +61,12 @@ Release/*
 # CMake files #
 ###############
 CMakeCache.txt
+CTestCostData.txt
 CMakeFiles/*
 */CMakeFiles/*
 */*/CMakeFiles/*
+*/*/*/CMakeFiles/*
+*/*/*/*/CMakeFiles/*
 *.rule
 */*.dir/*
 */lexer.c
