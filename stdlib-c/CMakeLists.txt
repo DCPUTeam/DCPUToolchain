@@ -115,9 +115,9 @@ function(add_dcpu_image target)
 	string(STRIP "${tasmoutputs}" tasmoutputs)
 	string(STRIP "${tcoutputs}" tcoutputs)
 	add_custom_command(
-		OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dlib16"
+		OUTPUT "${OUTPUT_DIR}/stdlib.dlib16"
 		COMMAND ${KERNEL_TOOLS}/dtld${CMAKE_EXECUTABLE_SUFFIX}
-			ARGS -l static -o "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stdlib.dlib16" ${tasmoutputs} ${tcoutputs}
+			ARGS -l static -o "${OUTPUT_DIR}/stdlib.dlib16" ${tasmoutputs} ${tcoutputs}
 		DEPENDS dtld ${tasmoutputs} ${tcoutputs}
 		COMMENT "Linking stdlib.dlib16 as static library with DCPU-Toolchain...")
 

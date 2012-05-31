@@ -340,11 +340,7 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 
 				// Get the existing value of the adjustment.
 				word = (uint16_t*)list_get_at(&abin->words, entry->address);
-				if (word == NULL)
-				{
-					printd(LEVEL_WARNING, "skipping invalid address adjustment!\n");
-					continue;
-				}
+				assert(word != NULL);
 
 				// Check to see if this adjustment entry is pointing into
 				// the old bin.
@@ -380,11 +376,7 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 
 			// Get the existing value of the adjustment.
 			word = (uint16_t*)list_get_at(&to->words, entry->address);
-			if (word == NULL)
-			{
-				printd(LEVEL_WARNING, "skipping invalid address adjustment!\n");
-				continue;
-			}
+			assert(word != NULL);
 
 			// Check to see if this adjustment entry is pointing into
 			// the old bin.

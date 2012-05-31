@@ -64,17 +64,16 @@ void* malloc(size_t size)
 
 void* realloc(void* ptr, size_t size)
 {
-	void* result;
-	void** store = &result;
-	__asm
-	{
-		.IMPORT realloc
-		SET A, <ptr>
-		SET B, <size>
-		JSR realloc
-		SET <store>, A
-	}
-	return result;
+	size_t i;
+	void* mem = malloc(size);
+	// DANGER: Later on realloc() will be provided by the OS.  For
+	// now we know that the standard library's malloc has the length
+	// 2 words behind the pointer, but this is an assumption that
+	// will not work across kernels!
+	for (i = 0; i < * (ptr - 2); i++)
+		mem[i] = ptr[i];
+	free(ptr);
+	return mem;
 }
 
 // Environment:
@@ -95,7 +94,7 @@ void* bsearch(const void* key, const void* base, size_t num, size_t size, int (*
 
 void qsort(void* base, size_t num, size_t size, int (*comparator)(const void* a, const void* b))
 {
-	// TODO 
+	// TODO
 }
 
 // Integer arithmethics:

@@ -271,10 +271,8 @@ void bins_sectionize()
 			while (list_iterator_hasnext(bin->adjustment))
 			{
 				entry = list_iterator_next(bin->adjustment);
-				if (list_get_at(&bin->words, entry->address) == NULL)
-					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x???? (%s)\n", entry->address, entry->bin->data);
-				else
-					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+				assert(list_get_at(&bin->words, entry->address) != NULL);
+				printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
 			}
 			list_iterator_stop(bin->adjustment);
 		}
@@ -391,10 +389,8 @@ void bins_sectionize()
 			while (list_iterator_hasnext(bin->adjustment))
 			{
 				entry = list_iterator_next(bin->adjustment);
-				if (list_get_at(&bin->words, entry->address) == NULL)
-					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x???? (%s)\n", entry->address, entry->bin->data);
-				else
-					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+				assert(list_get_at(&bin->words, entry->address) != NULL);
+				printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
 			}
 			list_iterator_stop(bin->adjustment);
 		}
@@ -504,10 +500,8 @@ void bins_flatten(freed_bstring name)
 			while (list_iterator_hasnext(bin->adjustment))
 			{
 				entry = list_iterator_next(bin->adjustment);
-				if (list_get_at(&bin->words, entry->address) == NULL)
-					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x???? (%s)\n", entry->address, entry->bin->data);
-				else
-					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+				assert(list_get_at(&bin->words, entry->address) != NULL);
+				printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
 			}
 			list_iterator_stop(bin->adjustment);
 		}
@@ -601,10 +595,8 @@ void bins_resolve(bool keepProvided)
 			while (list_iterator_hasnext(bin->adjustment))
 			{
 				entry = list_iterator_next(bin->adjustment);
-				if (list_get_at(&bin->words, entry->address) == NULL)
-					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x???? (%s)\n", entry->address, entry->bin->data);
-				else
-					printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+				assert(list_get_at(&bin->words, entry->address) != NULL);
+				printd(LEVEL_EVERYTHING, "	  0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
 			}
 			list_iterator_stop(bin->adjustment);
 		}
