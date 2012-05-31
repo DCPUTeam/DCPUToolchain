@@ -15,25 +15,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bstrlib.h>
+#include <bstring.h>
+#include <simclist.h>
 #include <dcpu.h>
 #include <dcpubase.h>
 #include <dcpuhook.h>
+#include <debug.h>
 #include <hwio.h>
 #include <hwlem1802.h>
 #include <hwtimer.h>
 #include <imap.h>
 #include <ddata.h>
-
-#define MAX_BREAKPOINTS 100
+#include "breakpoint.h"
+#include "backtrace.h"
 
 uint16_t flash_size = 0;
 uint16_t flash[0x10000];
-uint16_t breakpoints[MAX_BREAKPOINTS];
-bool breakpoints_temporary[MAX_BREAKPOINTS];
-uint16_t breakpoints_num;
-extern vm_t* vm;
+list_t breakpoints;
+list_t backtrace;
 list_t* symbols;
+extern vm_t* vm;
 
 void ddbg_help(bstring section)
 {
@@ -81,18 +82,48 @@ void ddbg_help(bstring section)
 
 void ddbg_cycle_hook(vm_t* vm, uint16_t pos, void* ud)
 {
-	int i = 0;
+	unsigned int i = 0;
+	struct breakpoint* bk;
+	uint16_t op, a, b;
 
-	for (i = 0; i < breakpoints_num; i++)
+	// Handle breakpoints.
+	for (i = 0; i < list_size(&breakpoints); i++)
 	{
-		if (vm->pc == breakpoints[i] && vm->pc != 0xFFFF)
+		bk = (struct breakpoint*)list_get_at(&breakpoints, i);
+
+		if (vm->pc == bk->addr)
 		{
 			vm->halted = true;
 			vm_hook_break(vm); // Required for UI to update correctly.
-			if (breakpoints_temporary[i])
-				breakpoints[i] = 0xFFFF;
-			else
-				printf("Breakpoint hit at 0x%04X.\n", breakpoints[i]);
+			if (bk->temporary)
+				list_delete_at(&breakpoints, i--);
+			if (!bk->silent)
+				printd(LEVEL_DEFAULT, "Breakpoint hit at 0x%04X.\n", bk->addr);
+		}
+	}
+
+	// Handle backtrace.
+	op = INSTRUCTION_GET_OP(vm->ram[vm->pc]);
+	a = INSTRUCTION_GET_A(vm->ram[vm->pc]);
+	b = INSTRUCTION_GET_B(vm->ram[vm->pc]);
+	if ((op == OP_SET && b == PC) || (op == OP_NONBASIC && b == NBOP_JSR))
+	{
+		// FIXME: This doesn't handle every valid value correctly..
+		if (a == PUSH_POP)
+			list_delete_at(&backtrace, list_size(&backtrace) - 1);
+		else if (a == NXT_LIT)
+		{
+			printd(LEVEL_DEFAULT, "jumping literally from 0x%04X to 0x%04X (0x%04X).\n", vm->pc, vm->ram[vm->pc + 1], vm->pc + 1);
+			list_append(&backtrace, backtrace_entry_create(vm->pc, vm->ram[vm->pc + 1]));
+		}
+		else if (a == NXT)
+		{
+			//list_append(&backtrace, backtrace_entry_create(vm->pc, vm->ram[vm->ram[vm->pc+1]]));
+		}
+		else
+		{
+			// Unhandled.
+			printd(LEVEL_WARNING, "warning: unhandled backtrace jump occurred.\n");
 		}
 	}
 }
@@ -146,8 +177,11 @@ void ddbg_load(bstring path)
 
 void ddbg_create_vm()
 {
+	breakpoints = breakpoint_list_create();
+	list_init(&backtrace);
+	list_attributes_copy(&backtrace, list_meter_uint16_t, 1);
 	vm = vm_create();
-	vm_hook_register(vm, &ddbg_cycle_hook, HOOK_ON_CYCLE, NULL);
+	vm_hook_register(vm, &ddbg_cycle_hook, HOOK_ON_PRE_CYCLE, NULL);
 	printf("Created VM.\n");
 }
 
@@ -245,16 +279,16 @@ void ddbg_add_breakpoint(bstring file, int index)
 		return;
 	}
 
-	breakpoints[breakpoints_num] = memory;
-	breakpoints_temporary[breakpoints_num++] = false;
+	list_append(&breakpoints, breakpoint_create(memory, false, false));
 	printf("Breakpoint added at 0x%04X.\n", memory);
 }
 
 void ddbg_delete_breakpoint(bstring file, int index)
 {
-	int i = 0;
+	unsigned int i = 0;
 	bool found = false;
 	int32_t memory = ddbg_file_to_address(file, index);
+	struct breakpoint* bk;
 
 	// Did we get a valid result?
 	if (memory == -1)
@@ -263,11 +297,13 @@ void ddbg_delete_breakpoint(bstring file, int index)
 		return;
 	}
 
-	for (i = 0; i < breakpoints_num; i++)
+	for (i = 0; i < list_size(&breakpoints); i++)
 	{
-		if (breakpoints[i] == memory)
+		bk = (struct breakpoint*)list_get_at(&breakpoints, i);
+
+		if (bk->addr == memory)
 		{
-			breakpoints[i] = 0xFFFF;
+			list_delete_at(&breakpoints, i--);
 			found = true;
 		}
 	}
@@ -312,19 +348,33 @@ void ddbg_step_over()
 		bp = vm->pc + offset;
 	}
 
-	breakpoints[breakpoints_num] = bp;
-	breakpoints_temporary[breakpoints_num++] = true;
+	list_append(&breakpoints, breakpoint_create(bp, true, true));
 	vm->halted = false;
 	vm_execute(vm);
 }
 
+void ddbg_backtrace()
+{
+	int i;
+	struct backtrace_entry* entry;
+
+	printd(LEVEL_DEFAULT, "current backtrace:\n");
+
+	for (i = list_size(&backtrace) - 1; i >= 0; i--)
+	{
+		entry = (struct backtrace_entry*)list_get_at(&backtrace, i);
+		printd(LEVEL_DEFAULT, "	 0x%04X called 0x%04X\n", entry->caller, entry->callee);
+	}
+}
+
 void ddbg_breakpoints_list()
 {
-	int i = 0;
+	unsigned int i = 0;
 
-	printf("%d breakpoints loaded.\n", breakpoints_num);
+	printf("%d breakpoints loaded.\n", list_size(&breakpoints));
 
-	for (i = 0; i < breakpoints_num; i++) printf("- at 0x%04X\n", breakpoints[i]);
+	for (i = 0; i < list_size(&breakpoints); i++)
+		printf("- at 0x%04X\n", ((struct breakpoint*)list_get_at(&breakpoints, i))->addr);
 }
 
 void ddbg_dump_state()

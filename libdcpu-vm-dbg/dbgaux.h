@@ -30,6 +30,7 @@ void ddbg_add_breakpoint(bstring file, int index);
 void ddbg_delete_breakpoint(bstring file, int index);
 void ddbg_step_into();
 void ddbg_step_over();
+void ddbg_backtrace();
 void ddbg_breakpoints_list();
 void ddbg_dump_state();
 void ddbg_dump_ram(int start, int difference);
