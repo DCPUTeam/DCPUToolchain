@@ -42,7 +42,7 @@ bool do_search(CURL* curl, bstring name)
 	FILE* fp;
 	list_t installed;
 	struct bStream* stream;
-	long httpcode;
+	long httpcode = 0;
 	bstring buffer, fname, sstr;
 	bstring ext = bfromcstr(".lua");
 	bstring url = bfromcstr("http://dms.dcputoolcha.in/modules/search?q=");
@@ -68,16 +68,16 @@ bool do_search(CURL* curl, bstring name)
 	printd(LEVEL_DEFAULT, "querying module repository...\n");
 	fp = fopen(modpath->data, "wb");
 	curl_easy_setopt(curl, CURLOPT_URL, url->data);
-	curl_easy_setopt(curl, CURLINFO_HTTP_CODE, &httpcode);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 	res = curl_easy_perform(curl);
+	curl_easy_getinfo(curl, CURLINFO_HTTP_CODE, &httpcode);
 	if (res != 0 || httpcode != 200)
 	{
 		bdestroy(url);
 		bdestroy(name);
 		bdestroy(modpath);
-		printd(LEVEL_ERROR, "curl failed with error code %i.\n", res);
+		printd(LEVEL_ERROR, "curl failed with error code %i, HTTP error code %i.\n", res, httpcode);
 		return 1;
 	}
 	fclose(fp);
@@ -137,7 +137,7 @@ bool do_install(CURL* curl, bstring name)
 {
 	FILE* fp;
 	CURLcode res;
-	long httpcode;
+	long httpcode = 0;
 	struct stat buffer;
 	bstring url = bfromcstr("http://dms.dcputoolcha.in/modules/download?name=");
 	bstring modpath = osutil_getmodulepath();
@@ -165,16 +165,16 @@ bool do_install(CURL* curl, bstring name)
 	printd(LEVEL_DEFAULT, "querying module repository...\n");
 	fp = fopen(modpath->data, "wb");
 	curl_easy_setopt(curl, CURLOPT_URL, url->data);
-	curl_easy_setopt(curl, CURLINFO_HTTP_CODE, &httpcode);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 	res = curl_easy_perform(curl);
+	curl_easy_getinfo(curl, CURLINFO_HTTP_CODE, &httpcode);
 	if (res != 0 && httpcode != 200)
 	{
 		bdestroy(url);
 		bdestroy(name);
 		bdestroy(modpath);
-		printd(LEVEL_ERROR, "curl failed with error code %i.\n", res);
+		printd(LEVEL_ERROR, "curl failed with error code %i, HTTP error code %i.\n", res, httpcode);
 		return 1;
 	}
 	fclose(fp);
@@ -242,7 +242,7 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
-	
+
 	// Set verbosity level.
 	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 

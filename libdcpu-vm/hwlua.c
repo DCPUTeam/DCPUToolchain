@@ -23,6 +23,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <assert.h>
+#include <ppexprlua.h>
 #include "hw.h"
 #include "hwlua.h"
 #include "dcpuhook.h"
@@ -304,6 +305,7 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
 	hw->state = lua_open();
 	assert(hw->state != NULL);
 	luaL_openlibs(hw->state);
+	luaX_loadexpressionlib(hw->state);
 
 	// Execute the code in the new Lua context.
 	if (luaL_dofile(hw->state, path->data) != 0)

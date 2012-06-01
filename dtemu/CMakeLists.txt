@@ -10,10 +10,11 @@ endif(NOT DEFINED IS_ROOT)
 
 # Define the emulator project.
 dt_project(executable)
+dt_needs(lua)
 dt_needs(libtcod)
 dt_needs(bstring)
 dt_needs(argtable2)
 dt_needs(libdcpu)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu-ci-objfmt)
-
+dt_needs(libdcpu-pp-expr)

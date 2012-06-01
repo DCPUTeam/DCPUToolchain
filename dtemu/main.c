@@ -71,14 +71,14 @@ int main(int argc, char* argv[])
 		if (show_help->count != 0)
 			arg_print_errors(stdout, end, "emulator");
 
-		printf("syntax:\n    dtemu");
+		printd(LEVEL_DEFAULT, "syntax:\n    dtemu");
 		arg_print_syntax(stderr, argtable, "\n");
-		printf("options:\n");
+		printd(LEVEL_DEFAULT, "options:\n");
 		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
-	
+
 	// Set verbosity level.
 	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 

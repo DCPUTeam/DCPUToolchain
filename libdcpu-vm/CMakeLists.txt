@@ -14,4 +14,4 @@ dt_needs(libtcod)
 dt_needs(libdcpu)
 dt_needs(bstring)
 dt_needs(simclist)
-
+dt_needs(libdcpu-pp-expr)

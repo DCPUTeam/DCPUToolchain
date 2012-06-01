@@ -10,4 +10,5 @@ endif(NOT DEFINED IS_ROOT)
 # Define the libvm project.
 dt_project(library)
 dt_needs(bstring)
+dt_needs(lua)
 dt_needs(libdcpu)
