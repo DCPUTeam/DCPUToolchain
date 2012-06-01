@@ -295,7 +295,7 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
 #ifdef _WIN32
 	bcatcstr(path, "modules\\");
 #else
-	bcatcstr(path, "modules/");
+	bcatcstr(path, "/modules/");
 #endif
 	bconcat(path, name);
 
