@@ -38,6 +38,7 @@ class NArrayDeclaration : public NDeclaration
 
 		IType* getPointerType();
 		IType* getMemAreaType();
+		//IType* type;
 
 		NArrayDeclaration(IType* type, NIdentifier& id, DimensionsList* dims, ExpressionList* initExprList);
 		virtual AsmBlock* compile(AsmGenerator& context);

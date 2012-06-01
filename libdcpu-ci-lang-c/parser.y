@@ -126,14 +126,15 @@ void yyerror(const char *str);
 %type <type> type type_base
 %type <ident> ident
 %type <expr> expr numeric string character deref fldref addressable arrayref
-%type <varvec> func_decl_args struct_decl_args
+%type <declvec> struct_decl_args
+%type <varvec> func_decl_args
 %type <exprvec> call_args array_init_list
 %type <dimvec> array_dims
 %type <decls> program prog_decl
 %type <function> func_decl
 %type <structure> struct_decl
-%type <variable> var_decl
-%type <array> array_decl
+%type <variable> var_decl var_decl_no_init
+%type <array> array_decl array_decl_no_init
 %type <block> block stmts block_or_stmt
 %type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm
 %type <token> assignop
@@ -245,48 +246,67 @@ struct_decl:
 		} |
 		STRUCT ident BRACE_OPEN BRACE_CLOSE SEMICOLON
 		{
-			$$ = new NStructureDeclaration(*$2, *(new VariableList()));
+			$$ = new NStructureDeclaration(*$2, *(new DeclarationList()));
 			//delete $4;
 		} ;
 
 struct_decl_args:
 		/* empty */
 		{
-			$$ = new VariableList();
+			$$ = new DeclarationList();
 		} |
-		var_decl
+		var_decl_no_init
 		{
-			$$ = new VariableList();
+			$$ = new DeclarationList();
 			$$->push_back($<variable>1);
 		} |
-		struct_decl_args SEMICOLON var_decl
+		array_decl_no_init
+		{
+			$$ = new DeclarationList();
+			$$->push_back($<array>1);
+		} |
+		struct_decl_args SEMICOLON var_decl_no_init
 		{
 			$1->push_back($<variable>3);
+		} |
+		struct_decl_args SEMICOLON array_decl_no_init
+		{
+			$1->push_back($<array>3);
 		} ;
 
-var_decl:
+var_decl_no_init:
 		type ident
 		{
 			$$ = new NVariableDeclaration($1, *$2);
 		} |
-		type ident ASSIGN_EQUAL expr
-		{
-			$$ = new NVariableDeclaration($1, *$2, $4);
-		} |
 		type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE
 		{
 			$$ = new NVariableDeclaration((new NFunctionPointerType($1, *$7)) /* TODO: free this memory */, *$4);
+		} ;
+var_decl:
+		var_decl_no_init
+		{
+			$$ = $1;
+		} |
+		type ident ASSIGN_EQUAL expr
+		{
+			$$ = new NVariableDeclaration($1, *$2, $4);
 		} |
 		type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE ASSIGN_EQUAL expr
 		{
 			$$ = new NVariableDeclaration((new NFunctionPointerType($1, *$7)) /* TODO: free this memory */, *$4, $10);
 		} ;
 
-array_decl:
+array_decl_no_init:
 		/* array declarations */
 		type ident array_dims
 		{
 			$$ = new NArrayDeclaration($1, *$2, $3, NULL);
+		} ;
+array_decl:
+		array_decl_no_init
+		{
+			$$ = $1;
 		} |
 		type ident array_dims ASSIGN_EQUAL BRACE_OPEN array_init_list BRACE_CLOSE
 		{

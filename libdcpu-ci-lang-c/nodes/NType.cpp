@@ -44,34 +44,10 @@ AsmBlock* NType::reference(AsmGenerator& context)
 	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a type.");
 }
 
-void NType::resolveStruct(AsmGenerator& context)
-{
-	if (this->resolvedStruct != NULL)
-		return;
-
-	// Search AST for struct nodes.
-	NDeclarations* decls = (NDeclarations*)context.m_RootNode;
-
-	for (DeclarationList::iterator i = decls->definitions.begin(); i != decls->definitions.end(); i++)
-		if ((*i)->cType == "statement-declaration-structure")
-			if (((NStructureDeclaration*)*i)->id.name == this->name)
-			{
-				this->resolvedStruct = ((NStructureDeclaration*)*i);
-				return;
-			}
-
-	throw new CompilerException(this->line, this->file, "Unknown struct type " + this->name + " encountered!");
-}
-
 size_t NType::getBitSize(AsmGenerator& context)
 {
 	if (this->pointerCount > 0)
 		return 16;
-	else if (this->isStruct)
-	{
-		this->resolveStruct(context);
-		return 16 * this->resolvedStruct->getWordSize(context);
-	}
 	else
 	{
 		if (this->name == "void")		return 0; // for void pointers
@@ -88,26 +64,6 @@ size_t NType::getBitSize(AsmGenerator& context)
 uint16_t NType::getWordSize(AsmGenerator& context)
 {
 	return (int)std::ceil((double)this->getBitSize(context) / 16.0);
-}
-
-uint16_t NType::getStructFieldPosition(AsmGenerator& context, std::string name)
-{
-	// Resolve struct if not already done.
-	this->resolveStruct(context);
-
-	// Count up the position.
-	size_t pos = 0;
-
-	for (VariableList::iterator i = this->resolvedStruct->fields.begin(); i != this->resolvedStruct->fields.end(); i++)
-	{
-		if ((*i)->id.name == name)
-			return pos;
-		else
-			pos += (*i)->type->getWordSize(context);
-	}
-
-	// If the field wasn't found...
-	throw new CompilerException(this->line, this->file, "Unable to lookup field " + name + " in structure " + this->resolvedStruct->id.name + "!");
 }
 
 IType* NType::getExpressionType(AsmGenerator& context)

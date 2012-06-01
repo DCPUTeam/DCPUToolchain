@@ -14,6 +14,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NStructureDeclaration.h"
+#include "NArrayDeclaration.h"
 
 AsmBlock* NStructureDeclaration::compile(AsmGenerator& context)
 {
@@ -32,8 +33,17 @@ size_t NStructureDeclaration::getWordSize(AsmGenerator& context)
 	// Return the size of each of the fields.
 	size_t s = 0;
 
-	for (VariableList::iterator i = this->fields.begin(); i != this->fields.end(); i++)
-		s += (*i)->type->getWordSize(context);
-
+	for (DeclarationList::iterator i = this->fields.begin(); i != this->fields.end(); i++)
+	{
+		if ((*i)->cType == "statement-declaration-variable")
+		{
+			s += ((NVariableDeclaration*)(*i))->type->getWordSize(context);
+		}
+		else if ((*i)->cType == "statement-declaration-array")
+		{
+			s += ((NArrayDeclaration*)(*i))->getPointerType()->getWordSize(context);
+			s += ((NArrayDeclaration*)(*i))->getMemAreaType()->getWordSize(context);
+		}
+	}
 	return s;
 }

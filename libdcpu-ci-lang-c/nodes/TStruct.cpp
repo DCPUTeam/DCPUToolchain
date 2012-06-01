@@ -14,6 +14,8 @@
 
 #include "TStruct.h"
 #include "NDeclarations.h"
+#include "NVariableDeclaration.h"
+#include "NArrayDeclaration.h"
 #include "Lists.h"
 #include <cmath>
 
@@ -161,12 +163,25 @@ uint16_t TStruct::getStructFieldPosition(std::string name)
 	// Count up the position.
 	size_t pos = 0;
 
-	for (VariableList::iterator i = this->m_resolvedStruct->fields.begin(); i != this->m_resolvedStruct->fields.end(); i++)
+	for (DeclarationList::iterator i = this->m_resolvedStruct->fields.begin(); i != this->m_resolvedStruct->fields.end(); i++)
 	{
-		if ((*i)->id.name == name)
-			return pos;
-		else
-			pos += (*i)->type->getWordSize(*m_context);
+		if ((*i)->cType == "statement-declaration-variable")
+		{
+			if (((NVariableDeclaration*)(*i))->id.name == name)
+				return pos;
+			else
+				pos += ((NVariableDeclaration*)(*i))->type->getWordSize(*m_context);
+		}
+		else if ((*i)->cType == "statement-declaration-array")
+		{
+			if (((NArrayDeclaration*)(*i))->id.name == name)
+				return pos;
+			else
+			{
+				pos += ((NArrayDeclaration*)(*i))->getPointerType()->getWordSize(*m_context);
+				pos += ((NArrayDeclaration*)(*i))->getMemAreaType()->getWordSize(*m_context);
+			}
+		}
 	}
 
 	// If the field wasn't found...
@@ -183,10 +198,18 @@ IType* TStruct::getStructFieldType(std::string name)
 	// Count up the position.
 	size_t pos = 0;
 
-	for (VariableList::iterator i = this->m_resolvedStruct->fields.begin(); i != this->m_resolvedStruct->fields.end(); i++)
+	for (DeclarationList::iterator i = this->m_resolvedStruct->fields.begin(); i != this->m_resolvedStruct->fields.end(); i++)
 	{
-		if ((*i)->id.name == name)
-			return (*i)->type;
+		if ((*i)->cType == "statement-declaration-variable")
+		{
+			if (((NVariableDeclaration*)(*i))->id.name == name)
+				return ((NVariableDeclaration*)(*i))->type;
+		}
+		else if ((*i)->cType == "statement-declaration-array")
+		{
+			if (((NArrayDeclaration*)(*i))->id.name == name)
+				return ((NArrayDeclaration*)(*i))->getPointerType();
+		}
 	}
 
 	return NULL;
