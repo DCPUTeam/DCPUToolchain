@@ -13,8 +13,10 @@
  **/
 
 #include <setjmp.h>
+#include <assert.h>
 #include <lua.h>
 #include <lauxlib.h>
+#include <simclist.h>
 #include "dcpu.h"
 #include "ppexpr.h"
 #include "ppexprlua.h"
@@ -56,31 +58,101 @@ struct expr* expr_lua_extract_expression(lua_State* L, int idx)
 	return ex;
 }
 
-jmp_buf evaluate_jmp;
+struct evaluate_state
+{
+	struct expr* expr;
+	jmp_buf jmp;
+	lua_State* lua;
+	int labelFunc;
+};
+list_t* evaluate_states = NULL;
+size_t evaluate_state_meter(const void* el)
+{
+	return sizeof(struct evaluate_state);
+}
 
 void expr_lua_expression_self_error(int code, void* data)
 {
-	longjmp(evaluate_jmp, 1);
+	longjmp(((struct evaluate_state*)(list_get_at(evaluate_states, list_size(evaluate_states) - 1)))->jmp, 1);
+}
+
+uint16_t expr_lua_expression_self_label(bstring name)
+{
+	struct evaluate_state* state;
+	uint16_t result;
+	assert(list_size(evaluate_states) > 0);
+	state = list_get_at(evaluate_states, list_size(evaluate_states) - 1);
+	assert(state->labelFunc != -1);
+	lua_pushvalue(state->lua, state->labelFunc);
+	lua_pushstring(state->lua, name->data);
+	if (lua_pcall(state->lua, 1, 1, 0) != 0)
+	{
+		lua_pushstring(state->lua, "calling label resolution function failed.");
+		lua_error(state->lua);
+		return 0;
+	}
+	result = (uint16_t)lua_tonumber(state->lua, -1);
+	lua_pop(state->lua, 1);
+	return result;
 }
 
 int expr_lua_expression_self_evaluate(lua_State* L)
 {
+	struct evaluate_state state;
 	struct expr* ex;
 	int result;
+	uint16_t eval;
+
+	// Check to make sure this function is being called correctly.
 	if (!lua_istable(L, 1))
 	{
-		lua_pushstring(L, "evaluate() must be called with : syntax.");
+		lua_pushstring(L, "evaluate() must have expression as first parameter (or be called with : operator)");
 		lua_error(L);
 	}
+
+	// Initialize state list if needed.
+	if (evaluate_states == NULL)
+	{
+		evaluate_states = malloc(sizeof(list_t));
+		list_init(evaluate_states);
+		list_attributes_copy(evaluate_states, &evaluate_state_meter, true);
+	}
+
+	// Extract expression.
 	ex = expr_lua_extract_expression(L, 1);
-	result = setjmp(evaluate_jmp);
+
+	// Create a new evaluation state.
+	state.expr = ex;
+	state.lua = L;
+	state.labelFunc = -1;
+	result = setjmp(state.jmp);
 	if (result != 0)
 	{
+		assert(list_size(evaluate_states) > 0);
+		list_delete_at(evaluate_states, list_size(evaluate_states) - 1);
 		lua_pushstring(L, "unable to evaluate expression.");
 		lua_error(L);
 	}
 
-	lua_pushnumber(L, expr_evaluate(ex, NULL, &expr_lua_expression_self_error));
+	// Evaluate the expression.
+	if (lua_isfunction(L, 2))
+	{
+		lua_pushvalue(L, 2);
+		state.labelFunc = lua_gettop(L);
+		list_append(evaluate_states, &state);
+		eval = expr_evaluate(ex, &expr_lua_expression_self_label, &expr_lua_expression_self_error);
+		lua_pop(L, 1);
+		lua_pushnumber(L, eval);
+	}
+	else
+	{
+		list_append(evaluate_states, &state);
+		eval = expr_evaluate(ex, NULL, &expr_lua_expression_self_error);
+		lua_pop(L, 1);
+		lua_pushnumber(L, eval);
+	}
+	assert(list_size(evaluate_states) > 0);
+	list_delete_at(evaluate_states, list_size(evaluate_states) - 1);
 	return 1;
 }
 
