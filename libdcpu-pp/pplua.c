@@ -22,8 +22,10 @@
 #include <osutil.h>
 #include <ppexprlua.h>
 #include <debug.h>
+#include <stdlib.h>
 #include "pplua.h"
 #include "dcpu.h"
+#include "parser.h"
 
 #define HANDLER_TABLE_NAME "__handlers"
 #define HANDLER_FIELD_FUNCTION_NAME "function"
@@ -327,7 +329,8 @@ void pp_lua_handle(struct pp_state* state, void* ud, bstring name, bstring param
 {
 	struct lua_preproc* pp;
 	char* cstr;
-
+	bstring dot;
+	
 	// Convert the name to lowercase.
 	btolower(name);
 	cstr = bstr2cstr(name, '0');
@@ -370,7 +373,19 @@ void pp_lua_handle(struct pp_state* state, void* ud, bstring name, bstring param
 	}
 	list_iterator_stop(&modules);
 
-	printd(LEVEL_WARNING, "warning: no handler for preprocessor directive '%s'.\n", name->data);
+	// ignore warning and pass directive through
+	//printd(LEVEL_WARNING, "warning: no handler for preprocessor directive '%s'.\n", name->data);
+	
+	// FIXME hachque: fix this when you added the support for any kind of parameters
+	// throughput the pp directive (might be assembler recognized directive)
+	btoupper(name);  // ugh this is all soo ugly
+	dot = bfromcstr(".");
+	bconcat(dot, name);
+	bcatcstr(dot, " ");
+	bconcat(dot, parameter); // doesnt work if parameter has to be surrounded by string characters: ""
+	cstr = bstr2cstr(dot, '0'); 
+	handle_pp_lua_print_line(cstr, ud);
+	
 	bdestroy(name);
 	bcstrfree(cstr);
 }

@@ -420,7 +420,18 @@ preprocessor:
 		{
 			// Pass this off to the Lua preprocessor module system.
 			pp_lua_handle(&lstate, scanner, $1, $2);
-		} ;
+		} |
+		CUSTOM WORD // for directives such as .EXPORT _stack_caller_init (no string characters "")
+		{
+			// Pass this off to the Lua preprocessor module system.
+			pp_lua_handle(&lstate, scanner, $1, $2);
+		} |
+		CUSTOM
+		{
+			// Pass this off to the Lua preprocessor module system.
+			// FIXME: the bstring contructor is probably wrong, sry hachque :)
+			pp_lua_handle(&lstate, scanner, $1, bfromcstr(""));
+		};
 
 text:
 		TEXT
