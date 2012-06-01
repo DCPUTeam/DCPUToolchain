@@ -524,13 +524,34 @@ void ddbg_load_symbols(bstring path)
 
 void ddbg_inspect_symbols()
 {
+	unsigned int i;
+	struct dbg_sym* sym;
+	struct dbg_sym_payload_line* payload_line;
+	struct dbg_sym_payload_string* payload_string;
+
 	// Check to see if no symbols are loaded.
 	if (symbols == NULL)
-	{
 		printf("No symbols are loaded.\n");
-		return;
+	else
+	{
+		// Print out a list of symbols.
+		printf("%u symbols are loaded.\n", list_size(symbols));
+		for (i = 0; i < list_size(symbols); i++)
+		{
+			sym = list_get_at(symbols, i);
+			switch (sym->type)
+			{
+				case DBGFMT_SYMBOL_LINE:
+					payload_line = (struct dbg_sym_payload_line*)sym->payload;
+					printd(LEVEL_DEFAULT, "0x%04X: [  line] %s:%u\n", payload_line->address, payload_line->path->data, payload_line->lineno);
+					break;
+				case DBGFMT_SYMBOL_STRING:
+					payload_string = (struct dbg_sym_payload_string*)sym->payload;
+					printd(LEVEL_DEFAULT, "0x%04X: [string] %s\n", payload_string->address, payload_string->data->data);
+					break;
+				default:
+					break;
+			}
+		}
 	}
-
-	// Print out a list of symbols.
-	printf("%u symbols are loaded.\n", list_size(symbols));
 }

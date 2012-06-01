@@ -61,6 +61,6 @@ struct aout_byte* aout_create_metadata_import(char* name);
 struct aout_byte* aout_create_metadata_section(char* name);
 struct aout_byte* aout_create_metadata_output(char* name);
 struct aout_byte* aout_emit(struct aout_byte* byte);
-void aout_write(FILE* out, bool relocatable, bool intermediate);
+uint16_t aout_write(FILE* out, bool relocatable, bool intermediate);
 
 #endif

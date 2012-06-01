@@ -47,6 +47,7 @@ int main(int argc, char* argv[])
 	struct errinfo* errval;
 	list_t symbols;
 	bstring temp = NULL;
+	uint16_t final;
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
@@ -79,6 +80,9 @@ int main(int argc, char* argv[])
 
 	// Set verbosity level.
 	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
+
+	// Set global path variable.
+	osutil_setarg0(bautofree(bfromcstr(argv[0])));
 
 	// Set up error handling.
 	errval = (struct errinfo*)setjmp(errjmp);
@@ -152,13 +156,21 @@ int main(int argc, char* argv[])
 	}
 
 	// Write content.
-	aout_write(img, (gen_relocatable->count > 0), (gen_intermediate->count > 0));
+	final = aout_write(img, (gen_relocatable->count > 0), (gen_intermediate->count > 0));
 	fclose(img);
 	printd(LEVEL_VERBOSE, "assembler: completed successfully.\n");
 
 	// Save debugging symbols to specified file if provided.
 	if (symbols_file->count > 0)
 	{
+		// Set the address of any debugging symbols that don't have an address
+		// yet to the address at the end of the file.
+		list_iterator_start(&symbols);
+		while (list_iterator_hasnext(&symbols))
+			dbgfmt_finalize_symbol(list_iterator_next(&symbols), final);
+		list_iterator_stop(&symbols);
+
+		// Check to ensure that the user isn't trying to write symbol files to stdout.
 		if (strcmp(symbols_file->filename[0], "-") == 0)
 		{
 			printd(LEVEL_ERROR, "assembler: debugging symbols can not be written to stdout.\n");

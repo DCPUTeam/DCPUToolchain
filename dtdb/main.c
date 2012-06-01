@@ -71,11 +71,12 @@ int main(int argc, char** argv)
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
+	struct arg_file* symbols_file = arg_file0("s", "symbols", "<file>", "The file to load symbols from.");
 	struct arg_file* input_file = arg_file0(NULL, NULL, "<file>", "The file to initially load.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { input_file, verbose, quiet, end };
+	void* argtable[] = { show_help, symbols_file, input_file, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -93,7 +94,7 @@ int main(int argc, char** argv)
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
-	
+
 	// Set verbosity level.
 	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 
@@ -105,8 +106,10 @@ int main(int argc, char** argv)
 
 	// Create VM.
 	ddbg_create_vm();
-	
+
 	// Load file if filename is specified.
+	if (symbols_file->count > 0)
+		ddbg_load_symbols(bfromcstr(symbols_file->filename[0]));
 	if (input_file->count > 0)
 	{
 		ddbg_load(bfromcstr(input_file->filename[0]));

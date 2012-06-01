@@ -29,6 +29,7 @@ extern "C"
 #include <pp.h>
 #include <ppfind.h>
 #include <debug.h>
+#include <osutil.h>
 }
 
 extern int yyparse();
@@ -65,9 +66,12 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
-	
+
 	// Set verbosity level.
 	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
+
+	// Set global path variable.
+	osutil_setarg0(bautofree(bfromcstr(argv[0])));
 
 	// Run the preprocessor.
 	ppfind_add_path(bautofree(bfromcstr(".")));
@@ -145,7 +149,7 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
-	
+
 	// Re-open the temporary file for reading.
 	std::ifstream input(temp.c_str(), std::ios::in);
 	if (input.bad() || input.fail())
@@ -161,7 +165,7 @@ int main(int argc, char* argv[])
 	{
 		// Write to file.
 		output = new std::ofstream(output_file->filename[0], std::ios::out | std::ios::trunc);
-		
+
 		if (output->bad() || output->fail())
 		{
 			printd(LEVEL_ERROR, "compiler: output file not readable.\n");

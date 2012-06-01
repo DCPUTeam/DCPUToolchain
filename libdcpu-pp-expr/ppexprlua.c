@@ -162,7 +162,7 @@ int expr_lua_expression_self_representation(lua_State* L)
 	bstring result;
 	if (!lua_istable(L, 1))
 	{
-		lua_pushstring(L, "evaluate() must be called with : syntax.");
+		lua_pushstring(L, "representation() must be called with : syntax.");
 		lua_error(L);
 	}
 	ex = expr_lua_extract_expression(L, 1);

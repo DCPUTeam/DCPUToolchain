@@ -21,6 +21,7 @@
 #include <version.h>
 #include <argtable2.h>
 #include <debug.h>
+#include <osutil.h>
 
 extern int pp_yyparse(void* scanner);
 extern void handle_start(freed_bstring name, FILE* output);
@@ -55,9 +56,12 @@ int main(int argc, char* argv[])
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
-	
+
 	// Set verbosity level.
 	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
+
+	// Set global path variable.
+	osutil_setarg0(bautofree(bfromcstr(argv[0])));
 
 	// Store the path of the input file.
 	path = bfromcstr(input_file->filename[0]);

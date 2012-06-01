@@ -83,6 +83,7 @@ char* pp_trim_and_unescape(char* data)
 <INITIAL>^[ \t]*[\.\#][Mm][Aa][Cc][Rr][Oo]					BEGIN(MACRODEF); return MACRO;
 <INITIAL,MACROCONTENT>^[ \t]*[\.\#][Ee][Nn][Dd][Mm][Aa][Cc][Rr][Oo]		BEGIN(PREPROCESSING); return ENDMACRO;
 <INITIAL>^[ \t]*[\.\#][\.\#]							BEGIN(MACROCALLDEF); return MACROCALL;
+<INITIAL>^[ \t]*[\.\#][A-Za-z]+							BEGIN(PREPROCESSING); yylval->string = bfromcstr(yytext); btrimws(yylval->string); bdelete(yylval->string, 0, 1); return CUSTOM;
 
 	/* String and character analysis */
 

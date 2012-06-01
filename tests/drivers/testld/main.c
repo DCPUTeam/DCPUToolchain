@@ -17,6 +17,7 @@
 #include <bstring.h>
 #include <version.h>
 #include <debug.h>
+#include <osutil.h>
 
 int main(int argc, char* argv[])
 {
@@ -60,6 +61,9 @@ int main(int argc, char* argv[])
 
 	// Set verbosity level.
 	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
+
+	// Set global path variable.
+	osutil_setarg0(bautofree(bfromcstr(argv[0])));
 
 	// Generate the argument list for the linker.
 	ldargs = bfromcstr(argv[0]);

@@ -173,7 +173,11 @@ bstring osutil_getmodulepath()
 	if (env == NULL)
 	{
 		tmp = osutil_getarg0path();
+#ifdef _WIN32
+		bcatcstr(tmp, "\\modules");
+#else
 		bcatcstr(tmp, "/modules");
+#endif
 	}
 	else
 	{

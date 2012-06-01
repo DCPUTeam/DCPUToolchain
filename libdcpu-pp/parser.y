@@ -23,12 +23,16 @@
 #include <bstrlib.h>
 #include <bstraux.h>
 #include <simclist.h>
+#include <lua.h>
 #include <osutil.h>
+#include "pplua.h"
 #include "ppfind.h"
 #include "dcpu.h"
+
 list_t equates;
 list_t scopes;
 list_t macros;
+struct pp_state lstate;
 void pp_discard_buffer();
 void yyerror(void* scanner, const char *str);
 void handle_uline(int line, bstring file, void* current);
@@ -36,6 +40,11 @@ void handle_line(int line, bstring file, void* current);
 void handle_start(freed_bstring name, FILE* current);
 void handle_output(bstring output, void* scanner);
 int handle_include(bstring fname, void* current);
+void handle_pp_lua_print(const char* text, void* current);
+void handle_pp_lua_print_line(const char* text, void* current);
+void handle_pp_lua_scope_enter(bool output, void* current);
+void handle_pp_lua_scope_exit(void* current);
+void handle_pp_lua_add_symbol(const char* symbol, void* current);
 bool is_globally_initialized = false;
 
 struct equate_entry
@@ -106,7 +115,7 @@ struct macrodef_entry* active_macro = NULL;
 // Define our lexical token names.
 %token <token> LINE ULINE INCLUDE EQUATE IF IFDEF IFNDEF ELSE ENDIF MACRO
 %token <token> ENDMACRO PARAM_OPEN PARAM_CLOSE COMMA UNDEF MACROCALL
-%token <string> STRING WORD
+%token <string> STRING WORD CUSTOM
 %token <any> WHITESPACE NEWLINE TEXT
 %token <number> NUMBER
 
@@ -137,6 +146,14 @@ struct macrodef_entry* active_macro = NULL;
 		active_scope = malloc(sizeof(struct scope_entry));
 		active_scope->active = true;
 		is_globally_initialized = true;
+
+		// Initialize Lua.
+		lstate.pp_lua_print = &handle_pp_lua_print;
+		lstate.pp_lua_print_line = &handle_pp_lua_print_line;
+		lstate.pp_lua_scope_enter = &handle_pp_lua_scope_enter;
+		lstate.pp_lua_scope_exit = &handle_pp_lua_scope_exit;
+		lstate.pp_lua_add_symbol = &handle_pp_lua_add_symbol;
+		pp_lua_init();
 	}
 };
 
@@ -398,6 +415,11 @@ preprocessor:
 				// TODO: Throw an error here because we encountered
 				// one more .ENDIF than we should have.
 			}
+		} |
+		CUSTOM STRING
+		{
+			// Pass this off to the Lua preprocessor module system.
+			pp_lua_handle(&lstate, scanner, $1, $2);
 		} ;
 
 text:
@@ -586,4 +608,27 @@ int handle_include(bstring fname, void* current)
 	ppfind_remove_path(bautocpy(dir));
 
 	return true;
+}
+
+void handle_pp_lua_print(const char* text, void* current)
+{
+	fprintf(pp_yyget_out((yyscan_t)current), "%s", text);
+}
+
+void handle_pp_lua_print_line(const char* text, void* current)
+{
+	fprintf(pp_yyget_out((yyscan_t)current), "%s\n", text);
+}
+
+void handle_pp_lua_scope_enter(bool output, void* current)
+{
+}
+
+void handle_pp_lua_scope_exit(void* current)
+{
+}
+
+void handle_pp_lua_add_symbol(const char* symbol, void* current)
+{
+	fprintf(pp_yyget_out((yyscan_t)current), ".SYMBOL %s\n", symbol);
 }

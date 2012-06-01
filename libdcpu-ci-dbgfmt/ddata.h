@@ -27,6 +27,7 @@
 #define DBGFMT_UNDETERMINED	0xFFFF
 
 #define DBGFMT_SYMBOL_LINE	0x1
+#define DBGFMT_SYMBOL_STRING	0x2
 
 struct dbg_sym_file
 {
@@ -49,6 +50,12 @@ struct dbg_sym_payload_line
 	uint16_t address;
 };
 
+struct dbg_sym_payload_string
+{
+	bstring data;
+	uint16_t address;
+};
+
 struct dbgfmt_serialization_result
 {
 	uint8_t* bytestream;
@@ -58,13 +65,14 @@ struct dbgfmt_serialization_result
 int dbgfmt_write(bstring path, list_t* symbols);
 list_t* dbgfmt_read(bstring path);
 
-
 void dbgfmt_update_symbol(struct dbg_sym * (*symbols)[4], uint16_t symbols_count, uint16_t address);
+void dbgfmt_finalize_symbol(struct dbg_sym* symbol, uint16_t address);
 
 struct dbg_sym* dbgfmt_create_symbol(uint8_t type, void* payload);
 struct dbg_sym_payload_line* dbgfmt_create_symbol_line(bstring path, uint16_t lineno, uint16_t address);
-
+struct dbg_sym_payload_string* dbgfmt_create_symbol_string(bstring data, uint16_t address);
 
 struct dbg_sym_payload_line* dbgfmt_get_symbol_line(struct dbg_sym* bytes);
+struct dbg_sym_payload_string* dbgfmt_get_symbol_string(struct dbg_sym* bytes);
 
 #endif

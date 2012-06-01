@@ -22,11 +22,6 @@
 #include "parser.h"
 #include "dcpu.h"
 
-/*int yywrap()
-{
-	return 1;
-}*/
-
 // Filename tracking for language producing assembly.
 int	yyulineno = 0;
 bstring yyufilename = NULL;
@@ -45,6 +40,7 @@ bstring yyfilename = NULL;
 %x IN_CHAR
 %x IN_STRING
 %x IN_SECTION
+%x IN_SYMBOL
 
 %%
 
@@ -65,6 +61,9 @@ bstring yyfilename = NULL;
 \.[Ff][Ii][Ll][Ll]				yylval.number = FILL; return FILL;
 \.[Ss][Ee][Cc][Tt][Ii][Oo][Nn]			yylval.number = SECTION; return KEYWORD;
 \.[Oo][Uu][Tt][Pp][Uu][Tt]			yylval.number = OUTPUT; return KEYWORD;
+\.[Ss][Yy][Mm][Bb][Oo][Ll][ \t]*		BEGIN(IN_SYMBOL); yylval.number = SYMBOL; return KEYWORD;
+<IN_SYMBOL>[^\n]+				yylval.string = bfromcstr(yytext); return STRING;
+<IN_SYMBOL>(\r\n|\r|\n)				BEGIN(INITIAL); return NEWLINE;
 
 	/* Opcodes as numbers support */
 

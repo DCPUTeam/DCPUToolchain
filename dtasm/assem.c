@@ -290,6 +290,8 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 	return result;
 }
 
+list_t newsyms;
+
 void process_line(struct ast_node_line* line)
 {
 	struct instruction_mapping* insttype;
@@ -307,6 +309,14 @@ void process_line(struct ast_node_line* line)
 		case type_keyword:
 			switch (line->keyword)
 			{
+				case SYMBOL:
+					printd(LEVEL_VERBOSE, ".SYMBOL %s", bstr2cstr(line->keyword_data_string, '0'));
+
+					// Emit debugging symbol.
+					list_append(&newsyms, dbgfmt_create_symbol(DBGFMT_SYMBOL_STRING, dbgfmt_create_symbol_string(line->keyword_data_string, DBGFMT_UNDETERMINED)));
+
+					break;
+
 				case SECTION:
 					printd(LEVEL_VERBOSE, ".SECTION %s", bstr2cstr(line->keyword_data_string, '0'));
 
@@ -481,6 +491,16 @@ void process_line(struct ast_node_line* line)
 	// If we can associate debugging symbols with this instruction...
 	if (result != NULL)
 	{
+		// While the new symbols list is not empty, copy those symbols
+		// into the output and associate.
+		while (list_size(&newsyms) > 0)
+		{
+			newsym = list_extract_at(&newsyms, 0);
+			printd(LEVEL_DEBUG, "Debugging custom symbol: %i\n", newsym->length);
+			result->symbols[result->symbols_count++] = newsym;
+			list_append(assem_dbg_symbols, newsym);
+		}
+
 		// If the line information is provided, output
 		// debugging symbols.
 		if (line != NULL && line->file != NULL)
@@ -510,6 +530,7 @@ void process_line(struct ast_node_line* line)
 void process_lines(struct ast_node_lines* lines)
 {
 	struct ast_node_line* current;
+	struct dbg_sym* newsym;
 
 	// First reverse the lines.
 	reverse_lines(lines);
@@ -519,12 +540,21 @@ void process_lines(struct ast_node_lines* lines)
 	// we reversed it).
 	current = lines->last;
 
+	list_init(&newsyms);
 	while (current != NULL)
 	{
 		// Process each line.
 		process_line(current);
 		current = current->prev;
 	}
+	while (list_size(&newsyms) > 0)
+	{
+		// Get each trailing debug symbol and store it in the list anyway.
+		newsym = list_extract_at(&newsyms, 0);
+		printd(LEVEL_DEBUG, "Debugging trailing symbol.\n");
+		list_append(assem_dbg_symbols, newsym);
+	}
+	list_destroy(&newsyms);
 }
 
 void process_root(struct ast_node_root* root, list_t* symbols)

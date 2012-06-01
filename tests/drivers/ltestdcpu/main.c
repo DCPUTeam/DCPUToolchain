@@ -16,6 +16,7 @@
 #include <bstring.h>
 #include <version.h>
 #include <debug.h>
+#include <osutil.h>
 #include "tests.h"
 
 int main(int argc, char* argv[])
@@ -49,6 +50,9 @@ int main(int argc, char* argv[])
 
 	// Set verbosity level.
 	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
+
+	// Set global path variable.
+	osutil_setarg0(bautofree(bfromcstr(argv[0])));
 
 	// Copy the test name and run the appropriate test.
 	test = bfromcstr(test_name->sval[0]);

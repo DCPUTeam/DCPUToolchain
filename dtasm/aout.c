@@ -344,7 +344,7 @@ uint16_t aout_get_label_address(bstring name)
 	return 0;
 }
 
-void aout_write(FILE* out, bool relocatable, bool intermediate)
+uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 {
 	struct aout_byte* current_outer;
 	struct aout_byte* current_inner;
@@ -604,4 +604,6 @@ void aout_write(FILE* out, bool relocatable, bool intermediate)
 	}
 
 	fflush(out);
+
+	return (uint16_t)((ftell(out) - true_origin) / 2);
 }

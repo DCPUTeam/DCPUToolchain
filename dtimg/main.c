@@ -14,6 +14,7 @@
 #include <argtable2.h>
 #include <version.h>
 #include <debug.h>
+#include <osutil.h>
 #include "base.h"
 #include "micro.h"
 
@@ -57,6 +58,9 @@ int main(int argc, char* argv[])
 
 	// Set verbosity level.
 	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
+
+	// Set global path variable.
+	osutil_setarg0(bautofree(bfromcstr(argv[0])));
 
 	// Check to make sure target is correct.
 	if (fs_arg->count == 0)
