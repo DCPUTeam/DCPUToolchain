@@ -15,6 +15,7 @@
 #include <CompilerException.h>
 #include "NDeclarations.h"
 #include "NFunctionDeclaration.h"
+#include "NArrayDeclaration.h"
 
 AsmBlock* NDeclarations::compile(AsmGenerator& context)
 {
@@ -38,10 +39,30 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 
 	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
 	{
-		if ((*i)->cType != "statement-declaration-variable")
-			continue;
-
-		map->insert(map->end(), StackPair(((NVariableDeclaration*)(*i))->id.name, ((NVariableDeclaration*)(*i))->type));
+		if ((*i)->cType == "statement-declaration-variable")
+		{
+			NVariableDeclaration* nvd = (NVariableDeclaration*)(*i);
+			map->insert(map->end(), StackPair(nvd->id.name, nvd->type));
+			// FIXME: Check to make sure variables do not clash with arguments
+			//	  or other variable declarations (hint: check the map to
+			//	  see if it already has a match).
+		}
+		else if ((*i)->cType == "statement-declaration-array")
+		{
+			// for arrays we have to push
+			NArrayDeclaration* nad = (NArrayDeclaration*)(*i);
+			std::string pointerName = nad->id.name;
+			// TODO maybe move the "<arraymem>" internal tag into some unified variable
+			std::string memAreaName = "<arraymem>_" + pointerName;
+			IType* pointerType = nad->getPointerType();
+			IType* memAreaType = nad->getMemAreaType();
+			// insert the array pointer and the mem area into the map
+			map->insert(map->end(), StackPair(pointerName, pointerType));
+			map->insert(map->end(), StackPair(memAreaName, memAreaType));
+			// FIXME: Check to make sure variables do not clash with arguments
+			//	  or other variable declarations (hint: check the map to
+			//	  see if it already has a match).
+		}
 	}
 
 	context.m_GlobalFrame = new StackFrame(context, *map);
@@ -52,23 +73,41 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 
 	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
 	{
-		if ((*i)->cType != "statement-declaration-variable")
-			continue;
+		if ((*i)->cType == "statement-declaration-variable")
+		{
+			// Calculate size.
+			unsigned int size = ((NVariableDeclaration*)(*i))->type->getWordSize(context);
 
-		// Calculate size.
-		unsigned int size = ((NVariableDeclaration*)(*i))->type->getWordSize(context);
+			// We can't have types with 0 word storage in the global scope.
+			if (size <= 0)
+				throw new CompilerException(this->line, this->file, "Unable to store global variable with a type that has size of 0 words.");
 
-		// We can't have types with 0 word storage in the global scope.
-		if (size <= 0)
-			throw new CompilerException(this->line, this->file, "Unable to store global variable with a type that has size of 0 words.");
+			// Output zero'd data sections.
+			*block <<  "	DAT 0";
 
-		// Output zero'd data sections.
-		*block <<  "	DAT 0";
+			for (unsigned int b = 1; b < size; b++)
+				*block <<  ", 0";
 
-		for (unsigned int b = 1; b < size; b++)
-			*block <<  ", 0";
+			*block << std::endl;
+		}
+		else if ((*i)->cType == "statement-declaration-array")
+		{
+			// Calculate size.
+			unsigned int size = ((NArrayDeclaration*)(*i))->getPointerType()->getWordSize(context);
+			size += ((NArrayDeclaration*)(*i))->getMemAreaType()->getWordSize(context);
 
-		*block << std::endl;
+			// We can't have types with 0 word storage in the global scope.
+			if (size <= 0)
+				throw new CompilerException(this->line, this->file, "Unable to store global variable with a type that has size of 0 words.");
+
+			// Output zero'd data sections.
+			*block <<  "	DAT 0";
+
+			for (unsigned int b = 1; b < size; b++)
+				*block <<  ", 0";
+
+			*block << std::endl;
+		}
 	}
 
 	*block << std::endl;
@@ -82,15 +121,16 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 
 		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
 		{
-			if ((*i)->cType != "statement-declaration-variable")
-				continue;
+			if ((*i)->cType == "statement-declaration-variable"
+				|| (*i)->cType == "statement-declaration-array")
+			{
+				// Compile initializer.
+				AsmBlock* inner = (*i)->compile(context);
+				*block << *inner;
 
-			// Compile initializer.
-			AsmBlock* inner = (*i)->compile(context);
-			*block << *inner;
-
-			if (inner != NULL)
-				delete inner;
+				if (inner != NULL)
+					delete inner;
+			}
 		}
 
 		// Output the code section.
@@ -101,11 +141,20 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 		// Ensure we don't have any global variable initializers declared here.
 		for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
 		{
-			if ((*i)->cType != "statement-declaration-variable")
-				continue;
+			if ((*i)->cType == "statement-declaration-variable")
+				if (((NVariableDeclaration*)(*i))->initExpr != NULL)
+					throw new CompilerException(this->line, this->file, "Initializers not permitted on global variables for assemblers that don't support sections.");
+			if ((*i)->cType == "statement-declaration-array")
+			{
+				if (((NArrayDeclaration*)(*i))->m_initExprs != NULL)
+					throw new CompilerException(this->line, this->file, "Initializers not permitted on global variables for assemblers that don't support sections.");
+				// Compile initializer.
+				AsmBlock* inner = (*i)->compile(context);
+				*block << *inner;
 
-			if (((NVariableDeclaration*)(*i))->initExpr != NULL)
-				throw new CompilerException(this->line, this->file, "Initializers not permitted on global variables for assemblers that don't support sections.");
+				if (inner != NULL)
+					delete inner;
+			}
 		}
 	}
 
@@ -129,7 +178,8 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 	// Handle function definitions.
 	for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
 	{
-		if ((*i)->cType == "statement-declaration-variable")
+		if ((*i)->cType == "statement-declaration-variable"
+			|| (*i)->cType == "statement-declaration-array")
 			continue;
 
 		AsmBlock* inner = (*i)->compile(context);

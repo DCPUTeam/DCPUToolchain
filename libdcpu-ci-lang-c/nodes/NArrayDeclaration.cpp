@@ -38,7 +38,6 @@ NArrayDeclaration::NArrayDeclaration(IType* type, NIdentifier& id, DimensionsLis
 	{
 		numPointers = 0;
 	}
-	std::cout << "num pointers " << numPointers << " and num els " << numElements << std::endl;
 
 	this->m_pointerType = t;
 	this->m_numElements = numElements;

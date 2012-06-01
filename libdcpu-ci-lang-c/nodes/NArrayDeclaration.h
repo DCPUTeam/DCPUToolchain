@@ -24,7 +24,7 @@
 class NArrayDeclaration : public NDeclaration
 {
 		DimensionsList* m_dims;
-		ExpressionList* m_initExprs;
+		
 
 		uint16_t m_numElements;
 
@@ -33,7 +33,7 @@ class NArrayDeclaration : public NDeclaration
 		IType* m_memAreaType;
 
 	public:
-
+		ExpressionList* m_initExprs;
 		NIdentifier& id;
 
 		IType* getPointerType();
