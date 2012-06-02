@@ -29,5 +29,6 @@ struct lconv_entry
 list_t* list_create();
 list_t* list_convert(struct lprov_entry* first);
 list_t* list_clone(list_t* original);
+struct lprov_entry* list_revert(list_t* list);
 
 #endif

@@ -117,7 +117,7 @@ function(add_dcpu_image target)
 	add_custom_command(
 		OUTPUT "${OUTPUT_DIR}/stdlib.dlib16"
 		COMMAND ${KERNEL_TOOLS}/dtld${CMAKE_EXECUTABLE_SUFFIX}
-			ARGS -l static -o "${OUTPUT_DIR}/stdlib.dlib16" ${tasmoutputs} ${tcoutputs}
+			ARGS --keep-outputs -l static -o "${OUTPUT_DIR}/stdlib.dlib16" ${tasmoutputs} ${tcoutputs}
 		DEPENDS dtld ${tasmoutputs} ${tcoutputs}
 		COMMENT "Linking stdlib.dlib16 as static library with DCPU-Toolchain...")
 

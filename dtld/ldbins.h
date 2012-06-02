@@ -24,7 +24,7 @@
 void bins_init();
 struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct lprov_entry* required, struct lprov_entry* adjustment, struct lprov_entry* section, struct lprov_entry* output);
 bool bins_load(freed_bstring path);
-void bins_save(freed_bstring name, freed_bstring path);
+void bins_save(freed_bstring name, freed_bstring path, freed_bstring target, bool keepOutputs);
 bool bins_write(freed_bstring name, uint16_t word);
 void bins_associate();
 void bins_sectionize();

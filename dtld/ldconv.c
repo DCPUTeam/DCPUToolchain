@@ -77,6 +77,35 @@ list_t* list_convert(struct lprov_entry* first)
 	return list;
 }
 
+struct lprov_entry* list_revert(list_t* list)
+{
+	struct lprov_entry* first = NULL;
+	struct lprov_entry* previous = NULL;
+	struct lprov_entry* current = NULL;
+	struct lconv_entry* entry = NULL;
+
+	if (list == NULL)
+		return NULL;
+
+	list_iterator_start(list);
+	while (list_iterator_hasnext(list))
+	{
+		entry = list_iterator_next(list);
+		current = malloc(sizeof(struct lprov_entry));
+		current->address = entry->address;
+		current->label = bstr2cstr(entry->label, '0');
+		current->next = NULL;
+		if (previous != NULL)
+			previous->next = current;
+		if (first == NULL)
+			first = current;
+		previous = current;
+	}
+	list_iterator_stop(list);
+
+	return first;
+}
+
 list_t* list_clone(list_t* original)
 {
 	list_t* list = malloc(sizeof(list_t));

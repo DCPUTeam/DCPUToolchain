@@ -161,7 +161,7 @@ bool bins_load(freed_bstring path)
 /// @param name The name of the bin to save.
 /// @param path The path to save the bin to.
 ///
-void bins_save(freed_bstring name, freed_bstring path)
+void bins_save(freed_bstring name, freed_bstring path, freed_bstring target, bool keepOutputs)
 {
 	FILE* out;
 	struct ldbin* bin = list_seek(&ldbins.bins, name.ref);
@@ -173,6 +173,19 @@ void bins_save(freed_bstring name, freed_bstring path)
 	{
 		printd(LEVEL_ERROR, "error: unable to open output path to save bins.");
 		exit(1);
+	}
+
+	// Check to see whether we need to write out
+	// the linker table.
+	if (biseqcstr(target.ref, "static"))
+	{
+		// FIXME: Free the result of list_revert (or better yet
+		// convert objfmt library to use simclist).
+		fwrite(ldata_objfmt, 1, strlen(ldata_objfmt) + 1, out);
+		if (keepOutputs)
+			objfile_save(out, list_revert(bin->provided), list_revert(bin->required), list_revert(bin->adjustment), list_revert(bin->section), list_revert(bin->output));
+		else
+			objfile_save(out, list_revert(bin->provided), list_revert(bin->required), list_revert(bin->adjustment), list_revert(bin->section), NULL);
 	}
 
 	// Write each byte from the bin.
@@ -464,8 +477,14 @@ void bins_flatten(freed_bstring name)
 		bconcat(desired, entry->label);
 		bin = list_seek(&ldbins.bins, desired);
 
-		// TODO: Throw a proper error.
-		assert(bin != NULL);
+		// If there's no such output bin, that means that
+		// there were no non-empty sections to fill it (because
+		// the bin won't have been created during sectionization).
+		if (bin == NULL)
+		{
+			printd(LEVEL_DEBUG, "there is no code that needs to be copied into %s; skipping\n", desired->data);
+			continue;
+		}
 
 		// Insert the required code.
 		printd(LEVEL_DEBUG, "copying 0x%04X words from 0x%04X in %s to 0x%04X in %s\n", list_size(&bin->words), 0, bin->name->data, entry->address, target->name->data);
