@@ -2,8 +2,8 @@
 
 	File:		TypePosition.cpp
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang
+	Project:	DCPU-16 Toolchain
+	Component:	LibDCPU-CI-Lang
 
 	Authors:	James Rhodes
 			Patrick Flick
@@ -12,6 +12,7 @@
 
 **/
 
+/*
 #include <sstream>
 #include "TypePosition.h"
 #include "CompilerException.h"
@@ -54,7 +55,7 @@ std::string TypePosition::getAddress()
 
 	if (!this->m_Found)
 		throw new CompilerException(0, "<internal>", "Attempted to get reference position of unknown type position result (internal error).");
-	
+
 	if (this->m_Function)
 		sstr << "cfunc_" << this->m_FunctionName;
 	else if (this->m_Global)
@@ -122,3 +123,4 @@ std::string TypePosition::pushAddress(char registr)
 
 	return sstr.str();
 }
+*/

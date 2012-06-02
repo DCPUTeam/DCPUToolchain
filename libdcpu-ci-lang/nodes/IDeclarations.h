@@ -14,13 +14,23 @@
 #ifndef __DCPU_COMP_INTERFACES_DECLARATIONS_H
 #define __DCPU_COMP_INTERFACES_DECLARATIONS_H
 
-#include <string>
+#include <bstring.h>
 #include "IFunctionDeclaration.h"
 
-class IDeclarations
+// Class data.
+#define MEMBERS_DATA_IDeclarations
+
+// Class functions.
+#define MEMBERS_FUNCTIONS_IDeclarations				\
+	IFunctionDeclaration* (*getFunction)(bstring name);
+
+// Class structure.
+typedef struct
 {
-	public:
-		virtual IFunctionDeclaration* getFunction(std::string name) = 0;
-};
+	CLASS_TYPE(IDeclarations)
+	CLASS_OPERATORS(IDeclarations)
+	MEMBERS_DATA_IDeclarations
+	MEMBERS_FUNCTIONS_IDeclarations
+} IDeclarations;
 
 #endif

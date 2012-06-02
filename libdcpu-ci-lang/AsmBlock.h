@@ -2,8 +2,8 @@
 
 	File:		AsmBlock.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang
+	Project:	DCPU-16 Toolchain
+	Component:	LibDCPU-CI-Lang
 
 	Authors:	James Rhodes
 
@@ -14,35 +14,33 @@
 #ifndef __DCPU_LIBDCC_ASMBLOCK_H
 #define __DCPU_LIBDCC_ASMBLOCK_H
 
-#include <string>
-#include <iostream>
-#include <sstream>
+#include <class.h>
+#include <bstring.h>
 
-class AsmBlock
+// Class data.
+#define MEMBERS_DATA_AsmBlock					\
+	bstring m_Assembly;
+
+// Class functions.
+#define MEMBERS_FUNCTIONS_AsmBlock						\
+	void (*write_char)(THIS(AsmBlock), char input);				\
+	void (*write_const_size_t)(THIS(AsmBlock), const size_t input);		\
+	void (*write_const_char)(THIS(AsmBlock), const char input[]);		\
+	void (*write_stream)(THIS(AsmBlock), struct bStream* stream);		\
+	void (*write_string)(THIS(AsmBlock), bstring input);			\
+	void (*write_asmblock)(THIS(AsmBlock), struct _AsmBlock* block);
+
+// Class structure.
+typedef struct _AsmBlock
 {
-	private:
-		std::string m_Assembly;
+	CLASS_TYPE(AsmBlock)
+	CLASS_OPERATORS(AsmBlock)
+	MEMBERS_DATA_AsmBlock
+	MEMBERS_FUNCTIONS_AsmBlock
+} AsmBlock;
 
-		typedef std::basic_ostream<char, std::char_traits<char> > _couttype;
-		typedef _couttype& (*_stdendl)(_couttype&);
-
-	public:
-		AsmBlock();
-
-		friend AsmBlock& operator<< (AsmBlock& block, char& input);
-		friend AsmBlock& operator<< (AsmBlock& block, const size_t& input);
-		friend AsmBlock& operator<< (AsmBlock& block, const char input[]);
-		friend AsmBlock& operator<< (AsmBlock& block, std::ifstream& input);
-		friend AsmBlock& operator<< (AsmBlock& block, const std::string& input);
-		friend AsmBlock& operator<< (AsmBlock& block, const AsmBlock& input);
-		friend std::ostream& operator<< (std::ostream& output, const AsmBlock& block);
-		AsmBlock& operator<<(_stdendl manip)
-		{
-			std::stringstream sstr;
-			sstr << std::endl;
-			this->m_Assembly += sstr.str();
-			return *this;
-		}
-};
+// Class constructors.
+AsmBlock* new_AsmBlock();
+void delete_AsmBlock(THIS(AsmBlock));
 
 #endif

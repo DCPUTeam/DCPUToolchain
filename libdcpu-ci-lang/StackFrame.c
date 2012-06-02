@@ -2,8 +2,8 @@
 
 	File:		StackFrame.cpp
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang
+	Project:	DCPU-16 Toolchain
+	Component:	LibDCPU-CI-Lang
 
 	Authors:	James Rhodes
 
@@ -11,6 +11,7 @@
 
 **/
 
+/*
 #include "StackFrame.h"
 
 // Gets a relative stack position by the variable name.
@@ -110,3 +111,4 @@ uint16_t StackFrame::getLocalsSize()
 
 	return size;
 }
+*/

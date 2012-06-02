@@ -2,8 +2,8 @@
 
 	File:		AsmGenerator.cpp
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang
+	Project:	DCPU-16 Toolchain
+	Component:	LibDCPU-CI-Lang
 
 	Authors:	James Rhodes
 
@@ -11,6 +11,7 @@
 
 **/
 
+/*
 #include <fstream>
 #include <cctype>
 #include <algorithm>
@@ -100,3 +101,4 @@ std::string AsmGenerator::getRandomString(std::string::size_type sz)
 	std::generate_n(std::back_inserter(s), sz, AsmGenerator::getRandomCharacter);
 	return s;
 }
+*/

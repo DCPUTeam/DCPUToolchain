@@ -2,8 +2,8 @@
 
 	File:		Assembler.cpp
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang
+	Project:	DCPU-16 Toolchain
+	Component:	LibDCPU-CI-Lang
 
 	Authors:	James Rhodes
 
@@ -12,6 +12,7 @@
 
 **/
 
+/*
 #include <exception>
 #include <stdexcept>
 #include "Assembler.h"
@@ -51,3 +52,4 @@ bool Assembler::hasAssembler(std::string name)
 	std::map<std::string, const Assembler*>::iterator i = Assembler::m_Assemblers.find(name);
 	return (i != Assembler::m_Assemblers.end());
 }
+*/

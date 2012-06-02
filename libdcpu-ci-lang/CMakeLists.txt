@@ -9,4 +9,6 @@ endif(NOT DEFINED IS_ROOT)
 
 # Define the libdcc project.
 dt_project(library nodes)
-
+dt_needs(bstring)
+dt_needs(simclist)
+dt_needs(libdcpu)
