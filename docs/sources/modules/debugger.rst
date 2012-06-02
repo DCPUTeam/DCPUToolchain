@@ -32,7 +32,8 @@ Function Hooks
         :noindex:
 
         Registers the specified `handler` function with the specified
-        command `name`.
+        command `name`.  Commands are registered in a
+        case-insensitive manner.
         
         .. py:function:: handler(state, params)
             :noindex:
@@ -45,7 +46,14 @@ Function Hooks
         :noindex:
 
         Registers the specified `handler` to fire every time the
-        `type` event fires.  Supported events are "cycle" and "write".
+        `type` event fires.  Supported events are "precycle",
+        "postcycle", "write", "break", "step" and "next".  Hooks
+        are registered in a case-insensitive manner.
+        
+        .. note::
+            At this time you can only have one function registered
+            as a hook for given event (the same way you can only have
+            one function registered for handling a given command).
         
         .. py:function:: handler(state)
             :noindex:
@@ -58,6 +66,11 @@ Function Hooks
 
         Registers the specified `handler` to fire when symbols are hit
         in the natural course of execution.
+        
+        .. note::
+            At this time you can only have one function registered
+            for handling symbols (the same way you can only have
+            one function registered for handling a given command).
         
         .. py:function:: handler(state, symbol)
             :noindex:
@@ -75,12 +88,16 @@ Function Hooks
         `cpu` is a table matching :py:class:`cpu` representing
         the current state of the virtual machine.
     
-    .. py:function:: break()
+    .. py:function:: _break()
         :noindex:
     
         Breaks execution of the virtual machine (if it was running)
         and drops the debugger back to accepting commands.
-            
+        
+        .. note::
+            This function is named "_break" and not "break" due to
+            "break" being a reserved word in the Lua lexer.
+        
 Module Example
 -------------------
 
@@ -90,25 +107,33 @@ if an assertion is not true.
 .. code-block:: lua
 
     function assert_handler(state, symbol)
-        -- check to see if it's our kind of symbol.
-        if (string.sub(symbol, 0, #"assertion:")) then
-            -- handle assertion
-            local expr = expression_create(string.sub(symbol, #"assertion:"))
-            if (expr.evaluate() ~= 0) then
-                -- assertion failed, break
-                print("assertion (" .. string.sub(symbol, #"assertion:") .. ") != 0")
-                state.break()
-            end
+      function resolve_label(needed)
+        if (state.cpu.registers[needed] == nil) then
+          state:_break()
+          error("unable to resolve '" .. needed .. "' for assertion evaluation (halted vm)")
+        else
+          return state.cpu.registers[needed]
         end
+      end
+      -- check to see if it's our kind of symbol.
+      if (string.sub(symbol, 0, #"assertion:") == "assertion:") then
+        -- handle assertion
+        local expr = expression_create(string.sub(symbol, #"assertion:" + 1))
+        if (expr:evaluate(resolve_label) ~= 1) then
+          -- assertion failed, break
+          print("assertion \"" .. string.sub(symbol, #"assertion:" + 1) .. "\" failed.")
+          state:_break()
+        end
+      end
     end
 
     function setup()
-        -- perform setup
-        add_symbol_hook(assert_handler)
+      -- perform setup
+      add_symbol_hook(assert_handler)
     end
 
     MODULE = {
-        Type = "Debugger",
-        Name = "Assertion Module",
-        Version = "1.0"
+      Type = "Debugger",
+      Name = "Assertion Module",
+      Version = "1.0"
     };

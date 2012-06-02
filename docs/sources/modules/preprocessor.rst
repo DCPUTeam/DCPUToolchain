@@ -28,15 +28,12 @@ Function Hooks
     The following functions are available during the :py:func:`setup`
     call:
     
-    .. py:function:: add_preprocessor_directive(name, handler[, flattenParams, noEvaluation])
+    .. py:function:: add_preprocessor_directive(name, handler)
         :noindex:
 
         Registers the specified `handler` function with the specified
-        directive `name`.  If `flattenParams` is true, then a single
-        string representing the rest of the line will be passed to
-        the handler (instead of the line being parsed by the lexer).
-        If `noEvaluation` is true, expression trees will be passed
-        as-is instead of evaluated.
+        directive `name`.  Directives are registered in a
+        case-insensitive manner.
         
         .. py:function:: handler(state, params)
             :noindex:
@@ -105,22 +102,23 @@ assertion debugging module is loaded.
 .. code-block:: lua
 
     function assert_handler(state, params)
-        -- we expect a single parameter that is an expression.
-        if (#params ~= 1 or params[0].type ~= "EXPRESSION")
-            print("error: .ASSERT directive expects single expression parameter.")
-        end
-        
-        -- output a symbol for the expression.
-        state.add_symbol("assertion:" .. params[0].representation());
+      -- we expect a single parameter that is an expression.
+      if (#params ~= 1 or params[1].type ~= "STRING") then
+        error("error: .ASSERT directive expects single expression parameter.")
+      end
+      local expr = expression_create(params[1].value);
+
+      -- output a symbol for the expression.
+      state:add_symbol("assertion:" .. expr:representation());
     end
 
     function setup()
-        -- perform setup
-        add_preprocessor_directive("ASSERT", assert_handler, false, true)
+      -- perform setup
+      add_preprocessor_directive("ASSERT", assert_handler, false, true)
     end
 
     MODULE = {
-        Type = "Preprocessor",
-        Name = ".ASSERT Directive",
-        Version = "1.0"
+      Type = "Preprocessor",
+      Name = ".ASSERT directive",
+      Version = "1.0"
     };

@@ -209,6 +209,11 @@ void dbg_lua_init()
 
 	// Get the module path.
 	modpath = osutil_getmodulepath();
+	if (modpath == NULL)
+	{
+		bdestroy(ext);
+		return;
+	}
 
 	// Attempt to open the module directory.
 	dir = opendir(modpath->data);
