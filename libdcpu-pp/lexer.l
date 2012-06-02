@@ -21,8 +21,6 @@
 #include <simclist.h>
 #include "parser.h"
 
-#define HANDLE ECHO
-
 char* pp_trim_and_unescape(char* data)
 {
 	unsigned int i = 0, a = 0;

@@ -109,6 +109,7 @@ struct macrodef_entry* active_macro = NULL;
 	int* token;
 	struct macrodef_entry* macro;
 	struct macroarg_entry* arg;
+	struct customarg_entry* carg;
 	list_t list;
 }
 
@@ -124,7 +125,8 @@ struct macrodef_entry* active_macro = NULL;
 %type <string> text
 %type <macro> macrodef
 %type <arg> callarg
-%type <list> macrodefargs macrocallargs
+%type <carg> customarg
+%type <list> macrodefargs macrocallargs customargs
 
 // Start at the root node.
 %start root
@@ -416,21 +418,44 @@ preprocessor:
 				// one more .ENDIF than we should have.
 			}
 		} |
-		CUSTOM STRING
+		CUSTOM customargs
 		{
 			// Pass this off to the Lua preprocessor module system.
-			pp_lua_handle(&lstate, scanner, $1, $2);
+			pp_lua_handle(&lstate, scanner, $1, &$2);
+		};
+		
+customargs:
+		/* empty */
+		{
+			list_init(&$$);
 		} |
-		CUSTOM WORD // for directives such as .EXPORT _stack_caller_init (no string characters "")
+		customargs customarg
 		{
-			// Pass this off to the Lua preprocessor module system.
-			pp_lua_handle(&lstate, scanner, $1, $2);
+			$$ = $1;
+			list_append(&$$, $2);
+		} ;
+
+customarg:
+		WORD
+		{
+			$$ = malloc(sizeof(struct customarg_entry));
+			$$->word = $1;
+			$$->string = NULL;
+			$$->number = 0;
 		} |
-		CUSTOM
+		STRING
 		{
-			// Pass this off to the Lua preprocessor module system.
-			// FIXME: the bstring contructor is probably wrong, sry hachque :)
-			pp_lua_handle(&lstate, scanner, $1, bfromcstr(""));
+			$$ = malloc(sizeof(struct customarg_entry));
+			$$->word = NULL;
+			$$->string = $1;
+			$$->number = 0;
+		} |
+		NUMBER
+		{
+			$$ = malloc(sizeof(struct customarg_entry));
+			$$->word = NULL;
+			$$->string = NULL;
+			$$->number = $1;
 		};
 
 text:
@@ -467,6 +492,7 @@ macrodef:
 			}
 		} ;
 
+
 macrodefargs:
 		WORD
 		{
@@ -496,15 +522,18 @@ callarg:
 		{
 			$$ = malloc(sizeof(struct macroarg_entry));
 			$$->string = $1;
+			$$->number = 0;
 		} |
 		STRING
 		{
 			$$ = malloc(sizeof(struct macroarg_entry));
 			$$->string = $1;
+			$$->number = 0;
 		} |
 		NUMBER
 		{
 			$$ = malloc(sizeof(struct macroarg_entry));
+			$$->string = NULL;
 			$$->number = $1;
 		};
 

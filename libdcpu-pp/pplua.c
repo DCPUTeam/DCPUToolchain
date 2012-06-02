@@ -25,7 +25,6 @@
 #include <stdlib.h>
 #include "pplua.h"
 #include "dcpu.h"
-#include "parser.h"
 
 #define HANDLER_TABLE_NAME "__handlers"
 #define HANDLER_FIELD_FUNCTION_NAME "function"
@@ -325,12 +324,20 @@ void pp_lua_push_state(struct lua_preproc* pp, struct pp_state* state, void* ud)
 	// New table is now at the top of the stack.
 }
 
-void pp_lua_handle(struct pp_state* state, void* ud, bstring name, bstring parameter)
+// Get a reference to the function declared in the parser.  We can't
+// include "parser.h" because it conflicts with the Windows headers, which
+// are included by dirent.portable.h.
+extern void handle_pp_lua_print_line(const char* text, void* ud);
+
+void pp_lua_handle(struct pp_state* state, void* ud, bstring name, list_t* parameters)
 {
 	struct lua_preproc* pp;
+	struct customarg_entry* carg;
 	char* cstr;
 	bstring dot;
-	
+	unsigned int i;
+	int paramtbl;
+
 	// Convert the name to lowercase.
 	btolower(name);
 	cstr = bstr2cstr(name, '0');
@@ -340,6 +347,10 @@ void pp_lua_handle(struct pp_state* state, void* ud, bstring name, bstring param
 	while (list_iterator_hasnext(&modules))
 	{
 		pp = list_iterator_next(&modules);
+
+		// Set stack top (I don't know why the top of the
+		// stack is negative!)
+		lua_settop(pp->state, 0);
 
 		// Search handler table for entries.
 		lua_getglobal(pp->state, HANDLER_TABLE_NAME);
@@ -354,38 +365,80 @@ void pp_lua_handle(struct pp_state* state, void* ud, bstring name, bstring param
 		// Call the handler function.
 		lua_getfield(pp->state, -1, HANDLER_FIELD_FUNCTION_NAME);
 		pp_lua_push_state(pp, state, ud);
-		lua_pushstring(pp->state, parameter->data);
+		lua_newtable(pp->state);
+		paramtbl = lua_gettop(pp->state);
+		for (i = 0; i < list_size(parameters); i++)
+		{
+			carg = list_get_at(parameters, i);
+
+			lua_newtable(pp->state);
+			if (carg->string != NULL)
+				lua_pushstring(pp->state, "STRING");
+			else if (carg->word != NULL)
+				lua_pushstring(pp->state, "WORD");
+			else
+				lua_pushstring(pp->state, "NUMBER");
+			lua_setfield(pp->state, -2, "type");
+			if (carg->string != NULL)
+				lua_pushstring(pp->state, carg->string->data);
+			else if (carg->word != NULL)
+				lua_pushstring(pp->state, carg->word->data);
+			else
+				lua_pushnumber(pp->state, carg->number);
+			lua_setfield(pp->state, -2, "value");
+			lua_rawseti(pp->state, paramtbl, i + 1);
+		}
 		if (lua_pcall(pp->state, 2, 0, 0) != 0)
 		{
 			printd(LEVEL_ERROR, "error: unable to call preprocessor handler for '%s'.\n", name->data);
 			printd(LEVEL_ERROR, "%s\n", lua_tostring(pp->state, -1));
 			bdestroy(name);
 			bcstrfree(cstr);
+			lua_pop(pp->state, 2);
 			list_iterator_stop(&modules);
+			list_destroy(parameters);
 			return;
 		}
 
 		bdestroy(name);
 		bcstrfree(cstr);
-		lua_pop(pp->state, 3);
+		lua_pop(pp->state, 2);
 		list_iterator_stop(&modules);
+		list_destroy(parameters);
 		return;
 	}
 	list_iterator_stop(&modules);
 
-	// ignore warning and pass directive through
-	//printd(LEVEL_WARNING, "warning: no handler for preprocessor directive '%s'.\n", name->data);
-	
-	// FIXME hachque: fix this when you added the support for any kind of parameters
-	// throughput the pp directive (might be assembler recognized directive)
-	btoupper(name);  // ugh this is all soo ugly
+	// There is no custom preprocessor module that handles this directive, however
+	// it could be a directive that is recognised by the underlying assembler / compiler,
+	// so pass it through as output.
 	dot = bfromcstr(".");
 	bconcat(dot, name);
-	bcatcstr(dot, " ");
-	bconcat(dot, parameter); // doesnt work if parameter has to be surrounded by string characters: ""
-	cstr = bstr2cstr(dot, '0'); 
-	handle_pp_lua_print_line(cstr, ud);
-	
+	btoupper(dot);
+	bconchar(dot, ' ');
+	list_iterator_start(parameters);
+	while (list_iterator_hasnext(parameters))
+	{
+		carg = list_iterator_next(parameters);
+
+		// Output the parameter based on the type.
+		if (carg->word != NULL)
+			bconcat(dot, carg->word);
+		else if (carg->string != NULL)
+		{
+			bconchar(dot, '"');
+			bescape(carg->string);
+			bconcat(dot, carg->string);
+			bconchar(dot, '"');
+		}
+		else
+			bformata(dot, "%i", carg->number);
+	}
+	list_iterator_stop(parameters);
+	handle_pp_lua_print_line(dot->data, ud);
+
+	// Clean up.
+	list_destroy(parameters);
 	bdestroy(name);
 	bcstrfree(cstr);
 }

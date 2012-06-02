@@ -32,4 +32,6 @@ freed_bstring bautofree(bstring str);
 void bautodestroy(freed_bstring f);
 freed_bstring bautocpy(const_bstring b1);
 
+int bescape(bstring str);
+
 #endif

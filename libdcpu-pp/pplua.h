@@ -27,7 +27,14 @@ struct pp_state
 	void (*pp_lua_add_symbol)(const char* symbol, void* ud);
 };
 
+struct customarg_entry
+{
+	bstring word;
+	bstring string;
+	int number;
+};
+
 void pp_lua_init();
-void pp_lua_handle(struct pp_state* state, void* ud, bstring name, bstring parameter);
+void pp_lua_handle(struct pp_state* state, void* ud, bstring name, list_t* parameters);
 
 #endif
