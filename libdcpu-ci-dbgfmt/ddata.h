@@ -63,12 +63,18 @@ struct dbgfmt_serialization_result
 };
 
 int dbgfmt_write(bstring path, list_t* symbols);
-list_t* dbgfmt_read(bstring path);
+list_t* dbgfmt_read(bstring path, uint8_t null_on_read_failure);
 
-void dbgfmt_update_symbol(struct dbg_sym * (*symbols)[4], uint16_t symbols_count, uint16_t address);
+size_t dbgsym_meter(const void* el);
+int dbgsym_comparator(const void* a, const void* b);
+
+uint16_t dbgfmt_get_symbol_address(struct dbg_sym* symbol);
+void dbgfmt_update_symbol(struct dbg_sym* symbol, uint16_t address);
+void dbgfmt_update_symbol_array(struct dbg_sym * (*symbols)[4], uint16_t symbols_count, uint16_t address);
 void dbgfmt_finalize_symbol(struct dbg_sym* symbol, uint16_t address);
 
 struct dbg_sym* dbgfmt_create_symbol(uint8_t type, void* payload);
+struct dbg_sym* dbgfmt_copy_symbol(struct dbg_sym* other);
 struct dbg_sym_payload_line* dbgfmt_create_symbol_line(bstring path, uint16_t lineno, uint16_t address);
 struct dbg_sym_payload_string* dbgfmt_create_symbol_string(bstring data, uint16_t address);
 

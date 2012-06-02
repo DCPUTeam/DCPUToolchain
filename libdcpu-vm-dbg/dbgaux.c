@@ -615,9 +615,12 @@ void ddbg_load_symbols(bstring path)
 	// symbols is not NULL.
 
 	// Load symbols.
-	symbols = dbgfmt_read(path);
+	symbols = dbgfmt_read(path, true);
 
-	printf("Loaded symbols from %s.\n", path->data);
+	if (symbols != NULL)
+		printd(LEVEL_DEFAULT, "Loaded symbols from %s.\n", path->data);
+	else
+		printd(LEVEL_DEFAULT, "Failed to load symbols from %s.\n", path->data);
 }
 
 void ddbg_inspect_symbols()

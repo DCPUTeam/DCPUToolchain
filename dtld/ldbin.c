@@ -18,6 +18,7 @@
 #include <debug.h>
 #include "ldbin.h"
 #include "ldconv.h"
+#include "ddata.h"
 
 ///
 /// Creates a new linker bin.
@@ -43,6 +44,8 @@ struct ldbin* bin_create(freed_bstring name, bool initLists)
 		bin->adjustment = list_create();
 		bin->section = list_create();
 		bin->output = list_create();
+		bin->symbols = list_create();
+		assert(0 /* bin_create can't initialize lists yet */);
 	}
 	else
 	{
@@ -51,6 +54,7 @@ struct ldbin* bin_create(freed_bstring name, bool initLists)
 		bin->adjustment = NULL;
 		bin->section = NULL;
 		bin->output = NULL;
+		bin->symbols = NULL;
 	}
 	return bin;
 }
@@ -67,6 +71,7 @@ void bin_destroy(struct ldbin* bin)
 	if (bin->adjustment != NULL) list_destroy(bin->adjustment);
 	if (bin->section != NULL) list_destroy(bin->section);
 	if (bin->output != NULL) list_destroy(bin->output);
+	if (bin->symbols != NULL) list_destroy(bin->symbols);
 	bdestroy(bin->name);
 	free(bin);
 }
@@ -179,6 +184,7 @@ void bin_insert(list_t* all, struct ldbin* to, struct ldbin* from, size_t at, si
 	bin_info_insert(all, to, to->required, from, from->required, false, false, at, offset, count);
 	bin_info_insert(all, to, to->adjustment, from, from->adjustment, true, false, at, offset, count);
 	bin_info_insert(all, to, to->output, from, from->output, false, true, at, offset, count);
+	bin_info_insert_symbols(to, from, at, offset, count);
 }
 
 ///
@@ -212,6 +218,7 @@ void bin_remove(list_t* all, struct ldbin* bin, size_t offset, size_t count)
 	bin_info_remove(all, bin, bin->required, offset, count);
 	bin_info_remove(all, bin, bin->adjustment, offset, count);
 	bin_info_remove(all, bin, bin->output, offset, count);
+	bin_info_remove_symbols(bin, offset, count);
 }
 
 ///
@@ -258,15 +265,6 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 				{
 					// Shift the address up.
 					entry->address += count;
-
-					// If this is an adjustment entry, we need to adjust it
-					// immediately (since we have no label to keep track of).
-					if (isAdjustment)
-					{
-						word = (uint16_t*)list_get_at(&to->words, entry->address);
-						if (*word >= offset)
-							*word = *word + count;
-					}
 				}
 			}
 		}
@@ -444,6 +442,95 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, size_t offset
 			// Adjust the address stored in the entry down
 			// by the amount of words that were removed.
 			entry->address -= count;
+		}
+	}
+}
+
+///
+/// Copies debugging symbols from one bin to another.
+///
+/// @param to The target bin that words were inserted into.
+/// @param from The source bin that words were read from.
+/// @param at The address in the target bin where the insert occurred.
+/// @param offset The address in the source bin where words were copied from.
+/// @param count The number of words that were inserted.
+///
+void bin_info_insert_symbols(struct ldbin* to, struct ldbin* from, size_t at, size_t offset, size_t count)
+{
+	struct dbg_sym* sym;
+	struct dbg_sym* copy;
+	size_t k;
+	uint16_t address;
+
+	// Adjust all of the memory addresses for debugging symbol entries in the
+	// bin that was written to and shift them up.
+	for (k = 0; k < list_size(to->symbols); k++)
+	{
+		sym = (struct dbg_sym*)list_get_at(to->symbols, k);
+		address = dbgfmt_get_symbol_address(sym);
+
+		if (address >= offset + count)
+		{
+			// Shift the address up.
+			dbgfmt_update_symbol(sym, address + count);
+		}
+	}
+
+	// Copy all of the new debugging symbol entries
+	// across into the correct place.
+	for (k = 0; k < list_size(from->symbols); k++)
+	{
+		sym = (struct dbg_sym*)list_get_at(from->symbols, k);
+		address = dbgfmt_get_symbol_address(sym);
+
+		if (address >= offset && (address < offset + count || (address >= list_size(&from->words) && offset + count + 1 >= list_size(&from->words))))
+		{
+			// Copy this debugging symbol entry.
+			copy = dbgfmt_copy_symbol(sym);
+
+			// Adjust the copy.
+			dbgfmt_update_symbol(copy, at + (address - offset));
+			list_append(to->symbols, copy);
+		}
+	}
+}
+
+///
+/// Removes debugging symbols in the specified linker bin.
+///
+/// @param bin The bin that this linker information list belongs to.
+/// @param offset The address that words were removed from.
+/// @param count The number of words that were removed.
+///
+void bin_info_remove_symbols(struct ldbin* bin, size_t offset, size_t count)
+{
+	struct dbg_sym* sym;
+	size_t k;
+	uint16_t address;
+
+	// Sort the list by addresses.
+	list_sort(bin->symbols, 1);
+
+	// Go through all of the information entries in the list.
+	for (k = 0; k < list_size(bin->symbols); k++)
+	{
+		sym = (struct dbg_sym*)list_get_at(bin->symbols, k);
+		address = dbgfmt_get_symbol_address(sym);
+
+		if (address < offset)
+			// Prior to the current address, so don't touch it.
+			continue;
+		else if (address >= offset && address < offset + count)
+		{
+			// Remove this linker information entry.
+			assert(list_delete_at(bin->symbols, k) == 0);
+			k--;
+		}
+		else if (address >= offset + count)
+		{
+			// Adjust the address stored in the entry down
+			// by the amount of words that were removed.
+			dbgfmt_update_symbol(sym, address - count);
 		}
 	}
 }

@@ -29,6 +29,7 @@ struct ldbin
 	list_t* adjustment;
 	list_t* section;
 	list_t* output;
+	list_t* symbols;
 	list_t words;
 };
 
@@ -44,5 +45,7 @@ void bin_remove(list_t* all, struct ldbin* bin, size_t offset, size_t count);
 
 void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin* from, list_t* fromlist, bool isAdjustment, bool isOutput, size_t at, size_t offset, size_t count);
 void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, size_t offset, size_t count);
+void bin_info_insert_symbols(struct ldbin* to, struct ldbin* from, size_t at, size_t offset, size_t count);
+void bin_info_remove_symbols(struct ldbin* bin, size_t offset, size_t count);
 
 #endif

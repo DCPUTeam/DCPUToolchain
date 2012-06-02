@@ -22,6 +22,23 @@ struct dbgfmt_serialization_result* dbgfmt_serialize_payload_string(struct dbg_s
 struct dbg_sym_payload_line* dbgfmt_deserialize_symbol_line(void* data, uint16_t length);
 struct dbg_sym_payload_string* dbgfmt_deserialize_symbol_string(void* data, uint16_t length);
 
+size_t dbgsym_meter(const void* el)
+{
+	return sizeof(struct dbg_sym);
+}
+
+int dbgsym_comparator(const void* a, const void* b)
+{
+	struct dbg_sym* ea = (struct dbg_sym*)a;
+	struct dbg_sym* eb = (struct dbg_sym*)b;
+	if (dbgfmt_get_symbol_address(ea) > dbgfmt_get_symbol_address(eb))
+		return -1;
+	else if (dbgfmt_get_symbol_address(ea) == dbgfmt_get_symbol_address(eb))
+		return 0;
+	else
+		return 1;
+}
+
 int dbgfmt_write(bstring path, list_t* symbols)
 {
 	FILE* out;
@@ -71,7 +88,7 @@ int dbgfmt_write(bstring path, list_t* symbols)
 	return 0;
 }
 
-list_t* dbgfmt_read(bstring path)
+list_t* dbgfmt_read(bstring path, uint8_t null_on_read_failure)
 {
 	FILE* in;
 	struct dbg_sym_file headers;
@@ -83,11 +100,20 @@ list_t* dbgfmt_read(bstring path)
 	// Open the file.
 	in = fopen(path->data, "rb");
 
-	// FIXME: Do some checking here to see if the file
-	// was loaded successfully.
-
 	// Initialize the list of symbols.
 	list_init(result);
+	list_attributes_copy(result, &dbgsym_meter, 0);
+	list_attributes_comparator(result, &dbgsym_comparator);
+
+	// Check to ensure the file is open.
+	if (in == NULL)
+	{
+		// Fail.
+		if (null_on_read_failure)
+			return NULL;
+		else
+			return result;
+	}
 
 	// Read in the header information.
 	fread(&headers.magic, sizeof(headers.magic), 1, in);
@@ -256,6 +282,26 @@ struct dbg_sym* dbgfmt_create_symbol(uint8_t type, void* payload)
 	return symbol;
 }
 
+struct dbg_sym* dbgfmt_copy_symbol(struct dbg_sym* other)
+{
+	struct dbg_sym_payload_line* payload_line;
+	struct dbg_sym_payload_string* payload_string;
+
+	switch (other->type)
+	{
+		case DBGFMT_SYMBOL_LINE:
+			payload_line = other->payload;
+			return dbgfmt_create_symbol(other->type, dbgfmt_create_symbol_line(payload_line->path, payload_line->lineno, payload_line->address));
+		case DBGFMT_SYMBOL_STRING:
+			payload_string = other->payload;
+			return dbgfmt_create_symbol(other->type, dbgfmt_create_symbol_string(payload_string->data, payload_string->address));
+		default:
+			assert(0 /* debugging symbol wasn't of any known type during address get */);
+	}
+
+	return NULL;
+}
+
 struct dbg_sym_payload_line* dbgfmt_create_symbol_line(bstring path, uint16_t lineno, uint16_t address)
 {
 	struct dbg_sym_payload_line* payload = malloc(sizeof(struct dbg_sym_payload_line));
@@ -279,7 +325,43 @@ struct dbg_sym_payload_string* dbgfmt_create_symbol_string(bstring data, uint16_
 	return payload;
 }
 
-void dbgfmt_update_symbol(struct dbg_sym * (*symbols)[4], uint16_t symbols_count, uint16_t address)
+uint16_t dbgfmt_get_symbol_address(struct dbg_sym* symbol)
+{
+	switch (symbol->type)
+	{
+		case DBGFMT_SYMBOL_LINE:
+			return ((struct dbg_sym_payload_line*)symbol->payload)->address;
+		case DBGFMT_SYMBOL_STRING:
+			return ((struct dbg_sym_payload_string*)symbol->payload)->address;
+		default:
+			assert(0 /* debugging symbol wasn't of any known type during address get */);
+	}
+
+	return 0;
+}
+
+void dbgfmt_update_symbol(struct dbg_sym* symbol, uint16_t address)
+{
+	switch (symbol->type)
+	{
+		case DBGFMT_SYMBOL_LINE:
+			((struct dbg_sym_payload_line*)symbol->payload)->address = address;
+			break;
+		case DBGFMT_SYMBOL_STRING:
+			((struct dbg_sym_payload_string*)symbol->payload)->address = address;
+			break;
+		default:
+			assert(0 /* debugging symbol wasn't of any known type during update */);
+	}
+}
+
+void dbgfmt_finalize_symbol(struct dbg_sym* symbol, uint16_t address)
+{
+	if (dbgfmt_get_symbol_address(symbol) == DBGFMT_UNDETERMINED)
+		dbgfmt_update_symbol(symbol, address);
+}
+
+void dbgfmt_update_symbol_array(struct dbg_sym * (*symbols)[4], uint16_t symbols_count, uint16_t address)
 {
 	int i;
 
@@ -288,33 +370,6 @@ void dbgfmt_update_symbol(struct dbg_sym * (*symbols)[4], uint16_t symbols_count
 		if ((*symbols)[i] == NULL)
 			continue;
 
-		switch ((*symbols)[i]->type)
-		{
-			case DBGFMT_SYMBOL_LINE:
-				((struct dbg_sym_payload_line*)(*symbols)[i]->payload)->address = address;
-				break;
-			case DBGFMT_SYMBOL_STRING:
-				((struct dbg_sym_payload_string*)(*symbols)[i]->payload)->address = address;
-				break;
-			default:
-				assert(0 /* debugging symbol wasn't of any known type during update */);
-		}
-	}
-}
-
-void dbgfmt_finalize_symbol(struct dbg_sym* symbol, uint16_t address)
-{
-	switch (symbol->type)
-	{
-		case DBGFMT_SYMBOL_LINE:
-			if (((struct dbg_sym_payload_line*)symbol->payload)->address == DBGFMT_UNDETERMINED)
-				((struct dbg_sym_payload_line*)symbol->payload)->address = address;
-			break;
-		case DBGFMT_SYMBOL_STRING:
-			if (((struct dbg_sym_payload_string*)symbol->payload)->address == DBGFMT_UNDETERMINED)
-				((struct dbg_sym_payload_string*)symbol->payload)->address = address;
-			break;
-		default:
-			assert(0 /* debugging symbol wasn't of any known type during update */);
+		dbgfmt_update_symbol((*symbols)[i], address);
 	}
 }

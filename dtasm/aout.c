@@ -584,7 +584,7 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 		else if (current_outer->type == AOUT_TYPE_NORMAL)
 		{
 			// Update the debugging symbol.
-			dbgfmt_update_symbol(&current_outer->symbols, current_outer->symbols_count, (uint16_t)((ftell(out) - true_origin) / 2));
+			dbgfmt_update_symbol_array(&current_outer->symbols, current_outer->symbols_count, (uint16_t)((ftell(out) - true_origin) / 2));
 
 			// Normal output.
 			if (current_outer->raw_used == true)

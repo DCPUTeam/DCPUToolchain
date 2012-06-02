@@ -69,7 +69,7 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
 				add_custom_command(
 					OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
 					COMMAND ${KERNEL_TOOLS}/dtasm${CMAKE_EXECUTABLE_SUFFIX}
-						ARGS -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
+						ARGS -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
 					DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
 					COMMENT "Assembling ${fpth}/${fbse}.oa with DCPU-Toolchain...")
 				if("${tout}" STREQUAL "")
@@ -88,7 +88,7 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
 				add_custom_command(
 					OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
 					COMMAND ${KERNEL_TOOLS}/${tool}${CMAKE_EXECUTABLE_SUFFIX}
-						ARGS ${toolargs} -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
+						ARGS ${toolargs} -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
 					DEPENDS ${tool} "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
 					COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
 				if("${tout}" STREQUAL "")
@@ -117,7 +117,7 @@ function(add_dcpu_image target)
 	add_custom_command(
 		OUTPUT "${OUTPUT_DIR}/stdlib.dlib16"
 		COMMAND ${KERNEL_TOOLS}/dtld${CMAKE_EXECUTABLE_SUFFIX}
-			ARGS --keep-outputs -l static -o "${OUTPUT_DIR}/stdlib.dlib16" ${tasmoutputs} ${tcoutputs}
+			ARGS -s "${OUTPUT_DIR}/stdlib.dsym16" --symbol-extension="os" --keep-outputs -l static -o "${OUTPUT_DIR}/stdlib.dlib16" ${tasmoutputs} ${tcoutputs}
 		DEPENDS dtld ${tasmoutputs} ${tcoutputs}
 		COMMENT "Linking stdlib.dlib16 as static library with DCPU-Toolchain...")
 
