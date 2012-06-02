@@ -14,7 +14,8 @@
 **/
 
 #include <lexfix.h>
-#include <bstrlib.h>
+#include <simclist.h>
+#include <bstring.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -23,9 +24,11 @@
 char* dbg_trim_and_unescape(char* data, int mode);
 
 #define COPY yylval->string = bfromcstr(strdup(yytext));
+#define COPY_LOWER yylval->string = bfromcstr(strdup(yytext)); btolower(yylval->string);
 #define COPY_HEX yylval->number = strtoul(yytext, NULL, 16);
 #define COPY_DEC yylval->number = strtoul(yytext, NULL, 10);
 #define COPY_UNESCAPE yylval->string = bfromcstr(dbg_trim_and_unescape(strdup(yytext), 1));
+#define COMMAND COPY_LOWER; btrimws(yylval->string);
 
 %}
 
@@ -37,50 +40,51 @@ char* dbg_trim_and_unescape(char* data, int mode);
 %option bison-bridge
 %option prefix="dbg_yy"
 
+%x IN_PARAMS
 
 %%
 
 	/* Debugger command identifiers */
 
-"load"						COPY; return ID_LOAD;
-"symbols"					COPY; return ID_SYMBOLS;
-"breakpoint"					COPY; return ID_BREAKPOINT;
-"break"						COPY; return ID_BREAKPOINT;
-"bt"						COPY; return ID_BACKTRACE;
-"backtrace"					COPY; return ID_BACKTRACE;
-"disassemble"					COPY; return ID_DISASSEMBLE;
-"disasm"					COPY; return ID_DISASSEMBLE;
-"run"						COPY; return ID_RUN;
-"continue"					COPY; return ID_CONTINUE;
-"stop"						COPY; return ID_STOP;
-"quit"						COPY; return ID_QUIT;
-"add"						COPY; return ID_ADD;
-"delete"					COPY; return ID_DELETE;
-"attach"					COPY; return ID_ATTACH;
-"inspect"					COPY; return ID_INSPECT;
-"hardware"					COPY; return ID_HARDWARE;
-"cpu"						COPY; return ID_CPU;
-"detach"					COPY; return ID_DETACH;
-"list"						COPY; return ID_LIST;
-"memory"					COPY; return ID_MEMORY;
-"help"						COPY; return ID_HELP;
-"step"						COPY; return ID_STEP;
-"next"						COPY; return ID_NEXT;
-"set"						COPY; return ID_SET;
-"debug"						COPY; return ID_DEBUG;
-\?							COPY; return ID_HELP;
+"load"						COMMAND; return ID_LOAD;
+"symbols"					COMMAND; return ID_SYMBOLS;
+"breakpoint"					COMMAND; return ID_BREAKPOINT;
+"break"						COMMAND; return ID_BREAKPOINT;
+"bt"						COMMAND; return ID_BACKTRACE;
+"backtrace"					COMMAND; return ID_BACKTRACE;
+"disassemble"					COMMAND; return ID_DISASSEMBLE;
+"disasm"					COMMAND; return ID_DISASSEMBLE;
+"run"						COMMAND; return ID_RUN;
+"continue"					COMMAND; return ID_CONTINUE;
+"stop"						COMMAND; return ID_STOP;
+"quit"						COMMAND; return ID_QUIT;
+"add"						COMMAND; return ID_ADD;
+"delete"					COMMAND; return ID_DELETE;
+"attach"					COMMAND; return ID_ATTACH;
+"inspect"					COMMAND; return ID_INSPECT;
+"hardware"					COMMAND; return ID_HARDWARE;
+"cpu"						COMMAND; return ID_CPU;
+"detach"					COMMAND; return ID_DETACH;
+"list"						COMMAND; return ID_LIST;
+"memory"					COMMAND; return ID_MEMORY;
+"help"						COMMAND; return ID_HELP;
+"step"						COMMAND; return ID_STEP;
+"next"						COMMAND; return ID_NEXT;
+"set"						COMMAND; return ID_SET;
+"debug"						COMMAND; return ID_DEBUG;
+\?						COMMAND; return ID_HELP;
+^[ \t]*[a-z-]+					COMMAND; return CUSTOM;
 
 	/* General stuff */
 
-0x[0-9A-Fa-f]+					COPY_HEX; return ADDRESS;
-[0-9]+							COPY_DEC; return ADDRESS;
-[\.\/A-Za-z0-9-]+				COPY; return PATH;
-[A-Za-z_-]+[A-Za-z0-9_-]*		COPY; return PARAM;
-L?'(\\.|[^\\'])+'				COPY_UNESCAPE return CHARACTER;
-L?\"(\\.|[^\\"])*\"				COPY_UNESCAPE; return STRING;
-\:								return COLON;
-
-[ \t]+						/* ignore whitespace */;
+0x[0-9A-Fa-f]+			COPY_HEX; return ADDRESS;
+[0-9]+				COPY_DEC; return ADDRESS;
+[\.\/A-Za-z0-9-]+		COPY; return PATH;
+[A-Za-z_-]+[A-Za-z0-9_-]*	COPY; return PARAM;
+L?'(\\.|[^\\'])+'		COPY_UNESCAPE return CHARACTER;
+L?\"(\\.|[^\\"])*\"		COPY_UNESCAPE; return STRING;
+\:				return COLON;
+[ \t]+				/* ignore whitespace */;
 
 %%
 

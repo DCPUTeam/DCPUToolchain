@@ -29,6 +29,7 @@
 #include <dcpu.h>
 #include <bstring.h>
 #include <dbgaux.h>
+#include <dbglua.h>
 #include <lexfix.h>
 #include <parser.h>
 #include <lexer.h>
@@ -45,6 +46,7 @@ vm_t* vm;
 #ifdef FEATURE_SDP
 pthread_t sdp_thread;
 #endif
+struct dbg_state lstate;
 
 extern int dbg_yyparse(void* scanner);
 
@@ -104,8 +106,8 @@ int main(int argc, char** argv)
 	// Register signal handler.
 	signal(SIGINT, ddbg_sigint);
 
-	// Create VM.
-	ddbg_create_vm();
+	// Initialize debugger.
+	ddbg_init();
 
 	// Load file if filename is specified.
 	if (symbols_file->count > 0)

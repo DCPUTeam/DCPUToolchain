@@ -15,8 +15,8 @@
 #include <dcpuhook.h>
 #include <bstrlib.h>
 
+void ddbg_init();
 void ddbg_help(bstring section);
-void ddbg_cycle_hook(vm_t* vm, uint16_t pos);
 void ddbg_set(bstring object, bstring value);
 void ddbg_load(bstring path);
 void ddbg_load_symbols(bstring path);

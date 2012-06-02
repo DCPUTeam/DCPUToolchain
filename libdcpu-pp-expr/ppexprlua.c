@@ -87,7 +87,7 @@ uint16_t expr_lua_expression_self_label(bstring name)
 	lua_pushstring(state->lua, name->data);
 	if (lua_pcall(state->lua, 1, 1, 0) != 0)
 	{
-		lua_pushstring(state->lua, "calling label resolution function failed.");
+		// rethrow error
 		lua_error(state->lua);
 		return 0;
 	}

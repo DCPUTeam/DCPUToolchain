@@ -16,11 +16,14 @@
 #define YYERROR_VERBOSE
 
 #include <lexfix.h>
-#include <bstrlib.h>
+#include <simclist.h>
+#include <bstring.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <debug.h>
 #include "dbgaux.h"
+#include "dbglua.h"
 
 void yyerror(void* scanner, const char *str);
 
@@ -32,17 +35,21 @@ void yyerror(void* scanner, const char *str);
 	int number;
 	bstring string;
 	int* token;
+	struct customarg_entry* carg;
+	list_t list;
 }
 
 // Define our lexical token names.
 %token <token> ID_LOAD ID_BREAKPOINT ID_RUN ID_CONTINUE ID_STOP ID_QUIT ID_ADD ID_DELETE
 %token <token> ID_ATTACH ID_INSPECT ID_HARDWARE ID_CPU ID_DETACH ID_LIST ID_MEMORY ID_HELP
 %token <token> ID_DISASSEMBLE ID_SYMBOLS COLON ID_STEP ID_SET ID_DEBUG ID_NEXT ID_BACKTRACE
-%token <string> PARAM PATH CHARACTER STRING
+%token <string> PARAM PATH CHARACTER STRING CUSTOM
 %token <number> ADDRESS
 
 // Define our parser types.
 %type <string> param
+%type <list> customargs
+%type <carg> customarg
 
 // Start at the root node.
 %start command
@@ -62,7 +69,12 @@ command:
 		hardware_command |
 		cpu_command |
 		memory_command |
-		help_command ;
+		help_command |
+		CUSTOM customargs
+		{
+			// Pass this off to the Lua debugger module system.
+			dbg_lua_handle_command(&lstate, NULL, bautofree($1), &$2);
+		} ;
 
 param:
 		PATH |
@@ -121,6 +133,55 @@ general_command:
 		{
 			// Show a list of all of the loaded symbols.
 			ddbg_inspect_symbols();
+		} ;
+		
+customargs:
+		/* empty */
+		{
+			list_init(&$$);
+		} |
+		customargs customarg
+		{
+			$$ = $1;
+			list_append(&$$, $2);
+		} ;
+
+customarg:
+		PATH
+		{
+			$$ = malloc(sizeof(struct customarg_entry));
+			$$->type = DBG_CUSTOMARG_TYPE_PATH;
+			$$->path = $1;
+			$$->param = NULL;
+			$$->string = NULL;
+			$$->number = 0;
+		} |
+		PARAM
+		{
+			$$ = malloc(sizeof(struct customarg_entry));
+			$$->type = DBG_CUSTOMARG_TYPE_PARAM;
+			$$->path = NULL;
+			$$->param = $1;
+			$$->string = NULL;
+			$$->number = 0;
+		} |
+		ADDRESS
+		{
+			$$ = malloc(sizeof(struct customarg_entry));
+			$$->type = DBG_CUSTOMARG_TYPE_NUMBER;
+			$$->path = NULL;
+			$$->param = NULL;
+			$$->string = NULL;
+			$$->number = $1;
+		} |
+		STRING
+		{
+			$$ = malloc(sizeof(struct customarg_entry));
+			$$->type = DBG_CUSTOMARG_TYPE_STRING;
+			$$->path = NULL;
+			$$->param = NULL;
+			$$->string = $1;
+			$$->number = 0;
 		} ;
 
 breakpoint_command:

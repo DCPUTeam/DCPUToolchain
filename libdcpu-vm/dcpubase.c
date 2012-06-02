@@ -173,8 +173,9 @@ void vm_cycle(vm_t* vm)
 		vm->sleep_cycles--;
 		return;
 	}
-	
+
 	vm_hook_fire(vm, 0, HOOK_ON_PRE_CYCLE);
+	if (vm->halted) return; // skip if the precycle hook halted the virtual machine
 
 	instruction = vm_consume_word(vm);
 	op = INSTRUCTION_GET_OP(instruction);

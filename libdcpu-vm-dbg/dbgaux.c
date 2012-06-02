@@ -28,6 +28,8 @@
 #include <ddata.h>
 #include "breakpoint.h"
 #include "backtrace.h"
+#include "dbgaux.h"
+#include "dbglua.h"
 
 uint16_t flash_size = 0;
 uint16_t flash[0x10000];
@@ -80,11 +82,58 @@ void ddbg_help(bstring section)
 	}
 }
 
-void ddbg_cycle_hook(vm_t* vm, uint16_t pos, void* ud)
+list_t* ddbg_get_symbols(uint16_t addr)
+{
+	unsigned int i;
+	struct dbg_sym* sym;
+	struct dbg_sym_payload_line* payload_line;
+	struct dbg_sym_payload_string* payload_string;
+	list_t* result = malloc(sizeof(list_t));
+	list_init(result);
+
+	if (symbols != NULL)
+	{
+		for (i = 0; i < list_size(symbols); i++)
+		{
+			sym = list_get_at(symbols, i);
+			switch (sym->type)
+			{
+				case DBGFMT_SYMBOL_LINE:
+					payload_line = (struct dbg_sym_payload_line*)sym->payload;
+					if (payload_line->address == addr)
+						list_append(result, bformat("lineinfo:%s:%u", payload_line->path->data, payload_line->lineno));
+					break;
+				case DBGFMT_SYMBOL_STRING:
+					payload_string = (struct dbg_sym_payload_string*)sym->payload;
+					if (payload_string->address == addr)
+						list_append(result, bfromcstr(payload_string->data->data));
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
+	return result;
+}
+
+void ddbg_precycle_hook(vm_t* vm, uint16_t pos, void* ud)
 {
 	unsigned int i = 0;
 	struct breakpoint* bk;
 	uint16_t op, a, b;
+
+	// Handle any symbols that are at this cycle.
+	list_t* symbols = ddbg_get_symbols(vm->pc);
+	list_iterator_start(symbols);
+	while (list_iterator_hasnext(symbols))
+		dbg_lua_handle_hook_symbol(&lstate, NULL, bautofree((bstring)list_iterator_next(symbols)));
+	list_iterator_stop(symbols);
+	list_empty(symbols);
+	free(symbols);
+
+	// Handle custom Lua commands.
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("precycle")));
 
 	// Handle breakpoints.
 	for (i = 0; i < list_size(&breakpoints); i++)
@@ -126,6 +175,24 @@ void ddbg_cycle_hook(vm_t* vm, uint16_t pos, void* ud)
 			printd(LEVEL_WARNING, "warning: unhandled backtrace jump occurred.\n");
 		}
 	}
+}
+
+void ddbg_postcycle_hook(vm_t* vm, uint16_t pos, void* ud)
+{
+	// Handle custom Lua commands.
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("postcycle")));
+}
+
+void ddbg_write_hook(vm_t* vm, uint16_t pos, void* ud)
+{
+	// Handle custom Lua commands.
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("write")));
+}
+
+void ddbg_break_hook(vm_t* vm, uint16_t pos, void* ud)
+{
+	// Handle custom Lua commands.
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("break")));
 }
 
 void ddbg_set(bstring object, bstring value)
@@ -175,13 +242,38 @@ void ddbg_load(bstring path)
 	flash_size = a;
 }
 
+vm_t* _dbg_lua_get_vm()
+{
+	return vm;
+}
+
+void _dbg_lua_break()
+{
+	// Halt virtual machine.
+	vm->halted = true;
+}
+
+void ddbg_init()
+{
+	// Initialize Lua.
+	lstate.get_vm = _dbg_lua_get_vm;
+	lstate.dbg_lua_break = _dbg_lua_break;
+	dbg_lua_init();
+
+	// Create VM.
+	ddbg_create_vm();
+}
+
 void ddbg_create_vm()
 {
 	breakpoints = breakpoint_list_create();
 	list_init(&backtrace);
 	list_attributes_copy(&backtrace, list_meter_uint16_t, 1);
 	vm = vm_create();
-	vm_hook_register(vm, &ddbg_cycle_hook, HOOK_ON_PRE_CYCLE, NULL);
+	vm_hook_register(vm, &ddbg_precycle_hook, HOOK_ON_PRE_CYCLE, NULL);
+	vm_hook_register(vm, &ddbg_postcycle_hook, HOOK_ON_POST_CYCLE, NULL);
+	vm_hook_register(vm, &ddbg_write_hook, HOOK_ON_WRITE, NULL);
+	vm_hook_register(vm, &ddbg_break_hook, HOOK_ON_BREAK, NULL);
 	printf("Created VM.\n");
 }
 
@@ -317,6 +409,9 @@ void ddbg_delete_breakpoint(bstring file, int index)
 void ddbg_step_into()
 {
 	vm_cycle(vm);
+
+	// Handle custom Lua commands.
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("step")));
 }
 
 void ddbg_step_over()
@@ -351,6 +446,9 @@ void ddbg_step_over()
 	list_append(&breakpoints, breakpoint_create(bp, true, true));
 	vm->halted = false;
 	vm_execute(vm);
+
+	// Handle custom Lua commands.
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("next")));
 }
 
 void ddbg_backtrace()

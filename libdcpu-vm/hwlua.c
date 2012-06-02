@@ -26,6 +26,7 @@
 #include <ppexprlua.h>
 #include "hw.h"
 #include "hwlua.h"
+#include "hwluacpu.h"
 #include "dcpuhook.h"
 #include "dcpubase.h"
 #include "dcpuops.h"
@@ -42,172 +43,6 @@ struct lua_hardware
 	uint16_t write_id;
 };
 
-struct lua_hardware* vm_hw_lua_extract_hardware(lua_State* L, int idx)
-{
-	struct lua_hardware* hw = NULL;
-	lua_getmetatable(L, idx);
-	lua_rawgeti(L, lua_gettop(L), 0);
-	hw = (struct lua_hardware*)lua_touserdata(L, -1);
-	lua_pop(L, 2);
-	return hw;
-}
-
-int vm_hw_lua_handle_register_get(lua_State* L)
-{
-	// Table is at 1, key is at 2.
-	struct lua_hardware* hw = vm_hw_lua_extract_hardware(L, 1);
-	bstring name = bfromcstr(lua_tostring(L, 2));
-
-	if (biseqcstrcaseless(name, "A"))
-		lua_pushnumber(L, hw->vm->registers[REG_A]);
-	else if (biseqcstrcaseless(name, "B"))
-		lua_pushnumber(L, hw->vm->registers[REG_B]);
-	else if (biseqcstrcaseless(name, "C"))
-		lua_pushnumber(L, hw->vm->registers[REG_C]);
-	else if (biseqcstrcaseless(name, "X"))
-		lua_pushnumber(L, hw->vm->registers[REG_X]);
-	else if (biseqcstrcaseless(name, "Y"))
-		lua_pushnumber(L, hw->vm->registers[REG_Y]);
-	else if (biseqcstrcaseless(name, "Z"))
-		lua_pushnumber(L, hw->vm->registers[REG_Z]);
-	else if (biseqcstrcaseless(name, "I"))
-		lua_pushnumber(L, hw->vm->registers[REG_I]);
-	else if (biseqcstrcaseless(name, "J"))
-		lua_pushnumber(L, hw->vm->registers[REG_J]);
-	else if (biseqcstrcaseless(name, "SP"))
-		lua_pushnumber(L, hw->vm->sp);
-	else if (biseqcstrcaseless(name, "PC"))
-		lua_pushnumber(L, hw->vm->pc);
-	else if (biseqcstrcaseless(name, "IA"))
-		lua_pushnumber(L, hw->vm->ia);
-	else if (biseqcstrcaseless(name, "EX"))
-		lua_pushnumber(L, hw->vm->ex);
-	else
-		lua_pushnil(L);
-
-	return 1;
-}
-
-int vm_hw_lua_handle_register_set(lua_State* L)
-{
-	// Table is at 1, key is at 2, value is at 3.
-	struct lua_hardware* hw = vm_hw_lua_extract_hardware(L, 1);
-	bstring name = bfromcstr(lua_tostring(L, 2));
-
-	if (biseqcstrcaseless(name, "A"))
-		hw->vm->registers[REG_A] = (uint16_t)lua_tonumber(L, 3);
-	else if (biseqcstrcaseless(name, "B"))
-		hw->vm->registers[REG_B] = (uint16_t)lua_tonumber(L, 3);
-	else if (biseqcstrcaseless(name, "C"))
-		hw->vm->registers[REG_C] = (uint16_t)lua_tonumber(L, 3);
-	else if (biseqcstrcaseless(name, "X"))
-		hw->vm->registers[REG_X] = (uint16_t)lua_tonumber(L, 3);
-	else if (biseqcstrcaseless(name, "Y"))
-		hw->vm->registers[REG_Y] = (uint16_t)lua_tonumber(L, 3);
-	else if (biseqcstrcaseless(name, "Z"))
-		hw->vm->registers[REG_Z] = (uint16_t)lua_tonumber(L, 3);
-	else if (biseqcstrcaseless(name, "I"))
-		hw->vm->registers[REG_I] = (uint16_t)lua_tonumber(L, 3);
-	else if (biseqcstrcaseless(name, "J"))
-		hw->vm->registers[REG_J] = (uint16_t)lua_tonumber(L, 3);
-	else if (biseqcstrcaseless(name, "SP"))
-		hw->vm->sp = (uint16_t)lua_tonumber(L, 3);
-	else if (biseqcstrcaseless(name, "PC"))
-		hw->vm->pc = (uint16_t)lua_tonumber(L, 3);
-	else if (biseqcstrcaseless(name, "IA"))
-		hw->vm->ia = (uint16_t)lua_tonumber(L, 3);
-	else if (biseqcstrcaseless(name, "EX"))
-		hw->vm->ex = (uint16_t)lua_tonumber(L, 3);
-	else
-		lua_pushnil(L);
-
-	return 1;
-}
-
-int vm_hw_lua_handle_ram_get(lua_State* L)
-{
-	// Table is at 1, key is at 2.
-	struct lua_hardware* hw = vm_hw_lua_extract_hardware(L, 1);
-	if (!lua_isnumber(L, 2))
-	{
-		lua_pushstring(L, "ram access must be by numeric value (use array operator)");
-		lua_error(L);
-		return 0;
-	}
-	lua_pushnumber(L, hw->vm->ram[(uint16_t)lua_tonumber(L, 2)]);
-	return 1;
-}
-
-int vm_hw_lua_handle_ram_set(lua_State* L)
-{
-	// Table is at 1, key is at 2, value is at 3.
-	struct lua_hardware* hw = vm_hw_lua_extract_hardware(L, 1);
-	if (!lua_isnumber(L, 2) || !lua_isnumber(L, 3))
-	{
-		lua_pushstring(L, "ram write must be by numeric value (use array operator / numeric value)");
-		lua_error(L);
-		return 0;
-	}
-	hw->vm->ram[(uint16_t)lua_tonumber(L, 2)] = (uint16_t)lua_tonumber(L, 3);
-	return 0;
-}
-
-void vm_hw_lua_push_cpu(vm_t* vm, struct lua_hardware* hw)
-{
-	int cpu, registers, registers_mt, ram, ram_mt;
-
-	// Create tables.
-	lua_newtable(hw->state);
-	cpu = lua_gettop(hw->state);
-	lua_newtable(hw->state);
-	registers = lua_gettop(hw->state);
-	lua_newtable(hw->state);
-	registers_mt = lua_gettop(hw->state);
-	lua_newtable(hw->state);
-	ram = lua_gettop(hw->state);
-	lua_newtable(hw->state);
-	ram_mt = lua_gettop(hw->state);
-
-	// Push userdata into metatables.
-	lua_pushlightuserdata(hw->state, hw);
-	lua_rawseti(hw->state, ram_mt, 0);
-	lua_pushlightuserdata(hw->state, hw);
-	lua_rawseti(hw->state, registers_mt, 0);
-
-	// Create the metatable functions.
-	lua_pushcfunction(hw->state, vm_hw_lua_handle_ram_get);
-	lua_setfield(hw->state, ram_mt, "__index");
-	lua_pushcfunction(hw->state, vm_hw_lua_handle_ram_set);
-	lua_setfield(hw->state, ram_mt, "__newindex");
-	lua_pushcfunction(hw->state, vm_hw_lua_handle_register_get);
-	lua_setfield(hw->state, registers_mt, "__index");
-	lua_pushcfunction(hw->state, vm_hw_lua_handle_register_set);
-	lua_setfield(hw->state, registers_mt, "__newindex");
-
-	// Associate metatables.
-	lua_pushvalue(hw->state, ram_mt);
-	lua_setmetatable(hw->state, ram);
-	lua_pushvalue(hw->state, registers_mt);
-	lua_setmetatable(hw->state, registers);
-
-	// FIXME: Protect the metatables.
-	//lua_pushboolean(hw->state, true);
-	//lua_setfield(hw->state, ram_mt, "__metatable");
-	//lua_pushboolean(hw->state, true);
-	//lua_setfield(hw->state, registers_mt, "__metatable");
-
-	// Put ram and registers into CPU.
-	lua_pushvalue(hw->state, ram);
-	lua_setfield(hw->state, cpu, "ram");
-	lua_pushvalue(hw->state, registers);
-	lua_setfield(hw->state, cpu, "registers");
-
-	// Clean up stack.
-	lua_pop(hw->state, lua_gettop(hw->state) - cpu);
-
-	// CPU is now on top of the stack.
-}
-
 void vm_hw_lua_cycle(vm_t* vm, uint16_t pos, void* ud)
 {
 	struct lua_hardware* hw = (struct lua_hardware*)ud;
@@ -222,7 +57,7 @@ void vm_hw_lua_cycle(vm_t* vm, uint16_t pos, void* ud)
 
 	// Load function and arguments.
 	lua_pushvalue(hw->state, cycle);
-	vm_hw_lua_push_cpu(vm, hw);
+	vm_hw_lua_cpu_push_cpu(hw->state, vm);
 
 	// Call the function.
 	if (lua_pcall(hw->state, 1, 0, 0) != 0)
@@ -247,7 +82,7 @@ void vm_hw_lua_write(vm_t* vm, uint16_t pos, void* ud)
 
 	// Load function and arguments.
 	lua_pushvalue(hw->state, write);
-	vm_hw_lua_push_cpu(vm, hw);
+	vm_hw_lua_cpu_push_cpu(hw->state, vm);
 	lua_pushnumber(hw->state, pos);
 
 	// Call the function.
@@ -273,7 +108,7 @@ void vm_hw_lua_interrupt(vm_t* vm, void* ud)
 
 	// Load function and arguments.
 	lua_pushvalue(hw->state, interrupt);
-	vm_hw_lua_push_cpu(vm, hw);
+	vm_hw_lua_cpu_push_cpu(hw->state, vm);
 
 	// Call the function.
 	if (lua_pcall(hw->state, 1, 0, 0) != 0)

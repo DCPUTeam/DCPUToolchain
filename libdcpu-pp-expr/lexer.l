@@ -56,5 +56,6 @@
 0b[0-1]+			yylval->number = strtoul(yytext, NULL, 2); return ADDRESS;
 0x[0-9A-Fa-f]+			yylval->number = strtoul(yytext, NULL, 16); return ADDRESS;
 [0-9]+				yylval->number = strtoul(yytext, NULL, 10); return ADDRESS;
+[ \t]+				/* ignore whitespace */;
 
 %%
