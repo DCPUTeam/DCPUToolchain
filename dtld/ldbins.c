@@ -70,15 +70,13 @@ void bins_init()
 ///
 struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct lprov_entry* required, struct lprov_entry* adjustment, struct lprov_entry* section, struct lprov_entry* output)
 {
-	struct ldbin* bin = bin_create(name, false);
+	struct ldbin* bin = bin_create(name);
 	bin->provided = list_convert(provided);
 	bin->required = list_convert(required);
 	bin->adjustment = list_convert(adjustment);
 	bin->section = list_convert(section);
 	bin->output = list_convert(output);
-	bin->symbols = list_create();
-	list_attributes_copy(bin->symbols, &dbgsym_meter, 0);
-	list_attributes_comparator(bin->symbols, &dbgsym_comparator);
+	bin->symbols = dbgfmt_create_list();
 	list_append(&ldbins.bins, bin);
 	return bin;
 }
@@ -152,6 +150,7 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
 	// Load all of the debugging symbols if requested.
 	if (loadDebugSymbols)
 	{
+		dbgfmt_free(bin->symbols); // bins_add will have allocated a list that we need to free
 		bin->symbols = dbgfmt_read(sympath, false);
 		bdestroy(sympath);
 	}
@@ -175,10 +174,15 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
 	// Close the file.
 	fclose(in);
 
-	// TODO: Free the list data in the struct lprov_entry
+	// Free the list data in the struct lprov_entry
 	// pointers (since it's cloned by the bin system).  Don't
 	// free the debugging symbols however, as they are not
 	// cloned.
+	lprov_free(provided);
+	lprov_free(required);
+	lprov_free(adjustment);
+	lprov_free(section);
+	lprov_free(output);
 
 	return true;
 }
@@ -193,6 +197,11 @@ void bins_save(freed_bstring name, freed_bstring path, freed_bstring target, boo
 {
 	FILE* out;
 	struct ldbin* bin = list_seek(&ldbins.bins, name.ref);
+	struct lprov_entry* provided = NULL;
+	struct lprov_entry* required = NULL;
+	struct lprov_entry* adjustment = NULL;
+	struct lprov_entry* section = NULL;
+	struct lprov_entry* outputs = NULL;
 	bstring sympath;
 	assert(bin != NULL);
 
@@ -200,6 +209,9 @@ void bins_save(freed_bstring name, freed_bstring path, freed_bstring target, boo
 	out = fopen(path.ref->data, "wb");
 	if (out == NULL)
 	{
+		bautodestroy(target);
+		bautodestroy(name);
+		bautodestroy(path);
 		printd(LEVEL_ERROR, "error: unable to open output path to save bins.");
 		exit(1);
 	}
@@ -211,10 +223,18 @@ void bins_save(freed_bstring name, freed_bstring path, freed_bstring target, boo
 		// FIXME: Free the result of list_revert (or better yet
 		// convert objfmt library to use simclist).
 		fwrite(ldata_objfmt, 1, strlen(ldata_objfmt) + 1, out);
+		provided = list_revert(bin->provided);
+		required = list_revert(bin->required);
+		adjustment = list_revert(bin->adjustment);
+		section = list_revert(bin->section);
 		if (keepOutputs)
-			objfile_save(out, list_revert(bin->provided), list_revert(bin->required), list_revert(bin->adjustment), list_revert(bin->section), list_revert(bin->output));
-		else
-			objfile_save(out, list_revert(bin->provided), list_revert(bin->required), list_revert(bin->adjustment), list_revert(bin->section), NULL);
+			outputs = list_revert(bin->output);
+		objfile_save(out, provided, required, adjustment, section, outputs);
+		lprov_free(provided);
+		lprov_free(required);
+		lprov_free(adjustment);
+		lprov_free(section);
+		lprov_free(outputs);
 	}
 
 	// Write each byte from the bin.
@@ -236,6 +256,7 @@ void bins_save(freed_bstring name, freed_bstring path, freed_bstring target, boo
 	}
 
 	// Free strings.
+	bautodestroy(target);
 	bautodestroy(name);
 	bautodestroy(path);
 }
@@ -363,14 +384,12 @@ void bins_sectionize()
 			bconcat(name, entry->label);
 			if (list_seek(&create, name) == NULL)
 			{
-				target = bin_create(bautofree(name), false);
+				target = bin_create(bautofree(name));
 				target->provided = list_create();
 				target->required = list_create();
 				target->adjustment = list_create();
 				target->output = list_create();
-				target->symbols = list_create();
-				list_attributes_copy(target->symbols, &dbgsym_meter, 0);
-				list_attributes_comparator(target->symbols, &dbgsym_comparator);
+				target->symbols = dbgfmt_create_list();
 				list_append(&create, target);
 				printd(LEVEL_DEBUG, "created section %s\n", target->name->data);
 			}
@@ -488,14 +507,12 @@ void bins_flatten(freed_bstring name)
 	size_t i, dk;
 
 	// Create the output bin.
-	target = bin_create(name, false);
+	target = bin_create(name);
 	target->provided = list_create();
 	target->required = list_create();
 	target->adjustment = list_create();
 	target->output = list_create();
-	target->symbols = list_create();
-	list_attributes_copy(target->symbols, &dbgsym_meter, 0);
-	list_attributes_comparator(target->symbols, &dbgsym_comparator);
+	target->symbols = dbgfmt_create_list();
 
 	// Loop through all of the current file bins and copy their
 	// remaining (non-section) code into the output.  Since the bins
@@ -545,19 +562,22 @@ void bins_flatten(freed_bstring name)
 		if (bin == NULL)
 		{
 			printd(LEVEL_DEBUG, "there is no code that needs to be copied into %s; skipping\n", desired->data);
+			bdestroy(desired);
 			continue;
 		}
 
 		// Insert the required code.
 		printd(LEVEL_DEBUG, "copying 0x%04X words from 0x%04X in %s to 0x%04X in %s\n", list_size(&bin->words), 0, bin->name->data, entry->address, target->name->data);
 		bin_insert(&ldbins.bins, target, bin, entry->address, 0, list_size(&bin->words));
+		bdestroy(desired);
 	}
 	list_iterator_stop(target->output);
 
 	// Delete all of the bins.
-	// TODO: Free data stored in the list before clearing.
-	//for (i = list_size(&ldbins.bins) - 1; i >= 0; i--)
-	//	bin_destroy(list_get_at(&ldbins.bins, i));
+	list_iterator_start(&ldbins.bins);
+	while (list_iterator_hasnext(&ldbins.bins))
+		bin_destroy(list_iterator_next(&ldbins.bins));
+	list_iterator_stop(&ldbins.bins);
 	list_clear(&ldbins.bins);
 
 	// Add the flattened bin to the list of bins.
@@ -706,4 +726,22 @@ void bins_resolve(bool keepProvided)
 		}
 		printd(LEVEL_VERBOSE, "\n");
 	}
+}
+
+///
+/// Clears the list of bins, freeing all associated memory.
+///
+void bins_free()
+{
+	struct ldbin* bin;
+	
+	// Delete all of the bins.
+	list_iterator_start(&ldbins.bins);
+	while (list_iterator_hasnext(&ldbins.bins))
+	{
+		bin = list_iterator_next(&ldbins.bins);
+		bin_destroy(bin);
+	}
+	list_iterator_stop(&ldbins.bins);
+	list_clear(&ldbins.bins);
 }

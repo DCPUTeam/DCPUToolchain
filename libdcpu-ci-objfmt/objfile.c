@@ -56,7 +56,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 	{
 		if (entry->mode == LABEL_PROVIDED && provided != NULL)
 		{
-			prov_current = lprov_create(entry->label, entry->address + *offset);
+			prov_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
 			if (prov_last == NULL)
 				*provided = prov_current;
@@ -67,7 +67,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 		}
 		else if (entry->mode == LABEL_REQUIRED && required != NULL)
 		{
-			req_current = lprov_create(entry->label, entry->address + *offset);
+			req_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
 			if (req_last == NULL)
 				*required = req_current;
@@ -92,12 +92,13 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 			if (section_current != NULL && entry->address + *offset == section_last_address)
 			{
 				printd(LEVEL_WARNING, "warning: skipped empty section %s on load.\n", entry->label);
+				ldata_free(entry);
 				entry = ldata_read(in);
 				continue;
 			}
 			section_last_address = entry->address + *offset;
 			
-			section_current = lprov_create(entry->label, entry->address + *offset);
+			section_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
 			if (section_last == NULL)
 				*section = section_current;
@@ -108,7 +109,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 		}
 		else if (entry->mode == LABEL_OUTPUT && adjustment != NULL)
 		{
-			output_current = lprov_create(entry->label, entry->address + *offset);
+			output_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
 			if (output_last == NULL)
 				*output = output_current;
@@ -117,9 +118,11 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 
 			output_last = output_current;
 		}
-
+		
+		ldata_free(entry);
 		entry = ldata_read(in);
 	}
+	ldata_free(entry);
 
 	// Now read the rest of the file to determine it's total
 	// length so that we can adjust what will be the offset.
@@ -141,6 +144,7 @@ void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* r
 		entry->address = provided->address;
 		strcpy(entry->label, provided->label);
 		ldata_write(out, entry);
+		free(entry);
 
 		provided = provided->next;
 	}
@@ -153,6 +157,7 @@ void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* r
 		entry->address = required->address;
 		strcpy(entry->label, required->label);
 		ldata_write(out, entry);
+		free(entry);
 
 		required = required->next;
 	}
@@ -165,6 +170,7 @@ void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* r
 		entry->address = adjustment->address;
 		memset(entry->label, 0, 256);
 		ldata_write(out, entry);
+		free(entry);
 
 		adjustment = adjustment->next;
 	}
@@ -177,6 +183,7 @@ void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* r
 		entry->address = section->address;
 		strcpy(entry->label, section->label);
 		ldata_write(out, entry);
+		free(entry);
 
 		section = section->next;
 	}
@@ -189,6 +196,7 @@ void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* r
 		entry->address = output->address;
 		strcpy(entry->label, output->label);
 		ldata_write(out, entry);
+		free(entry);
 
 		output = output->next;
 	}
@@ -199,4 +207,5 @@ void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* r
 	entry->address = 0;
 	memset(entry->label, 0, 256);
 	ldata_write(out, entry);
+	free(entry);
 }

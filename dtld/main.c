@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_str* target_arg = arg_str0("l", "link-as", "target", "Link as the specified object, can be 'image' or 'static'.");
-	struct arg_file* symbol_file = arg_file0("s", "symbols", "<file>", "Produce a combined symbol file.");
+	struct arg_file* symbol_file = arg_file0("s", "symbols", "<file>", "Produce a combined symbol file (~triples memory usage!).");
 	struct arg_str* symbol_ext = arg_str0(NULL, "symbol-extension", "ext", "When -s is used, specifies the extension for symbol files.  Defaults to \"dsym16\".");
 	struct arg_file* input_files = arg_filen(NULL, NULL, "<file>", 1, 100, "The input object files.");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, target_arg, keep_output_arg, symbol_ext, input_files, output_file, symbol_file, verbose, quiet, end };
+	void* argtable[] = { show_help, target_arg, keep_output_arg, symbol_ext, symbol_file, output_file, input_files, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -95,7 +95,9 @@ int main(int argc, char* argv[])
 	//	 with bins_compress(); when it's implemented.
 	bins_resolve(biseqcstr(target, "static") == true);
 	bins_save(bautofree(bfromcstr("output")), bautofree(bfromcstr(output_file->filename[0])), bautofree(target), keep_output_arg->count > 0, symbol_file->count > 0 ? symbol_file->filename[0] : NULL);
-
+	bins_free();
+	
+	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;
 }
 

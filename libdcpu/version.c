@@ -41,6 +41,7 @@ void version_print(freed_bstring application)
 
 	if (debug_getlevel() < LEVEL_VERBOSE)
 	{
+		bdestroy(ver);
 		bautodestroy(application);
 		return;
 	}

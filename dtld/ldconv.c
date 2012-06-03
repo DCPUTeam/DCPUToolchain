@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <bstring.h>
 #include <simclist.h>
+#include <debug.h>
 #include <lprov.h>
 #include "ldconv.h"
 
@@ -55,6 +56,8 @@ list_t* list_create()
 	list_attributes_seeker(list, &lconv_entry_seeker);
 	return list;
 }
+
+long allocated_strings = 0;
 
 list_t* list_convert(struct lprov_entry* first)
 {
@@ -104,6 +107,29 @@ struct lprov_entry* list_revert(list_t* list)
 	list_iterator_stop(list);
 
 	return first;
+}
+
+void list_prov_destroy(list_t* list)
+{
+	struct lconv_entry* entry = NULL;
+	
+	if (list == NULL)
+		return;
+	
+	list_iterator_start(list);
+	while (list_iterator_hasnext(list))
+	{
+		entry = list_iterator_next(list);
+		bdestroy(entry->label);
+		
+		// No need to free entries as list_attributes_copy
+		// has the copy_data option set to 1.  We also don't
+		// free the bin name, as we don't own that.
+	}
+	list_iterator_stop(list);
+	list_clear(list);
+	list_destroy(list);
+	free(list);
 }
 
 list_t* list_clone(list_t* original)

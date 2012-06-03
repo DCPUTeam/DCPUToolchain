@@ -50,3 +50,18 @@ struct lprov_entry* lprov_find_by_address(struct lprov_entry* first, uint16_t ad
 
 	return NULL;
 }
+
+void lprov_free(struct lprov_entry* first)
+{
+	struct lprov_entry* old;
+	struct lprov_entry* entry = first;
+	
+	while (entry != NULL)
+	{
+		old = entry;
+		entry = entry->next;
+		if (old->label != NULL)
+			free(old->label);
+		free(old);
+	}
+}

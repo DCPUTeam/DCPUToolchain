@@ -33,7 +33,7 @@ struct ldbin
 	list_t words;
 };
 
-struct ldbin* bin_create(freed_bstring name, bool initLists);
+struct ldbin* bin_create(freed_bstring name);
 void bin_destroy(struct ldbin* bin);
 void bin_write(struct ldbin* bin, uint16_t word);
 

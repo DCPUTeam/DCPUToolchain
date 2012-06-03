@@ -26,7 +26,7 @@
 /// @param name The name of the linker bin.
 /// @return The new linker bin.
 ///
-struct ldbin* bin_create(freed_bstring name, bool initLists)
+struct ldbin* bin_create(freed_bstring name)
 {
 	struct ldbin* bin = malloc(sizeof(struct ldbin));
 	memset(bin, 0, sizeof(struct ldbin));
@@ -37,25 +37,12 @@ struct ldbin* bin_create(freed_bstring name, bool initLists)
 	list_attributes_copy(&bin->words, &list_meter_uint16_t, 1);
 	list_attributes_comparator(&bin->words, &list_comparator_uint16_t);
 	list_attributes_hash_computer(&bin->words, &list_hashcomputer_uint16_t);
-	if (initLists)
-	{
-		bin->provided = list_create();
-		bin->required = list_create();
-		bin->adjustment = list_create();
-		bin->section = list_create();
-		bin->output = list_create();
-		bin->symbols = list_create();
-		assert(0 /* bin_create can't initialize lists yet */);
-	}
-	else
-	{
-		bin->provided = NULL;
-		bin->required = NULL;
-		bin->adjustment = NULL;
-		bin->section = NULL;
-		bin->output = NULL;
-		bin->symbols = NULL;
-	}
+	bin->provided = NULL;
+	bin->required = NULL;
+	bin->adjustment = NULL;
+	bin->section = NULL;
+	bin->output = NULL;
+	bin->symbols = NULL;
 	return bin;
 }
 
@@ -66,12 +53,13 @@ struct ldbin* bin_create(freed_bstring name, bool initLists)
 ///
 void bin_destroy(struct ldbin* bin)
 {
-	if (bin->provided != NULL) list_destroy(bin->provided);
-	if (bin->required != NULL) list_destroy(bin->required);
-	if (bin->adjustment != NULL) list_destroy(bin->adjustment);
-	if (bin->section != NULL) list_destroy(bin->section);
-	if (bin->output != NULL) list_destroy(bin->output);
-	if (bin->symbols != NULL) list_destroy(bin->symbols);
+	if (bin->provided != NULL) list_prov_destroy(bin->provided);
+	if (bin->required != NULL) list_prov_destroy(bin->required);
+	if (bin->adjustment != NULL) list_prov_destroy(bin->adjustment);
+	if (bin->section != NULL) list_prov_destroy(bin->section);
+	if (bin->output != NULL) list_prov_destroy(bin->output);
+	if (bin->symbols != NULL) dbgfmt_free(bin->symbols);
+	list_destroy(&bin->words);
 	bdestroy(bin->name);
 	free(bin);
 }
@@ -221,6 +209,8 @@ void bin_remove(list_t* all, struct ldbin* bin, size_t offset, size_t count)
 	bin_info_remove_symbols(bin, offset, count);
 }
 
+extern long allocated_strings;
+
 ///
 /// Copies references from the specified linker information list to another linker information list.
 ///
@@ -281,13 +271,21 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 				copy = malloc(sizeof(struct lconv_entry));
 				copy->address = entry->address;
 				copy->bin = entry->bin;
-				copy->label = bfromcstr("");
-				bassign(copy->label, entry->label);
+				if (entry->label == NULL)
+					copy->label = NULL;
+				else
+				{
+					copy->label = bfromcstr("");
+					bassign(copy->label, entry->label);
+				}
 
 				// Adjust the copy.
 				copy->address = at + (entry->address - offset);
 				copy->bin = entry->bin;
 				list_append(tolist, copy);
+				
+				// Free copy (list automatically copies data for us).
+				free(copy);
 			}
 		}
 	}
@@ -307,13 +305,21 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 				copy = malloc(sizeof(struct lconv_entry));
 				copy->address = entry->address;
 				copy->bin = entry->bin;
-				copy->label = bfromcstr("");
-				bassign(copy->label, entry->label);
+				if (entry->label == NULL)
+					copy->label = NULL;
+				else
+				{
+					copy->label = bfromcstr("");
+					bassign(copy->label, entry->label);
+				}
 
 				// Adjust the copy.
 				copy->address = at + (entry->address - offset);
 				copy->bin = entry->bin;
 				list_append(tolist, copy);
+				
+				// Free copy (list automatically copies data for us).
+				free(copy);
 			}
 		}
 
@@ -434,6 +440,7 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, size_t offset
 		else if (entry->address >= offset && entry->address < offset + count)
 		{
 			// Remove this linker information entry.
+			bdestroy(entry->label);
 			assert(list_delete_at(list, k) == 0);
 			k--;
 		}
@@ -491,6 +498,7 @@ void bin_info_insert_symbols(struct ldbin* to, struct ldbin* from, size_t at, si
 			// Adjust the copy.
 			dbgfmt_update_symbol(copy, at + (address - offset));
 			list_append(to->symbols, copy);
+			free(copy);
 		}
 	}
 }
@@ -523,6 +531,7 @@ void bin_info_remove_symbols(struct ldbin* bin, size_t offset, size_t count)
 		else if (address >= offset && address < offset + count)
 		{
 			// Remove this linker information entry.
+			dbgfmt_free_symbol(sym);
 			assert(list_delete_at(bin->symbols, k) == 0);
 			k--;
 		}

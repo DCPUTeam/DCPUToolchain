@@ -12,8 +12,9 @@
 
 **/
 
-#include "ddata.h"
 #include <assert.h>
+#include <debug.h>
+#include "ddata.h"
 
 struct dbg_sym_file* dbgfmt_header(uint32_t num_symbols);
 struct dbg_sym* dbgfmt_debugging_symbol(uint8_t type, void* payload);
@@ -39,6 +40,15 @@ int dbgsym_comparator(const void* a, const void* b)
 		return 1;
 }
 
+list_t* dbgfmt_create_list()
+{
+	list_t* result = malloc(sizeof(list_t));
+	list_init(result);
+	list_attributes_copy(result, &dbgsym_meter, 1);
+	list_attributes_comparator(result, &dbgsym_comparator);
+	return result;
+}
+
 int dbgfmt_write(bstring path, list_t* symbols)
 {
 	FILE* out;
@@ -51,6 +61,7 @@ int dbgfmt_write(bstring path, list_t* symbols)
 
 	out = fopen(path->data, "wb");
 	fwrite(&hdr->magic, sizeof(hdr->magic), 1, out);
+	free(hdr);
 	fwrite(&total, sizeof(uint32_t), 1, out);
 	for (i = 0; i < total; i++)
 	{
@@ -64,6 +75,8 @@ int dbgfmt_write(bstring path, list_t* symbols)
 				rawdata = malloc(result->length);
 				memcpy(rawdata, result->bytestream, result->length);
 				rawlength = result->length;
+				free(result->bytestream);
+				free(result);
 				break;
 			case DBGFMT_SYMBOL_STRING:
 				result = dbgfmt_serialize_payload_string((struct dbg_sym_payload_string*)sym->payload);
@@ -71,6 +84,8 @@ int dbgfmt_write(bstring path, list_t* symbols)
 				rawdata = malloc(result->length);
 				memcpy(rawdata, result->bytestream, result->length);
 				rawlength = result->length;
+				free(result->bytestream);
+				free(result);
 				break;
 			default:
 				assert(0 /* unable to write out unknown debugging symbol */);
@@ -94,23 +109,21 @@ list_t* dbgfmt_read(bstring path, uint8_t null_on_read_failure)
 	struct dbg_sym_file headers;
 	struct dbg_sym* symbol;
 	void* payload;
-	list_t* result = malloc(sizeof(list_t));
+	list_t* result = dbgfmt_create_list();
 	uint32_t i;
 
 	// Open the file.
 	in = fopen(path->data, "rb");
-
-	// Initialize the list of symbols.
-	list_init(result);
-	list_attributes_copy(result, &dbgsym_meter, 0);
-	list_attributes_comparator(result, &dbgsym_comparator);
 
 	// Check to ensure the file is open.
 	if (in == NULL)
 	{
 		// Fail.
 		if (null_on_read_failure)
+		{
+			dbgfmt_free(result);
 			return NULL;
+		}
 		else
 			return result;
 	}
@@ -149,9 +162,13 @@ list_t* dbgfmt_read(bstring path, uint8_t null_on_read_failure)
 
 		// Add the deserialized structure to the symbol.
 		symbol->payload = payload;
+		//printd(LEVEL_DEFAULT, "ALLOC %p.\n", symbol->payload);
 
 		// Add the symbol to the list.
 		list_append(result, symbol);
+		
+		// Free symbol and data (it is copied into the list).
+		free(symbol);
 	}
 
 	// Close the file.
@@ -159,6 +176,31 @@ list_t* dbgfmt_read(bstring path, uint8_t null_on_read_failure)
 
 	// Return the result list.
 	return result;
+}
+
+void dbgfmt_free(list_t* symbols)
+{
+	struct dbg_sym* symbol;
+	
+	if (symbols == NULL)
+		return;
+	
+	list_iterator_start(symbols);
+	while (list_iterator_hasnext(symbols))
+	{
+		symbol = list_iterator_next(symbols);
+		
+		// Free payload.
+		dbgfmt_free_symbol(symbol);
+		
+		// No need to free the symbol, it will be
+		// free'd by simclist when we clear / destroy
+		// the list.
+	}
+	list_iterator_stop(symbols);
+	list_clear(symbols);
+	list_destroy(symbols);
+	free(symbols);
 }
 
 struct dbg_sym_payload_line* dbgfmt_get_symbol_line(struct dbg_sym* bytes)
@@ -300,6 +342,29 @@ struct dbg_sym* dbgfmt_copy_symbol(struct dbg_sym* other)
 	}
 
 	return NULL;
+}
+
+void dbgfmt_free_symbol(struct dbg_sym* symbol)
+{
+	struct dbg_sym_payload_line* payload_line;
+	struct dbg_sym_payload_string* payload_string;
+
+	// Free payload.
+	switch (symbol->type)
+	{
+		case DBGFMT_SYMBOL_LINE:
+			payload_line = symbol->payload;
+			bdestroy(payload_line->path);
+			free(payload_line);
+			break;
+		case DBGFMT_SYMBOL_STRING:
+			payload_string = symbol->payload;
+			bdestroy(payload_string->data);
+			free(payload_string);
+			break;
+		default:
+			assert(0 /* debugging symbol wasn't of any known type during address get */);
+	}
 }
 
 struct dbg_sym_payload_line* dbgfmt_create_symbol_line(bstring path, uint16_t lineno, uint16_t address)

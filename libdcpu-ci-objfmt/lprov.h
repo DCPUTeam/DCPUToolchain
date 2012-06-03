@@ -27,5 +27,6 @@ struct lprov_entry
 struct lprov_entry* lprov_create(char* label, uint16_t address);
 struct lprov_entry* lprov_find_by_label(struct lprov_entry* first, char* label);
 struct lprov_entry* lprov_find_by_address(struct lprov_entry* first, uint16_t address);
+void lprov_free(struct lprov_entry* first);
 
 #endif

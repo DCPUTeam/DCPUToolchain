@@ -52,4 +52,10 @@ void ldata_write(FILE* out, struct ldata_entry* entry)
 	fwrite(cpy, 1, 256, out);
 	fwrite(&entry->mode, sizeof(uint8_t), 1, out);
 	fwrite(&entry->address, sizeof(uint16_t), 1, out);
+	free(cpy);
+}
+
+void ldata_free(struct ldata_entry* entry)
+{
+	free(entry);
 }

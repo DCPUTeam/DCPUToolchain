@@ -30,5 +30,6 @@ void bins_associate();
 void bins_sectionize();
 void bins_flatten(freed_bstring name);
 void bins_resolve(bool keepProvided);
+void bins_free();
 
 #endif

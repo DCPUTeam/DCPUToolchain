@@ -35,5 +35,6 @@ struct ldata_entry
 static const char ldata_objfmt[] = "OBJECT-FORMAT-1.0";
 struct ldata_entry* ldata_read(FILE* in);
 void ldata_write(FILE* out, struct ldata_entry* entry);
+void ldata_free(struct ldata_entry* entry);
 
 #endif
