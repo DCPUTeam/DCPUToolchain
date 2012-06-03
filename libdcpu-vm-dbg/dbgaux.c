@@ -566,21 +566,22 @@ void ddbg_disassemble(int start, int difference)
 						if (payload_line->address == start + i)
 						{
 							found = true;
-							printf("0x%04X (0x%04X) (%s:%d): ", start + i, vm->ram[start + i], payload_line->path->data, payload_line->lineno);
+							printf("0x%04X (0x%04X) (%s:%d):\n", start + i, vm->ram[start + i], payload_line->path->data, payload_line->lineno);
 
 						}
 						break;
 				}
 			}
-			if (!found) printf("0x%04X (0x%04X): ", start + i, vm->ram[start + i]);
+			if (!found) printf("0x%04X (0x%04X):\n", start + i, vm->ram[start + i]);
 		}
 		else
-		{
 			printf("0x%04X (0x%04X): ", start + i, vm->ram[start + i]);
-		}
 		if (map_inst != NULL)
 		{
-			printf("%s ", map_inst->name);
+			if (symbols != NULL)
+				printf("    %s ", map_inst->name);
+			else
+				printf("%s ", map_inst->name);
 			if (op_b == NXT)
 				printf("[0x%04X] ", vm->ram[start + (++i)]);
 			else if (op_b == NXT_LIT)
@@ -599,9 +600,19 @@ void ddbg_disassemble(int start, int difference)
 				printf("0x%04X ", op_a);
 		}
 		else if (val == 0x0)
-			printf("<null>"); // No data here.
+		{
+			if (symbols != NULL)
+				printf("    <null>"); // No data here.
+			else
+				printf("<null>"); // No data here.
+		}
 		else
-			printf("DAT");
+		{
+			if (symbols != NULL)
+				printf("    DAT");
+			else
+				printf("DAT");
+		}
 		printf("\n");
 	}
 

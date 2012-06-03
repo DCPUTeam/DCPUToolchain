@@ -1,5 +1,3 @@
-.ULINE 2 "bootstrap.asm"
-
 ; Immediately jump to _setup.
 SET PC, _setup
 

@@ -251,7 +251,7 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 			{
 				entry = (struct lconv_entry*)list_get_at(tolist, k);
 
-				if (entry->address >= offset + count)
+				if (entry->address >= at)
 				{
 					// Shift the address up.
 					entry->address += count;
@@ -476,7 +476,7 @@ void bin_info_insert_symbols(struct ldbin* to, struct ldbin* from, size_t at, si
 		sym = (struct dbg_sym*)list_get_at(to->symbols, k);
 		address = dbgfmt_get_symbol_address(sym);
 
-		if (address >= offset + count)
+		if (address >= at)
 		{
 			// Shift the address up.
 			dbgfmt_update_symbol(sym, address + count);
