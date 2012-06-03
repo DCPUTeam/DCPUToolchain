@@ -13,9 +13,6 @@ The module block definition for hardware modules is as follows:
         Version = "1.0"
     };
     
-.. note::
-
-    Hardware modules are currently loaded from the `hw/` folder.
     
 Module API
 ------------------
