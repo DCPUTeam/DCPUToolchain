@@ -111,6 +111,7 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
 	if (in == NULL)
 	{
 		// Handle the error.
+		printd(LEVEL_ERROR, "error: unable to open '%s'.\n", path.ref->data);
 		return false;
 	}
 

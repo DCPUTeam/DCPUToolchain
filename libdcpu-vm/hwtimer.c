@@ -38,9 +38,7 @@ void vm_hw_timer_cycle(vm_t* vm, uint16_t pos, void* ud)
 		if (timer_tick > base_frequency)	 // processor runs at 100khz, timer interrupt triggers 60 times a second
 		{
 			if (message > 0x0)
-			{
-				vm_op_int(vm, message);
-			}
+				vm_interrupt(vm, message);
 
 			timer_tick = 0;
 		}

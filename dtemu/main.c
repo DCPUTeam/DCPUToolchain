@@ -152,9 +152,9 @@ int main(int argc, char* argv[])
 	vm = vm_create();
 	vm->debug = (debug_mode->count > 0);
 	vm_flash(vm, flash);
-	vm_hw_lem1802_init(vm);
-	vm_hw_io_init(vm);
 	vm_hw_timer_init(vm);
+	vm_hw_io_init(vm);
+	vm_hw_lem1802_init(vm);
 	vm_hw_lua_init(vm);
 	if (legacy_mode->count > 0)
 	{

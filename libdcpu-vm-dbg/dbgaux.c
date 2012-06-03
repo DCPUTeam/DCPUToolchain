@@ -172,7 +172,7 @@ void ddbg_precycle_hook(vm_t* vm, uint16_t pos, void* ud)
 		else
 		{
 			// Unhandled.
-			printd(LEVEL_WARNING, "warning: unhandled backtrace jump occurred.\n");
+			printd(LEVEL_DEBUG, "warning: unhandled backtrace jump occurred.\n");
 		}
 	}
 }
@@ -500,6 +500,12 @@ void ddbg_dump_state()
 	fprintf(stderr, "J:   0x%04X	 [J]:	0x%04X\n", vm->registers[REG_J], vm->ram[vm->registers[REG_J]]);
 	fprintf(stderr, "PC:  0x%04X	 SP:	0x%04X\n", vm->pc, vm->sp);
 	fprintf(stderr, "EX:  0x%04X	 IA:	0x%04X\n", vm->ex, vm->ia);
+	if (vm->queue_interrupts)
+		fprintf(stderr, "IRQ ENABLED:		  true\n");
+	else
+		fprintf(stderr, "IRQ ENABLED:		 false\n");
+	fprintf(stderr, "IRQ COUNT:		0x%04X\n", vm->irq_count);
+	fprintf(stderr, "CYCLES TO SLEEP:	0x%04X\n", vm->sleep_cycles);
 }
 
 void ddbg_dump_ram(int start, int difference)

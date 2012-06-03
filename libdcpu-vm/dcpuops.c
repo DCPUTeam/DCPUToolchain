@@ -17,6 +17,7 @@
 
 #include <libtcod.h>
 #include <stdio.h>
+#include <debug.h>
 #include "dcpubase.h"
 #include "dcpuops.h"
 #include "dcpuhook.h"
@@ -46,8 +47,6 @@
 		vm_hook_fire(vm, (uint16_t)(var - (uint16_t*)&vm->ram), HOOK_ON_WRITE);
 
 #define OP_NUM_CYCLES(count) vm->sleep_cycles += (count - 1);
-
-uint16_t irqs = 0x0;
 
 uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos)
 {
@@ -356,7 +355,7 @@ void vm_op_xor(vm_t* vm, uint16_t b, uint16_t a)
 	VM_HOOK_FIRE(store_b);
 }
 
-void vm_op_shr(vm_t* vm, uint16_t a, uint16_t b)
+void vm_op_shr(vm_t* vm, uint16_t b, uint16_t a)
 {
 	uint16_t val_b, val_a;
 	uint16_t* store_b;
@@ -371,7 +370,7 @@ void vm_op_shr(vm_t* vm, uint16_t a, uint16_t b)
 	VM_HOOK_FIRE(store_b);
 }
 
-void vm_op_asr(vm_t* vm, uint16_t a, uint16_t b)
+void vm_op_asr(vm_t* vm, uint16_t b, uint16_t a)
 {
 	// TODO: This may not infact be correct.  C uses
 	// arithmetic shifts if the left-hand value is
@@ -551,63 +550,55 @@ void vm_op_std(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_jsr(vm_t* vm, uint16_t a)
 {
-	uint16_t new_pc = vm_resolve_value(vm, a, POS_A);
+	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	uint16_t t;
 	OP_NUM_CYCLES(3);
 
 	VM_SKIP_RESET;
 	t = --vm->sp;
 	vm->ram[t] = vm->pc;
-	vm->pc = new_pc;
+	vm->pc = val_a;
 }
 
 void vm_op_hcf(vm_t* vm, uint16_t a)
 {
+	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	OP_NUM_CYCLES(9);
-	vm->halted = true; // TODO: make it do crazy shit
+	vm->halted = true;
 }
 
 void vm_op_int(vm_t* vm, uint16_t a)
 {
+	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	OP_NUM_CYCLES(4);
-
-	if (vm->queue_interrupts == 1)
-	{
-		irqs++;
-		vm->irq[irqs] = a;
-	}
-	else
-	{
-		vm_interrupt(vm, a);
-	}
+	
+	printd(LEVEL_DEFAULT, "sending interrupt %u\n", val_a);
+	vm->queue_interrupts = false;
+	vm_interrupt(vm, val_a);
 }
 
 void vm_op_iag(vm_t* vm, uint16_t a)
 {
+	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	VM_SKIP_RESET;
-	vm_op_set(vm, a, IA);
+	vm_op_set(vm, val_a, IA);
 }
 
 void vm_op_ias(vm_t* vm, uint16_t a)
 {
+	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	VM_SKIP_RESET;
-
-	if (a == 0)
-		vm->queue_interrupts = 1;
-
-	vm_op_set(vm, IA, a);
+	vm_op_set(vm, IA, val_a);
 }
 
 void vm_op_rfi(vm_t* vm, uint16_t a)
 {
+	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	OP_NUM_CYCLES(3);
-
 	VM_SKIP_RESET;
-
-	vm->queue_interrupts = 0;
-
-	vm->registers[REG_A] = vm->ram[vm->sp];
-	vm->pc = vm->ram[++vm->sp];
+	vm->registers[REG_A] = vm->ram[vm->sp++];
+	vm->pc = vm->ram[vm->sp++];
+	vm->queue_interrupts = false;
 	VM_HOOK_FIRE(&vm->registers[REG_A]);
 }
 
@@ -621,18 +612,14 @@ void vm_op_iaq(vm_t* vm, uint16_t a)
 
 	if (val_a == 0)
 	{
-		for (i = 0; i < irqs; i++)
-		{
-			vm_interrupt(vm, vm->irq[i]);
-		}
-
-		irqs = 0;
-		vm->queue_interrupts = 0;
+		// Should we even be doing this???
+		//for (i = 0; i < vm->irq_count; i++)
+		//	vm_interrupt(vm, vm->irq[i]);
+		//vm->irq_count = 0;
+		vm->queue_interrupts = false;
 	}
 	else
-	{
-		vm->queue_interrupts = 1;
-	}
+		vm->queue_interrupts = true;
 }
 
 void vm_op_hwn(vm_t* vm, uint16_t a)
@@ -674,21 +661,13 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 		*store_c = queried_device.version;
 		*store_x = (queried_device.manufacturer & 0x0000FFFF) >>  0;
 		*store_y = (queried_device.manufacturer & 0xFFFF0000) >> 16;
+		
+		VM_HOOK_FIRE(store_a);
+		VM_HOOK_FIRE(store_b);
+		VM_HOOK_FIRE(store_c);
+		VM_HOOK_FIRE(store_x);
+		VM_HOOK_FIRE(store_y);
 	}
-	else
-	{
-		*store_a = 0;
-		*store_b = 0;
-		*store_c = 0;
-		*store_x = 0;
-		*store_y = 0;
-	}
-
-	VM_HOOK_FIRE(store_a);
-	VM_HOOK_FIRE(store_b);
-	VM_HOOK_FIRE(store_c);
-	VM_HOOK_FIRE(store_x);
-	VM_HOOK_FIRE(store_y);
 	vm->skip = false;
 }
 

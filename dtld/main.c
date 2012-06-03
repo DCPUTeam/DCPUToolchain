@@ -87,7 +87,12 @@ int main(int argc, char* argv[])
 	// produce result.
 	bins_init();
 	for (i = 0; i < input_files->count; i++)
-		bins_load(bautofree(bfromcstr(input_files->filename[i])), symbol_file->count > 0, (symbol_file->count > 0 && symbol_ext->count > 0) ? symbol_ext->sval[0] : "dsym16");
+		if (!bins_load(bautofree(bfromcstr(input_files->filename[i])), symbol_file->count > 0, (symbol_file->count > 0 && symbol_ext->count > 0) ? symbol_ext->sval[0] : "dsym16"))
+		{
+			// Failed to load one of the input files.
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+			return 1;
+		}
 	bins_associate();
 	bins_sectionize();
 	bins_flatten(bautofree(bfromcstr("output")));

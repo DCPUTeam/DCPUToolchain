@@ -15,8 +15,12 @@
 
 #define PRIVATE_VM_ACCESS
 
+#include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
+#include <debug.h>
+#include <imap.h>
 #include "dcpubase.h"
 #include "dcpuops.h"
 #include "dcpuhook.h"
@@ -33,14 +37,34 @@ void vm_halt(vm_t* vm, const char* message, ...)
 
 void vm_interrupt(vm_t* vm, uint16_t msgid)
 {
-	if (vm->ia == 0)
-		return;
-
-	vm->ram[--vm->sp] = vm->pc;
-	vm->ram[--vm->sp] = vm->registers[REG_A];
-	vm->pc = vm->ia;
-	vm->registers[REG_A] = msgid;
-
+	if (vm->queue_interrupts)
+	{
+		if (vm->irq_count >= INTERRUPT_MAX)
+		{
+			printd(LEVEL_ERROR, "interrupt queue hit maximum number (halted VM)\n");
+			vm->halted = true;
+		}
+		else
+		{
+			vm->irq[vm->irq_count++] = msgid;
+			printd(LEVEL_DEFAULT, "appending interrupt %u to interrupt queue\n", msgid);
+		}
+	}
+	else
+	{
+		if (vm->ia == 0)
+		{
+			printd(LEVEL_DEFAULT, "ignoring request to fire interrupt %u\n", msgid);
+			return;
+		}
+		
+		vm->ram[--vm->sp] = vm->pc;
+		vm->ram[--vm->sp] = vm->registers[REG_A];
+		vm->pc = vm->ia;
+		vm->registers[REG_A] = msgid;
+		vm->queue_interrupts = true;
+		printd(LEVEL_DEFAULT, "executing interrupt %u right now\n", msgid);
+	}
 }
 
 uint16_t vm_consume_word(vm_t* vm)
@@ -144,21 +168,48 @@ void vm_print_op(const char* opname, vm_t* vm, uint16_t a, uint16_t b)
 	if (!vm->debug)
 		return;
 
+	//if (vm->skip)
+	//	printf("0x%04X: (skipped) %s 0x%04X 0x%04X", vm->pc, opname, a, b);
+	//else
+	//	printf("0x%04X: %s 0x%04X 0x%04X", vm->pc, opname, a, b);
 	if (vm->skip)
-		printf("0x%04X: (skipped) %s 0x%04X 0x%04X", vm->pc, opname, a, b);
+	{
+		if (get_register_by_value(a) != NULL && get_register_by_value(b) != NULL)
+			printf("0x%04X: (skipped) %s %s %s", vm->pc, opname, get_register_by_value(a)->name, get_register_by_value(b)->name);
+		else
+			printf("0x%04X: (skipped) %s 0x%04X 0x%04X", vm->pc, opname, a, b);
+	}
 	else
-		printf("0x%04X: %s 0x%04X 0x%04X", vm->pc, opname, a, b);
+	{
+		if (get_register_by_value(a) != NULL && get_register_by_value(b) != NULL)
+			printf("0x%04X: %s %s %s", vm->pc, opname, get_register_by_value(a)->name, get_register_by_value(b)->name);
+		else
+			printf("0x%04X: %s 0x%04X 0x%04X", vm->pc, opname, a, b);
+	}
 }
 
 void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
 {
 	if (!vm->debug)
 		return;
-
+	//if (vm->skip)
+	//	printf("0x%04X: (skipped) %s 0x%04X", vm->pc, opname, a);
+	//else
+	//	printf("0x%04X: %s 0x%04X", vm->pc, opname, a);
 	if (vm->skip)
-		printf("0x%04X: (skipped) %s 0x%04X", vm->pc, opname, a);
+	{
+		if (get_register_by_value(a) != NULL)
+			printf("0x%04X: (skipped) %s %s", vm->pc, opname, get_register_by_value(a)->name);
+		else
+			printf("0x%04X: (skipped) %s 0x%04X", vm->pc, opname, a);
+	}
 	else
-		printf("0x%04X: %s 0x%04X", vm->pc, opname, a);
+	{
+		if (get_register_by_value(a) != NULL)
+			printf("0x%04X: %s %s", vm->pc, opname, get_register_by_value(a)->name);
+		else
+			printf("0x%04X: %s 0x%04X", vm->pc, opname, a);
+	}
 }
 
 void vm_cycle(vm_t* vm)
@@ -173,6 +224,16 @@ void vm_cycle(vm_t* vm)
 		vm->sleep_cycles--;
 		return;
 	}
+	
+	if (!vm->queue_interrupts && vm->irq_count > 0)
+	{
+		a = vm->irq[0];
+		printd(LEVEL_ERROR, "sending interrupt handler with msgid %u\n");
+		memcpy(&vm->irq, &vm->irq[1], INTERRUPT_MAX * sizeof(uint16_t));
+		vm->irq[INTERRUPT_MAX] = 0;
+		vm->irq_count--;
+		vm_interrupt(vm, a);
+	}
 
 	vm_hook_fire(vm, 0, HOOK_ON_PRE_CYCLE);
 	if (vm->halted) return; // skip if the precycle hook halted the virtual machine
@@ -181,8 +242,6 @@ void vm_cycle(vm_t* vm)
 	op = INSTRUCTION_GET_OP(instruction);
 	b = INSTRUCTION_GET_B(instruction);
 	a = INSTRUCTION_GET_A(instruction);
-
-	if (vm->debug) printf("Instruction: %04X\n", instruction);
 
 	switch (op)
 	{

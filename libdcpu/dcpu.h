@@ -134,6 +134,8 @@ typedef uint8_t bool;
 #define INSTRUCTION_GET_B(inst) ((inst & 0x3e0) >> 5)
 #define INSTRUCTION_GET_OP(inst) (inst & 0x1f)
 
+#define INTERRUPT_MAX	255
+
 ///
 /// Represents a DCPU-16 virtual machine.
 ///
@@ -149,9 +151,10 @@ typedef struct
 	uint16_t ex;			///< The overflow or excess data register.
 	uint16_t ram[0x10000];		///< The virtual machine's main RAM segment.
 	uint16_t dummy;			///< A dummy position that is used internally to silently redirect assignments.
-	uint16_t irq[0x10000];		///< The interrupt queue.
+	uint16_t irq[256];		///< The interrupt queue.
+	uint16_t irq_count;		///< The number of interrupts currently in the queue.
 	uint8_t sleep_cycles;		///< An internal counter used to measure how many additional cycles the VM should sleep for.
-	uint8_t queue_interrupts;	///< The number of interrupts in the interrupt queue.
+	uint8_t queue_interrupts;	///< Whether the interrupt queue is enabled.
 	uint8_t halted;			///< Whether the virtual machine is currently halted.
 	uint8_t skip;			///< Whether the virtual machine will skip the next instruction.
 	uint8_t debug;			///< Whether the virtual machine will output each instruction to standard output.

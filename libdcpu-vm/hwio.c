@@ -58,7 +58,7 @@ void vm_hw_io_cycle(vm_t* vm, uint16_t pos, void* ud)
 			last_key = ascii;
 
 			if (interrupt_message != 0)
-				vm_op_int(vm, interrupt_message);
+				vm_interrupt(vm, interrupt_message);
 
 			if (kb_legacy != false)
 				vm->ram[0x9000] = last_key;
@@ -85,7 +85,6 @@ void vm_hwio_interrupt(vm_t* vm, void* ud)
 		case KB_STORE_IN_REG:
 			*store_c = last_key;
 			last_key = 0x0;
-			printf("storing in C: %04X\n", *store_c);
 			break;
 		case KB_COMPARE:
 			*store_c = val_b == last_key ? 1 : 0;
