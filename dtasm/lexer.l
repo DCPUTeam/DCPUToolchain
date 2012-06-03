@@ -204,6 +204,7 @@ bstring yyfilename = NULL;
 \:				return COLON;
 
 (\r\n|\r|\n)			return NEWLINE;
+<<EOF>>				{ static int once = 0; return (once = !once) ? NEWLINE : 0; }
 \;[^\r\n]*			/* ignore comments */;
 [ \t]+				/* ignore whitespace */;
 

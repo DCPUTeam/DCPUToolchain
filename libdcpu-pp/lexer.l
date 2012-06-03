@@ -62,8 +62,6 @@ char* pp_trim_and_unescape(char* data)
 
 %%
 
-	/* <<EOF>> 								{static int once = 0; return once++ ? 0 : NEWLINE;} */
-
 	/* Preprocessor keywords */
 
 <INITIAL>^[ \t]*[\.\#][Ll][Ii][Nn][Ee]						BEGIN(PREPROCESSING); return LINE;
@@ -116,5 +114,6 @@ char* pp_trim_and_unescape(char* data)
 <PREPROCESSING>[ \t]+							/* ignore whitespace */;
 <MACROCONTENT,INITIAL>(\r\n|\r|\n)					yylval->any = '\n'; return NEWLINE;
 <MACROCONTENT,INITIAL>[^\r\n]						yylval->any = yytext[0]; return TEXT;
+<<EOF>>									{ static int once = 0; return (once = !once) ? NEWLINE : 0; }
 
 %%

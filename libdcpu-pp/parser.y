@@ -548,9 +548,11 @@ callarg:
 
 #include "lexer.h"
 
+bstring pp_yyfilename = NULL;
+
 void yyerror(void* scanner, const char *str)
 {
-	fprintf(stderr,"error at line %i: %s\n", pp_yyget_lineno(scanner), str);
+	fprintf(stderr,"error at line %i of file %s: %s\n", pp_yyget_lineno(scanner), pp_yyfilename->data, str);
 }
 
 void handle_output(bstring output, void* scanner)
@@ -578,8 +580,6 @@ void finalize_lua(int line, void* current)
 {
 	fprintf(pp_yyget_out(current), "# %i\n", line);
 }
-
-bstring pp_yyfilename = NULL;
 
 void handle_start(freed_bstring name, FILE* output)
 {
@@ -633,6 +633,7 @@ int handle_include(bstring fname, void* current)
 	
 	// Output the new state.
 	fprintf(pp_yyget_out(current), "\n# 1 %s\n", path->data);
+	bassign(pp_yyfilename, path);
 	
 	// Include the file.
 	ffnew = fopen((const char*)(path->data), "r");
