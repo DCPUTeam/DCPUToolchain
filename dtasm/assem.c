@@ -497,7 +497,7 @@ void process_line(struct ast_node_line* line)
 		{
 			newsym = list_extract_at(&newsyms, 0);
 			printd(LEVEL_DEBUG, "Debugging custom symbol: %i\n", newsym->length);
-			result->symbols[result->symbols_count++] = newsym;
+			list_append(&result->symbols, newsym);
 			list_append(assem_dbg_symbols, newsym);
 		}
 
@@ -507,7 +507,7 @@ void process_line(struct ast_node_line* line)
 		{
 			// Output a file / line number debugging symbol here.
 			newsym = dbgfmt_create_symbol(DBGFMT_SYMBOL_LINE, dbgfmt_create_symbol_line(line->file, line->line, DBGFMT_UNDETERMINED));
-			result->symbols[result->symbols_count++] = newsym;
+			list_append(&result->symbols, newsym);
 			list_append(assem_dbg_symbols, newsym);
 
 			printd(LEVEL_DEBUG, "Debugging symbol: %i %s\n", line->line, line->file->data);
@@ -519,7 +519,7 @@ void process_line(struct ast_node_line* line)
 		{
 			// Output a file / line number debugging symbol here.
 			newsym = dbgfmt_create_symbol(DBGFMT_SYMBOL_LINE, dbgfmt_create_symbol_line(line->ufile, line->uline, DBGFMT_UNDETERMINED));
-			result->symbols[result->symbols_count++] = newsym;
+			list_append(&result->symbols, newsym);
 			list_append(assem_dbg_symbols, newsym);
 
 			printd(LEVEL_DEBUG, "High-level debugging symbol: %i %s\n", line->uline, line->ufile->data);

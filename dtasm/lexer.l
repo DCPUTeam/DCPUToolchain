@@ -46,6 +46,7 @@ bstring yyfilename = NULL;
 
 	/* Line and file directives */
 	
+\#\ [0-9]+(\r\n|\r|\n)				rparse_dol(yytext, &yylineno);
 \#\ [0-9]+\ [^\r\n]*(\r\n|\r|\n)		rparse_do(yytext, &yylineno, &yyfilename);
 \#U\ [0-9]+\ [^\r\n]*(\r\n|\r|\n)		rparse_do(yytext, &yyulineno, &yyufilename);
 

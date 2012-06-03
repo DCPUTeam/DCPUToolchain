@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <debug.h>
 #include "dcpubase.h"
 #include "dcpuhook.h"
 
@@ -43,7 +44,7 @@ void vm_hook_break(vm_t* vm)
 uint16_t vm_hook_register(vm_t* vm, vm_hook hook, uint16_t mode, void* ud)
 {
 	uint16_t id = 0;
-	printf("registering hook\n");
+	printd(LEVEL_EVERYTHING, "registering hook\n");
 
 	while (vm_hook_list[id] != NULL && id < HOOK_MAX)
 		id++;

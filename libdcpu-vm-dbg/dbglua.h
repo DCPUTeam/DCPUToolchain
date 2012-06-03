@@ -23,6 +23,8 @@ struct dbg_state
 {
 	vm_t* (*get_vm)();
 	void (*dbg_lua_break)();
+	void (*dbg_lua_run)();
+	list_t* (*dbg_lua_get_symbols)();
 };
 
 #define DBG_CUSTOMARG_TYPE_PATH 0

@@ -23,6 +23,8 @@
 #include <ppexprlua.h>
 #include <debug.h>
 #include <stdlib.h>
+#include "parser.h"
+#include "lexer.h"
 #include "pplua.h"
 #include "dcpu.h"
 
@@ -56,7 +58,7 @@ int pp_lua_add_preprocessor_directive(lua_State* L)
 	lua_setfield(L, entry, HANDLER_FIELD_FUNCTION_NAME);
 	// entry is now at the top of the stack.
 	lua_setfield(L, handlers, lowered->data);
-	printd(LEVEL_DEFAULT, "registered preprocessor directive '%s' with custom Lua handler.\n", lowered->data);
+	printd(LEVEL_DEBUG, "registered preprocessor directive '%s' with custom Lua handler.\n", lowered->data);
 	lua_pop(L, 1);
 	bdestroy(lowered);
 	return 0;
@@ -83,7 +85,7 @@ struct lua_preproc* pp_lua_load(bstring name)
 	// Execute the code in the new Lua context.
 	if (luaL_dofile(pp->state, path->data) != 0)
 	{
-		printf("lua error was %s.\n", lua_tostring(pp->state, -1));
+		printd(LEVEL_ERROR, "lua error was %s.\n", lua_tostring(pp->state, -1));
 
 		// Return NULL.
 		lua_close(pp->state);
@@ -99,7 +101,7 @@ struct lua_preproc* pp_lua_load(bstring name)
 	// Ensure module table was provided.
 	if (lua_isnoneornil(pp->state, module))
 	{
-		printf("failed to load preprocessor module from %s.\n", path->data);
+		printd(LEVEL_ERROR, "failed to load preprocessor module from %s.\n", path->data);
 
 		// Return NULL.
 		lua_close(pp->state);
@@ -208,7 +210,7 @@ void pp_lua_init()
 		}
 
 		// Attempt to load the Lua file.
-		printd(LEVEL_VERBOSE, "loading custom preprocessor module from: %s\n", name->data);
+		printd(LEVEL_DEBUG, "loading custom preprocessor module from: %s\n", name->data);
 		ppm = pp_lua_load(name);
 		if (ppm != NULL)
 			list_append(&modules, ppm);
@@ -334,7 +336,7 @@ void pp_lua_push_state(struct lua_preproc* pp, struct pp_state* state, void* ud)
 // are included by dirent.portable.h.
 extern void handle_pp_lua_print_line(const char* text, void* ud);
 
-void pp_lua_handle(struct pp_state* state, void* ud, bstring name, list_t* parameters)
+void pp_lua_handle(struct pp_state* state, void* scanner, bstring name, list_t* parameters)
 {
 	struct lua_preproc* pp;
 	struct customarg_entry* carg;
@@ -343,6 +345,9 @@ void pp_lua_handle(struct pp_state* state, void* ud, bstring name, list_t* param
 	unsigned int i;
 	int paramtbl;
 
+	// Get the current line number.
+	int lineno = pp_yyget_lineno(scanner);
+	
 	// Convert the name to lowercase.
 	btolower(name);
 	cstr = bstr2cstr(name, '0');
@@ -369,7 +374,7 @@ void pp_lua_handle(struct pp_state* state, void* ud, bstring name, list_t* param
 
 		// Call the handler function.
 		lua_getfield(pp->state, -1, HANDLER_FIELD_FUNCTION_NAME);
-		pp_lua_push_state(pp, state, ud);
+		pp_lua_push_state(pp, state, scanner);
 		lua_newtable(pp->state);
 		paramtbl = lua_gettop(pp->state);
 		for (i = 0; i < list_size(parameters); i++)
@@ -404,7 +409,12 @@ void pp_lua_handle(struct pp_state* state, void* ud, bstring name, list_t* param
 			list_destroy(parameters);
 			return;
 		}
-
+		
+		// Output line information to readjust for the fact that
+		// the custom Lua module may have outputted more lines or
+		// no lines at all.
+		fprintf(pp_yyget_out((yyscan_t)scanner), "# %i\n", lineno - 1);
+		
 		bdestroy(name);
 		bcstrfree(cstr);
 		lua_pop(pp->state, 2);
@@ -440,7 +450,7 @@ void pp_lua_handle(struct pp_state* state, void* ud, bstring name, list_t* param
 			bformata(dot, "%i", carg->number);
 	}
 	list_iterator_stop(parameters);
-	handle_pp_lua_print_line(dot->data, ud);
+	handle_pp_lua_print_line(dot->data, scanner);
 
 	// Clean up.
 	list_destroy(parameters);

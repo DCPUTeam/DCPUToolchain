@@ -16,6 +16,7 @@
 #define __DCPU_RPARSE_H
 
 void rparse_do(char* yytext, int* out_line, bstring* out_filename);
+void rparse_dol(char* yytext, int* out_line);
 
 #endif
 

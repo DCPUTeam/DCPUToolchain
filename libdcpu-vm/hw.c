@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <debug.h>
 #include "dcpubase.h"
 #include "hw.h"
 
@@ -36,8 +37,8 @@ uint16_t vm_hw_register(vm_t* vm, hw_t hardware)
 		vm_halt(vm, "unable to register hardware, maximum reached!");
 		return 0;
 	}
-
-	printf("assigned id %d: 0x%08X\n", id, hardware.id);
+	
+	printd(LEVEL_DEBUG, "assigned id %d: 0x%08X\n", id, hardware.id);
 	vm_hw_connected[id] = 1;
 	vm_hw_list[id] = hardware;
 
@@ -53,7 +54,7 @@ void vm_hw_interrupt(vm_t* vm, uint16_t index)
 {
 	hw_t device = vm_hw_list[index];
 
-	if (vm->debug) printf("\nInterrupting device 0x%04X (0x%08X): %p\n", index, device.id, device.handler);
+	if (vm->debug) printd(LEVEL_DEBUG, "\nInterrupting device 0x%04X (0x%08X): %p\n", index, device.id, device.handler);
 
 	if (device.handler != NULL)
 		device.handler(vm, device.userdata);

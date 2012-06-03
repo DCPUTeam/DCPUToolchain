@@ -72,7 +72,7 @@ int dbgsym_comparator(const void* a, const void* b);
 
 uint16_t dbgfmt_get_symbol_address(struct dbg_sym* symbol);
 void dbgfmt_update_symbol(struct dbg_sym* symbol, uint16_t address);
-void dbgfmt_update_symbol_array(struct dbg_sym * (*symbols)[4], uint16_t symbols_count, uint16_t address);
+void dbgfmt_update_symbol_list(list_t* symbols, uint16_t address);
 void dbgfmt_finalize_symbol(struct dbg_sym* symbol, uint16_t address);
 
 struct dbg_sym* dbgfmt_create_symbol(uint8_t type, void* payload);

@@ -125,7 +125,11 @@ int main(int argc, char** argv)
 #ifdef FEATURE_SDP
 	pthread_create(&sdp_thread, NULL, (void*)ddbg_sdp_thread, vm);
 #endif
+	
+	// We always want to show the debugger start message.
+	debug_setlevel(LEVEL_VERBOSE + verbose->count - quiet->count);
 	version_print(bautofree(bfromcstr("Debugger")));
+	debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
 
 	for (;;)
 	{

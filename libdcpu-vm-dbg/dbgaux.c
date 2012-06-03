@@ -162,7 +162,7 @@ void ddbg_precycle_hook(vm_t* vm, uint16_t pos, void* ud)
 			list_delete_at(&backtrace, list_size(&backtrace) - 1);
 		else if (a == NXT_LIT)
 		{
-			printd(LEVEL_DEFAULT, "jumping literally from 0x%04X to 0x%04X (0x%04X).\n", vm->pc, vm->ram[vm->pc + 1], vm->pc + 1);
+			printd(LEVEL_DEBUG, "jumping literally from 0x%04X to 0x%04X (0x%04X).\n", vm->pc, vm->ram[vm->pc + 1], vm->pc + 1);
 			list_append(&backtrace, backtrace_entry_create(vm->pc, vm->ram[vm->pc + 1]));
 		}
 		else if (a == NXT)
@@ -253,11 +253,24 @@ void _dbg_lua_break()
 	vm->halted = true;
 }
 
+void _dbg_lua_run()
+{
+	// Un-halt virtual machine.
+	vm->halted = false;
+}
+
+list_t* _dbg_lua_get_symbols()
+{
+	return symbols;
+}
+
 void ddbg_init()
 {
 	// Initialize Lua.
 	lstate.get_vm = _dbg_lua_get_vm;
 	lstate.dbg_lua_break = _dbg_lua_break;
+	lstate.dbg_lua_run = _dbg_lua_run;
+	lstate.dbg_lua_get_symbols = _dbg_lua_get_symbols;
 	dbg_lua_init();
 
 	// Create VM.

@@ -24,6 +24,7 @@
 #include <debug.h>
 #include <stdlib.h>
 #include <hwluacpu.h>
+#include <ddata.h>
 #include "dbglua.h"
 #include "dcpu.h"
 
@@ -60,7 +61,7 @@ int dbg_lua_add_base(lua_State* L, const char* table)
 	lua_setfield(L, entry, HANDLER_FIELD_FUNCTION_NAME);
 	// entry is now at the top of the stack.
 	lua_setfield(L, handlers, lowered->data);
-	printd(LEVEL_DEFAULT, "registered debugger command / hook '%s' with custom Lua handler.\n", lowered->data);
+	printd(LEVEL_DEBUG, "registered debugger command / hook '%s' with custom Lua handler.\n", lowered->data);
 	lua_pop(L, 1);
 	bdestroy(lowered);
 	return 0;
@@ -87,7 +88,7 @@ int dbg_lua_add_symbol_hook(lua_State* L)
 	lua_setfield(L, entry, HANDLER_FIELD_FUNCTION_NAME);
 	// entry is now at the top of the stack.
 	lua_setfield(L, handlers, HANDLER_ENTRY_SYMBOL_HOOK);
-	printd(LEVEL_DEFAULT, "registered debugger symbol hook with custom Lua handler.\n");
+	printd(LEVEL_DEBUG, "registered debugger symbol hook with custom Lua handler.\n");
 	lua_pop(L, 1);
 	return 0;
 }
@@ -113,7 +114,7 @@ struct lua_debugst* dbg_lua_load(bstring name)
 	// Execute the code in the new Lua context.
 	if (luaL_dofile(ds->state, path->data) != 0)
 	{
-		printf("lua error was %s.\n", lua_tostring(ds->state, -1));
+		printd(LEVEL_ERROR, "lua error was %s.\n", lua_tostring(ds->state, -1));
 
 		// Return NULL.
 		lua_close(ds->state);
@@ -129,7 +130,7 @@ struct lua_debugst* dbg_lua_load(bstring name)
 	// Ensure module table was provided.
 	if (lua_isnoneornil(ds->state, module))
 	{
-		printf("failed to load debugger module from %s.\n", path->data);
+		printd(LEVEL_ERROR, "failed to load debugger module from %s.\n", path->data);
 
 		// Return NULL.
 		lua_close(ds->state);
@@ -302,6 +303,86 @@ int dbg_lua_handle_break(lua_State* L)
 	return 0;
 }
 
+int dbg_lua_handle_run(lua_State* L)
+{
+	struct dbg_state* state = dbg_lua_extract_state(L, 1);
+	void* ud = dbg_lua_extract_state_ud(L, 1);
+	state->dbg_lua_run();
+	return 0;
+}
+
+int dbg_lua_handle_symbols(lua_State* L)
+{
+	struct dbg_state* state = dbg_lua_extract_state(L, 1);
+	void* ud = dbg_lua_extract_state_ud(L, 1);
+	list_t* symbols = state->dbg_lua_get_symbols();
+	struct dbg_sym* current = NULL;
+	struct dbg_sym_payload_string* payload = NULL;
+	int tbl;
+	lua_newtable(L);
+	tbl = lua_gettop(L);
+	list_iterator_start(symbols);
+	while (list_iterator_hasnext(symbols))
+	{
+		current = (struct dbg_sym*)list_iterator_next(symbols);
+		if (current->type != DBGFMT_SYMBOL_STRING)
+			continue;
+		payload = (struct dbg_sym_payload_string*)current->payload;
+		if (payload->data == NULL)
+			continue;
+		lua_newtable(L);
+		lua_pushstring(L, payload->data->data);
+		lua_setfield(L, -2, "data");
+		lua_pushnumber(L, payload->address);
+		lua_setfield(L, -2, "address");
+		lua_rawseti(L, tbl, lua_objlen(L, tbl) + 1);
+	}
+	list_iterator_stop(symbols);
+	return 1;
+}
+
+int dbg_lua_handle_lines(lua_State* L)
+{
+	struct dbg_state* state = dbg_lua_extract_state(L, 1);
+	void* ud = dbg_lua_extract_state_ud(L, 1);
+	list_t* symbols = state->dbg_lua_get_symbols();
+	struct dbg_sym* current = NULL;
+	struct dbg_sym_payload_line* payload = NULL;
+	int tbl;
+	lua_newtable(L);
+	tbl = lua_gettop(L);
+	list_iterator_start(symbols);
+	while (list_iterator_hasnext(symbols))
+	{
+		current = (struct dbg_sym*)list_iterator_next(symbols);
+		if (current->type != DBGFMT_SYMBOL_LINE)
+			continue;
+		payload = (struct dbg_sym_payload_line*)current->payload;
+		if (payload->path == NULL)
+			continue;
+		lua_newtable(L);
+		lua_pushstring(L, payload->path->data);
+		lua_setfield(L, -2, "file");
+		lua_pushnumber(L, payload->lineno);
+		lua_setfield(L, -2, "line");
+		lua_pushnumber(L, payload->address);
+		lua_setfield(L, -2, "address");
+		lua_rawseti(L, tbl, lua_objlen(L, tbl) + 1);
+	}
+	list_iterator_stop(symbols);
+	return 1;
+}
+
+void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type);
+
+int dbg_lua_handle_raise(lua_State* L)
+{
+	struct dbg_state* state = dbg_lua_extract_state(L, 1);
+	void* ud = dbg_lua_extract_state_ud(L, 1);
+	dbg_lua_handle_hook(state, NULL, bautofree(bfromcstr(luaL_checkstring(L, 2))));
+	return 0;
+}
+
 void dbg_lua_push_state(struct lua_debugst* ds, struct dbg_state* state, void* ud)
 {
 	int tbl, tbl_mt;
@@ -321,6 +402,14 @@ void dbg_lua_push_state(struct lua_debugst* ds, struct dbg_state* state, void* u
 	// Push C functions into table.
 	lua_pushcfunction(ds->state, &dbg_lua_handle_break);
 	lua_setfield(ds->state, tbl, "_break");
+	lua_pushcfunction(ds->state, &dbg_lua_handle_run);
+	lua_setfield(ds->state, tbl, "run");
+	lua_pushcfunction(ds->state, &dbg_lua_handle_symbols);
+	lua_setfield(ds->state, tbl, "symbols");
+	lua_pushcfunction(ds->state, &dbg_lua_handle_lines);
+	lua_setfield(ds->state, tbl, "lines");
+	lua_pushcfunction(ds->state, &dbg_lua_handle_raise);
+	lua_setfield(ds->state, tbl, "raise");
 
 	// Push CPU state into table.
 	vm_hw_lua_cpu_push_cpu(ds->state, state->get_vm());
@@ -341,7 +430,7 @@ void dbg_lua_handle_command(struct dbg_state* state, void* ud, freed_bstring nam
 	struct lua_debugst* ds;
 	struct customarg_entry* carg;
 	char* cstr;
-	unsigned int i;
+	unsigned int i, k;
 	int paramtbl;
 
 	// Convert the name to lowercase.
@@ -349,10 +438,9 @@ void dbg_lua_handle_command(struct dbg_state* state, void* ud, freed_bstring nam
 	cstr = bstr2cstr(name.ref, '0');
 
 	// Loop through all of the modules.
-	list_iterator_start(&modules);
-	while (list_iterator_hasnext(&modules))
+	for (k = 0; k < list_size(&modules); k++)
 	{
-		ds = list_iterator_next(&modules);
+		ds = list_get_at(&modules, k);
 
 		// Set stack top (I don't know why the top of the
 		// stack is negative!)
@@ -415,9 +503,14 @@ void dbg_lua_handle_command(struct dbg_state* state, void* ud, freed_bstring nam
 		lua_pop(ds->state, 2);
 		list_iterator_stop(&modules);
 		list_destroy(parameters);
+		
+		// The command may have started the virtual machine, check the
+		// status of the VM and execute if needed.
+		if (state->get_vm()->halted == false)
+			vm_execute(state->get_vm());
+		
 		return;
 	}
-	list_iterator_stop(&modules);
 
 	// There is no command to handle this.
 	printd(LEVEL_ERROR, "no such command found.\n");
@@ -431,19 +524,19 @@ void dbg_lua_handle_command(struct dbg_state* state, void* ud, freed_bstring nam
 void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type)
 {
 	struct lua_debugst* ds;
+	unsigned int i;
 	char* cstr;
 
 	// Convert the name to lowercase.
 	btolower(type.ref);
 	cstr = bstr2cstr(type.ref, '0');
 
-	printd(LEVEL_DEBUG, "firing hook %s.\n", cstr);
+	printd(LEVEL_EVERYTHING, "firing hook %s.\n", cstr);
 
 	// Loop through all of the modules.
-	list_iterator_start(&modules);
-	while (list_iterator_hasnext(&modules))
+	for (i = 0; i < list_size(&modules); i++)
 	{
-		ds = list_iterator_next(&modules);
+		ds = list_get_at(&modules, i);
 
 		// Set stack top (I don't know why the top of the
 		// stack is negative!)
@@ -455,11 +548,13 @@ void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type)
 		if (!lua_istable(ds->state, -1))
 		{
 			// No such entry.
+			printd(LEVEL_EVERYTHING, "no matching hook for %s.\n", cstr);
 			lua_pop(ds->state, 2);
 			continue;
 		}
 
 		// Call the handler function.
+		printd(LEVEL_EVERYTHING, "calling hook %s.\n", cstr);
 		lua_getfield(ds->state, -1, HANDLER_FIELD_FUNCTION_NAME);
 		dbg_lua_push_state(ds, state, ud);
 		if (lua_pcall(ds->state, 1, 0, 0) != 0)
@@ -470,7 +565,6 @@ void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type)
 			continue;
 		}
 	}
-	list_iterator_stop(&modules);
 
 	// Clean up.
 	bcstrfree(cstr);
@@ -480,12 +574,12 @@ void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type)
 void dbg_lua_handle_hook_symbol(struct dbg_state* state, void* ud, freed_bstring symbol)
 {
 	struct lua_debugst* ds;
+	unsigned int i;
 
 	// Loop through all of the modules.
-	list_iterator_start(&modules);
-	while (list_iterator_hasnext(&modules))
+	for (i = 0; i < list_size(&modules); i++)
 	{
-		ds = list_iterator_next(&modules);
+		ds = list_get_at(&modules, i);
 
 		// Set stack top (I don't know why the top of the
 		// stack is negative!)
@@ -513,7 +607,6 @@ void dbg_lua_handle_hook_symbol(struct dbg_state* state, void* ud, freed_bstring
 			continue;
 		}
 	}
-	list_iterator_stop(&modules);
 
 	// Clean up.
 	bautodestroy(symbol);

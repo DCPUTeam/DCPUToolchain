@@ -426,15 +426,10 @@ void dbgfmt_finalize_symbol(struct dbg_sym* symbol, uint16_t address)
 		dbgfmt_update_symbol(symbol, address);
 }
 
-void dbgfmt_update_symbol_array(struct dbg_sym * (*symbols)[4], uint16_t symbols_count, uint16_t address)
+void dbgfmt_update_symbol_list(list_t* symbols, uint16_t address)
 {
 	int i;
 
-	for (i = 0; i < symbols_count; i++)
-	{
-		if ((*symbols)[i] == NULL)
-			continue;
-
-		dbgfmt_update_symbol((*symbols)[i], address);
-	}
+	for (i = 0; i < list_size(symbols); i++)
+		dbgfmt_update_symbol((struct dbg_sym*)list_get_at(symbols, i), address);
 }

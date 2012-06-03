@@ -47,3 +47,25 @@ void rparse_do(char* yytext, int* out_line, bstring* out_filename)
 	bdestroy(str);
 }
 
+void rparse_dol(char* yytext, int* out_line)
+{
+	bstring str = bfromcstr(yytext);
+	bstring space = bfromcstr(" ");
+	
+	// Determine the space positions.
+	int firstSpace = binstr(str, 0, space);
+	
+	// Create substrings.
+	bstring bline = bmidstr(str, firstSpace + 1, blength(str));
+	
+	// Convert the line number and trim file name.
+	int line = strtoul((const char*)bline->data, NULL, 10);
+	
+	// Set variables.
+	*out_line = line;
+	
+	// Free resources.
+	bdestroy(bline);
+	bdestroy(space);
+	bdestroy(str);
+}

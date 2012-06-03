@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <simclist.h>
 #include <ppexpr.h>
 #include "dcpu.h"
 
@@ -42,8 +43,7 @@ struct aout_byte
 	char* label;
 	bool raw_used;
 	uint16_t raw;
-	struct dbg_sym* symbols[4];
-	uint16_t symbols_count;
+	list_t symbols;
 };
 
 extern struct aout_byte* start;

@@ -35,6 +35,6 @@ struct customarg_entry
 };
 
 void pp_lua_init();
-void pp_lua_handle(struct pp_state* state, void* ud, bstring name, list_t* parameters);
+void pp_lua_handle(struct pp_state* state, void* scanner, bstring name, list_t* parameters);
 
 #endif
