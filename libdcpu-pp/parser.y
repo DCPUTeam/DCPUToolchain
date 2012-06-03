@@ -45,6 +45,7 @@ void handle_pp_lua_print_line(const char* text, void* current);
 void handle_pp_lua_scope_enter(bool output, void* current);
 void handle_pp_lua_scope_exit(void* current);
 void handle_pp_lua_add_symbol(const char* symbol, void* current);
+void finalize_lua(int line, void* current);
 bool is_globally_initialized = false;
 
 struct equate_entry
@@ -421,7 +422,13 @@ preprocessor:
 		CUSTOM customargs
 		{
 			// Pass this off to the Lua preprocessor module system.
+			int lineno = pp_yyget_lineno(scanner);
 			pp_lua_handle(&lstate, scanner, $1, &$2);
+			
+			// Output line information to readjust for the fact that
+			// the custom Lua module may have outputted more lines or
+			// no lines at all.
+			finalize_lua(lineno - 1, scanner);
 		};
 		
 customargs:
@@ -565,6 +572,11 @@ void handle_line(int line, bstring file, void* current)
 void handle_uline(int line, bstring file, void* current)
 {
 	fprintf(pp_yyget_out((yyscan_t)current), "#U %i %s\n", line, file->data);
+}
+
+void finalize_lua(int line, void* current)
+{
+	fprintf(pp_yyget_out(current), "# %i\n", line);
 }
 
 bstring pp_yyfilename = NULL;

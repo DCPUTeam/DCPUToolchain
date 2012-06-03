@@ -23,8 +23,6 @@
 #include <ppexprlua.h>
 #include <debug.h>
 #include <stdlib.h>
-#include "parser.h"
-#include "lexer.h"
 #include "pplua.h"
 #include "dcpu.h"
 
@@ -344,9 +342,6 @@ void pp_lua_handle(struct pp_state* state, void* scanner, bstring name, list_t* 
 	bstring dot;
 	unsigned int i;
 	int paramtbl;
-
-	// Get the current line number.
-	int lineno = pp_yyget_lineno(scanner);
 	
 	// Convert the name to lowercase.
 	btolower(name);
@@ -409,11 +404,6 @@ void pp_lua_handle(struct pp_state* state, void* scanner, bstring name, list_t* 
 			list_destroy(parameters);
 			return;
 		}
-		
-		// Output line information to readjust for the fact that
-		// the custom Lua module may have outputted more lines or
-		// no lines at all.
-		fprintf(pp_yyget_out((yyscan_t)scanner), "# %i\n", lineno - 1);
 		
 		bdestroy(name);
 		bcstrfree(cstr);
