@@ -338,7 +338,7 @@ void bins_sectionize()
 		{
 			list_iterator_start(bin->symbols);
 			while (list_iterator_hasnext(bin->symbols))
-				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->adjustment)));
+				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
 			list_iterator_stop(bin->symbols);
 		}
 		printd(LEVEL_VERBOSE, "	 \n");
@@ -468,7 +468,7 @@ void bins_sectionize()
 		{
 			list_iterator_start(bin->symbols);
 			while (list_iterator_hasnext(bin->symbols))
-				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->adjustment)));
+				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
 			list_iterator_stop(bin->symbols);
 		}
 		printd(LEVEL_VERBOSE, "\n");
@@ -597,7 +597,7 @@ void bins_flatten(freed_bstring name)
 		{
 			list_iterator_start(bin->symbols);
 			while (list_iterator_hasnext(bin->symbols))
-				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->adjustment)));
+				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
 			list_iterator_stop(bin->symbols);
 		}
 		printd(LEVEL_VERBOSE, "\n");
@@ -701,7 +701,7 @@ void bins_resolve(bool keepProvided)
 		{
 			list_iterator_start(bin->symbols);
 			while (list_iterator_hasnext(bin->symbols))
-				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->adjustment)));
+				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
 			list_iterator_stop(bin->symbols);
 		}
 		printd(LEVEL_VERBOSE, "\n");
