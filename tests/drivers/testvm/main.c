@@ -28,8 +28,10 @@ int main(int argc, char* argv[])
 	char ca, ce;
 	char* file_cpu;
 	char* file_sym;
+#ifndef _WIN32
 	char* mod_path;
 	char* temp;
+#endif
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
@@ -63,23 +65,22 @@ int main(int argc, char* argv[])
 	file_cpu = tempnam(NULL, "vtcpu");
 	file_sym = tempnam(NULL, "vtsym");
 	
+#ifndef _WIN32
 	// We need to get the existing TOOLCHAIN_MODULES
 	// environment variable so we can set it back later
 	// on.
 	mod_path = getenv("TOOLCHAIN_MODULES");
 	bassigncstr(cmdargs, argv[0]);
 	btrunc(cmdargs, binstr(cmdargs, 0, bfromcstr("testvm")));
-	#ifdef _WIN32
-	bcatcstr(cmdargs, "..\\tests\\drivers\\testvm\\modules"); // Totally not portable!
-	#else
 	bcatcstr(cmdargs, "../tests/drivers/testvm/modules"); // Totally not portable!
-	#endif
-	//binsertch(cmdargs, 0, 1, '"');
-	//bconchar(cmdargs, '"');
-	//bconchar(cmdargs, ' ');
 	printd(LEVEL_DEFAULT, "%s\n", cmdargs->data);
 	setenv("TOOLCHAIN_MODULES", temp = bstr2cstr(cmdargs, '0'), 1);
 	bcstrfree(temp);
+#else
+	printd(LEVEL_WARNING, "warning: Unable to set TOOLCHAIN_MODULES temporarily on Windows systems for\n");
+	printd(LEVEL_WARNING, "         testing purposes.  Install units, unitsdbg, assert and assertdbg\n");
+	printd(LEVEL_WARNING, "         globally to ensure that the test suite runs correctly.\n");
+#endif
 
 	// Generate the argument list for the assembler.
 	bassigncstr(cmdargs, argv[0]);
@@ -148,6 +149,7 @@ int main(int argc, char* argv[])
 		unlink(file_cpu);
 		unlink(file_sym);
 		
+#ifndef _WIN32
 		// Restore TOOLCHAIN_MODULES.
 		if (mod_path == NULL)
 			unsetenv("TOOLCHAIN_MODULES");
@@ -157,6 +159,7 @@ int main(int argc, char* argv[])
 			setenv("TOOLCHAIN_MODULES", temp = bstr2cstr(cmdargs, '0'), 1);
 			bcstrfree(temp);
 		}
+#endif
 		
 		// Show error message (is 'result >> 8' modification only applicable to UNIX)?
 		printd(LEVEL_ERROR, "error: unit test failed with exit code %i (see above output).\n", result >> 8);
@@ -166,7 +169,8 @@ int main(int argc, char* argv[])
 	// Delete temporary files.
 	unlink(file_cpu);
 	unlink(file_sym);
-	
+
+#ifndef _WIN32
 	// Restore TOOLCHAIN_MODULES.
 	if (mod_path == NULL)
 		unsetenv("TOOLCHAIN_MODULES");
@@ -176,6 +180,7 @@ int main(int argc, char* argv[])
 		setenv("TOOLCHAIN_MODULES", temp = bstr2cstr(cmdargs, '0'), 1);
 		bcstrfree(temp);
 	}
+#endif
 
 	return 0;
 }
