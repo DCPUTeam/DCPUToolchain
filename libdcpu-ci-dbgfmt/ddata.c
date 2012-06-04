@@ -428,7 +428,7 @@ void dbgfmt_finalize_symbol(struct dbg_sym* symbol, uint16_t address)
 
 void dbgfmt_update_symbol_list(list_t* symbols, uint16_t address)
 {
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < list_size(symbols); i++)
 		dbgfmt_update_symbol((struct dbg_sym*)list_get_at(symbols, i), address);
