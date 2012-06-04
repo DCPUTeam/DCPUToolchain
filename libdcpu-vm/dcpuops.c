@@ -571,7 +571,7 @@ void vm_op_int(vm_t* vm, uint16_t a)
 {
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	OP_NUM_CYCLES(4);
-	
+
 	printd(LEVEL_DEFAULT, "sending interrupt %u\n", val_a);
 	vm->queue_interrupts = false;
 	vm_interrupt(vm, val_a);
@@ -579,16 +579,17 @@ void vm_op_int(vm_t* vm, uint16_t a)
 
 void vm_op_iag(vm_t* vm, uint16_t a)
 {
-	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+	uint16_t* store_a = vm_internal_get_store(vm, a, POS_A);
 	VM_SKIP_RESET;
-	vm_op_set(vm, val_a, IA);
+	*store_a = vm->ia;
+	VM_HOOK_FIRE(store_a);
 }
 
 void vm_op_ias(vm_t* vm, uint16_t a)
 {
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	VM_SKIP_RESET;
-	vm_op_set(vm, IA, val_a);
+	vm->ia = val_a;
 }
 
 void vm_op_rfi(vm_t* vm, uint16_t a)
@@ -661,7 +662,7 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 		*store_c = queried_device.version;
 		*store_x = (queried_device.manufacturer & 0x0000FFFF) >>  0;
 		*store_y = (queried_device.manufacturer & 0xFFFF0000) >> 16;
-		
+
 		VM_HOOK_FIRE(store_a);
 		VM_HOOK_FIRE(store_b);
 		VM_HOOK_FIRE(store_c);
