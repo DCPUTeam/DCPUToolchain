@@ -37,6 +37,22 @@ void printd(int level, const char* message, ...)
 }
 
 ///
+/// Potentially outputs a debugging message to stderr.
+///
+/// Potentially outputs a debugging message to stderr depending
+/// on the current debugging level.
+///
+/// @param level The debugging level relevant for this output.
+/// @param message The message format (same as printf).
+/// @param args The variable argument list.
+///
+void vprintd(int level, const char* message, va_list args)
+{
+	if (_current >= level && _current != LEVEL_SILENT)
+		vfprintf(stderr, message, args);
+}
+
+///
 /// Sets the debugging level.
 ///
 /// @param level The new debugging level.

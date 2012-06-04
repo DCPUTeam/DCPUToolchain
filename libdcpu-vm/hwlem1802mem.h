@@ -33,11 +33,14 @@ void vm_hw_lem1802_mem_init(vm_t* vm);
 void vm_hw_lem1802_mem_free(vm_t* vm);
 void vm_hw_lem1802_mem_set_palette(vm_t* vm, uint16_t pos);
 TCOD_color_t vm_hw_lem1802_mem_get_palette_color(vm_t* vm, uint16_t idx);
+TCOD_color_t vm_hw_lem1802_mem_get_default_palette_color(uint16_t idx);
 void vm_hw_lem1802_mem_set_font(vm_t* vm, uint16_t pos);
 uint16_t vm_hw_lem1802_mem_get_font();
 uint16_t vm_hw_lem1802_mem_get_font_char_width();
 uint16_t vm_hw_lem1802_mem_get_font_char_height();
+uint32_t vm_hw_lem1802_mem_get_font_default_representation(uint16_t idx);
 TCOD_image_t vm_hw_lem1802_mem_get_font_image();
+TCOD_image_t vm_hw_lem1802_mem_get_default_font_image();
 void vm_hw_lem1802_mem_set_screen(vm_t* vm, uint16_t pos);
 uint16_t vm_hw_lem1802_mem_get_screen();
 

@@ -33,3 +33,22 @@ TCOD_color_t vm_hw_lem1802_util_get_color(uint16_t raw)
 	return result;
 }
 
+///
+/// Converts a LibTCOD color into a raw 16-bit color.
+///
+/// @param color The LibTCOD color.
+/// @return The raw value.
+///
+uint16_t vm_hw_lem1802_util_get_raw(TCOD_color_t color)
+{
+	uint16_t result = 0;
+	
+	// Mathematical!
+	result += ((color.r / 16) << 8) & 0xF00;
+	result += ((color.g / 16) << 4) & 0x0F0;
+	result += ((color.b / 16) << 0) & 0x00F;
+	
+	return result;
+}
+
+

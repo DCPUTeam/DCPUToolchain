@@ -13,6 +13,8 @@
 **/
 
 #include <stdio.h>
+#include <time.h>
+#include <debug.h>
 #include "hw.h"
 #include "hwtimer.h"
 #include "dcpu.h"
@@ -20,58 +22,55 @@
 #include "dcpuhook.h"
 #include "dcpuops.h"
 
-uint32_t timer_tick = 0;
-uint32_t base_frequency = 0;
 uint16_t message = 0x0;
 uint16_t clock_enabled = 0;
-uint16_t clock_elapsed = 0;
+uint16_t clock_ticks = 0;
+float clock_interval = 0;
+float clock_base = 0;
 uint16_t hook_id = 0;
 uint16_t hw_id = 0;
 
 void vm_hw_timer_cycle(vm_t* vm, uint16_t pos, void* ud)
 {
+	float clock_current = (float)clock() / (float)CLOCKS_PER_SEC;
 	if (clock_enabled == 1)
 	{
-		timer_tick++;
-		clock_elapsed++;
-
-		if (timer_tick > base_frequency)	 // processor runs at 100khz, timer interrupt triggers 60 times a second
+		if (clock_current > clock_base + clock_interval)
 		{
+			clock_ticks++;
+			clock_base += clock_interval;
 			if (message > 0x0)
 				vm_interrupt(vm, message);
-
-			timer_tick = 0;
 		}
 	}
 }
 
 void vm_hw_timer_interrupt(vm_t* vm, void* ud)
 {
-	uint16_t requested_action = vm_resolve_value(vm, REG_A, 0);
-	uint16_t val_b = vm_resolve_value(vm, REG_B, 0);
-
-	switch (requested_action)
+	switch (vm->registers[REG_A])
 	{
 		case TIMER_SET_ENABLED:
-			if (val_b == 0x0)
+			if (vm->registers[REG_B] == 0x0)
 				clock_enabled = 0;
 			else
 			{
-				if (val_b > 60) break;
-
-				base_frequency = 100000 / (60 / (int)val_b);
+				if (vm->registers[REG_B] > 60) break;
+				clock_base = (float)clock() / (float)CLOCKS_PER_SEC;
+				clock_interval = 1.f;
+				clock_interval /= 60.f;
+				clock_interval *= (float)(int)(vm->registers[REG_B]);
 				clock_enabled = 1;
 			}
-			clock_elapsed = 0;
 
 			break;
 
 		case TIMER_GET_ELAPSED:
-			vm->registers[REG_C] = clock_elapsed;
+			vm->registers[REG_C] = clock_ticks;
+			clock_ticks = 0;
 			break;
 
 		case TIMER_SET_INTERRUPT:
-			message = val_b;
+			message = vm->registers[REG_B];
 			break;
 	}
 }

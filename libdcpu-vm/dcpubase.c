@@ -29,7 +29,7 @@ void vm_halt(vm_t* vm, const char* message, ...)
 {
 	va_list argptr;
 	va_start(argptr, message);
-	vfprintf(stderr, message, argptr);
+	vprintd(LEVEL_DEFAULT, message, argptr);
 	va_end(argptr);
 	vm->halted = true;
 	return;
@@ -47,14 +47,14 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
 		else
 		{
 			vm->irq[vm->irq_count++] = msgid;
-			printd(LEVEL_DEFAULT, "appending interrupt %u to interrupt queue\n", msgid);
+			printd(LEVEL_DEBUG, "appending interrupt %u to interrupt queue\n", msgid);
 		}
 	}
 	else
 	{
 		if (vm->ia == 0)
 		{
-			printd(LEVEL_DEFAULT, "ignoring request to fire interrupt %u\n", msgid);
+			printd(LEVEL_DEBUG, "ignoring request to fire interrupt %u\n", msgid);
 			return;
 		}
 		
@@ -62,8 +62,9 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
 		vm->ram[--vm->sp] = vm->registers[REG_A];
 		vm->pc = vm->ia;
 		vm->registers[REG_A] = msgid;
+		printd(LEVEL_DEBUG, "turning on interrupt queue\n");
 		vm->queue_interrupts = true;
-		printd(LEVEL_DEFAULT, "executing interrupt %u right now\n", msgid);
+		printd(LEVEL_DEBUG, "executing interrupt %u right now\n", msgid);
 	}
 }
 
@@ -228,7 +229,7 @@ void vm_cycle(vm_t* vm)
 	if (!vm->queue_interrupts && vm->irq_count > 0)
 	{
 		a = vm->irq[0];
-		printd(LEVEL_ERROR, "sending interrupt handler with msgid %u\n");
+		printd(LEVEL_DEBUG, "sending interrupt handler with msgid %u\n");
 		memcpy(&vm->irq, &vm->irq[1], INTERRUPT_MAX * sizeof(uint16_t));
 		vm->irq[INTERRUPT_MAX] = 0;
 		vm->irq_count--;
@@ -429,14 +430,14 @@ void vm_cycle(vm_t* vm)
 					break;
 
 				default:
-					vm_halt(vm, "Invalid non-basic opcode %u. (0x%04X at 0x%04X)", b, instruction, vm->pc);
+					vm_halt(vm, "Invalid non-basic opcode %u. (0x%04X at 0x%04X)\n", b, instruction, vm->pc);
 					break;
 			}
 
 			break;
 
 		default:
-			vm_halt(vm, "Invalid opcode %u. (0x%04X at 0x%04X)", op, instruction, vm->pc);
+			vm_halt(vm, "Invalid opcode %u. (0x%04X at 0x%04X)\n", op, instruction, vm->pc);
 			break;
 	}
 

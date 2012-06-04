@@ -572,8 +572,9 @@ void vm_op_int(vm_t* vm, uint16_t a)
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	OP_NUM_CYCLES(4);
 
-	printd(LEVEL_DEFAULT, "sending interrupt %u\n", val_a);
+	printd(LEVEL_DEBUG, "turning off interrupt queue\n");
 	vm->queue_interrupts = false;
+	printd(LEVEL_DEBUG, "sending interrupt %u\n", val_a);
 	vm_interrupt(vm, val_a);
 }
 
@@ -599,7 +600,9 @@ void vm_op_rfi(vm_t* vm, uint16_t a)
 	VM_SKIP_RESET;
 	vm->registers[REG_A] = vm->ram[vm->sp++];
 	vm->pc = vm->ram[vm->sp++];
+	printd(LEVEL_DEBUG, "turning off interrupt queue\n");
 	vm->queue_interrupts = false;
+	printd(LEVEL_DEBUG, "returning from interrupt.\n");
 	VM_HOOK_FIRE(&vm->registers[REG_A]);
 }
 
@@ -611,16 +614,18 @@ void vm_op_iaq(vm_t* vm, uint16_t a)
 
 	VM_SKIP_RESET;
 
+	printd(LEVEL_DEBUG, "IAQ CALLED WITH %u\n", val_a);
+	
 	if (val_a == 0)
 	{
-		// Should we even be doing this???
-		//for (i = 0; i < vm->irq_count; i++)
-		//	vm_interrupt(vm, vm->irq[i]);
-		//vm->irq_count = 0;
+		printd(LEVEL_DEBUG, "turning off interrupt queue\n");
 		vm->queue_interrupts = false;
 	}
 	else
+	{
+		printd(LEVEL_DEBUG, "turning on interrupt queue\n");
 		vm->queue_interrupts = true;
+	}
 }
 
 void vm_op_hwn(vm_t* vm, uint16_t a)
@@ -655,7 +660,7 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
 	{
 		queried_device = vm_hw_get_device(vm, val_a);
 
-		if (vm->debug) printf("\nhwq: index %d %08X", val_a, queried_device.id);
+		printd(LEVEL_DEBUG, "hwq: index %d %08X\n", val_a, queried_device.id);
 
 		*store_a = (queried_device.id & 0x0000FFFF) >>	0;
 		*store_b = (queried_device.id & 0xFFFF0000) >> 16;

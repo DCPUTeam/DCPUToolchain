@@ -16,10 +16,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <bstring.h>
-
+#include <debug.h>
 #include "hw.h"
 #include "hwlem1802.h"
 #include "hwlem1802mem.h"
+#include "hwlem1802util.h"
 #include "hwioascii.h"
 #include "dcpuhook.h"
 #include "dcpubase.h"
@@ -203,33 +204,49 @@ void vm_hw_lem1802_break(vm_t* vm, uint16_t pos, void* ud)
 
 void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 {
-	uint16_t requested_action = vm_resolve_value(vm, REG_A, 0);
-	uint16_t val_b = vm_resolve_value(vm, REG_B, 0);
+	uint16_t requested_action = vm->registers[REG_A];
+	uint16_t val_b = vm->registers[REG_B];
+	uint16_t idx = 0;
+	uint32_t store;
 
 	switch (requested_action)
 	{
 		case LEM1802_MEM_MAP_SCREEN:
+			printd(LEVEL_DEBUG, "LEM1802 SCREEN MAPPED.\n");
 			vm_hw_lem1802_mem_set_screen(vm, val_b);
 			break;
 
 		case LEM1802_MEM_MAP_FONT:
+			printd(LEVEL_DEBUG, "LEM1802 FONT MAPPED.\n");
 			vm_hw_lem1802_mem_set_font(vm, val_b);
 			break;
 
 		case LEM1802_MEM_MAP_PALETTE:
+			printd(LEVEL_DEBUG, "LEM1802 PALETTE MAPPED.\n");
 			vm_hw_lem1802_mem_set_palette(vm, val_b);
 			break;
 
 		case LEM1802_SET_BORDER_COLOR:
+			printd(LEVEL_DEBUG, "LEM1802 BORDER SET.\n");
 			vm_hw_lem1802_set_border(vm, val_b);
 			break;
 
 		case LEM1802_MEM_DUMP_FONT:
-			// TODO
+			printd(LEVEL_DEBUG, "LEM1802 DUMP FONT.\n");
+			vm->sleep_cycles += 256;
+			for (idx = 0; idx < 128; idx++)
+			{
+				store = vm_hw_lem1802_mem_get_font_default_representation(idx);
+				vm->ram[val_b + idx * 2] = (uint16_t)(store >> 16);
+				vm->ram[val_b + idx * 2 + 1] = (uint16_t)((store << 16) >> 16);
+			}
 			break;
 
 		case LEM1802_MEM_DUMP_PALETTE:
-			// TODO
+			printd(LEVEL_DEBUG, "LEM1802 DUMP PALETTE.\n");
+			vm->sleep_cycles += 16;
+			for (idx = 0; idx < 16; idx++)
+				vm->ram[val_b + idx] = vm_hw_lem1802_util_get_raw(vm_hw_lem1802_mem_get_default_palette_color(idx));
 			break;
 	}
 }

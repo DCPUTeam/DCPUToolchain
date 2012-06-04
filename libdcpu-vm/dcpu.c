@@ -48,6 +48,7 @@ void vm_init(vm_t* vm, bool init_memory)
 	vm->dummy = 0x0;
 	vm->halted = false;
 	vm->skip = false;
+	printd(LEVEL_DEBUG, "turning off interrupt queue\n");
 	vm->queue_interrupts = false;
 	vm->irq_count = 0;
 	for (i = 0; i < 256; i++)

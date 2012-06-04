@@ -62,6 +62,12 @@ uint16_t font_location = 0;
 TCOD_image_t font_image = NULL;
 
 ///
+/// Another cloned LibTCOD image, used to dump the
+/// default into RAM when required.
+///
+TCOD_image_t font_default = NULL;
+
+///
 /// The width of a single character in the font image.
 ///
 int font_char_width = 0;
@@ -105,6 +111,7 @@ void vm_hw_lem1802_mem_init(vm_t* vm)
 	TCOD_console_set_keyboard_repeat(200, 10);
 	TCOD_sys_set_fps(10000);
 	font_image = TCOD_image_load(font_path->data);
+	font_default = TCOD_image_load(font_path->data);
 	TCOD_sys_get_char_size(&font_char_width, &font_char_height);
 
 	// Free memory.
@@ -155,6 +162,17 @@ TCOD_color_t vm_hw_lem1802_mem_get_palette_color(vm_t* vm, uint16_t idx)
 		// Use the custom palette.
 		return vm_hw_lem1802_util_get_color(vm->ram[palette_location + idx]);
 	}
+}
+
+///
+/// Returns the default color based on the required index.
+///
+/// @param idx The color index.
+/// @return The LibTCOD color to use in rendering.
+///
+TCOD_color_t vm_hw_lem1802_mem_get_default_palette_color(uint16_t idx)
+{
+	return vm_hw_lem1802_util_get_color(palette_internal[idx]);
 }
 
 ///
@@ -218,6 +236,77 @@ uint16_t vm_hw_lem1802_mem_get_font_char_height()
 }
 
 ///
+/// Returns a representation of a default character as it would
+/// appear in the DCPU-16 RAM.
+///
+/// @param idx The index in the font to retrieve.
+/// @return The 32-bit integer (which is stored as two 16-bit words) representation.
+///
+uint32_t vm_hw_lem1802_mem_get_font_default_representation(uint16_t idx)
+{
+	unsigned int i = 0, x = 0, y = 0, fx = 0, fy = 0;
+	TCOD_color_t color_white = { 255, 255, 255 };
+	TCOD_image_t char_image = NULL;
+	uint16_t char_width, char_height;
+	uint16_t ax = 0, ay = 0;
+	uint16_t first = 0;
+	uint16_t second = 0;
+	uint16_t result = 0;
+	TCOD_color_t color;
+	
+	// Get the font character width / height.
+	char_width = vm_hw_lem1802_mem_get_font_char_width();
+	char_height = vm_hw_lem1802_mem_get_font_char_height();
+	char_image = vm_hw_lem1802_mem_get_default_font_image();
+	
+	// Work out the position of the character in the font.
+	fx = idx / 16 * char_width;
+	fy = idx % 16 * char_height;
+	
+	// For each pixel in the image, grab it's on / off value
+	// from the memory location.
+	for (x = 0; x < 4; x++)
+	{
+		// Loop through each row.
+		for (y = 0; y < 8; y++)
+		{
+			// TEMPORARY: Some loaded fonts may have characters wider
+			//            or higher than the addressable font size and thus
+			//            we must skip over intermediate pixels.
+			for (ax = 0; ax < char_width; ax += char_width / HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH)
+			{
+				for (ay = 0; ay < char_height; ay += char_height / HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT)
+				{
+					// Determine whether the pixel is on or off.
+					color = TCOD_image_get_pixel(char_image, (fx + x) * char_width / HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH + ax, ay - (fy + y + 1) * char_height / HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT);
+					if (color.r == color_white.r && color.g == color_white.g && color.b == color_white.b)
+						result = 1;
+					else
+						result = 0;
+					
+					// Shift across 8-bits if needed.
+					if (x == 0 || x == 2)
+						result = result << 8;
+					
+					// Shift back based on the row.
+					result = result >> y;
+					
+					// Set in the correct upper or lower field.
+					if (x == 0 || x == 1)
+						first += result;
+					else
+						second += result;
+				}
+			}
+		}
+	}
+	
+	// Combine first and second values into
+	// a single uint32_t and return.
+	return ((uint32_t)first << 16) + (uint32_t)second;
+}
+
+///
 /// Returns the LibTCOD image.
 ///
 /// Returns the LibTCOD image.	This should probably be factored
@@ -229,6 +318,18 @@ uint16_t vm_hw_lem1802_mem_get_font_char_height()
 TCOD_image_t vm_hw_lem1802_mem_get_font_image()
 {
 	return font_image;
+}
+
+///
+/// Returns the default LibTCOD image.
+///
+/// Returns the defaultLibTCOD image.
+///
+/// @return The font image.
+///
+TCOD_image_t vm_hw_lem1802_mem_get_default_font_image()
+{
+	return font_default;
 }
 
 ///

@@ -16,6 +16,7 @@
 #define __DCPU_DEBUG_H
 
 #include <stdio.h>
+#include <stdarg.h>
 #include "dcpu.h"
 #include "bstring.h"
 
@@ -29,6 +30,7 @@
 #define LEVEL_SILENT 0
 
 void printd(int level, const char* message, ...);
+void vprintd(int level, const char* message, va_list args);
 void debug_setlevel(int level);
 int debug_getlevel();
 

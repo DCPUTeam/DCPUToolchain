@@ -20,6 +20,7 @@
 #include <libtcod.h>
 
 TCOD_color_t vm_hw_lem1802_util_get_color(uint16_t raw);
+uint16_t vm_hw_lem1802_util_get_raw(TCOD_color_t color);
 
 #endif
 

@@ -51,7 +51,7 @@ uint16_t vm_hook_register(vm_t* vm, vm_hook hook, uint16_t mode, void* ud)
 
 	if (id >= HOOK_MAX)
 	{
-		vm_halt(vm, "unable to register hook, maximum reached!");
+		vm_halt(vm, "unable to register hook, maximum reached!\n");
 		return 0;
 	}
 
