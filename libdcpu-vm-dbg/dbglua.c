@@ -331,6 +331,8 @@ int dbg_lua_handle_symbols(lua_State* L)
 	struct dbg_sym_payload_string* payload = NULL;
 	int tbl;
 	lua_newtable(L);
+	if (symbols == NULL)
+		return 1;
 	tbl = lua_gettop(L);
 	list_iterator_start(symbols);
 	while (list_iterator_hasnext(symbols))
@@ -361,6 +363,8 @@ int dbg_lua_handle_lines(lua_State* L)
 	struct dbg_sym_payload_line* payload = NULL;
 	int tbl;
 	lua_newtable(L);
+	if (symbols == NULL)
+		return 1;
 	tbl = lua_gettop(L);
 	list_iterator_start(symbols);
 	while (list_iterator_hasnext(symbols))

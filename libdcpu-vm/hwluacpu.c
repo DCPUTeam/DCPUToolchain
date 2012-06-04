@@ -13,7 +13,11 @@
 **/
 
 #include <lua.h>
+#include <lauxlib.h>
 #include <bstring.h>
+#include <dcpu.h>
+#include "dcpubase.h"
+#include "dcpudis.h"
 #include "hwluacpu.h"
 
 vm_t* vm_hw_lua_cpu_extract_cpu(lua_State* L, int idx)
@@ -126,13 +130,83 @@ int vm_hw_lua_cpu_handle_ram_set(lua_State* L)
 	return 0;
 }
 
+int vm_hw_lua_cpu_disassemble(lua_State* L)
+{
+	vm_t* vm = vm_hw_lua_cpu_extract_cpu(L, 1);
+	struct inst inst = vm_disassemble(vm, luaL_checknumber(L, 2), true);
+	lua_newtable(L);
+	lua_newtable(L);
+	lua_pushnumber(L, inst.original.op);
+	lua_setfield(L, -2, "op");
+	lua_pushnumber(L, inst.original.a);
+	lua_setfield(L, -2, "a");
+	lua_pushnumber(L, inst.original.b);
+	lua_setfield(L, -2, "b");
+	lua_setfield(L, -2, "original");
+	lua_newtable(L);
+	if (inst.pretty.op != NULL)
+		lua_pushstring(L, inst.pretty.op->data);
+	else
+		lua_pushnil(L);
+	lua_setfield(L, -2, "op");
+	if (inst.pretty.a != NULL)
+		lua_pushstring(L, inst.pretty.a->data);
+	else
+		lua_pushnil(L);
+	lua_setfield(L, -2, "a");
+	if (inst.pretty.b != NULL)
+		lua_pushstring(L, inst.pretty.b->data);
+	else
+		lua_pushnil(L);
+	lua_setfield(L, -2, "b");
+	lua_setfield(L, -2, "pretty");
+	lua_pushnumber(L, inst.op);
+	lua_setfield(L, -2, "op");
+	lua_pushnumber(L, inst.a);
+	lua_setfield(L, -2, "a");
+	lua_pushnumber(L, inst.b);
+	lua_setfield(L, -2, "b");
+	lua_pushnumber(L, inst.size);
+	lua_setfield(L, -2, "size");
+	lua_newtable(L);
+	if (inst.size >= 1)
+	{
+		lua_pushnumber(L, inst.extra[0]);
+		lua_rawseti(L, -2, 1);
+	}
+	if (inst.size >= 2)
+	{
+		lua_pushnumber(L, inst.extra[1]);
+		lua_rawseti(L, -2, 2);
+	}
+	lua_setfield(L, -2, "extra");
+	lua_newtable(L);
+	if (inst.used[0])
+		lua_pushnumber(L, inst.next[0]);
+	else
+		lua_pushnil(L);
+	lua_rawseti(L, -2, 1);
+	if (inst.used[1])
+		lua_pushnumber(L, inst.next[1]);
+	else
+		lua_pushnil(L);
+	lua_rawseti(L, -2, 2);
+	lua_setfield(L, -2, "next");
+	bdestroy(inst.pretty.op);
+	bdestroy(inst.pretty.a);
+	bdestroy(inst.pretty.b);
+	return 1;
+}
+
 void vm_hw_lua_cpu_push_cpu(lua_State* L, vm_t* vm)
 {
-	int cpu, registers, registers_mt, ram, ram_mt;
+	int cpu, cpu_mt, registers, registers_mt, ram, ram_mt;
 
 	// Create tables.
 	lua_newtable(L);
 	cpu = lua_gettop(L);
+	lua_newtable(L);
+	cpu_mt = lua_gettop(L);
 	lua_newtable(L);
 	registers = lua_gettop(L);
 	lua_newtable(L);
@@ -143,6 +217,8 @@ void vm_hw_lua_cpu_push_cpu(lua_State* L, vm_t* vm)
 	ram_mt = lua_gettop(L);
 
 	// Push userdata into metatables.
+	lua_pushlightuserdata(L, vm);
+	lua_rawseti(L, cpu_mt, 0);
 	lua_pushlightuserdata(L, vm);
 	lua_rawseti(L, ram_mt, 0);
 	lua_pushlightuserdata(L, vm);
@@ -159,6 +235,8 @@ void vm_hw_lua_cpu_push_cpu(lua_State* L, vm_t* vm)
 	lua_setfield(L, registers_mt, "__newindex");
 
 	// Associate metatables.
+	lua_pushvalue(L, cpu_mt);
+	lua_setmetatable(L, cpu);
 	lua_pushvalue(L, ram_mt);
 	lua_setmetatable(L, ram);
 	lua_pushvalue(L, registers_mt);
@@ -175,6 +253,8 @@ void vm_hw_lua_cpu_push_cpu(lua_State* L, vm_t* vm)
 	lua_setfield(L, cpu, "ram");
 	lua_pushvalue(L, registers);
 	lua_setfield(L, cpu, "registers");
+	lua_pushcfunction(L, &vm_hw_lua_cpu_disassemble);
+	lua_setfield(L, cpu, "disassemble");
 
 	// Clean up stack.
 	lua_pop(L, lua_gettop(L) - cpu);

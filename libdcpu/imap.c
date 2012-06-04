@@ -175,6 +175,14 @@ struct register_mapping* get_register_by_value(uint16_t value)
 		i += 1;
 	}
 	i = 0;
+	while (register_value_next_map[i].name != NULL)
+	{
+		if (register_value_next_map[i].value == value)
+			return &register_value_next_map[i];
+		
+		i += 1;
+	}
+	i = 0;
 	while (register_name_map[i].name != NULL)
 	{
 		if (register_name_map[i].value == value)

@@ -30,6 +30,7 @@
 #include "backtrace.h"
 #include "dbgaux.h"
 #include "dbglua.h"
+#include "dcpudis.h"
 
 uint16_t flash_size = 0;
 uint16_t flash[0x10000];
@@ -43,43 +44,67 @@ void ddbg_help(bstring section)
 {
 	if (biseq(section, bfromcstr("general")))
 	{
-		printf("Available commands:\n");
-		printf("- break\n");
-		printf("- load\n");
-		printf("- run\n");
-		printf("- continue\n");
-		printf("- inspect\n");
-		printf("- quit\n");
-		printf("Type `help <command>' to get help about a particular command.\n");
+		printd(LEVEL_DEFAULT, "Available commands:\n");
+		printd(LEVEL_DEFAULT, "- break\n");
+		printd(LEVEL_DEFAULT, "- load\n");
+		printd(LEVEL_DEFAULT, "- run\n");
+		printd(LEVEL_DEFAULT, "- continue\n");
+		printd(LEVEL_DEFAULT, "- step\n");
+		printd(LEVEL_DEFAULT, "- next\n");
+		printd(LEVEL_DEFAULT, "- inspect\n");
+		printd(LEVEL_DEFAULT, "- disasm\n");
+		printd(LEVEL_DEFAULT, "- backtrace\n");
+		printd(LEVEL_DEFAULT, "- quit\n");
+		printd(LEVEL_DEFAULT, "Type `help <command>' to get help about a particular command.\n");
 	}
 	else if (biseq(section, bfromcstr("break")))
 	{
-		printf("Manipulates breakpoints.\n");
-		printf("Available commands: add, delete, list\n");
-		printf("Syntax: `break <command> <path>:<index>'\n");
-		printf("Example: break add memory:0xbeef\n");
-		printf("Example: break add test.c:23\n");
-		printf("Note: `test.c:23` will only work correctly if you have previously loaded symbols with the `load symbols` command.\n");
+		printd(LEVEL_DEFAULT, "Manipulates breakpoints.\n");
+		printd(LEVEL_DEFAULT, "Available commands: add, delete, list\n");
+		printd(LEVEL_DEFAULT, "Syntax: `break <command> <path>:<index>'\n");
+		printd(LEVEL_DEFAULT, "Example: break add memory:0xbeef\n");
+		printd(LEVEL_DEFAULT, "Example: break add test.c:23\n");
+		printd(LEVEL_DEFAULT, "Note: `test.c:23` will only work correctly if you have previously loaded symbols with the `load symbols` command.\n");
 	}
 	else if (biseq(section, bfromcstr("load")))
 	{
-		printf("Loads words from a file to the VM.\n");
-		printf("Syntax: `load [symbols] <file>'\n");
+		printd(LEVEL_DEFAULT, "Loads words from a file to the VM.\n");
+		printd(LEVEL_DEFAULT, "Syntax: `load [symbols] <file>'\n");
 	}
 	else if (biseq(section, bfromcstr("run")) || biseq(section, bfromcstr("continue")))
 	{
-		printf("Sets vm->halted to false, runs the VM.\n");
+		printd(LEVEL_DEFAULT, "Sets vm->halted to false, runs the VM.\n");
+	}
+	else if (biseq(section, bfromcstr("step")))
+	{
+		printd(LEVEL_DEFAULT, "Executes a single instruction, stepping into any jumps (i.e. step into).\n");
+	}
+	else if (biseq(section, bfromcstr("next")))
+	{
+		printd(LEVEL_DEFAULT, "Executes until the instruction directly following the current instruction is hit (i.e. step over).\n");
 	}
 	else if (biseq(section, bfromcstr("inspect")))
 	{
-		printf("Returns information about devices.\n");
-		printf("Available commands: cpu, memory, symbols.\n");
-		printf("Syntax: `inspect <command> [<arg1>] [<arg2>]'\n");
-		printf("Note: `inspect memory' takes one or two arguments; the first argument is the start address and the second argument is the number of words to be dumped.\n");
+		printd(LEVEL_DEFAULT, "Returns information about devices.\n");
+		printd(LEVEL_DEFAULT, "Available commands: cpu, memory, symbols.\n");
+		printd(LEVEL_DEFAULT, "Syntax: `inspect <command> [<arg1>] [<arg2>]'\n");
+		printd(LEVEL_DEFAULT, "Note: `inspect memory' takes one or two arguments; the first argument is the start address and the second argument is the number of words to be dumped.\n");
+	}
+	else if (biseq(section, bfromcstr("disasm")))
+	{
+		printd(LEVEL_DEFAULT, "Disassembles loaded image.\n");
+		printd(LEVEL_DEFAULT, "Syntax: `disasm [<start>] [<length>]'\n");
+		printd(LEVEL_DEFAULT, "Note: If start is not provided, disassembles from 0x0.  If length is not provided, disassembles however many words were initially loaded.\n");
+	}
+	else if (biseq(section, bfromcstr("backtrace")))
+	{
+		printd(LEVEL_DEFAULT, "Experimental; shows an assembly backtrace.\n");
+		printd(LEVEL_DEFAULT, "Syntax: `bt'\n");
+		printd(LEVEL_DEFAULT, "Note: Due to the nature of assembly code, backtrace often generates lots of redundant entries.  It is likely to be moved into a module in the future.\n");
 	}
 	else if (biseq(section, bfromcstr("quit")))
 	{
-		printf("Gracefully quits the debugger.\n");
+		printd(LEVEL_DEFAULT, "Gracefully quits the debugger.\n");
 	}
 }
 
@@ -201,7 +226,7 @@ void ddbg_set(bstring object, bstring value)
 	if (biseq(object, bfromcstr("vm_debug")))
 	{
 		vm->debug = (biseq(value, bfromcstr("on"))) ? true : false;
-		printf("Debugging set to %d.\n", vm->debug);
+		printd(LEVEL_DEFAULT, "Debugging set to %d.\n", vm->debug);
 	}
 }
 
@@ -216,7 +241,7 @@ void ddbg_load(bstring path)
 
 	if (load == NULL)
 	{
-		printf("Unable to load %s from disk.\n", path->data);
+		printd(LEVEL_DEFAULT, "Unable to load %s from disk.\n", path->data);
 		return;
 	}
 
@@ -239,7 +264,7 @@ void ddbg_load(bstring path)
 
 	fclose(load);
 
-	printf("Loaded 0x%04X words from %s.\n", a, path->data);
+	printd(LEVEL_DEFAULT, "Loaded 0x%04X words from %s.\n", a, path->data);
 	flash_size = a;
 }
 
@@ -288,13 +313,13 @@ void ddbg_create_vm()
 	vm_hook_register(vm, &ddbg_postcycle_hook, HOOK_ON_POST_CYCLE, NULL);
 	vm_hook_register(vm, &ddbg_write_hook, HOOK_ON_WRITE, NULL);
 	vm_hook_register(vm, &ddbg_break_hook, HOOK_ON_BREAK, NULL);
-	printf("Created VM.\n");
+	printd(LEVEL_DEFAULT, "Created VM.\n");
 }
 
 void ddbg_flash_vm()
 {
 	vm_flash(vm, flash);
-	printf("Flashed memory.\n");
+	printd(LEVEL_DEFAULT, "Flashed memory.\n");
 }
 
 void ddbg_run_vm()
@@ -302,7 +327,7 @@ void ddbg_run_vm()
 	vm->halted = false;
 	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("run")), 0);
 	vm_execute(vm, NULL);
-	printf("\n");
+	printd(LEVEL_DEFAULT, "\n");
 }
 
 void ddbg_continue_vm()
@@ -310,7 +335,7 @@ void ddbg_continue_vm()
 	vm->halted = false;
 	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("continue")), 0);
 	vm_execute(vm, NULL);
-	printf("\n");
+	printd(LEVEL_DEFAULT, "\n");
 }
 
 void ddbg_attach(bstring hw)
@@ -322,7 +347,7 @@ void ddbg_attach(bstring hw)
 	else if (biseq(hw, bfromcstr("clock")))
 		vm_hw_timer_init(vm);
 	else
-		printf("Unrecognized hardware.\n");
+		printd(LEVEL_DEFAULT, "Unrecognized hardware.\n");
 }
 
 int32_t ddbg_file_to_address(bstring file, int index)
@@ -345,7 +370,7 @@ int32_t ddbg_file_to_address(bstring file, int index)
 					{
 						// The filename and line number matches, we have found
 						// our symbol entry.
-						printf("Line information: %s:%u is at 0x%04X\n", payload_line->path->data, payload_line->lineno, payload_line->address);
+						printd(LEVEL_DEFAULT, "Line information: %s:%u is at 0x%04X\n", payload_line->path->data, payload_line->lineno, payload_line->address);
 						return payload_line->address;
 					}
 					break;
@@ -371,7 +396,7 @@ void ddbg_add_breakpoint(bstring file, int index)
 	{
 		if (index < 0)
 		{
-			printf("Memory address must be greater than 0.\n");
+			printd(LEVEL_DEFAULT, "Memory address must be greater than 0.\n");
 			memory = -1;
 		}
 		else
@@ -383,12 +408,12 @@ void ddbg_add_breakpoint(bstring file, int index)
 	// Did we get a valid result?
 	if (memory == -1)
 	{
-		printf("Unable to resolve specified symbol.\n");
+		printd(LEVEL_DEFAULT, "Unable to resolve specified symbol.\n");
 		return;
 	}
 
 	list_append(&breakpoints, breakpoint_create(memory, false, false));
-	printf("Breakpoint added at 0x%04X.\n", memory);
+	printd(LEVEL_DEFAULT, "Breakpoint added at 0x%04X.\n", memory);
 }
 
 void ddbg_delete_breakpoint(bstring file, int index)
@@ -401,7 +426,7 @@ void ddbg_delete_breakpoint(bstring file, int index)
 	// Did we get a valid result?
 	if (memory == -1)
 	{
-		printf("Unable to resolve specified symbol.\n");
+		printd(LEVEL_DEFAULT, "Unable to resolve specified symbol.\n");
 		return;
 	}
 
@@ -417,9 +442,9 @@ void ddbg_delete_breakpoint(bstring file, int index)
 	}
 
 	if (found == true)
-		printf("Breakpoint removed at 0x%04X.\n", memory);
+		printd(LEVEL_DEFAULT, "Breakpoint removed at 0x%04X.\n", memory);
 	else
-		printf("There was no breakpoint at %s:%d.\n", bstr2cstr(file, 0), index);
+		printd(LEVEL_DEFAULT, "There was no breakpoint at %s:%d.\n", bstr2cstr(file, 0), index);
 }
 
 void ddbg_step_into()
@@ -485,30 +510,30 @@ void ddbg_breakpoints_list()
 {
 	unsigned int i = 0;
 
-	printf("%d breakpoints loaded.\n", list_size(&breakpoints));
+	printd(LEVEL_DEFAULT, "%d breakpoints loaded.\n", list_size(&breakpoints));
 
 	for (i = 0; i < list_size(&breakpoints); i++)
-		printf("- at 0x%04X\n", ((struct breakpoint*)list_get_at(&breakpoints, i))->addr);
+		printd(LEVEL_DEFAULT, "- at 0x%04X\n", ((struct breakpoint*)list_get_at(&breakpoints, i))->addr);
 }
 
 void ddbg_dump_state()
 {
-	fprintf(stderr, "A:   0x%04X	 [A]:	0x%04X\n", vm->registers[REG_A], vm->ram[vm->registers[REG_A]]);
-	fprintf(stderr, "B:   0x%04X	 [B]:	0x%04X\n", vm->registers[REG_B], vm->ram[vm->registers[REG_B]]);
-	fprintf(stderr, "C:   0x%04X	 [C]:	0x%04X\n", vm->registers[REG_C], vm->ram[vm->registers[REG_C]]);
-	fprintf(stderr, "X:   0x%04X	 [X]:	0x%04X\n", vm->registers[REG_X], vm->ram[vm->registers[REG_X]]);
-	fprintf(stderr, "Y:   0x%04X	 [Y]:	0x%04X\n", vm->registers[REG_Y], vm->ram[vm->registers[REG_Y]]);
-	fprintf(stderr, "Z:   0x%04X	 [Z]:	0x%04X\n", vm->registers[REG_Z], vm->ram[vm->registers[REG_Z]]);
-	fprintf(stderr, "I:   0x%04X	 [I]:	0x%04X\n", vm->registers[REG_I], vm->ram[vm->registers[REG_I]]);
-	fprintf(stderr, "J:   0x%04X	 [J]:	0x%04X\n", vm->registers[REG_J], vm->ram[vm->registers[REG_J]]);
-	fprintf(stderr, "PC:  0x%04X	 SP:	0x%04X\n", vm->pc, vm->sp);
-	fprintf(stderr, "EX:  0x%04X	 IA:	0x%04X\n", vm->ex, vm->ia);
+	printd(LEVEL_DEFAULT, "A:   0x%04X	 [A]:	0x%04X\n", vm->registers[REG_A], vm->ram[vm->registers[REG_A]]);
+	printd(LEVEL_DEFAULT, "B:   0x%04X	 [B]:	0x%04X\n", vm->registers[REG_B], vm->ram[vm->registers[REG_B]]);
+	printd(LEVEL_DEFAULT, "C:   0x%04X	 [C]:	0x%04X\n", vm->registers[REG_C], vm->ram[vm->registers[REG_C]]);
+	printd(LEVEL_DEFAULT, "X:   0x%04X	 [X]:	0x%04X\n", vm->registers[REG_X], vm->ram[vm->registers[REG_X]]);
+	printd(LEVEL_DEFAULT, "Y:   0x%04X	 [Y]:	0x%04X\n", vm->registers[REG_Y], vm->ram[vm->registers[REG_Y]]);
+	printd(LEVEL_DEFAULT, "Z:   0x%04X	 [Z]:	0x%04X\n", vm->registers[REG_Z], vm->ram[vm->registers[REG_Z]]);
+	printd(LEVEL_DEFAULT, "I:   0x%04X	 [I]:	0x%04X\n", vm->registers[REG_I], vm->ram[vm->registers[REG_I]]);
+	printd(LEVEL_DEFAULT, "J:   0x%04X	 [J]:	0x%04X\n", vm->registers[REG_J], vm->ram[vm->registers[REG_J]]);
+	printd(LEVEL_DEFAULT, "PC:  0x%04X	 SP:	0x%04X\n", vm->pc, vm->sp);
+	printd(LEVEL_DEFAULT, "EX:  0x%04X	 IA:	0x%04X\n", vm->ex, vm->ia);
 	if (vm->queue_interrupts)
-		fprintf(stderr, "IRQ ENABLED:		  true\n");
+		printd(LEVEL_DEFAULT, "IRQ ENABLED:		  true\n");
 	else
-		fprintf(stderr, "IRQ ENABLED:		 false\n");
-	fprintf(stderr, "IRQ COUNT:		0x%04X\n", vm->irq_count);
-	fprintf(stderr, "CYCLES TO SLEEP:	0x%04X\n", vm->sleep_cycles);
+		printd(LEVEL_DEFAULT, "IRQ ENABLED:		 false\n");
+	printd(LEVEL_DEFAULT, "IRQ COUNT:		0x%04X\n", vm->irq_count);
+	printd(LEVEL_DEFAULT, "CYCLES TO SLEEP:	0x%04X\n", vm->sleep_cycles);
 }
 
 void ddbg_dump_ram(int start, int difference)
@@ -517,7 +542,7 @@ void ddbg_dump_ram(int start, int difference)
 
 	if (start < 0 || difference < 0)
 	{
-		printf("Invalid parameters provided to 'inspect memory'.");
+		printd(LEVEL_DEFAULT, "Invalid parameters provided to 'inspect memory'.");
 		return;
 	}
 
@@ -526,22 +551,22 @@ void ddbg_dump_ram(int start, int difference)
 
 	if ((start + difference) > 0xffff)
 	{
-		printf("Memory out of bounds.\n");
+		printd(LEVEL_DEFAULT, "Memory out of bounds.\n");
 		return;
 	}
 
 	for (i = 0; i < difference; i++)
 	{
 		if (i % 8 == 0)
-			printf("%04X: ", start + i);
+			printd(LEVEL_DEFAULT, "%04X: ", start + i);
 
-		printf("%04X ", vm->ram[start + i]);
+		printd(LEVEL_DEFAULT, "%04X ", vm->ram[start + i]);
 
 		if ((i + 1) % 8 == 0)
-			printf("\n");
+			printd(LEVEL_DEFAULT, "\n");
 	}
 
-	printf("\n");
+	printd(LEVEL_DEFAULT, "\n");
 }
 
 void ddbg_disassemble(int start, int difference)
@@ -549,33 +574,22 @@ void ddbg_disassemble(int start, int difference)
 	int i = 0;
 	unsigned int ii = 0;
 	bool found = false;
-	uint16_t inst, op_a, op_b, val;
-	struct instruction_mapping* map_inst;
-	struct register_mapping* map_op_a;
-	struct register_mapping* map_op_b;
+	struct inst inst;
 	struct dbg_sym* sym;
 	struct dbg_sym_payload_line* payload_line;
 
 	if (start < 0 || difference < 0)
 	{
-		printf("Invalid parameters provided to 'disassemble'.");
+		printd(LEVEL_DEFAULT, "Invalid parameters provided to 'disassemble'.");
 		return;
 	}
 
 	if (difference == 0)
 		difference = (flash_size - start);
 
-	for (i = 0; i < difference; i++)
+	while (i < difference)
 	{
-		val = vm->ram[start + i];
-		inst = INSTRUCTION_GET_OP(vm->ram[start + i]);
-		op_a = INSTRUCTION_GET_A(vm->ram[start + i]);
-		op_b = INSTRUCTION_GET_B(vm->ram[start + i]);
-
-		map_inst = get_instruction_by_value(inst, op_b);
-		map_op_a = get_register_by_value(op_a);
-		map_op_b = get_register_by_value(op_b);
-
+		// Show symbols.
 		if (symbols != NULL)
 		{
 			for (ii = 0; ii < list_size(symbols); ii++)
@@ -588,57 +602,33 @@ void ddbg_disassemble(int start, int difference)
 						if (payload_line->address == start + i)
 						{
 							found = true;
-							printf("0x%04X (0x%04X) (%s:%d):\n", start + i, vm->ram[start + i], payload_line->path->data, payload_line->lineno);
+							printd(LEVEL_DEFAULT, "0x%04X (0x%04X) (%s:%d):\n", start + i, vm->ram[start + i], payload_line->path->data, payload_line->lineno);
 
 						}
 						break;
 				}
 			}
-			if (!found) printf("0x%04X (0x%04X):\n", start + i, vm->ram[start + i]);
+			if (!found) printd(LEVEL_DEFAULT, "0x%04X (0x%04X):\n", start + i, vm->ram[start + i]);
 		}
 		else
-			printf("0x%04X (0x%04X): ", start + i, vm->ram[start + i]);
-		if (map_inst != NULL)
-		{
-			if (symbols != NULL)
-				printf("    %s ", map_inst->name);
-			else
-				printf("%s ", map_inst->name);
-			if (op_b == NXT)
-				printf("[0x%04X] ", vm->ram[start + (++i)]);
-			else if (op_b == NXT_LIT)
-				printf("0x%04X ", vm->ram[start + (++i)]);
-			else if (map_op_b != NULL)
-				printf("%s ", map_op_b->name);
-			else
-				printf("0x%04X ", op_b);
-			if (op_a == NXT)
-				printf("[0x%04X] ", vm->ram[start + (++i)]);
-			else if (op_a == NXT_LIT)
-				printf("0x%04X ", vm->ram[start + (++i)]);
-			else if (map_op_a != NULL)
-				printf("%s ", map_op_a->name);
-			else
-				printf("0x%04X ", op_a);
-		}
-		else if (val == 0x0)
-		{
-			if (symbols != NULL)
-				printf("    <null>"); // No data here.
-			else
-				printf("<null>"); // No data here.
-		}
+			printd(LEVEL_DEFAULT, "0x%04X (0x%04X): ", start + i, vm->ram[start + i]);
+		
+		// Disassemble.
+		inst = vm_disassemble(vm, start + i, true);
+		if (symbols != NULL)
+			printd(LEVEL_DEFAULT, "    ");
+		if (inst.original.full == 0x0)
+			printd(LEVEL_DEFAULT, "<null>\n");
+		else if (inst.pretty.op == NULL)
+			printd(LEVEL_DEFAULT, "???\n");
+		else if (inst.pretty.b == NULL)
+			printd(LEVEL_DEFAULT, "%s %s\n", inst.pretty.op->data, inst.pretty.a->data);
 		else
-		{
-			if (symbols != NULL)
-				printf("    DAT");
-			else
-				printf("DAT");
-		}
-		printf("\n");
+			printd(LEVEL_DEFAULT, "%s %s, %s\n", inst.pretty.op->data, inst.pretty.b->data, inst.pretty.a->data);
+		i += inst.size;
 	}
 
-	printf("\n");
+	printd(LEVEL_DEFAULT, "\n");
 }
 
 
@@ -665,11 +655,11 @@ void ddbg_inspect_symbols()
 
 	// Check to see if no symbols are loaded.
 	if (symbols == NULL)
-		printf("No symbols are loaded.\n");
+		printd(LEVEL_DEFAULT, "No symbols are loaded.\n");
 	else
 	{
 		// Print out a list of symbols.
-		printf("%u symbols are loaded.\n", list_size(symbols));
+		printd(LEVEL_DEFAULT, "%u symbols are loaded.\n", list_size(symbols));
 		for (i = 0; i < list_size(symbols); i++)
 		{
 			sym = list_get_at(symbols, i);
