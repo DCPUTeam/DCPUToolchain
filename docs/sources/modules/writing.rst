@@ -140,3 +140,107 @@ Virtual Machine
             val = cpu.registers.A;     -- Get the value in register A.
             cpu.registers.PC = a * 2;  -- Jump current execution to double the value of A.
             cpu.registers.EX = 0xFFFF; -- Set the overflow register to 0xFFFF.
+    
+    .. py:function:: disassemble(address)
+        :noindex:
+    
+        Returns an :py:class:`instruction` object that represents the
+        instruction located at the address `address`.
+
+.. py:class:: instruction
+
+    A table representing a DCPU-16 instruction.
+
+    .. py:attribute:: original
+        :noindex:
+        
+        A table will the following fields:
+        
+        .. py:attribute:: full
+            :noindex:
+            
+            The full, original 16-bit word.
+        
+        .. py:attribute:: op
+            :noindex:
+            
+            The original opcode, before resolving into non-basic opcodes.
+            
+        .. py:attribute:: a
+            :noindex:
+            
+            The original A parameter, before resolving into a value.
+            
+        .. py:attribute:: b
+            :noindex:
+            
+            The original B parameter, before resolving into a value.
+            
+    .. py:attribute:: pretty
+        :noindex:
+        
+        A table will the following fields:
+        
+        .. py:attribute:: op
+            :noindex:
+            
+            The pretty printed, string representation of the opcode.  Can
+            be nil if the value at the disassembled address does not
+            represent any known instruction.
+            
+        .. py:attribute:: a
+            :noindex:
+            
+            The pretty printed, string representation of the A parameter.
+            Should only be nil if `op` is also nil.
+            
+        .. py:attribute:: b
+            :noindex:
+            
+            The pretty printed, string representation of the B parameter.
+            Can be nil if `op` is either nil or if the instruction is non-basic.
+            
+    .. py:attribute:: op
+        :noindex:
+        
+        The resolved opcode, taking into account non-basic resolution.  Thus
+        this field can contain both basic and non-basic opcodes (use `original.op`
+        to determine what this field contains).
+            
+    .. py:attribute:: a
+        :noindex:
+        
+        The resolved A value.  The A parameter is evaluated in order to fill this
+        field and thus this represents the value of a memory address, register, etc.
+        
+    .. py:attribute:: b
+        :noindex:
+        
+        The resolved B value.  The B parameter is evaluated in order to fill this
+        field and thus this represents the value of a memory address, register, etc.
+        If the instruction is non-basic, this field will be 0 (not nil!).
+        
+    .. py:attribute:: size
+        :noindex:
+        
+        The total number of words that this instruction occupies.  This value will
+        either be 1, 2 or 3 (unless the DCPU-16 specification changes in the future).
+        
+    .. py:attribute:: extra
+        :noindex:
+        
+        An array of the additional words (excluding the first word which can be read
+        using `original.full` field) used by this instruction.  This array does not
+        sort the values; they are in the order that they are in memory.  Thus this
+        array could contain a single word that matches up to either the A or B parameter.
+        This array at most contains 2 entries (at indicies 1 and 2).
+        
+    .. py:attribute:: next
+        :noindex:
+        
+        An array of the next values used by this instruction.  Unlike `extra`, this
+        array is mapped such that the value at `next[1]` represents the next value for
+        the A parameter and the value at `next[2]` represents the next value for the
+        B parameter.  If either parameter does not use a next value, then the associated
+        value in this array will be nil.
+        

@@ -136,6 +136,8 @@ int vm_hw_lua_cpu_disassemble(lua_State* L)
 	struct inst inst = vm_disassemble(vm, luaL_checknumber(L, 2), true);
 	lua_newtable(L);
 	lua_newtable(L);
+	lua_pushnumber(L, inst.original.full);
+	lua_setfield(L, -2, "full");
 	lua_pushnumber(L, inst.original.op);
 	lua_setfield(L, -2, "op");
 	lua_pushnumber(L, inst.original.a);
