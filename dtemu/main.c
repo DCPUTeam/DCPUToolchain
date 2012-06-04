@@ -54,13 +54,14 @@ int main(int argc, char* argv[])
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file, or - to read from standard input.");
+	struct arg_file* execution_dump_file = arg_file0("e", "execution-dump", "<file>", "Produce a very large execution dump file.");
 	struct arg_lit* debug_mode = arg_lit0("d", "debug", "Show each executed instruction.");
 	struct arg_lit* terminate_mode = arg_lit0("t", "show-on-terminate", "Show state of machine when program is terminated.");
 	struct arg_lit* legacy_mode = arg_lit0("l", "legacy", "Automatically initialize hardware to legacy values.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { input_file, debug_mode, terminate_mode, legacy_mode, verbose, quiet, end };
+	void* argtable[] = { input_file, debug_mode, execution_dump_file, terminate_mode, legacy_mode, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -161,7 +162,7 @@ int main(int argc, char* argv[])
 		vm_hw_lem1802_mem_set_screen(vm, 0x8000);
 		vm_hw_io_set_legacy(true);
 	}
-	vm_execute(vm);
+	vm_execute(vm, execution_dump_file->count > 0 ? execution_dump_file->filename[0] : NULL);
 
 	if (terminate_mode->count > 0)
 	{

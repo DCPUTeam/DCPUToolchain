@@ -148,14 +148,14 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
 		case NXT:
 			t = vm->ram[vm_consume_word(vm)];
 
-			if (vm->debug) printf(" (0x%04X) ", t);
+			if (vm->debug || vm->dump != NULL) fprintf(vm->dump == NULL ? stdout : vm->dump, " (0x%04X) ", t);
 
 			return t;
 
 		case NXT_LIT:
 			t = vm_consume_word(vm);
 
-			if (vm->debug) printf(" (0x%04X) ", t);
+			if (vm->debug || vm->dump != NULL) fprintf(vm->dump == NULL ? stdout : vm->dump, " (0x%04X) ", t);
 
 			return t;
 
@@ -166,51 +166,75 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
 
 void vm_print_op(const char* opname, vm_t* vm, uint16_t a, uint16_t b)
 {
-	if (!vm->debug)
+	FILE* target = stdout;
+	if (!vm->debug && vm->dump == NULL)
 		return;
+	if (vm->dump != NULL)
+		target = vm->dump;
 
-	//if (vm->skip)
-	//	printf("0x%04X: (skipped) %s 0x%04X 0x%04X", vm->pc, opname, a, b);
-	//else
-	//	printf("0x%04X: %s 0x%04X 0x%04X", vm->pc, opname, a, b);
 	if (vm->skip)
 	{
 		if (get_register_by_value(a) != NULL && get_register_by_value(b) != NULL)
-			printf("0x%04X: (skipped) %s %s %s", vm->pc, opname, get_register_by_value(a)->name, get_register_by_value(b)->name);
+			fprintf(target, "0x%04X: (skipped) %s %s %s", vm->pc, opname, get_register_by_value(a)->name, get_register_by_value(b)->name);
 		else
-			printf("0x%04X: (skipped) %s 0x%04X 0x%04X", vm->pc, opname, a, b);
+			fprintf(target, "0x%04X: (skipped) %s 0x%04X 0x%04X", vm->pc, opname, a, b);
 	}
 	else
 	{
 		if (get_register_by_value(a) != NULL && get_register_by_value(b) != NULL)
-			printf("0x%04X: %s %s %s", vm->pc, opname, get_register_by_value(a)->name, get_register_by_value(b)->name);
+			fprintf(target, "0x%04X: %s %s %s", vm->pc, opname, get_register_by_value(a)->name, get_register_by_value(b)->name);
 		else
-			printf("0x%04X: %s 0x%04X 0x%04X", vm->pc, opname, a, b);
+			fprintf(target, "0x%04X: %s 0x%04X 0x%04X", vm->pc, opname, a, b);
 	}
 }
 
 void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
 {
-	if (!vm->debug)
+	FILE* target = stdout;
+	if (!vm->debug && vm->dump == NULL)
 		return;
-	//if (vm->skip)
-	//	printf("0x%04X: (skipped) %s 0x%04X", vm->pc, opname, a);
-	//else
-	//	printf("0x%04X: %s 0x%04X", vm->pc, opname, a);
+	if (vm->dump != NULL)
+		target = vm->dump;
+	
 	if (vm->skip)
 	{
 		if (get_register_by_value(a) != NULL)
-			printf("0x%04X: (skipped) %s %s", vm->pc, opname, get_register_by_value(a)->name);
+			fprintf(target, "0x%04X: (skipped) %s %s", vm->pc, opname, get_register_by_value(a)->name);
 		else
-			printf("0x%04X: (skipped) %s 0x%04X", vm->pc, opname, a);
+			fprintf(target, "0x%04X: (skipped) %s 0x%04X", vm->pc, opname, a);
 	}
 	else
 	{
 		if (get_register_by_value(a) != NULL)
-			printf("0x%04X: %s %s", vm->pc, opname, get_register_by_value(a)->name);
+			fprintf(target, "0x%04X: %s %s", vm->pc, opname, get_register_by_value(a)->name);
 		else
-			printf("0x%04X: %s 0x%04X", vm->pc, opname, a);
+			fprintf(target, "0x%04X: %s 0x%04X", vm->pc, opname, a);
 	}
+}
+
+void vm_dump_state(vm_t* vm)
+{
+	if (vm->dump == NULL)
+		return;
+	
+	fprintf(vm->dump, "--------------------------------\n");
+	fprintf(vm->dump, "A:   0x%04X	 [A]:	0x%04X\n", vm->registers[REG_A], vm->ram[vm->registers[REG_A]]);
+	fprintf(vm->dump, "B:   0x%04X	 [B]:	0x%04X\n", vm->registers[REG_B], vm->ram[vm->registers[REG_B]]);
+	fprintf(vm->dump, "C:   0x%04X	 [C]:	0x%04X\n", vm->registers[REG_C], vm->ram[vm->registers[REG_C]]);
+	fprintf(vm->dump, "X:   0x%04X	 [X]:	0x%04X\n", vm->registers[REG_X], vm->ram[vm->registers[REG_X]]);
+	fprintf(vm->dump, "Y:   0x%04X	 [Y]:	0x%04X\n", vm->registers[REG_Y], vm->ram[vm->registers[REG_Y]]);
+	fprintf(vm->dump, "Z:   0x%04X	 [Z]:	0x%04X\n", vm->registers[REG_Z], vm->ram[vm->registers[REG_Z]]);
+	fprintf(vm->dump, "I:   0x%04X	 [I]:	0x%04X\n", vm->registers[REG_I], vm->ram[vm->registers[REG_I]]);
+	fprintf(vm->dump, "J:   0x%04X	 [J]:	0x%04X\n", vm->registers[REG_J], vm->ram[vm->registers[REG_J]]);
+	fprintf(vm->dump, "PC:  0x%04X	 SP:	0x%04X\n", vm->pc, vm->sp);
+	fprintf(vm->dump, "EX:  0x%04X	 IA:	0x%04X\n", vm->ex, vm->ia);
+	if (vm->queue_interrupts)
+		fprintf(vm->dump, "IRQ ENABLED:		  true\n");
+	else
+		fprintf(vm->dump, "IRQ ENABLED:		 false\n");
+	fprintf(vm->dump, "IRQ COUNT:		0x%04X\n", vm->irq_count);
+	fprintf(vm->dump, "CYCLES TO SLEEP:	0x%04X\n", vm->sleep_cycles);
+	fprintf(vm->dump, "\n");
 }
 
 void vm_cycle(vm_t* vm)
@@ -441,8 +465,11 @@ void vm_cycle(vm_t* vm)
 			break;
 	}
 
-	if (vm->debug)
-		printf("\n");
+	if (vm->debug || vm->dump != NULL)
+		fprintf(vm->dump == NULL ? stdout : vm->dump, "\n");
+	
+	if (vm->dump != NULL)
+		vm_dump_state(vm);
 
 	vm_hook_fire(vm, 0, HOOK_ON_POST_CYCLE);
 }

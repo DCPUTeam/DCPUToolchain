@@ -51,6 +51,7 @@ void vm_init(vm_t* vm, bool init_memory)
 	printd(LEVEL_DEBUG, "turning off interrupt queue\n");
 	vm->queue_interrupts = false;
 	vm->irq_count = 0;
+	vm->dump = NULL;
 	for (i = 0; i < 256; i++)
 		vm->irq[i] = 0x0;
 
@@ -91,10 +92,13 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 		vm->ram[i] = memory[i];
 }
 
-void vm_execute(vm_t* vm)
+void vm_execute(vm_t* vm, const char* execution_dump)
 {
 	double cycles = 0;
 	int start = clock();
+	
+	if (execution_dump != NULL)
+		vm->dump = fopen(execution_dump, "w");
 
 	// Execute the memory using DCPU-16 specifications.
 	while (!vm->halted)
@@ -110,5 +114,11 @@ void vm_execute(vm_t* vm)
 			cycles -= 100000.f / CLOCKS_PER_SEC;
 			//printd(LEVEL_DEFAULT, "executed %f cycles (waited %u clocks)", (100000.f / CLOCKS_PER_SEC), 1);
 		}
+	}
+	
+	if (vm->dump != NULL)
+	{
+		fclose(vm->dump);
+		vm->dump = NULL;
 	}
 }

@@ -507,7 +507,7 @@ void dbg_lua_handle_command(struct dbg_state* state, void* ud, freed_bstring nam
 		// The command may have started the virtual machine, check the
 		// status of the VM and execute if needed.
 		if (state->get_vm()->halted == false)
-			vm_execute(state->get_vm());
+			vm_execute(state->get_vm(), NULL);
 		
 		return;
 	}

@@ -16,6 +16,7 @@
 #define __DCPU_H
 
 #include <stdint.h>
+#include <stdio.h>
 
 // Boolean stuff.
 #ifndef __cplusplus
@@ -158,6 +159,7 @@ typedef struct
 	uint8_t halted;			///< Whether the virtual machine is currently halted.
 	uint8_t skip;			///< Whether the virtual machine will skip the next instruction.
 	uint8_t debug;			///< Whether the virtual machine will output each instruction to standard output.
+	FILE* dump;			///< An open file descriptor where instruction execution information should be sent, or NULL.
 } vm_t;
 
 ///
@@ -179,7 +181,7 @@ typedef struct
 
 vm_t* vm_create();
 void vm_flash(vm_t* vm, uint16_t memory[0x10000]);
-void vm_execute(vm_t* vm);
+void vm_execute(vm_t* vm, const char* execution_dump);
 void vm_free(vm_t* vm);
 
 #endif

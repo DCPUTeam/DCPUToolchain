@@ -299,14 +299,14 @@ void ddbg_flash_vm()
 void ddbg_run_vm()
 {
 	vm->halted = false;
-	vm_execute(vm);
+	vm_execute(vm, NULL);
 	printf("\n");
 }
 
 void ddbg_continue_vm()
 {
 	vm->halted = false;
-	vm_execute(vm);
+	vm_execute(vm, NULL);
 	printf("\n");
 }
 
@@ -458,7 +458,7 @@ void ddbg_step_over()
 
 	list_append(&breakpoints, breakpoint_create(bp, true, true));
 	vm->halted = false;
-	vm_execute(vm);
+	vm_execute(vm, NULL);
 
 	// Handle custom Lua commands.
 	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("next")));
