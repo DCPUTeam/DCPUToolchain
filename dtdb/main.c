@@ -73,12 +73,13 @@ int main(int argc, char** argv)
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
+	struct arg_str* command_arg = arg_str0("c", NULL, "<command>", "Run a single debugger command and exit with the result.");
 	struct arg_file* symbols_file = arg_file0("s", "symbols", "<file>", "The file to load symbols from.");
 	struct arg_file* input_file = arg_file0(NULL, NULL, "<file>", "The file to initially load.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, symbols_file, input_file, verbose, quiet, end };
+	void* argtable[] = { show_help, command_arg, symbols_file, input_file, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -110,17 +111,29 @@ int main(int argc, char** argv)
 	ddbg_init();
 
 	// Load file if filename is specified.
-	if (symbols_file->count > 0)
-		ddbg_load_symbols(bfromcstr(symbols_file->filename[0]));
 	if (input_file->count > 0)
 	{
+		ddbg_attach(bfromcstr("clock"));
+		ddbg_attach(bfromcstr("keyboard"));
+		ddbg_attach(bfromcstr("lem1802"));
 		ddbg_load(bfromcstr(input_file->filename[0]));
 		ddbg_flash_vm();
-		ddbg_attach(bfromcstr("lem1802"));
-		ddbg_attach(bfromcstr("keyboard"));
-		ddbg_attach(bfromcstr("clock"));
 	}
+	if (symbols_file->count > 0)
+		ddbg_load_symbols(bfromcstr(symbols_file->filename[0]));
 
+	// If the user specified a command, execute only that
+	// command and then continue.
+	if (command_arg->count > 0)
+	{
+		ddbg_return_code = 1; // Default is failure.
+		dbg_yylex_init(&scanner);
+		dbg_yy_scan_string(command_arg->sval[0], scanner);
+		dbg_yyparse(scanner);
+		dbg_yylex_destroy(scanner);
+		return ddbg_return_code;
+	}
+	
 	// Create SDP thread if supported.
 #ifdef FEATURE_SDP
 	pthread_create(&sdp_thread, NULL, (void*)ddbg_sdp_thread, vm);

@@ -37,6 +37,7 @@ list_t breakpoints;
 list_t backtrace;
 list_t* symbols;
 extern vm_t* vm;
+int ddbg_return_code;
 
 void ddbg_help(bstring section)
 {

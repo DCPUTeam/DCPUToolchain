@@ -345,6 +345,14 @@ void process_line(struct ast_node_line* line)
 				case FILL:
 					printd(LEVEL_VERBOSE, ".FILL");
 
+					if (line->keyword_data_expr_1 == NULL || line->keyword_data_expr_2 == NULL)
+					{
+						if (line->keyword_data_string != NULL)
+							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, line->keyword_data_string->data);
+						else
+							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
+					}
+					
 					// Emit N words with value X
 					flimit = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
 					fchar = expr_evaluate(line->keyword_data_expr_2, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
@@ -370,6 +378,14 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case ORIGIN:
+					if (line->keyword_data_expr_1 == NULL)
+					{
+						if (line->keyword_data_string != NULL)
+							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, line->keyword_data_string->data);
+						else
+							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
+					}
+					
 					opos = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
 					printd(LEVEL_VERBOSE, ".ORIGIN 0x%04X", opos);
 

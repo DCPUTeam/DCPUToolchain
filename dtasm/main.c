@@ -48,19 +48,22 @@ int main(int argc, char* argv[])
 	list_t symbols;
 	bstring temp = NULL;
 	uint16_t final;
+	int i;
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_lit* gen_relocatable = arg_lit0("r", "relocatable", "Generate relocatable code.");
 	struct arg_lit* gen_intermediate = arg_lit0("i", "intermediate", "Generate intermediate code for use with the linker.");
+	// 20 is maxcount for include directories, this has to be set to some constant number.
+	struct arg_file* include_dirs = arg_filen("I", NULL, "<directory>", 0, 20, "Adds the directory <dir> to the directories to be searched for header files.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	struct arg_file* symbols_file = arg_file0("s", "debug-symbols", "<file>", "The debugging symbol output file.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { output_file, symbols_file, gen_relocatable, gen_intermediate, show_help, input_file, verbose, quiet, end };
-
+	void* argtable[] = { show_help, output_file, symbols_file, gen_relocatable, gen_intermediate, include_dirs, input_file, verbose, quiet, end };
+	
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
 
@@ -104,6 +107,8 @@ int main(int argc, char* argv[])
 
 	// Run the preprocessor.
 	ppfind_add_autopath(bautofree(bfromcstr(input_file->filename[0])));
+	for (i = 0; i < include_dirs->count; ++i)
+		ppfind_add_path(bautofree(bfromcstr(include_dirs->filename[i])));
 	pp_result_name = pp_do(bautofree(bfromcstr(input_file->filename[0])));
 
 	if (pp_result_name == NULL)

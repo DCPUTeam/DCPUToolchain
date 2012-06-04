@@ -334,6 +334,10 @@ void pp_lua_push_state(struct lua_preproc* pp, struct pp_state* state, void* ud)
 // are included by dirent.portable.h.
 extern void handle_pp_lua_print_line(const char* text, void* ud);
 
+// Get a reference to the function that allows use to push an
+// expression as a Lua object.
+extern int luaX_pushexpression(lua_State* L, struct expr* expr);
+
 void pp_lua_handle(struct pp_state* state, void* scanner, bstring name, list_t* parameters)
 {
 	struct lua_preproc* pp;
@@ -377,14 +381,18 @@ void pp_lua_handle(struct pp_state* state, void* scanner, bstring name, list_t* 
 			carg = list_get_at(parameters, i);
 
 			lua_newtable(pp->state);
-			if (carg->string != NULL)
+			if (carg->expr != NULL)
+				lua_pushstring(pp->state, "EXPRESSION");
+			else if (carg->string != NULL)
 				lua_pushstring(pp->state, "STRING");
 			else if (carg->word != NULL)
 				lua_pushstring(pp->state, "WORD");
 			else
 				lua_pushstring(pp->state, "NUMBER");
 			lua_setfield(pp->state, -2, "type");
-			if (carg->string != NULL)
+			if (carg->expr != NULL)
+				luaX_pushexpression(pp->state, carg->expr);
+			else if (carg->string != NULL)
 				lua_pushstring(pp->state, carg->string->data);
 			else if (carg->word != NULL)
 				lua_pushstring(pp->state, carg->word->data);

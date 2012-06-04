@@ -25,8 +25,10 @@
 #include <simclist.h>
 #include <lua.h>
 #include <osutil.h>
+#include <debug.h>
 #include "pplua.h"
 #include "ppfind.h"
+#include "ppexpr.h"
 #include "dcpu.h"
 
 list_t equates;
@@ -46,6 +48,8 @@ void handle_pp_lua_scope_enter(bool output, void* current);
 void handle_pp_lua_scope_exit(void* current);
 void handle_pp_lua_add_symbol(const char* symbol, void* current);
 void finalize_lua(int line, void* current);
+uint16_t equate_replace(bstring label);
+void equate_errexit(int code, void* data);
 bool is_globally_initialized = false;
 
 struct equate_entry
@@ -68,6 +72,7 @@ struct macrodef_entry
 
 struct macroarg_entry
 {
+	struct expr* expr;
 	bstring string;
 	int number;
 };
@@ -111,10 +116,13 @@ struct macrodef_entry* active_macro = NULL;
 	struct macrodef_entry* macro;
 	struct macroarg_entry* arg;
 	struct customarg_entry* carg;
+	struct expr* expr;
 	list_t list;
 }
 
 // Define our lexical token names.
+%token <token> ADD SUBTRACT MULTIPLY DIVIDE MODULUS EQUALS NOT_EQUALS LESS_THAN LESS_EQUALS GREATER_THAN GREATER_EQUALS
+%token <token> PAREN_OPEN PAREN_CLOSE BITWISE_AND BITWISE_BOR BITWISE_XOR BITWISE_NOT BOOLEAN_OR BOOLEAN_AND BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
 %token <token> LINE ULINE INCLUDE EQUATE IF IFDEF IFNDEF ELSE ENDIF MACRO
 %token <token> ENDMACRO PARAM_OPEN PARAM_CLOSE COMMA UNDEF MACROCALL
 %token <string> STRING WORD CUSTOM
@@ -128,6 +136,7 @@ struct macrodef_entry* active_macro = NULL;
 %type <arg> callarg
 %type <carg> customarg
 %type <list> macrodefargs macrocallargs customargs
+%type <expr> expr
 
 // Start at the root node.
 %start root
@@ -369,6 +378,23 @@ preprocessor:
 				}
 			}
 		} |
+		IF expr
+		{
+			uint16_t result;
+
+			// First push our existing scope onto the list and create
+			// a new scope.
+			list_append(&scopes, active_scope);
+			active_scope = malloc(sizeof(struct scope_entry));
+			active_scope->active = false;
+
+			// Evaluate the expression.
+			result = expr_evaluate($2, &equate_replace, &equate_errexit);
+			
+			// If the result was true, activate this scope.
+			if (result)
+				active_scope->active = true;
+		} |
 		IFNDEF WORD
 		{
 			unsigned int i;
@@ -394,7 +420,20 @@ preprocessor:
 		} |
 		UNDEF WORD
 		{
-			// TODO: Implement this!
+			unsigned int i;
+			struct equate_entry* e;
+			
+			// Check to see whether the specified equate exists.
+			for (i = 0; i < list_size(&equates); i++)
+			{
+				e = (struct equate_entry*)list_get_at(&equates, i);
+				if (biseq(e->name, $2))
+				{
+					// Equate found.  Remove it.
+					list_extract_at(&equates, i);
+					i--;
+				}
+			}
 		} |
 		ELSE
 		{
@@ -446,6 +485,7 @@ customarg:
 		WORD
 		{
 			$$ = malloc(sizeof(struct customarg_entry));
+			$$->expr = NULL;
 			$$->word = $1;
 			$$->string = NULL;
 			$$->number = 0;
@@ -453,6 +493,7 @@ customarg:
 		STRING
 		{
 			$$ = malloc(sizeof(struct customarg_entry));
+			$$->expr = NULL;
 			$$->word = NULL;
 			$$->string = $1;
 			$$->number = 0;
@@ -460,9 +501,18 @@ customarg:
 		NUMBER
 		{
 			$$ = malloc(sizeof(struct customarg_entry));
+			$$->expr = NULL;
 			$$->word = NULL;
 			$$->string = NULL;
 			$$->number = $1;
+		} |
+		expr
+		{
+			$$ = malloc(sizeof(struct customarg_entry));
+			$$->expr = $1;
+			$$->word = NULL;
+			$$->string = NULL;
+			$$->number = 0;
 		};
 
 text:
@@ -528,21 +578,109 @@ callarg:
 		WORD
 		{
 			$$ = malloc(sizeof(struct macroarg_entry));
+			$$->expr = NULL;
 			$$->string = $1;
 			$$->number = 0;
 		} |
 		STRING
 		{
 			$$ = malloc(sizeof(struct macroarg_entry));
+			$$->expr = NULL;
 			$$->string = $1;
 			$$->number = 0;
 		} |
 		NUMBER
 		{
 			$$ = malloc(sizeof(struct macroarg_entry));
+			$$->expr = NULL;
 			$$->string = NULL;
 			$$->number = $1;
-		};
+		} |
+		expr
+		{
+			$$ = malloc(sizeof(struct macroarg_entry));
+			$$->expr = $1;
+			$$->string = NULL;
+			$$->number = 0;
+		} ;
+
+expr:
+		NUMBER
+		{
+			$$ = expr_new_number($1);
+		} |
+		WORD
+		{
+			$$ = expr_new_label(bautofree($1));
+		} |
+		PAREN_OPEN expr PAREN_CLOSE
+		{
+			$$ = $2;
+		} |
+		SUBTRACT expr
+		{
+			$$ = expr_new(expr_new_number(0), EXPR_OP_SUBTRACT, $2);
+		} |
+		BITWISE_NOT expr
+		{
+			$$ = expr_new(expr_new_number(0xFFFF), EXPR_OP_XOR, $2);
+		} |
+		expr DIVIDE expr
+		{
+			$$ = expr_new($1, EXPR_OP_DIVIDE, $3);
+		} |
+		expr MULTIPLY expr
+		{
+			$$ = expr_new($1, EXPR_OP_MULTIPLY, $3);
+		} |
+		expr SUBTRACT expr
+		{
+			$$ = expr_new($1, EXPR_OP_SUBTRACT, $3);
+		} |
+		expr ADD expr
+		{
+			$$ = expr_new($1, EXPR_OP_ADD, $3);
+		} |
+		expr MODULUS expr
+		{
+			$$ = expr_new($1, EXPR_OP_MODULUS, $3);
+		} |
+		expr BITWISE_AND expr
+		{
+			$$ = expr_new($1, EXPR_OP_AND, $3);
+		} |
+		expr BITWISE_XOR expr
+		{
+			$$ = expr_new($1, EXPR_OP_XOR, $3);
+		} |
+		expr BITWISE_BOR expr
+		{
+			$$ = expr_new($1, EXPR_OP_BOR, $3);
+		} |
+		expr EQUALS expr
+		{
+			$$ = expr_new($1, EXPR_OP_EQUALS, $3);
+		} |
+		expr NOT_EQUALS expr
+		{
+			$$ = expr_new($1, EXPR_OP_NOT_EQUALS, $3);
+		} |
+		expr LESS_THAN expr
+		{
+			$$ = expr_new($1, EXPR_OP_LESS_THAN, $3);
+		} |
+		expr LESS_EQUALS expr
+		{
+			$$ = expr_new($1, EXPR_OP_LESS_EQUALS, $3);
+		} |
+		expr GREATER_THAN expr
+		{
+			$$ = expr_new($1, EXPR_OP_GREATER_THAN, $3);
+		} |
+		expr GREATER_EQUALS expr
+		{
+			$$ = expr_new($1, EXPR_OP_GREATER_EQUALS, $3);
+		} ;
 
 %%
 
@@ -550,9 +688,39 @@ callarg:
 
 bstring pp_yyfilename = NULL;
 
+uint16_t equate_replace(bstring label)
+{
+	unsigned int i;
+	struct equate_entry* e;
+	
+	// Find the desired equate.
+	for (i = 0; i < list_size(&equates); i++)
+	{
+		e = (struct equate_entry*)list_get_at(&equates, i);
+		if (biseq(e->name, label))
+		{
+			// Equate found.
+			return strtol(e->replace->data, NULL, 0);
+		}
+	}
+	
+	equate_errexit(EXPR_EXIT_LABEL_NOT_FOUND, label->data);
+	return 0;
+}
+
+void equate_errexit(int code, void* data)
+{
+	if (code == EXPR_EXIT_LABEL_NOT_FOUND)
+		printd(LEVEL_ERROR, "error occurred while evaluating expression: unable to find equate '%s'.\n", (const char*)data);
+	else if (code == EXPR_EXIT_DIVIDE_BY_ZERO)
+		printd(LEVEL_ERROR, "error occurred while evaluating expression: divide by zero.\n");
+	else
+		printd(LEVEL_ERROR, "error occurred while evaluating expression: unknown error.\n");
+}
+
 void yyerror(void* scanner, const char *str)
 {
-	fprintf(stderr,"error at line %i of file %s: %s\n", pp_yyget_lineno(scanner), pp_yyfilename->data, str);
+	fprintf(stderr, "error at line %i of file %s: %s\n", pp_yyget_lineno(scanner), pp_yyfilename->data, str);
 }
 
 void handle_output(bstring output, void* scanner)

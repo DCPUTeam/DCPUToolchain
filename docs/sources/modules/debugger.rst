@@ -46,20 +46,25 @@ Function Hooks
         :noindex:
 
         Registers the specified `handler` to fire every time the
-        `type` event fires.  Supported events are "precycle",
-        "postcycle", "write", "break", "step" and "next".  Hooks
-        are registered in a case-insensitive manner.
+        `type` event fires.  Built-in events are "precycle",
+        "postcycle", "write", "break", "step", "next", "run" and
+        "continue.  Hooks are registered in a case-insensitive manner.
+        You can fire events using the `raise` method of the state
+        object that is passed to handlers.
         
         .. note::
             At this time you can only have one function registered
             as a hook for given event (the same way you can only have
             one function registered for handling a given command).
         
-        .. py:function:: handler(state)
+        .. py:function:: handler(state, pos)
             :noindex:
         
             Handles a debugger hook.  `state` is a table
-            representing :py:class:`state`.
+            representing :py:class:`state`.  `pos` is a number
+            which indicates the memory position that was affected
+            by the event.  In some cases, `pos` is not used and is
+            simply set to 0.
     
     .. py:function:: add_symbol_hook(handler)
         :noindex:
@@ -88,15 +93,51 @@ Function Hooks
         `cpu` is a table matching :py:class:`cpu` representing
         the current state of the virtual machine.
     
-    .. py:function:: _break()
+    .. py:function:: _break([code])
         :noindex:
     
         Breaks execution of the virtual machine (if it was running)
         and drops the debugger back to accepting commands.
         
+        Optionally accepts a numeric return code for usage when the
+        debugger is running in single command (-c) mode.  The return code
+        of the debugger will be the code provided from the last `_break`
+        call that actually provides a code parameter.  Calling `_break`
+        without the code parameter will not affect any previously set
+        return code.
+        
         .. note::
             This function is named "_break" and not "break" due to
             "break" being a reserved word in the Lua lexer.
+            
+    .. py:function:: run()
+        :noindex:
+    
+        Starts or continues execution of the virtual machine after
+        the Lua module returns control back to the debugger (i.e. after
+        the current hook or command exits).
+        
+    .. py:function:: symbols()
+        :noindex:
+    
+        Returns an indexed table of entries that designate string symbols
+        currently loaded.  Each entry is a table with fields "address" and
+        "data" where the address indicates the memory position the symbol
+        points to and "data" is the string symbol.
+        
+    .. py:function:: lines()
+        :noindex:
+    
+        Returns an table of entries of line number symbols.  Operates similar
+        to symbols() except that the returned table has fields "file", "line"
+        and "address".  "file" is a string value and "line" is a numeric value.
+        
+    .. py:function:: raise(event[, pos])
+        :noindex:
+    
+        Raises an event which can be handled by other Lua modules via the
+        `add_hook` function.  The event name is the "type" of hook and the
+        position parameter is passed to the hook handler in other modules.
         
 Module Example
 -------------------
@@ -120,9 +161,17 @@ if an assertion is not true.
         -- handle assertion
         local expr = expression_create(string.sub(symbol, #"assertion:" + 1))
         if (expr:evaluate(resolve_label) ~= 1) then
+          -- attempt to find line information
+          local lineinfo = ""
+          for i, v in ipairs(state:lines()) do
+            if (v.address < state.cpu.registers.pc) then 
+              lineinfo = " after '" .. v.file .. ":" .. v.line .. "'"
+            end
+          end
           -- assertion failed, break
-          print("assertion \"" .. string.sub(symbol, #"assertion:" + 1) .. "\" failed.")
+          print("assertion \"" .. string.sub(symbol, #"assertion:" + 1) .. "\" failed" .. lineinfo .. ".")
           state:_break()
+          state:raise("assertion_failed")
         end
       end
     end

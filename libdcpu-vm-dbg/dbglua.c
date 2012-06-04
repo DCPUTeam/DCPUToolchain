@@ -295,11 +295,22 @@ void* dbg_lua_extract_state_ud(lua_State* L, int idx)
 	return ud;
 }
 
+extern int ddbg_return_code;
+
 int dbg_lua_handle_break(lua_State* L)
 {
 	struct dbg_state* state = dbg_lua_extract_state(L, 1);
 	void* ud = dbg_lua_extract_state_ud(L, 1);
 	state->dbg_lua_break();
+	if (lua_isboolean(L, 2))
+	{
+		if (lua_toboolean(L, 2))
+			ddbg_return_code = 0;
+		else
+			ddbg_return_code = 1;
+	}
+	else if (lua_isnumber(L, 2))
+		ddbg_return_code = lua_tonumber(L, 2);
 	return 0;
 }
 
@@ -410,7 +421,7 @@ void dbg_lua_push_state(struct lua_debugst* ds, struct dbg_state* state, void* u
 	lua_setfield(ds->state, tbl, "lines");
 	lua_pushcfunction(ds->state, &dbg_lua_handle_raise);
 	lua_setfield(ds->state, tbl, "raise");
-
+	
 	// Push CPU state into table.
 	vm_hw_lua_cpu_push_cpu(ds->state, state->get_vm());
 	lua_setfield(ds->state, tbl, "cpu");

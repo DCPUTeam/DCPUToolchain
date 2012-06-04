@@ -180,9 +180,7 @@ bstring osutil_getmodulepath()
 #endif
 	}
 	else
-	{
 		tmp = bfromcstr(env);
-	}
 
 	// Check if path exists.
 	result = stat(tmp->data, &buffer);

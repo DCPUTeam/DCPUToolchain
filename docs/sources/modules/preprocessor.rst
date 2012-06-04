@@ -73,7 +73,7 @@ Function Hooks
     
         Adds a string-based symbol at this location which will be
         available during debugging modules.  See also
-        :ref:`module-debugging`.
+        :ref:`modules-debugger`.
     
 .. py:class:: param
     :noindex:
@@ -81,16 +81,21 @@ Function Hooks
     .. py:attribute:: type
         :noindex:
     
-        The type of the parameter.  Will be either "WORD", "PATH",
-        "STRING", "NUMBER" or "EXPRESSION".
+        The type of the parameter.
+        
+        Under the debugger, will be either "PATH", "PARAM",
+        "NUMBER" or "STRING".
+        
+        Under the preprocessor, will be either "WORD", "STRING"
+        "EXPRESSION" or "NUMBER".
         
         See also :py:class:`expression`.
     
     .. py:attribute:: value
         :noindex:
     
-        The value of the parameter, either a string or number,
-        depending on the type of the parameter.
+        The value of the parameter, either a string, number or,
+        expression object depending on the type of the parameter.
 
         
 Module Example

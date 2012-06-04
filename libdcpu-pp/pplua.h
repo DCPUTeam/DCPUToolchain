@@ -29,6 +29,7 @@ struct pp_state
 
 struct customarg_entry
 {
+	struct expr* expr;
 	bstring word;
 	bstring string;
 	int number;

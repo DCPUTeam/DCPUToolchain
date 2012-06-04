@@ -15,6 +15,12 @@
 #include <dcpuhook.h>
 #include <bstrlib.h>
 
+///
+/// The last return code from a debugging command (to indicate
+/// success or failure).
+///
+extern int ddbg_return_code;
+
 void ddbg_init();
 void ddbg_help(bstring section);
 void ddbg_set(bstring object, bstring value);
