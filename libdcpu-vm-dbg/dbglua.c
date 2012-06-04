@@ -373,13 +373,13 @@ int dbg_lua_handle_lines(lua_State* L)
 	return 1;
 }
 
-void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type);
+void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type, uint16_t pos);
 
 int dbg_lua_handle_raise(lua_State* L)
 {
 	struct dbg_state* state = dbg_lua_extract_state(L, 1);
 	void* ud = dbg_lua_extract_state_ud(L, 1);
-	dbg_lua_handle_hook(state, NULL, bautofree(bfromcstr(luaL_checkstring(L, 2))));
+	dbg_lua_handle_hook(state, NULL, bautofree(bfromcstr(luaL_checkstring(L, 2))), luaL_optinteger(L, 3, 0));
 	return 0;
 }
 
@@ -521,7 +521,7 @@ void dbg_lua_handle_command(struct dbg_state* state, void* ud, freed_bstring nam
 	bcstrfree(cstr);
 }
 
-void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type)
+void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type, uint16_t pos)
 {
 	struct lua_debugst* ds;
 	unsigned int i;
@@ -557,7 +557,8 @@ void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type)
 		printd(LEVEL_EVERYTHING, "calling hook %s.\n", cstr);
 		lua_getfield(ds->state, -1, HANDLER_FIELD_FUNCTION_NAME);
 		dbg_lua_push_state(ds, state, ud);
-		if (lua_pcall(ds->state, 1, 0, 0) != 0)
+		lua_pushnumber(ds->state, pos);
+		if (lua_pcall(ds->state, 2, 0, 0) != 0)
 		{
 			printd(LEVEL_ERROR, "error: unable to call debugger hook handler for '%s'.\n", type.ref->data);
 			printd(LEVEL_ERROR, "%s\n", lua_tostring(ds->state, -1));

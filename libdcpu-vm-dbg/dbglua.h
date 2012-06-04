@@ -45,7 +45,7 @@ extern struct dbg_state lstate;
 
 void dbg_lua_init();
 void dbg_lua_handle_command(struct dbg_state* state, void* ud, freed_bstring name, list_t* parameters);
-void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type);
+void dbg_lua_handle_hook(struct dbg_state* state, void* ud, freed_bstring type, uint16_t pos);
 void dbg_lua_handle_hook_symbol(struct dbg_state* state, void* ud, freed_bstring symbol);
 
 #endif

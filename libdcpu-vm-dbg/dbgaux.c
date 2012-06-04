@@ -133,7 +133,7 @@ void ddbg_precycle_hook(vm_t* vm, uint16_t pos, void* ud)
 	free(symbols);
 
 	// Handle custom Lua commands.
-	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("precycle")));
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("precycle")), pos);
 
 	// Handle breakpoints.
 	for (i = 0; i < list_size(&breakpoints); i++)
@@ -180,19 +180,19 @@ void ddbg_precycle_hook(vm_t* vm, uint16_t pos, void* ud)
 void ddbg_postcycle_hook(vm_t* vm, uint16_t pos, void* ud)
 {
 	// Handle custom Lua commands.
-	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("postcycle")));
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("postcycle")), pos);
 }
 
 void ddbg_write_hook(vm_t* vm, uint16_t pos, void* ud)
 {
 	// Handle custom Lua commands.
-	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("write")));
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("write")), pos);
 }
 
 void ddbg_break_hook(vm_t* vm, uint16_t pos, void* ud)
 {
 	// Handle custom Lua commands.
-	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("break")));
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("break")), pos);
 }
 
 void ddbg_set(bstring object, bstring value)
@@ -299,6 +299,7 @@ void ddbg_flash_vm()
 void ddbg_run_vm()
 {
 	vm->halted = false;
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("run")), 0);
 	vm_execute(vm, NULL);
 	printf("\n");
 }
@@ -306,6 +307,7 @@ void ddbg_run_vm()
 void ddbg_continue_vm()
 {
 	vm->halted = false;
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("continue")), 0);
 	vm_execute(vm, NULL);
 	printf("\n");
 }
@@ -424,7 +426,7 @@ void ddbg_step_into()
 	vm_cycle(vm);
 
 	// Handle custom Lua commands.
-	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("step")));
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("step")), 0);
 }
 
 void ddbg_step_over()
@@ -461,7 +463,7 @@ void ddbg_step_over()
 	vm_execute(vm, NULL);
 
 	// Handle custom Lua commands.
-	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("next")));
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("next")), 0);
 }
 
 void ddbg_backtrace()

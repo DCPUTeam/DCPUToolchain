@@ -572,8 +572,6 @@ void vm_op_int(vm_t* vm, uint16_t a)
 	uint16_t val_a = vm_resolve_value(vm, a, POS_A);
 	OP_NUM_CYCLES(4);
 
-	printd(LEVEL_DEBUG, "turning off interrupt queue\n");
-	vm->queue_interrupts = false;
 	printd(LEVEL_DEBUG, "sending interrupt %u\n", val_a);
 	vm_interrupt(vm, val_a);
 }
