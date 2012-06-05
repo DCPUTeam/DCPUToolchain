@@ -53,6 +53,8 @@ void ddbg_help(bstring section)
 		printd(LEVEL_DEFAULT, "- next\n");
 		printd(LEVEL_DEFAULT, "- inspect\n");
 		printd(LEVEL_DEFAULT, "- disasm\n");
+		printd(LEVEL_DEFAULT, "- attach\n");
+		printd(LEVEL_DEFAULT, "- detach\n");
 		printd(LEVEL_DEFAULT, "- backtrace\n");
 		printd(LEVEL_DEFAULT, "- quit\n");
 		printd(LEVEL_DEFAULT, "Type `help <command>' to get help about a particular command.\n");
@@ -95,6 +97,15 @@ void ddbg_help(bstring section)
 		printd(LEVEL_DEFAULT, "Disassembles loaded image.\n");
 		printd(LEVEL_DEFAULT, "Syntax: `disasm [<start>] [<length>]'\n");
 		printd(LEVEL_DEFAULT, "Note: If start is not provided, disassembles from 0x0.  If length is not provided, disassembles however many words were initially loaded.\n");
+	}
+	else if (biseq(section, bfromcstr("attach")) || biseq(section, bfromcstr("detach")))
+	{
+		printd(LEVEL_DEFAULT, "Attaches or detaches hardware from the debugger.\n");
+		printd(LEVEL_DEFAULT, "Syntax: `attach hardware <name>'\n");
+		printd(LEVEL_DEFAULT, "Syntax: `detach hardware <name>'\n");
+		printd(LEVEL_DEFAULT, "Note: The supported hardware names are `lem1802', `keyboard' and `clock'.  Lua hardware can not yet be loaded.\n");
+		printd(LEVEL_DEFAULT, "Note: When you specify a filename on the command-line, the debugger will automatically attach all devices.\n");
+		printd(LEVEL_DEFAULT, "Note: Attaching hardware of the same kind may have unintended side effects.\n");
 	}
 	else if (biseq(section, bfromcstr("backtrace")))
 	{
