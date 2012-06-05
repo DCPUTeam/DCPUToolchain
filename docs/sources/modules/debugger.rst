@@ -47,10 +47,11 @@ Function Hooks
 
         Registers the specified `handler` to fire every time the
         `type` event fires.  Built-in events are "precycle",
-        "postcycle", "write", "break", "step", "next", "run" and
-        "continue.  Hooks are registered in a case-insensitive manner.
-        You can fire events using the `raise` method of the state
-        object that is passed to handlers.
+        "postcycle", "write", "break", "step", "next", "run",
+        "continue" and "interrupt".  Hooks are registered in a
+        case-insensitive manner.  You can fire events using the 
+        `raise` method of the state object that is
+        passed to handlers.
         
         .. note::
             At this time you can only have one function registered
@@ -62,9 +63,21 @@ Function Hooks
         
             Handles a debugger hook.  `state` is a table
             representing :py:class:`state`.  `pos` is a number
-            which indicates the memory position that was affected
-            by the event.  In some cases, `pos` is not used and is
-            simply set to 0.
+            which indicates a memory position related to the
+            event.
+
+            For the `write` event, `pos` contains the address in
+            RAM that was written to.
+
+            For the `interrupt` event, `pos` contains the old PC
+            value (the interrupt has already been set up when the
+            event fires).
+
+            When custom Lua modules use the `raise` method in the
+            `state` object, they may pass a position parameter
+            which can be used to store any numeric data.
+
+            For all other events, `pos` will be 0.
     
     .. py:function:: add_symbol_hook(handler)
         :noindex:

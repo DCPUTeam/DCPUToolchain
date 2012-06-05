@@ -140,6 +140,17 @@ Virtual Machine
             val = cpu.registers.A;     -- Get the value in register A.
             cpu.registers.PC = a * 2;  -- Jump current execution to double the value of A.
             cpu.registers.EX = 0xFFFF; -- Set the overflow register to 0xFFFF.
+
+    .. py:attribute:: irq
+        :noindex:
+    
+        The queue of current interrupts that are yet to be handled.
+        You can not modify the interrupt queue.
+        
+        .. code-block:: lua
+
+            a = #cpu.irq;           -- Get the total number of interrupts.
+            a = cpu.irq[1];         -- Get the first interrupt in the queue.
     
     .. py:function:: disassemble(address)
         :noindex:

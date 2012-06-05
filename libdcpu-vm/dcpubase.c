@@ -37,6 +37,8 @@ void vm_halt(vm_t* vm, const char* message, ...)
 
 void vm_interrupt(vm_t* vm, uint16_t msgid)
 {
+	uint16_t save;
+
 	if (vm->queue_interrupts)
 	{
 		if (vm->irq_count >= INTERRUPT_MAX)
@@ -57,14 +59,16 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
 			printd(LEVEL_DEBUG, "ignoring request to fire interrupt %u\n", msgid);
 			return;
 		}
-		
+
+		save = vm->pc;
 		vm->ram[--vm->sp] = vm->pc;
 		vm->ram[--vm->sp] = vm->registers[REG_A];
-		vm->pc = vm->ia;
 		vm->registers[REG_A] = msgid;
+		vm->pc = vm->ia;
 		printd(LEVEL_DEBUG, "turning on interrupt queue\n");
 		vm->queue_interrupts = true;
 		printd(LEVEL_DEBUG, "executing interrupt %u right now\n", msgid);
+		vm_hook_fire(vm, save, HOOK_ON_INTERRUPT);
 	}
 }
 
@@ -195,7 +199,7 @@ void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
 		return;
 	if (vm->dump != NULL)
 		target = vm->dump;
-	
+
 	if (vm->skip)
 	{
 		if (get_register_by_value(a) != NULL)
@@ -216,18 +220,18 @@ void vm_dump_state(vm_t* vm)
 {
 	if (vm->dump == NULL)
 		return;
-	
+
 	fprintf(vm->dump, "--------------------------------\n");
-	fprintf(vm->dump, "A:   0x%04X	 [A]:	0x%04X\n", vm->registers[REG_A], vm->ram[vm->registers[REG_A]]);
-	fprintf(vm->dump, "B:   0x%04X	 [B]:	0x%04X\n", vm->registers[REG_B], vm->ram[vm->registers[REG_B]]);
-	fprintf(vm->dump, "C:   0x%04X	 [C]:	0x%04X\n", vm->registers[REG_C], vm->ram[vm->registers[REG_C]]);
-	fprintf(vm->dump, "X:   0x%04X	 [X]:	0x%04X\n", vm->registers[REG_X], vm->ram[vm->registers[REG_X]]);
-	fprintf(vm->dump, "Y:   0x%04X	 [Y]:	0x%04X\n", vm->registers[REG_Y], vm->ram[vm->registers[REG_Y]]);
-	fprintf(vm->dump, "Z:   0x%04X	 [Z]:	0x%04X\n", vm->registers[REG_Z], vm->ram[vm->registers[REG_Z]]);
-	fprintf(vm->dump, "I:   0x%04X	 [I]:	0x%04X\n", vm->registers[REG_I], vm->ram[vm->registers[REG_I]]);
-	fprintf(vm->dump, "J:   0x%04X	 [J]:	0x%04X\n", vm->registers[REG_J], vm->ram[vm->registers[REG_J]]);
-	fprintf(vm->dump, "PC:  0x%04X	 SP:	0x%04X\n", vm->pc, vm->sp);
-	fprintf(vm->dump, "EX:  0x%04X	 IA:	0x%04X\n", vm->ex, vm->ia);
+	fprintf(vm->dump, "A:	0x%04X	 [A]:	0x%04X\n", vm->registers[REG_A], vm->ram[vm->registers[REG_A]]);
+	fprintf(vm->dump, "B:	0x%04X	 [B]:	0x%04X\n", vm->registers[REG_B], vm->ram[vm->registers[REG_B]]);
+	fprintf(vm->dump, "C:	0x%04X	 [C]:	0x%04X\n", vm->registers[REG_C], vm->ram[vm->registers[REG_C]]);
+	fprintf(vm->dump, "X:	0x%04X	 [X]:	0x%04X\n", vm->registers[REG_X], vm->ram[vm->registers[REG_X]]);
+	fprintf(vm->dump, "Y:	0x%04X	 [Y]:	0x%04X\n", vm->registers[REG_Y], vm->ram[vm->registers[REG_Y]]);
+	fprintf(vm->dump, "Z:	0x%04X	 [Z]:	0x%04X\n", vm->registers[REG_Z], vm->ram[vm->registers[REG_Z]]);
+	fprintf(vm->dump, "I:	0x%04X	 [I]:	0x%04X\n", vm->registers[REG_I], vm->ram[vm->registers[REG_I]]);
+	fprintf(vm->dump, "J:	0x%04X	 [J]:	0x%04X\n", vm->registers[REG_J], vm->ram[vm->registers[REG_J]]);
+	fprintf(vm->dump, "PC:	0x%04X	 SP:	0x%04X\n", vm->pc, vm->sp);
+	fprintf(vm->dump, "EX:	0x%04X	 IA:	0x%04X\n", vm->ex, vm->ia);
 	if (vm->queue_interrupts)
 		fprintf(vm->dump, "IRQ ENABLED:		  true\n");
 	else
@@ -249,7 +253,7 @@ void vm_cycle(vm_t* vm)
 		vm->sleep_cycles--;
 		return;
 	}
-	
+
 	if (!vm->queue_interrupts && vm->irq_count > 0)
 	{
 		a = vm->irq[0];
@@ -467,7 +471,7 @@ void vm_cycle(vm_t* vm)
 
 	if (vm->debug || vm->dump != NULL)
 		fprintf(vm->dump == NULL ? stdout : vm->dump, "\n");
-	
+
 	if (vm->dump != NULL)
 		vm_dump_state(vm);
 

@@ -96,10 +96,8 @@ int vm_hw_lua_cpu_handle_register_set(lua_State* L)
 		vm->ia = (uint16_t)lua_tonumber(L, 3);
 	else if (biseqcstrcaseless(name, "EX"))
 		vm->ex = (uint16_t)lua_tonumber(L, 3);
-	else
-		lua_pushnil(L);
 
-	return 1;
+	return 0;
 }
 
 int vm_hw_lua_cpu_handle_ram_get(lua_State* L)
@@ -128,6 +126,45 @@ int vm_hw_lua_cpu_handle_ram_set(lua_State* L)
 	}
 	vm->ram[(uint16_t)lua_tonumber(L, 2)] = (uint16_t)lua_tonumber(L, 3);
 	return 0;
+}
+
+int vm_hw_lua_cpu_handle_irq_get(lua_State* L)
+{
+	// Table is at 1, key is at 2.
+	vm_t* vm = vm_hw_lua_cpu_extract_cpu(L, 1);
+	uint16_t idx;
+	if (!lua_isnumber(L, 2))
+	{
+		lua_pushstring(L, "irq access must be by numeric value (use array operator)");
+		lua_error(L);
+		return 0;
+	}
+	idx = (uint16_t)lua_tonumber(L, 2);
+	if (idx < 1 || idx > vm->irq_count)
+	{
+		lua_pushstring(L, "irq access out of bounds");
+		lua_error(L);
+		return 0;
+	}
+	lua_pushnumber(L, vm->irq[idx]);
+	return 1;
+}
+
+int vm_hw_lua_cpu_handle_irq_set(lua_State* L)
+{
+	// Table is at 1, key is at 2, value is at 3.
+	vm_t* vm = vm_hw_lua_cpu_extract_cpu(L, 1);
+	lua_pushstring(L, "irq write not permitted");
+	lua_error(L);
+	return 0;
+}
+
+int vm_hw_lua_cpu_handle_irq_length(lua_State* L)
+{
+	// Table is at 1, key is at 2, value is at 3.
+	vm_t* vm = vm_hw_lua_cpu_extract_cpu(L, 1);
+	lua_pushnumber(L, vm->irq_count);
+	return 1;
 }
 
 int vm_hw_lua_cpu_disassemble(lua_State* L)
@@ -202,7 +239,7 @@ int vm_hw_lua_cpu_disassemble(lua_State* L)
 
 void vm_hw_lua_cpu_push_cpu(lua_State* L, vm_t* vm)
 {
-	int cpu, cpu_mt, registers, registers_mt, ram, ram_mt;
+	int cpu, cpu_mt, registers, registers_mt, ram, ram_mt, irq, irq_mt;
 
 	// Create tables.
 	lua_newtable(L);
@@ -217,6 +254,10 @@ void vm_hw_lua_cpu_push_cpu(lua_State* L, vm_t* vm)
 	ram = lua_gettop(L);
 	lua_newtable(L);
 	ram_mt = lua_gettop(L);
+	lua_newtable(L);
+	irq = lua_gettop(L);
+	lua_newtable(L);
+	irq_mt = lua_gettop(L);
 
 	// Push userdata into metatables.
 	lua_pushlightuserdata(L, vm);
@@ -225,6 +266,8 @@ void vm_hw_lua_cpu_push_cpu(lua_State* L, vm_t* vm)
 	lua_rawseti(L, ram_mt, 0);
 	lua_pushlightuserdata(L, vm);
 	lua_rawseti(L, registers_mt, 0);
+	lua_pushlightuserdata(L, vm);
+	lua_rawseti(L, irq_mt, 0);
 
 	// Create the metatable functions.
 	lua_pushcfunction(L, vm_hw_lua_cpu_handle_ram_get);
@@ -235,12 +278,20 @@ void vm_hw_lua_cpu_push_cpu(lua_State* L, vm_t* vm)
 	lua_setfield(L, registers_mt, "__index");
 	lua_pushcfunction(L, vm_hw_lua_cpu_handle_register_set);
 	lua_setfield(L, registers_mt, "__newindex");
+	lua_pushcfunction(L, vm_hw_lua_cpu_handle_irq_get);
+	lua_setfield(L, irq_mt, "__index");
+	lua_pushcfunction(L, vm_hw_lua_cpu_handle_irq_set);
+	lua_setfield(L, irq_mt, "__newindex");
+	lua_pushcfunction(L, vm_hw_lua_cpu_handle_irq_length);
+	lua_setfield(L, irq_mt, "__len");
 
 	// Associate metatables.
 	lua_pushvalue(L, cpu_mt);
 	lua_setmetatable(L, cpu);
 	lua_pushvalue(L, ram_mt);
 	lua_setmetatable(L, ram);
+	lua_pushvalue(L, irq_mt);
+	lua_setmetatable(L, irq);
 	lua_pushvalue(L, registers_mt);
 	lua_setmetatable(L, registers);
 
@@ -255,6 +306,8 @@ void vm_hw_lua_cpu_push_cpu(lua_State* L, vm_t* vm)
 	lua_setfield(L, cpu, "ram");
 	lua_pushvalue(L, registers);
 	lua_setfield(L, cpu, "registers");
+	lua_pushvalue(L, irq);
+	lua_setfield(L, cpu, "irq");
 	lua_pushcfunction(L, &vm_hw_lua_cpu_disassemble);
 	lua_setfield(L, cpu, "disassemble");
 

@@ -23,9 +23,8 @@
 int main(int argc, char* argv[])
 {
 	bstring cmdargs = bfromcstr("");
-	int i, result;
+	int result;
 	unsigned int match = 0, unmatch = 0;
-	char ca, ce;
 	char* file_cpu;
 	char* file_sym;
 #ifndef _WIN32
@@ -60,11 +59,11 @@ int main(int argc, char* argv[])
 
 	// Set global path variable.
 	osutil_setarg0(bautofree(bfromcstr(argv[0])));
-	
+
 	// Get temporary names for each intermediate file.
 	file_cpu = tempnam(NULL, "vtcpu");
 	file_sym = tempnam(NULL, "vtsym");
-	
+
 #ifndef _WIN32
 	// We need to get the existing TOOLCHAIN_MODULES
 	// environment variable so we can set it back later
@@ -78,8 +77,8 @@ int main(int argc, char* argv[])
 	bcstrfree(temp);
 #else
 	printd(LEVEL_WARNING, "warning: Unable to set TOOLCHAIN_MODULES temporarily on Windows systems for\n");
-	printd(LEVEL_WARNING, "         testing purposes.  Install units, unitsdbg, assert and assertdbg\n");
-	printd(LEVEL_WARNING, "         globally to ensure that the test suite runs correctly.\n");
+	printd(LEVEL_WARNING, "		testing purposes.  Install units, unitsdbg, assert and assertdbg\n");
+	printd(LEVEL_WARNING, "		globally to ensure that the test suite runs correctly.\n");
 #endif
 
 	// Generate the argument list for the assembler.
@@ -88,7 +87,7 @@ int main(int argc, char* argv[])
 	binsertch(cmdargs, 0, 1, '"');
 	bconchar(cmdargs, '"');
 	bconchar(cmdargs, ' ');
-	
+
 	// Symbols file.
 	bcatcstr(cmdargs, "-s \"");
 	bcatcstr(cmdargs, file_sym);
@@ -119,7 +118,7 @@ int main(int argc, char* argv[])
 		printd(LEVEL_ERROR, "error: unable to assemble unit test (assembler returned non-zero exit code '%i').\n", result >> 8);
 		return 1;
 	}
-	
+
 	// We now need to set up the command to
 	// run the debugger to invoke the unit tests.
 	bassigncstr(cmdargs, argv[0]);
@@ -127,20 +126,20 @@ int main(int argc, char* argv[])
 	binsertch(cmdargs, 0, 1, '"');
 	bconchar(cmdargs, '"');
 	bconchar(cmdargs, ' ');
-	
+
 	// Run the 'test' command automatically.
 	bcatcstr(cmdargs, "-c test ");
-	
+
 	// Symbols file.
 	bcatcstr(cmdargs, "-s \"");
 	bcatcstr(cmdargs, file_sym);
 	bcatcstr(cmdargs, "\" ");
-	
+
 	// Input file.
 	bcatcstr(cmdargs, "\"");
 	bcatcstr(cmdargs, file_cpu);
 	bcatcstr(cmdargs, "\" ");
-	
+
 	// Now run the debugger!
 	result = system(cmdargs->data);
 	if (result != 0)
@@ -148,7 +147,7 @@ int main(int argc, char* argv[])
 		// Unit test failed!
 		unlink(file_cpu);
 		unlink(file_sym);
-		
+
 #ifndef _WIN32
 		// Restore TOOLCHAIN_MODULES.
 		if (mod_path == NULL)
@@ -160,12 +159,12 @@ int main(int argc, char* argv[])
 			bcstrfree(temp);
 		}
 #endif
-		
+
 		// Show error message (is 'result >> 8' modification only applicable to UNIX)?
 		printd(LEVEL_ERROR, "error: unit test failed with exit code %i (see above output).\n", result >> 8);
 		return 1;
 	}
-	
+
 	// Delete temporary files.
 	unlink(file_cpu);
 	unlink(file_sym);

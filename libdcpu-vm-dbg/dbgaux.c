@@ -221,6 +221,12 @@ void ddbg_break_hook(vm_t* vm, uint16_t pos, void* ud)
 	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("break")), pos);
 }
 
+void ddbg_interrupt_hook(vm_t* vm, uint16_t pos, void* ud)
+{
+	// Handle custom Lua commands.
+	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("interrupt")), pos);
+}
+
 void ddbg_set(bstring object, bstring value)
 {
 	if (biseq(object, bfromcstr("vm_debug")))
@@ -313,6 +319,7 @@ void ddbg_create_vm()
 	vm_hook_register(vm, &ddbg_postcycle_hook, HOOK_ON_POST_CYCLE, NULL);
 	vm_hook_register(vm, &ddbg_write_hook, HOOK_ON_WRITE, NULL);
 	vm_hook_register(vm, &ddbg_break_hook, HOOK_ON_BREAK, NULL);
+	vm_hook_register(vm, &ddbg_interrupt_hook, HOOK_ON_INTERRUPT, NULL);
 	printd(LEVEL_DEFAULT, "Created VM.\n");
 }
 
@@ -612,11 +619,11 @@ void ddbg_disassemble(int start, int difference)
 		}
 		else
 			printd(LEVEL_DEFAULT, "0x%04X (0x%04X): ", start + i, vm->ram[start + i]);
-		
+
 		// Disassemble.
 		inst = vm_disassemble(vm, start + i, true);
 		if (symbols != NULL)
-			printd(LEVEL_DEFAULT, "    ");
+			printd(LEVEL_DEFAULT, "	   ");
 		if (inst.original.full == 0x0)
 			printd(LEVEL_DEFAULT, "<null>\n");
 		else if (inst.pretty.op == NULL)
