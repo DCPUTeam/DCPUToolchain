@@ -700,7 +700,7 @@ uint16_t equate_replace(bstring label)
 		if (biseq(e->name, label))
 		{
 			// Equate found.
-			return strtol(e->replace->data, NULL, 0);
+			return (uint16_t)strtol(e->replace->data, NULL, 0);
 		}
 	}
 	

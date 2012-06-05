@@ -154,7 +154,7 @@ typedef struct
 	uint16_t dummy;			///< A dummy position that is used internally to silently redirect assignments.
 	uint16_t irq[256];		///< The interrupt queue.
 	uint16_t irq_count;		///< The number of interrupts currently in the queue.
-	uint8_t sleep_cycles;		///< An internal counter used to measure how many additional cycles the VM should sleep for.
+	uint16_t sleep_cycles;		///< An internal counter used to measure how many additional cycles the VM should sleep for.
 	uint8_t queue_interrupts;	///< Whether the interrupt queue is enabled.
 	uint8_t halted;			///< Whether the virtual machine is currently halted.
 	uint8_t skip;			///< Whether the virtual machine will skip the next instruction.

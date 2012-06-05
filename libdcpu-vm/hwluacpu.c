@@ -133,7 +133,7 @@ int vm_hw_lua_cpu_handle_ram_set(lua_State* L)
 int vm_hw_lua_cpu_disassemble(lua_State* L)
 {
 	vm_t* vm = vm_hw_lua_cpu_extract_cpu(L, 1);
-	struct inst inst = vm_disassemble(vm, luaL_checknumber(L, 2), true);
+	struct inst inst = vm_disassemble(vm, (uint16_t)luaL_checknumber(L, 2), true);
 	lua_newtable(L);
 	lua_newtable(L);
 	lua_pushnumber(L, inst.original.full);

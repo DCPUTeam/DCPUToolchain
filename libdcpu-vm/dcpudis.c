@@ -1,16 +1,16 @@
 /**
- * 
+ *
  *	File:		dcpudis.c
- * 
+ *
  *	Project:	DCPU-16 Toolchain
  *	Component:	LibDCPU-VM
- * 
+ *
  *	Authors:	James Rhodes
- * 
+ *
  *	Description:	Defines functions that assist
  *			in disassembling and analysing
  *			instructions.
- * 
+ *
  **/
 
 #include <stdint.h>
@@ -35,28 +35,27 @@
 struct inst vm_disassemble(vm_t* vm, uint16_t pos, bool pretty)
 {
 	struct inst result;
-	uint16_t instruction;
 	uint16_t pc_store = vm->pc;
 	uint16_t sp_store = vm->sp;
-	uint16_t debug_store = vm->debug;
+	uint8_t debug_store = vm->debug;
 	struct instruction_mapping* instmap;
 	struct register_mapping* regmap;
-	
+
 	// Set pretty structure to NULL by default.
 	result.pretty.op = NULL;
 	result.pretty.a = NULL;
 	result.pretty.b = NULL;
-	
+
 	// Set correct VM state for a resolving read.
 	vm->pc = pos;
 	vm->debug = false;
-	
+
 	// Read the basic instruction data.
 	result.original.full = vm->ram[vm->pc++];
 	result.original.op = INSTRUCTION_GET_OP(result.original.full);
 	result.original.a = INSTRUCTION_GET_A(result.original.full);
 	result.original.b = INSTRUCTION_GET_B(result.original.full);
-	
+
 	// Resolve values.
 	if (result.original.op == OP_NONBASIC)
 	{
@@ -91,21 +90,21 @@ struct inst vm_disassemble(vm_t* vm, uint16_t pos, bool pretty)
 		result.used[1] = true;
 		result.next[1] = vm->ram[pos + 1];
 	}
-	else if (result.size - 1 >= 2) 
+	else if (result.size - 1 >= 2)
 	{
 		result.used[0] = true;
 		result.used[1] = true;
 		result.next[0] = vm->ram[pos + 1];
 		result.next[1] = vm->ram[pos + 2];
 	}
-	
+
 	// Work out pretty values if required.
 	instmap = get_instruction_by_value(result.original.op, result.original.b);
 	if (pretty && instmap != NULL)
 	{
 		// Work out the instruction name.
 		result.pretty.op = bfromcstr(instmap->name);
-		
+
 		// Work out the a parameter.
 		regmap = get_register_by_value(result.original.a);
 		if (result.original.a >= REG_A && result.original.a <= REG_J)
@@ -130,7 +129,7 @@ struct inst vm_disassemble(vm_t* vm, uint16_t pos, bool pretty)
 			result.pretty.a = bformat("0x%04X", result.original.a - 0x21);
 		else
 			result.pretty.a = bfromcstr("???");
-		
+
 		// Only fill the b parameter if the opcode was basic.
 		if (result.pretty.op != OP_NONBASIC)
 		{
@@ -159,12 +158,12 @@ struct inst vm_disassemble(vm_t* vm, uint16_t pos, bool pretty)
 				result.pretty.b = bfromcstr("???");
 		}
 	}
-	
+
 	// Restore state.
 	vm->pc = pc_store;
 	vm->sp = sp_store;
 	vm->debug = debug_store;
-	
+
 	// Return instruction.
 	return result;
 }
