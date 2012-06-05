@@ -115,9 +115,16 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 
 		if (registr == NULL)
 		{
-			// Attempt to use a label in brackets that can't be.
-			printd(LEVEL_VERBOSE, "\n");
-			ahalt(ERR_NEXTED_LABEL_UNSUPPORTED, param->addcmpt);
+			// Attempt to use a label in square brackets.  Convert this
+			// to an expression and then reinvoke ourselves with the
+			// evaluated value.
+			param->value = expr_new(expr_new_label(bautofree(bfromcstr(param->addcmpt))), EXPR_OP_ADD, param->value);
+			param->addcmpt = "";
+			param->added = 0;
+			param->bracketed = 0;
+
+			bdestroy(btmp);
+			return process_address(param);
 		}
 		else if (registr->value == VALUE_NEXT_UNSUPPORTED)
 		{
@@ -352,7 +359,7 @@ void process_line(struct ast_node_line* line)
 						else
 							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
 					}
-					
+
 					// Emit N words with value X
 					flimit = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
 					fchar = expr_evaluate(line->keyword_data_expr_2, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
@@ -385,7 +392,7 @@ void process_line(struct ast_node_line* line)
 						else
 							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
 					}
-					
+
 					opos = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
 					printd(LEVEL_VERBOSE, ".ORIGIN 0x%04X", opos);
 
