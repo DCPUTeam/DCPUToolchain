@@ -367,20 +367,6 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 					*word = *word - offset + at;
 					entry->bin = to->name;
 				}
-				/* TODO something like this into the remove function */
-				/*
-				else if (*word >= offset + count && biseq(entry->bin, from->name)
-				{
-					printd(LEVEL_DEBUG, "repointing internal adjustment in range [offset+count,...) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
-					       entry->address, abin->name->data,
-					       *word, entry->bin->data,
-					       *word - offset + at, to->name->data);
-
-					*word = *word - offset + at;
-					entry->bin = to->name;
-				}
-				*/
-				
 				// adjustment was pointing into the new bin
 				else if (*word >= at && biseq(entry->bin, to->name))
 				{
