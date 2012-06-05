@@ -1,3 +1,6 @@
 [submodule "modules"]
 	path = modules
 	url = git://github.com/DCPUTeam/DCPUModules.git
+[submodule "kernel"]
+	path = kernel
+	url = git://github.com/DCPUTeam/AtlasOS.git
