@@ -331,19 +331,19 @@ void bins_sectionize()
 	{
 		bin = list_get_at(&ldbins.bins, i);
 		printd(LEVEL_VERBOSE, "start bin: %s\n", bin->name->data);
-		bin->provided != NULL ? printd(LEVEL_VERBOSE,   "    total provided: %u\n", list_size(bin->provided)) : false;
-		bin->required != NULL ? printd(LEVEL_VERBOSE,   "    total required: %u\n", list_size(bin->required)) : false;
+		bin->provided != NULL ? printd(LEVEL_VERBOSE,	"    total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printd(LEVEL_VERBOSE,	"    total required: %u\n", list_size(bin->required)) : false;
 		bin->adjustment != NULL ? printd(LEVEL_VERBOSE, "    total adjustment: %u\n", list_size(bin->adjustment)) : false;
-		bin->section != NULL ? printd(LEVEL_VERBOSE,    "    total sections: %u\n", list_size(bin->section)) : false;
-		bin->output != NULL ? printd(LEVEL_VERBOSE,     "    total outputs: %u\n", list_size(bin->output)) : false;
-		bin->symbols != NULL ? printd(LEVEL_VERBOSE,    "    total symbols: %u\n", list_size(bin->symbols)) : false;
-		printd(LEVEL_VERBOSE,                           "    total words: 0x%04X\n", list_size(&bin->words));
+		bin->section != NULL ? printd(LEVEL_VERBOSE,	"    total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printd(LEVEL_VERBOSE,	"    total outputs: %u\n", list_size(bin->output)) : false;
+		bin->symbols != NULL ? printd(LEVEL_VERBOSE,	"    total symbols: %u\n", list_size(bin->symbols)) : false;
+		printd(LEVEL_VERBOSE,				"    total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
 		dk = 0;
 		while (list_iterator_hasnext(&bin->words))
-			printd(LEVEL_EVERYTHING,                "        0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_EVERYTHING,		"	 0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
-		printd(LEVEL_EVERYTHING,                        "        ------: ------\n");
+		printd(LEVEL_EVERYTHING,			"	 ------: ------\n");
 		if (bin->adjustment != NULL)
 		{
 			list_iterator_start(bin->adjustment);
@@ -351,16 +351,16 @@ void bins_sectionize()
 			{
 				entry = list_iterator_next(bin->adjustment);
 				assert(list_get_at(&bin->words, entry->address) != NULL);
-				printd(LEVEL_EVERYTHING,        "        0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+				printd(LEVEL_EVERYTHING,	"	 0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
 			}
 			list_iterator_stop(bin->adjustment);
 		}
-		printd(LEVEL_EVERYTHING,                        "        ------: ------\n");
+		printd(LEVEL_EVERYTHING,			"	 ------: ------\n");
 		if (bin->symbols != NULL)
 		{
 			list_iterator_start(bin->symbols);
 			while (list_iterator_hasnext(bin->symbols))
-				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
+				printd(LEVEL_EVERYTHING,	"	 0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
 			list_iterator_stop(bin->symbols);
 		}
 		printd(LEVEL_VERBOSE, "	 \n");
@@ -459,19 +459,19 @@ void bins_sectionize()
 	{
 		bin = list_get_at(&ldbins.bins, i);
 		printd(LEVEL_VERBOSE, "end bin: %s\n", bin->name->data);
-		bin->provided != NULL ? printd(LEVEL_VERBOSE,   "    total provided: %u\n", list_size(bin->provided)) : false;
-		bin->required != NULL ? printd(LEVEL_VERBOSE,   "    total required: %u\n", list_size(bin->required)) : false;
+		bin->provided != NULL ? printd(LEVEL_VERBOSE,	"    total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printd(LEVEL_VERBOSE,	"    total required: %u\n", list_size(bin->required)) : false;
 		bin->adjustment != NULL ? printd(LEVEL_VERBOSE, "    total adjustment: %u\n", list_size(bin->adjustment)) : false;
-		bin->section != NULL ? printd(LEVEL_VERBOSE,    "    total sections: %u\n", list_size(bin->section)) : false;
-		bin->output != NULL ? printd(LEVEL_VERBOSE,     "    total outputs: %u\n", list_size(bin->output)) : false;
-		bin->symbols != NULL ? printd(LEVEL_VERBOSE,    "    total symbols: %u\n", list_size(bin->symbols)) : false;
-		printd(LEVEL_VERBOSE,                           "    total words: 0x%04X\n", list_size(&bin->words));
+		bin->section != NULL ? printd(LEVEL_VERBOSE,	"    total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printd(LEVEL_VERBOSE,	"    total outputs: %u\n", list_size(bin->output)) : false;
+		bin->symbols != NULL ? printd(LEVEL_VERBOSE,	"    total symbols: %u\n", list_size(bin->symbols)) : false;
+		printd(LEVEL_VERBOSE,				"    total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
 		dk = 0;
 		while (list_iterator_hasnext(&bin->words))
-			printd(LEVEL_EVERYTHING,                "        0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_EVERYTHING,		"	 0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
-		printd(LEVEL_EVERYTHING,                        "        ------: ------\n");
+		printd(LEVEL_EVERYTHING,			"	 ------: ------\n");
 		if (bin->adjustment != NULL)
 		{
 			list_iterator_start(bin->adjustment);
@@ -479,16 +479,16 @@ void bins_sectionize()
 			{
 				entry = list_iterator_next(bin->adjustment);
 				assert(list_get_at(&bin->words, entry->address) != NULL);
-				printd(LEVEL_EVERYTHING,        "        0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+				printd(LEVEL_EVERYTHING,	"	 0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
 			}
 			list_iterator_stop(bin->adjustment);
 		}
-		printd(LEVEL_EVERYTHING,                        "        ------: ------\n");
+		printd(LEVEL_EVERYTHING,			"	 ------: ------\n");
 		if (bin->symbols != NULL)
 		{
 			list_iterator_start(bin->symbols);
 			while (list_iterator_hasnext(bin->symbols))
-				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
+				printd(LEVEL_EVERYTHING,	"	 0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
 			list_iterator_stop(bin->symbols);
 		}
 		printd(LEVEL_VERBOSE, "\n");
@@ -589,19 +589,19 @@ void bins_flatten(freed_bstring name)
 	{
 		bin = list_get_at(&ldbins.bins, i);
 		printd(LEVEL_VERBOSE, "flattened bin: %s\n", bin->name->data);
-		bin->provided != NULL ? printd(LEVEL_VERBOSE,   "    total provided: %u\n", list_size(bin->provided)) : false;
-		bin->required != NULL ? printd(LEVEL_VERBOSE,   "    total required: %u\n", list_size(bin->required)) : false;
+		bin->provided != NULL ? printd(LEVEL_VERBOSE,	"    total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printd(LEVEL_VERBOSE,	"    total required: %u\n", list_size(bin->required)) : false;
 		bin->adjustment != NULL ? printd(LEVEL_VERBOSE, "    total adjustment: %u\n", list_size(bin->adjustment)) : false;
-		bin->section != NULL ? printd(LEVEL_VERBOSE,    "    total sections: %u\n", list_size(bin->section)) : false;
-		bin->output != NULL ? printd(LEVEL_VERBOSE,     "    total outputs: %u\n", list_size(bin->output)) : false;
-		bin->symbols != NULL ? printd(LEVEL_VERBOSE,    "    total symbols: %u\n", list_size(bin->symbols)) : false;
-		printd(LEVEL_VERBOSE,                           "    total words: 0x%04X\n", list_size(&bin->words));
+		bin->section != NULL ? printd(LEVEL_VERBOSE,	"    total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printd(LEVEL_VERBOSE,	"    total outputs: %u\n", list_size(bin->output)) : false;
+		bin->symbols != NULL ? printd(LEVEL_VERBOSE,	"    total symbols: %u\n", list_size(bin->symbols)) : false;
+		printd(LEVEL_VERBOSE,				"    total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
 		dk = 0;
 		while (list_iterator_hasnext(&bin->words))
-			printd(LEVEL_EVERYTHING,                "        0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_EVERYTHING,		"	 0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
-		printd(LEVEL_EVERYTHING,                        "        ------: ------\n");
+		printd(LEVEL_EVERYTHING,			"	 ------: ------\n");
 		if (bin->adjustment != NULL)
 		{
 			list_iterator_start(bin->adjustment);
@@ -609,16 +609,16 @@ void bins_flatten(freed_bstring name)
 			{
 				entry = list_iterator_next(bin->adjustment);
 				assert(list_get_at(&bin->words, entry->address) != NULL);
-				printd(LEVEL_EVERYTHING,        "        0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+				printd(LEVEL_EVERYTHING,	"	 0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
 			}
 			list_iterator_stop(bin->adjustment);
 		}
-		printd(LEVEL_EVERYTHING,                        "        ------: ------\n");
+		printd(LEVEL_EVERYTHING,			"	 ------: ------\n");
 		if (bin->symbols != NULL)
 		{
 			list_iterator_start(bin->symbols);
 			while (list_iterator_hasnext(bin->symbols))
-				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
+				printd(LEVEL_EVERYTHING,	"	 0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
 			list_iterator_stop(bin->symbols);
 		}
 		printd(LEVEL_VERBOSE, "\n");
@@ -637,6 +637,7 @@ void bins_resolve(bool keepProvided)
 	struct lconv_entry* entry;
 	struct lconv_entry* required;
 	struct lconv_entry* provided;
+	struct lconv_entry* adjustment;
 	struct ldbin* bin;
 	uint16_t* word;
 	size_t i, dk;
@@ -664,6 +665,25 @@ void bins_resolve(bool keepProvided)
 		// Insert the required code.
 		word = list_get_at(&bin->words, required->address);
 		*word = provided->address;
+		
+		
+		// Add the deleted requirement as adjustment
+		adjustment = malloc(sizeof(struct lconv_entry));
+		if (provided->label == NULL)
+			adjustment->label = NULL;
+		else
+		{
+			adjustment->label = bfromcstr("");
+			bassign(adjustment->label, provided->label);
+		}
+
+		adjustment->bin = bfromcstr("");
+		bassign(adjustment->bin, bin->name);
+		adjustment->address = required->address;
+		if (bin->adjustment == NULL) {
+			list_init(bin->adjustment);
+		}
+		list_append(bin->adjustment, adjustment);
 
 		printd(LEVEL_DEBUG, "resolve: %s (0x%4X) -> 0x%4X\n", required->label->data, required->address, provided->address);
 	}
@@ -693,19 +713,19 @@ void bins_resolve(bool keepProvided)
 	{
 		bin = list_get_at(&ldbins.bins, i);
 		printd(LEVEL_VERBOSE, "resolved bin: %s\n", bin->name->data);
-		bin->provided != NULL ? printd(LEVEL_VERBOSE,   "    total provided: %u\n", list_size(bin->provided)) : false;
-		bin->required != NULL ? printd(LEVEL_VERBOSE,   "    total required: %u\n", list_size(bin->required)) : false;
+		bin->provided != NULL ? printd(LEVEL_VERBOSE,	"    total provided: %u\n", list_size(bin->provided)) : false;
+		bin->required != NULL ? printd(LEVEL_VERBOSE,	"    total required: %u\n", list_size(bin->required)) : false;
 		bin->adjustment != NULL ? printd(LEVEL_VERBOSE, "    total adjustment: %u\n", list_size(bin->adjustment)) : false;
-		bin->section != NULL ? printd(LEVEL_VERBOSE,    "    total sections: %u\n", list_size(bin->section)) : false;
-		bin->output != NULL ? printd(LEVEL_VERBOSE,     "    total outputs: %u\n", list_size(bin->output)) : false;
-		bin->symbols != NULL ? printd(LEVEL_VERBOSE,    "    total symbols: %u\n", list_size(bin->symbols)) : false;
-		printd(LEVEL_VERBOSE,                           "    total words: 0x%04X\n", list_size(&bin->words));
+		bin->section != NULL ? printd(LEVEL_VERBOSE,	"    total sections: %u\n", list_size(bin->section)) : false;
+		bin->output != NULL ? printd(LEVEL_VERBOSE,	"    total outputs: %u\n", list_size(bin->output)) : false;
+		bin->symbols != NULL ? printd(LEVEL_VERBOSE,	"    total symbols: %u\n", list_size(bin->symbols)) : false;
+		printd(LEVEL_VERBOSE,				"    total words: 0x%04X\n", list_size(&bin->words));
 		list_iterator_start(&bin->words);
 		dk = 0;
 		while (list_iterator_hasnext(&bin->words))
-			printd(LEVEL_EVERYTHING,                "        0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
+			printd(LEVEL_EVERYTHING,		"	 0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
 		list_iterator_stop(&bin->words);
-		printd(LEVEL_EVERYTHING,                        "        ------: ------\n");
+		printd(LEVEL_EVERYTHING,			"	 ------: ------\n");
 		if (bin->adjustment != NULL)
 		{
 			list_iterator_start(bin->adjustment);
@@ -713,16 +733,16 @@ void bins_resolve(bool keepProvided)
 			{
 				entry = list_iterator_next(bin->adjustment);
 				assert(list_get_at(&bin->words, entry->address) != NULL);
-				printd(LEVEL_EVERYTHING,        "        0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
+				printd(LEVEL_EVERYTHING,	"	 0x%04X: 0x%04X (%s)\n", entry->address, *(uint16_t*)list_get_at(&bin->words, entry->address), entry->bin->data);
 			}
 			list_iterator_stop(bin->adjustment);
 		}
-		printd(LEVEL_EVERYTHING,                        "        ------: ------\n");
+		printd(LEVEL_EVERYTHING,			"	 ------: ------\n");
 		if (bin->symbols != NULL)
 		{
 			list_iterator_start(bin->symbols);
 			while (list_iterator_hasnext(bin->symbols))
-				printd(LEVEL_EVERYTHING,        "        0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
+				printd(LEVEL_EVERYTHING,	"	 0x%04X: DEBUG SYMBOL\n", dbgfmt_get_symbol_address(list_iterator_next(bin->symbols)));
 			list_iterator_stop(bin->symbols);
 		}
 		printd(LEVEL_VERBOSE, "\n");

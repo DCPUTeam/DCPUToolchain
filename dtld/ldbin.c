@@ -202,10 +202,10 @@ void bin_remove(list_t* all, struct ldbin* bin, size_t offset, size_t count)
 	}
 
 	// Perform linker information updates.
-	bin_info_remove(all, bin, bin->provided, offset, count);
-	bin_info_remove(all, bin, bin->required, offset, count);
-	bin_info_remove(all, bin, bin->adjustment, offset, count);
-	bin_info_remove(all, bin, bin->output, offset, count);
+	bin_info_remove(all, bin, bin->provided, false, offset, count);
+	bin_info_remove(all, bin, bin->required, false, offset, count);
+	bin_info_remove(all, bin, bin->adjustment, true, offset, count);
+	bin_info_remove(all, bin, bin->output, false, offset, count);
 	bin_info_remove_symbols(bin, offset, count);
 }
 
@@ -293,6 +293,15 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 	// and make appropriate changes.
 	else
 	{
+		// adjust all the adjustments past the insertion point
+		for (k = 0; k < list_size(tolist); k++)
+		{
+			entry = (struct lconv_entry*)list_get_at(tolist, k);
+			if (entry->address >= at) {
+				entry->address += count;
+			}
+		}
+		
 		// Copy all of the new linker information entries
 		// across into the correct place.
 		for (k = 0; k < list_size(fromlist); k++)
@@ -350,7 +359,7 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 				// the old bin.
 				if (*word >= offset && *word < offset + count && biseq(entry->bin, from->name))
 				{
-					printd(LEVEL_DEBUG, "repointing internal adjustment at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+					printd(LEVEL_DEBUG, "repointing internal adjustment to from[offset,offset+count) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
 					       entry->address, abin->name->data,
 					       *word, entry->bin->data,
 					       *word - offset + at, to->name->data);
@@ -358,15 +367,29 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 					*word = *word - offset + at;
 					entry->bin = to->name;
 				}
-				else if (*word >= offset + count && biseq(entry->bin, to->name))
+				/* TODO something like this into the remove function */
+				/*
+				else if (*word >= offset + count && biseq(entry->bin, from->name)
 				{
-					printd(LEVEL_DEBUG, "repointing (to) internal adjustment at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+					printd(LEVEL_DEBUG, "repointing internal adjustment in range [offset+count,...) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+					       entry->address, abin->name->data,
+					       *word, entry->bin->data,
+					       *word - offset + at, to->name->data);
+
+					*word = *word - offset + at;
+					entry->bin = to->name;
+				}
+				*/
+				
+				// adjustment was pointing into the new bin
+				else if (*word >= at && biseq(entry->bin, to->name))
+				{
+					printd(LEVEL_DEBUG, "repointing (to) internal adjustment in to[at+count) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
 					       entry->address, abin->name->data,
 					       *word, entry->bin->data,
 					       *word - offset + count, to->name->data);
 
-					*word = *word - offset + count;
-					entry->bin = to->name;
+					*word = *word + count;
 				}
 			}
 		}
@@ -386,7 +409,7 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 			// the old bin.
 			if (*word >= offset && *word < offset + count && biseq(entry->bin, from->name))
 			{
-				printd(LEVEL_DEBUG, "repointing (from) internal adjustment at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+				printd(LEVEL_DEBUG, "repointing internal adjustment to from[offset,offset+count) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
 				       entry->address, to->name->data,
 				       *word, entry->bin->data,
 				       *word - offset + at, to->name->data);
@@ -394,15 +417,16 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 				*word = *word - offset + at;
 				entry->bin = to->name;
 			}
-			else if (*word >= offset + count && biseq(entry->bin, to->name))
+			// internal adjustments (internal to 'to')
+			else if (*word >= at && biseq(entry->bin, to->name))
 			{
-				printd(LEVEL_DEBUG, "repointing (to) internal adjustment at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+				printd(LEVEL_DEBUG, "repointing internal adjustment to to[at,...) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
 				       entry->address, to->name->data,
 				       *word, entry->bin->data,
-				       *word - offset + count, to->name->data);
+				       *word + count, to->name->data);
 
-				*word = *word - offset + count;
-				entry->bin = to->name;
+				*word = *word + count;
+				//entry->bin = to->name;
 			}
 		}
 	}
@@ -418,10 +442,12 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
 /// @param offset The address that words were removed from.
 /// @param count The number of words that were removed.
 ///
-void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, size_t offset, size_t count)
+void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, bool isAdjustment, size_t offset, size_t count)
 {
 	struct lconv_entry* entry;
-	size_t k;
+	struct ldbin* abin;
+	size_t k, j;
+	uint16_t* word;
 
 	// Skip if the list is NULL.
 	if (list == NULL) return;
@@ -430,25 +456,88 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, size_t offset
 	list_sort(list, 1);
 
 	// Go through all of the information entries in the list.
-	for (k = 0; k < list_size(list); k++)
+	if (!isAdjustment)
 	{
-		entry = (struct lconv_entry*)list_get_at(list, k);
+		for (k = 0; k < list_size(list); k++)
+		{
+			entry = (struct lconv_entry*)list_get_at(list, k);
 
-		if (entry->address < offset)
-			// Prior to the current address, so don't touch it.
-			continue;
-		else if (entry->address >= offset && entry->address < offset + count)
-		{
-			// Remove this linker information entry.
-			bdestroy(entry->label);
-			assert(list_delete_at(list, k) == 0);
-			k--;
+			if (entry->address < offset)
+				// Prior to the current address, so don't touch it.
+				continue;
+			else if (entry->address >= offset && entry->address < offset + count)
+			{
+				// Remove this linker information entry.
+				bdestroy(entry->label);
+				assert(list_delete_at(list, k) == 0);
+				k--;
+			}
+			else if (entry->address >= offset + count)
+			{
+				// Adjust the address stored in the entry down
+				// by the amount of words that were removed.
+				entry->address -= count;
+			}
 		}
-		else if (entry->address >= offset + count)
+	}
+	else
+	{	// adjust adjustment addresses
+		for (k = 0; k < list_size(list); k++)
 		{
-			// Adjust the address stored in the entry down
-			// by the amount of words that were removed.
-			entry->address -= count;
+			entry = (struct lconv_entry*)list_get_at(list, k);
+
+			if (entry->address < offset)
+				// Prior to the current address, so don't touch it.
+				continue;
+			else if (entry->address >= offset && entry->address < offset + count)
+			{
+				// Remove this linker information entry.
+				bdestroy(entry->label);
+				assert(list_delete_at(list, k) == 0);
+				k--;
+			}
+			else if (entry->address >= offset + count)
+			{
+				// Adjust the address stored in the entry down
+				// by the amount of words that were removed.
+				//entry->address -= count;
+			}
+		}
+		
+		
+		// Loop through all of the bins.
+		for (k = 0; k < list_size(all); k++)
+		{
+			abin = list_get_at(all, k);
+			if (abin->adjustment == NULL) continue;
+
+			// Loop through all of the adjustments and modify them
+			// if they are targetting the from bin.
+			for (j = 0; j < list_size(abin->adjustment); j++)
+			{
+				entry = (struct lconv_entry*)list_get_at(abin->adjustment, j);
+				
+				if (entry->address >= offset + count && biseq(entry->bin, bin->name))
+				{
+					entry->address -= count;
+				}
+				
+				// Get the existing value of the adjustment.
+				word = (uint16_t*)list_get_at(&abin->words, entry->address);
+				assert(word != NULL);
+
+				// Check to see if this adjustment entry is pointing into
+				// the old bin.
+				if (*word >= offset + count && biseq(entry->bin, bin->name))
+				{
+					printd(LEVEL_DEBUG, "repointing (to) internal adjustment to from[offset+count,...) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+					       entry->address, abin->name->data,
+					       *word, entry->bin->data,
+					       *word - count, bin->name->data);
+					
+					*word = *word - count;
+				}
+			}
 		}
 	}
 }
