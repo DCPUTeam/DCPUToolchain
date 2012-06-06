@@ -41,6 +41,22 @@ extern vm_t* vm;
 int ddbg_return_code;
 bool ignore_next_breakpoint = false;
 
+int32_t min_int32(int32_t a, int32_t b)
+{
+	if (a < b)
+		return a;
+	else
+		return b;
+}
+
+int32_t max_int32(int32_t a, int32_t b)
+{
+	if (a > b)
+		return a;
+	else
+		return b;
+}
+
 void ddbg_help(bstring section)
 {
 	if (biseq(section, bfromcstr("general")))
@@ -198,7 +214,7 @@ void ddbg_precycle_hook(vm_t* vm, uint16_t pos, void* ud)
 				if (bk->temporary)
 					list_delete_at(&breakpoints, i--);
 				if (!bk->silent)
-					ddbg_disassemble(max((int32_t)vm->pc - 10, 0x0), min((int32_t)vm->pc + 10, 0x10000) - vm->pc);
+					ddbg_disassemble(max_int32((int32_t)vm->pc - 10, 0x0), min_int32((int32_t)vm->pc + 10, 0x10000) - vm->pc);
 				printd(LEVEL_DEFAULT, "Breakpoint hit at 0x%04X.\n", bk->addr);
 				return;
 			}
@@ -700,7 +716,7 @@ void ddbg_disassemble_default()
 	// The parser can't access the VM instance, so we use
 	// this function to default to printing the assembly
 	// around the current instruction.
-	ddbg_disassemble(max((int32_t)vm->pc - 10, 0x0), min((int32_t)vm->pc + 10, 0x10000) - vm->pc);
+	ddbg_disassemble(max_int32((int32_t)vm->pc - 10, 0x0), min_int32((int32_t)vm->pc + 10, 0x10000) - vm->pc);
 }
 
 void ddbg_disassemble(int start, int difference)
