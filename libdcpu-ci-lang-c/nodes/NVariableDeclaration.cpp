@@ -14,15 +14,34 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NVariableDeclaration.h"
+#include "TStruct.h"
 
 AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 {
-	// If we have no initialization expression, we don't need to do anything.
-	if (this->initExpr == NULL)
-		return NULL;
-
 	// Create our new block.
 	AsmBlock* block = new AsmBlock();
+	
+	// Get the position of the variable.
+	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+
+	if (!result.isFound())
+		throw new CompilerException(this->line, this->file, "The variable '" + this->id.name + "' was not found in the scope.");
+	
+	// get variable type
+	IType* varType = context.m_CurrentFrame->getTypeOfVariable(this->id.name);
+	
+	// if this is a struct, it may has to be initialized (arrays within structs)
+	if (varType->isStruct())
+	{
+		// Set the value of the variable directly.
+		*block << result.pushAddress('I');
+		TStruct* structType = (TStruct*) varType;
+		*block << *(structType->initStruct(context, 'I'));
+	}
+	
+	// If we have no initialization expression, we don't need to do anything.
+	if (this->initExpr == NULL)
+		return block;
 
 	// Add file and line information.
 	*block << this->getFileAndLineState();
@@ -31,9 +50,6 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 	AsmBlock* expr = this->initExpr->compile(context);
 	*block << *expr;
 	delete expr;
-
-	// get variable type
-	IType* varType = context.m_CurrentFrame->getTypeOfVariable(this->id.name);
 
 	// get type, it may has to be cast
 	IType* exprType = this->initExpr->getExpressionType(context);
@@ -50,16 +66,9 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 					    + "' to '" + varType->getName() + "'");
 	}
 
-
-
-	// Get the position of the variable.
-	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
-
-	if (!result.isFound())
-		throw new CompilerException(this->line, this->file, "The variable '" + this->id.name + "' was not found in the scope.");
-
 	// Set the value of the variable directly.
 	*block << result.pushAddress('I');
+
 	// save the value A to [I]
 	*block << *(varType->saveToRef(context, 'A', 'I'));
 

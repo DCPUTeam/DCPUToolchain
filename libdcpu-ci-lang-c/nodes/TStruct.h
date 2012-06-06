@@ -62,7 +62,7 @@ class TStruct: public IType
 
 
 		// struct specific functions and members
-
+		AsmBlock* initStruct(AsmGenerator& context, char structAdr);
 		uint16_t getStructFieldPosition(std::string name);
 		IType* getStructFieldType(std::string name);
 		size_t getBitSize();

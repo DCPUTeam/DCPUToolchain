@@ -42,6 +42,7 @@ class NArrayDeclaration : public NDeclaration
 
 		NArrayDeclaration(IType* type, NIdentifier& id, DimensionsList* dims, ExpressionList* initExprList);
 		virtual AsmBlock* compile(AsmGenerator& context);
+		virtual AsmBlock* initPointerTable(AsmGenerator& context, char arrayPointerAdr, char arrayMemAreaAdr);
 		virtual AsmBlock* reference(AsmGenerator& context);
 };
 

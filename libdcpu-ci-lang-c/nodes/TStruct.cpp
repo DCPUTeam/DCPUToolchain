@@ -155,13 +155,60 @@ uint16_t TStruct::getWordSize(AsmGenerator& context)
 	return this->getWordSize();
 }
 
+AsmBlock* TStruct::initStruct(AsmGenerator& context, char structAdr) {
+	this->initContext(context);
+	this->resolveStruct();
+	
+	AsmBlock* block = new AsmBlock();
+	
+	uint16_t pos = 0;
+	for (DeclarationList::iterator i = this->m_resolvedStruct->fields.begin(); i != this->m_resolvedStruct->fields.end(); i++)
+	{
+		if ((*i)->cType == "statement-declaration-variable")
+		{
+			NVariableDeclaration* nvd = (NVariableDeclaration*)(*i);
+			if (nvd->type->isStruct()) {
+				TStruct* type = (TStruct*)nvd->type;
+				*block << "	SET PUSH, " << structAdr << std::endl;
+				*block << "	ADD " << structAdr << ", " << pos << std::endl;
+				*block << *(type->initStruct(context, structAdr));
+				*block << "	SET " << structAdr << ", POP" << std::endl;
+			}
+			pos += nvd->type->getWordSize(context);
+		}
+		else if ((*i)->cType == "statement-declaration-array")
+		{
+			NArrayDeclaration* nad = (NArrayDeclaration*)(*i);
+			
+			*block << "	SET PUSH, " << structAdr << std::endl;
+			*block << "	ADD " << structAdr << ", " << pos << std::endl;
+			char memAdr;
+			if (structAdr != 'I')
+				memAdr = 'I';
+			else
+				memAdr = 'B';
+			*block << "	SET " << memAdr << ", " << structAdr << std::endl;
+			*block << "	ADD " << memAdr << ", 1" << std::endl;
+			
+			*block << *(nad->initPointerTable(context, structAdr, memAdr));
+			
+			*block << "	SET " << structAdr << ", POP" << std::endl;
+			
+			pos += nad->getPointerType()->getWordSize(*m_context);
+			pos += nad->getMemAreaType()->getWordSize(*m_context);
+		}
+	}
+	
+	return block;
+}
+
 uint16_t TStruct::getStructFieldPosition(std::string name)
 {
 	// Resolve struct if not already done.
 	this->resolveStruct();
 
 	// Count up the position.
-	size_t pos = 0;
+	uint16_t pos = 0;
 
 	for (DeclarationList::iterator i = this->m_resolvedStruct->fields.begin(); i != this->m_resolvedStruct->fields.end(); i++)
 	{

@@ -146,14 +146,7 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 					throw new CompilerException(this->line, this->file, "Initializers not permitted on global variables for assemblers that don't support sections.");
 			if ((*i)->cType == "statement-declaration-array")
 			{
-				if (((NArrayDeclaration*)(*i))->m_initExprs != NULL)
-					throw new CompilerException(this->line, this->file, "Initializers not permitted on global variables for assemblers that don't support sections.");
-				// Compile initializer.
-				AsmBlock* inner = (*i)->compile(context);
-				*block << *inner;
-
-				if (inner != NULL)
-					delete inner;
+				throw new CompilerException(this->line, this->file, "Global arrays not permitted for assemblers that don't support sections.");
 			}
 		}
 	}

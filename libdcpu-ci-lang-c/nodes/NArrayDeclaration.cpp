@@ -54,6 +54,48 @@ IType* NArrayDeclaration::getMemAreaType()
 	return this->m_memAreaType;
 }
 
+AsmBlock* NArrayDeclaration::initPointerTable(AsmGenerator& context, char arrayPointerAdr, char arrayMemAreaAdr)
+{
+	// Create our new block.
+	AsmBlock* block = new AsmBlock();
+	
+	// save the value A to [I]
+	*block << *(this->m_pointerType->saveToRef(context, arrayMemAreaAdr, arrayPointerAdr));
+
+	// if this is a multidimensional array, init the pointer table
+	uint16_t acc_size = 1;
+	for (unsigned int i = 0; i < this->m_dims->size() - 1; ++i)
+	{
+		// size of table row on current level
+		acc_size *= (*this->m_dims)[i];
+		// copy the memory location
+		*block <<   "	SET " << arrayPointerAdr << ", " << arrayMemAreaAdr << std::endl;
+		*block <<   "	ADD " << arrayPointerAdr << ", " << acc_size << std::endl;
+		for (int j = 0; j < acc_size; ++j)
+		{
+			// set pointer in current mem slot
+			// to [curPos+j] = curPos+ACC_SIZE[i]+j*LOCAL_SIZE[i+1]
+			// where ACC_SIZE[i] = dims[0]*dims[1]*...*dims[i]
+			// and LOCAL_SIZE[i+1] = dims[i+1]
+
+			// TODO ops dependend on pointer type !?
+			*block <<   "	SET [" << arrayMemAreaAdr << "], " << arrayPointerAdr << std::endl;
+			*block <<   "	ADD " << arrayMemAreaAdr << ", 1" << std::endl;
+			if (i + 1 != this->m_dims->size() - 1)
+			{
+				// dimension i+1 is still pointers
+				*block <<   "	ADD " << arrayPointerAdr << ", " << (*this->m_dims)[i + 1] << std::endl;
+			}
+			else
+			{
+				// dimension i+1 is the last, use base type word size!
+				*block <<   "	ADD " << arrayPointerAdr << ", " << this->m_baseType->getWordSize(context)*(*this->m_dims)[i + 1] << std::endl;
+			}
+		}
+	}
+	return block;
+}
+
 AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 {
 	// Create our new block.
@@ -78,40 +120,9 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 	// set the pointer that is the array variable
 	*block << memPos.pushAddress('A');
 	*block << variablePos.pushAddress('I');
-	// save the value A to [I]
-	*block << *(this->m_pointerType->saveToRef(context, 'A', 'I'));
 
-	// if this is a multidimensional array, init the pointer table
-	uint16_t acc_size = 1;
-	for (unsigned int i = 0; i < this->m_dims->size() - 1; ++i)
-	{
-		// size of table row on current level
-		acc_size *= (*this->m_dims)[i];
-		// copy the memory location
-		*block <<   "	SET B, A" << std::endl;
-		*block <<   "	ADD B, " << acc_size << std::endl;
-		for (int j = 0; j < acc_size; ++j)
-		{
-			// set pointer in current mem slot
-			// to [curPos+j] = curPos+ACC_SIZE[i]+j*LOCAL_SIZE[i+1]
-			// where ACC_SIZE[i] = dims[0]*dims[1]*...*dims[i]
-			// and LOCAL_SIZE[i+1] = dims[i+1]
-
-			// TODO ops dependend on pointer type !?
-			*block <<   "	SET [A], B" << std::endl;
-			*block <<   "	ADD A, 1" << std::endl;
-			if (i + 1 != this->m_dims->size() - 1)
-			{
-				// dimension i+1 is still pointers
-				*block <<   "	ADD B, " << (*this->m_dims)[i + 1] << std::endl;
-			}
-			else
-			{
-				// dimension i+1 is the last, use base type word size!
-				*block <<   "	ADD B, " << this->m_baseType->getWordSize(context)*(*this->m_dims)[i + 1] << std::endl;
-			}
-		}
-	}
+	// init pointer table
+	*block << *(this->initPointerTable(context, 'I','A'));
 
 	// If we have no initialization expression, we don't need to init
 	if (this->m_initExprs == NULL)
