@@ -85,6 +85,9 @@ class TStruct: public IType
 		// load from a reference into a value
 		virtual AsmBlock*  loadFromRef(AsmGenerator& context, char fromRef, char to);
 
+		// saves type specific 0 value into the reference
+		virtual AsmBlock* setToZero(AsmGenerator& context, char toRef);
+
 		/* stack ops */
 		virtual AsmBlock* pushStack(AsmGenerator& context, char a);
 		// FIXME do i need this?

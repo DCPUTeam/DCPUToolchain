@@ -59,6 +59,9 @@ class IType
 		virtual AsmBlock*  saveToRef(AsmGenerator& context, char from, char toRef) INTERNAL_TYPE_EXCEPTION("copy value of")
 		// load from a reference into a value
 		virtual AsmBlock*  loadFromRef(AsmGenerator& context, char fromRef, char to) INTERNAL_TYPE_EXCEPTION("copy value of")
+		
+		// saves type specific 0 value into the reference
+		virtual AsmBlock*  setToZero(AsmGenerator& context, char toRef) INTERNAL_TYPE_EXCEPTION("copy value of")
 
 		/* stack ops */
 		virtual AsmBlock*  pushStack(AsmGenerator& context, char a) INTERNAL_TYPE_EXCEPTION("push")

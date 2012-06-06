@@ -45,6 +45,7 @@ class TGenericInt16: public TGenericBasicType
 		// load from a reference into a value
 		virtual AsmBlock*  loadFromRef(AsmGenerator& context, char fromRef, char to);
 
+		virtual AsmBlock*  setToZero(AsmGenerator& context, char toRef);
 
 		/* stack ops */
 		virtual AsmBlock* pushStack(AsmGenerator& context, char a);

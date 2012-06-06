@@ -42,6 +42,14 @@ NArrayDeclaration::NArrayDeclaration(IType* type, NIdentifier& id, DimensionsLis
 	this->m_pointerType = t;
 	this->m_numElements = numElements;
 	this->m_memAreaType = new TArrayMemArea(type, numElements, numPointers);
+	
+	// If we have no initialization expression, we create an emtpy list
+	// this way every value in every array always gets initialized
+	// but this is necessary for complex types (structs)
+	if (this->m_baseType->isStruct() && this->m_initExprs == NULL)
+	{
+		this->m_initExprs = new ExpressionList();
+	}
 }
 
 IType* NArrayDeclaration::getPointerType()
@@ -124,10 +132,6 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 	// init pointer table
 	*block << *(this->initPointerTable(context, 'I','A'));
 
-	// If we have no initialization expression, we don't need to init
-	if (this->m_initExprs == NULL)
-		return block;
-
 	// push data address onto stack
 	*block <<   "	SET PUSH, A" << std::endl;
 
@@ -173,11 +177,8 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 			//		e.g. two separate for loops, the second
 			//		one is not using PUSH and POP
 			*block <<   "	SET B, POP" << std::endl;
-			for (int j = 0; j < this->m_baseType->getWordSize(context); ++j)
-			{
-				*block <<   "	SET [B], 0" << std::endl;
-				*block <<   "	ADD B, 1" << std::endl;
-			}
+			*block << *(this->m_baseType->setToZero(context, 'B'));
+			*block <<   "	ADD B, " << this->m_baseType->getWordSize(context) << std::endl;
 			*block <<   "	SET PUSH, B" << std::endl;
 		}
 	}

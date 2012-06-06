@@ -53,6 +53,14 @@ AsmBlock*  TGenericInt16::loadFromRef(AsmGenerator& context, char fromRef, char 
 	return block;
 }
 
+
+AsmBlock* TGenericInt16::setToZero(AsmGenerator& context, char toRef)
+{
+	AsmBlock* block = new AsmBlock();
+	*block <<	"	SET [" << toRef << "], 0x0" << std::endl;
+	return block;
+}
+
 /*************/
 /* stack ops */
 /*************/

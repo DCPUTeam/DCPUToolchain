@@ -304,6 +304,14 @@ AsmBlock* TStruct::loadFromRef(AsmGenerator& context, char fromRef, char to)
 	return copyByRef(context, fromRef, to);
 }
 
+
+AsmBlock* TStruct::setToZero(AsmGenerator& context, char toRef)
+{
+	AsmBlock* block = new AsmBlock();
+	*block << *(this->initStruct(context, toRef));
+	return block;
+}
+
 /*************/
 /* stack ops */
 /*************/
