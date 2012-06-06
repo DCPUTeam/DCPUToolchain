@@ -506,6 +506,7 @@ void process_line(struct ast_node_line* line)
 
 		case type_label:
 			// Handle label definition.
+			list_append(&newsyms, dbgfmt_create_symbol(DBGFMT_SYMBOL_LABEL, dbgfmt_create_symbol_label(bfromcstr(line->label->name), DBGFMT_UNDETERMINED)));
 			printd(LEVEL_VERBOSE, ":%s\n", line->label->name);
 			aout_emit(aout_create_label(line->label->name));
 			break;

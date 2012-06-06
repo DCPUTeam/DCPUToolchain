@@ -217,6 +217,18 @@ breakpoint_add_command:
 			// Add a breakpoint in the specified file
 			// at the specified line number.
 			ddbg_add_breakpoint($3, $5);
+		} |
+		ID_BREAKPOINT ID_ADD param
+		{
+			// Add a breakpoint at the specified label
+			// or C function.
+			ddbg_add_breakpoint_identifier($3);
+		} |
+		ID_ADD ID_BREAKPOINT param
+		{
+			// Add a breakpoint at the specified label
+			// or C function.
+			ddbg_add_breakpoint_identifier($3);
 		} ;
 
 breakpoint_list_command:
@@ -247,6 +259,18 @@ breakpoint_delete_command:
 			// Delete a breakpoint in the specified file ($3)
 			// at the specified line number ($5).
 			ddbg_delete_breakpoint($3, $5);
+		} |
+		ID_BREAKPOINT ID_DELETE param
+		{
+			// Delete a breakpoint at the specified label
+			// or C function.
+			ddbg_delete_breakpoint_identifier($3);
+		} |
+		ID_DELETE ID_BREAKPOINT param
+		{
+			// Delete a breakpoint at the specified label
+			// or C function.
+			ddbg_delete_breakpoint_identifier($3);
 		} ;
 
 hardware_command:
@@ -340,8 +364,8 @@ memory_inspect_command:
 memory_disassemble_command:
 		ID_DISASSEMBLE
 		{
-			// Disassemble memory.
-			ddbg_disassemble(0, 0);
+			// Disassemble memory around current instruction.
+			ddbg_disassemble_default();
 		} |
 		ID_DISASSEMBLE ADDRESS
 		{

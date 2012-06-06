@@ -39,6 +39,7 @@ list_t backtrace;
 list_t* symbols;
 extern vm_t* vm;
 int ddbg_return_code;
+bool ignore_next_breakpoint = false;
 
 void ddbg_help(bstring section)
 {
@@ -125,6 +126,7 @@ list_t* ddbg_get_symbols(uint16_t addr)
 	struct dbg_sym* sym;
 	struct dbg_sym_payload_line* payload_line;
 	struct dbg_sym_payload_string* payload_string;
+	struct dbg_sym_payload_label* payload_label;
 	list_t* result = malloc(sizeof(list_t));
 	list_init(result);
 
@@ -144,6 +146,11 @@ list_t* ddbg_get_symbols(uint16_t addr)
 					payload_string = (struct dbg_sym_payload_string*)sym->payload;
 					if (payload_string->address == addr)
 						list_append(result, bfromcstr(payload_string->data->data));
+					break;
+				case DBGFMT_SYMBOL_LABEL:
+					payload_label = (struct dbg_sym_payload_label*)sym->payload;
+					if (payload_label->address == addr)
+						list_append(result, bformat("label:%s", payload_label->label->data));
 					break;
 				default:
 					break;
@@ -172,21 +179,32 @@ void ddbg_precycle_hook(vm_t* vm, uint16_t pos, void* ud)
 	// Handle custom Lua commands.
 	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("precycle")), pos);
 
-	// Handle breakpoints.
-	for (i = 0; i < list_size(&breakpoints); i++)
-	{
-		bk = (struct breakpoint*)list_get_at(&breakpoints, i);
+	// Check to see if Lua halted the VM and return if it did.
+	if (vm->halted)
+		return;
 
-		if (vm->pc == bk->addr)
+	// Handle breakpoints.
+	if (!ignore_next_breakpoint)
+	{
+		for (i = 0; i < list_size(&breakpoints); i++)
 		{
-			vm->halted = true;
-			vm_hook_break(vm); // Required for UI to update correctly.
-			if (bk->temporary)
-				list_delete_at(&breakpoints, i--);
-			if (!bk->silent)
+			bk = (struct breakpoint*)list_get_at(&breakpoints, i);
+
+			if (vm->pc == bk->addr)
+			{
+				vm->halted = true;
+				ignore_next_breakpoint = true;
+				vm_hook_break(vm); // Required for UI to update correctly.
+				if (bk->temporary)
+					list_delete_at(&breakpoints, i--);
+				if (!bk->silent)
+					ddbg_disassemble(max((int32_t)vm->pc - 10, 0x0), min((int32_t)vm->pc + 10, 0x10000) - vm->pc);
 				printd(LEVEL_DEFAULT, "Breakpoint hit at 0x%04X.\n", bk->addr);
+				return;
+			}
 		}
 	}
+	ignore_next_breakpoint = false;
 
 	// Handle backtrace.
 	op = INSTRUCTION_GET_OP(vm->ram[vm->pc]);
@@ -283,6 +301,7 @@ void ddbg_load(bstring path)
 
 	printd(LEVEL_DEFAULT, "Loaded 0x%04X words from %s.\n", a, path->data);
 	flash_size = a;
+	ignore_next_breakpoint = false;
 }
 
 vm_t* _dbg_lua_get_vm()
@@ -294,12 +313,14 @@ void _dbg_lua_break()
 {
 	// Halt virtual machine.
 	vm->halted = true;
+	ignore_next_breakpoint = false;
 }
 
 void _dbg_lua_run()
 {
 	// Un-halt virtual machine.
 	vm->halted = false;
+	ignore_next_breakpoint = false;
 }
 
 list_t* _dbg_lua_get_symbols()
@@ -325,6 +346,7 @@ void ddbg_create_vm()
 	breakpoints = breakpoint_list_create();
 	list_init(&backtrace);
 	list_attributes_copy(&backtrace, list_meter_uint16_t, 1);
+	ignore_next_breakpoint = false;
 	vm = vm_create();
 	vm_hook_register(vm, &ddbg_precycle_hook, HOOK_ON_PRE_CYCLE, NULL);
 	vm_hook_register(vm, &ddbg_postcycle_hook, HOOK_ON_POST_CYCLE, NULL);
@@ -337,6 +359,7 @@ void ddbg_create_vm()
 void ddbg_flash_vm()
 {
 	vm_flash(vm, flash);
+	ignore_next_breakpoint = false;
 	printd(LEVEL_DEFAULT, "Flashed memory.\n");
 }
 
@@ -390,6 +413,39 @@ int32_t ddbg_file_to_address(bstring file, int index)
 						// our symbol entry.
 						printd(LEVEL_DEFAULT, "Line information: %s:%u is at 0x%04X\n", payload_line->path->data, payload_line->lineno, payload_line->address);
 						return payload_line->address;
+					}
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
+	// If we don't find a memory address, we return -1.
+	return -1;
+}
+
+int32_t ddbg_label_to_address(bstring label)
+{
+	unsigned int i;
+	struct dbg_sym* sym;
+	struct dbg_sym_payload_label* payload_label;
+
+	if (symbols != NULL)
+	{
+		// Search through our debugging symbols.
+		for (i = 0; i < list_size(symbols); i++)
+		{
+			sym = list_get_at(symbols, i);
+			switch (sym->type)
+			{
+				case DBGFMT_SYMBOL_LABEL:
+					payload_label = (struct dbg_sym_payload_label*)sym->payload;
+					if (biseq(payload_label->label, label))
+					{
+						// The label matches, we have found our symbol entry.
+						printd(LEVEL_DEFAULT, "Label information: %s is at 0x%04X\n", payload_label->label->data, payload_label->address);
+						return payload_label->address;
 					}
 					break;
 				default:
@@ -462,7 +518,59 @@ void ddbg_delete_breakpoint(bstring file, int index)
 	if (found == true)
 		printd(LEVEL_DEFAULT, "Breakpoint removed at 0x%04X.\n", memory);
 	else
-		printd(LEVEL_DEFAULT, "There was no breakpoint at %s:%d.\n", bstr2cstr(file, 0), index);
+		printd(LEVEL_DEFAULT, "There was no breakpoint at %s:%d.\n", file->data, index);
+}
+
+void ddbg_add_breakpoint_identifier(bstring ident)
+{
+	// TODO: In the future when C functions are supported
+	// in the debugging symbol format, we should probably
+	// allow setting breakpoints by C function name as well.
+	int32_t memory = ddbg_label_to_address(ident);
+
+	// Did we get a valid result?
+	if (memory == -1)
+	{
+		printd(LEVEL_DEFAULT, "Unable to resolve specified symbol.\n");
+		return;
+	}
+
+	list_append(&breakpoints, breakpoint_create(memory, false, false));
+	printd(LEVEL_DEFAULT, "Breakpoint added at 0x%04X.\n", memory);
+}
+
+void ddbg_delete_breakpoint_identifier(bstring ident)
+{
+	// TODO: In the future when C functions are supported
+	// in the debugging symbol format, we should probably
+	// allow removing breakpoints by C function name as well.
+	unsigned int i = 0;
+	bool found = false;
+	int32_t memory = ddbg_label_to_address(ident);
+	struct breakpoint* bk;
+
+	// Did we get a valid result?
+	if (memory == -1)
+	{
+		printd(LEVEL_DEFAULT, "Unable to resolve specified symbol.\n");
+		return;
+	}
+
+	for (i = 0; i < list_size(&breakpoints); i++)
+	{
+		bk = (struct breakpoint*)list_get_at(&breakpoints, i);
+
+		if (bk->addr == memory)
+		{
+			list_delete_at(&breakpoints, i--);
+			found = true;
+		}
+	}
+
+	if (found == true)
+		printd(LEVEL_DEFAULT, "Breakpoint removed at 0x%04X.\n", memory);
+	else
+		printd(LEVEL_DEFAULT, "There was no breakpoint on label %s.\n", ident->data);
 }
 
 void ddbg_step_into()
@@ -587,6 +695,14 @@ void ddbg_dump_ram(int start, int difference)
 	printd(LEVEL_DEFAULT, "\n");
 }
 
+void ddbg_disassemble_default()
+{
+	// The parser can't access the VM instance, so we use
+	// this function to default to printing the assembly
+	// around the current instruction.
+	ddbg_disassemble(max((int32_t)vm->pc - 10, 0x0), min((int32_t)vm->pc + 10, 0x10000) - vm->pc);
+}
+
 void ddbg_disassemble(int start, int difference)
 {
 	int i = 0;
@@ -595,6 +711,7 @@ void ddbg_disassemble(int start, int difference)
 	struct inst inst;
 	struct dbg_sym* sym;
 	struct dbg_sym_payload_line* payload_line;
+	struct dbg_sym_payload_label* payload_label;
 
 	if (start < 0 || difference < 0)
 	{
@@ -624,6 +741,15 @@ void ddbg_disassemble(int start, int difference)
 
 						}
 						break;
+					case DBGFMT_SYMBOL_LABEL:
+						payload_label = (struct dbg_sym_payload_label*)sym->payload;
+						if (payload_label->address == start + i)
+						{
+							found = true;
+							printd(LEVEL_DEFAULT, "0x%04X (0x%04X) (%s):\n", start + i, vm->ram[start + i], payload_label->label->data);
+
+						}
+						break;
 				}
 			}
 			if (!found) printd(LEVEL_DEFAULT, "0x%04X (0x%04X):\n", start + i, vm->ram[start + i]);
@@ -635,6 +761,10 @@ void ddbg_disassemble(int start, int difference)
 		inst = vm_disassemble(vm, start + i, true);
 		if (symbols != NULL)
 			printd(LEVEL_DEFAULT, "	   ");
+		if (vm->pc == start + i)
+			printd(LEVEL_DEFAULT, " >>> ");
+		else
+			printd(LEVEL_DEFAULT, "	    ");
 		if (inst.original.full == 0x0)
 			printd(LEVEL_DEFAULT, "<null>\n");
 		else if (inst.pretty.op == NULL)
@@ -670,6 +800,7 @@ void ddbg_inspect_symbols()
 	struct dbg_sym* sym;
 	struct dbg_sym_payload_line* payload_line;
 	struct dbg_sym_payload_string* payload_string;
+	struct dbg_sym_payload_label* payload_label;
 
 	// Check to see if no symbols are loaded.
 	if (symbols == NULL)
@@ -690,6 +821,10 @@ void ddbg_inspect_symbols()
 				case DBGFMT_SYMBOL_STRING:
 					payload_string = (struct dbg_sym_payload_string*)sym->payload;
 					printd(LEVEL_DEFAULT, "0x%04X: [string] %s\n", payload_string->address, payload_string->data->data);
+					break;
+				case DBGFMT_SYMBOL_LABEL:
+					payload_label = (struct dbg_sym_payload_label*)sym->payload;
+					printd(LEVEL_DEFAULT, "0x%04X: [ label] %s\n", payload_label->address, payload_label->label->data);
 					break;
 				default:
 					break;

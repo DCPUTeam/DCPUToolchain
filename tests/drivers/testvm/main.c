@@ -140,6 +140,13 @@ int main(int argc, char* argv[])
 	bcatcstr(cmdargs, file_cpu);
 	bcatcstr(cmdargs, "\" ");
 
+	// Windows needs the whole command wrapped in quotes and slashes to be correct.
+	// See http://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command.
+#ifdef _WIN32
+	binsertch(cmdargs, 0, 1, '"');
+	bconchar(cmdargs, '"');
+#endif
+
 	// Now run the debugger!
 	result = system(cmdargs->data);
 	if (result != 0)
@@ -160,8 +167,13 @@ int main(int argc, char* argv[])
 		}
 #endif
 
-		// Show error message (is 'result >> 8' modification only applicable to UNIX)?
+		// Show error message.
+#ifdef _WIN32
+		printd(LEVEL_ERROR, "error: unit test failed with exit code %i (see above output).\n", result);
+#else
+		// On UNIX, we have to bitshift to get the actual program error code.
 		printd(LEVEL_ERROR, "error: unit test failed with exit code %i (see above output).\n", result >> 8);
+#endif
 		return 1;
 	}
 

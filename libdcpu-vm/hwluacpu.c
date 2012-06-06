@@ -133,9 +133,15 @@ int vm_hw_lua_cpu_handle_irq_get(lua_State* L)
 	// Table is at 1, key is at 2.
 	vm_t* vm = vm_hw_lua_cpu_extract_cpu(L, 1);
 	uint16_t idx;
-	if (!lua_isnumber(L, 2))
+	bstring enabled = bfromcstr("enabled");
+	if (lua_isstring(L, 2) && biseqcstrcaseless(enabled, lua_tostring(L, 2)))
 	{
-		lua_pushstring(L, "irq access must be by numeric value (use array operator)");
+		lua_pushboolean(L, vm->queue_interrupts);
+		return 1;
+	}
+	else if (!lua_isnumber(L, 2))
+	{
+		lua_pushstring(L, "irq access must be by numeric value (use array operator) or \"enabled\" field");
 		lua_error(L);
 		return 0;
 	}

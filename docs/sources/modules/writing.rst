@@ -145,12 +145,20 @@ Virtual Machine
         :noindex:
     
         The queue of current interrupts that are yet to be handled.
-        You can not modify the interrupt queue.
+        You can not modify the interrupt queue.  Queue messages are
+        access via the array operator; the only supported field access
+        is for the "enabled" field.
         
         .. code-block:: lua
 
             a = #cpu.irq;           -- Get the total number of interrupts.
             a = cpu.irq[1];         -- Get the first interrupt in the queue.
+            b = cpu.irq.enabled;    -- Get whether the queue is enabled.
+        
+        .. py:attribute:: enabled
+            :noindex:
+            
+            Whether or not the interrupt queue is currently enabled.
     
     .. py:function:: disassemble(address)
         :noindex:

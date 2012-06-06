@@ -12,6 +12,7 @@
 
 **/
 
+#include <dcpu.h>
 #include <dcpuhook.h>
 #include <bstrlib.h>
 
@@ -34,10 +35,13 @@ void ddbg_continue_vm();
 void ddbg_attach(bstring hw);
 void ddbg_add_breakpoint(bstring file, int index);
 void ddbg_delete_breakpoint(bstring file, int index);
+void ddbg_add_breakpoint_identifier(bstring ident);
+void ddbg_delete_breakpoint_identifier(bstring ident);
 void ddbg_step_into();
 void ddbg_step_over();
 void ddbg_backtrace();
 void ddbg_breakpoints_list();
 void ddbg_dump_state();
 void ddbg_dump_ram(int start, int difference);
+void ddbg_disassemble_default();
 void ddbg_disassemble(int start, int difference);

@@ -28,6 +28,9 @@
 
 #define DBGFMT_SYMBOL_LINE	0x1
 #define DBGFMT_SYMBOL_STRING	0x2
+#define DBGFMT_SYMBOL_LABEL	0x3
+#define DBGFMT_SYMBOL_CFUNC	0x4
+#define DBGFMT_SYMBOL_CVAR	0x5
 
 struct dbg_sym_file
 {
@@ -56,6 +59,12 @@ struct dbg_sym_payload_string
 	uint16_t address;
 };
 
+struct dbg_sym_payload_label
+{
+	bstring label;
+	uint16_t address;
+};
+
 struct dbgfmt_serialization_result
 {
 	uint8_t* bytestream;
@@ -80,8 +89,10 @@ struct dbg_sym* dbgfmt_copy_symbol(struct dbg_sym* other);
 void dbgfmt_free_symbol(struct dbg_sym* symbol);
 struct dbg_sym_payload_line* dbgfmt_create_symbol_line(bstring path, uint16_t lineno, uint16_t address);
 struct dbg_sym_payload_string* dbgfmt_create_symbol_string(bstring data, uint16_t address);
+struct dbg_sym_payload_label* dbgfmt_create_symbol_label(bstring data, uint16_t address);
 
 struct dbg_sym_payload_line* dbgfmt_get_symbol_line(struct dbg_sym* bytes);
 struct dbg_sym_payload_string* dbgfmt_get_symbol_string(struct dbg_sym* bytes);
+struct dbg_sym_payload_label* dbgfmt_get_symbol_label(struct dbg_sym* bytes);
 
 #endif
