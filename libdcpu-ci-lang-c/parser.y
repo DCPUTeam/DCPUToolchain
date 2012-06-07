@@ -37,6 +37,7 @@ class NInteger;
 #include "nodes/NContinueStatement.h"
 #include "nodes/NSwitchStatement.h"
 #include "nodes/NCaseStatement.h"
+#include "nodes/NDefaultStatement.h"
 #include "nodes/NDebugStatement.h"
 #include "nodes/NWhileStatement.h"
 #include "nodes/NForStatement.h"
@@ -121,7 +122,7 @@ void yyerror(const char *str);
 %token <token> TRUE FALSE
 
 /* TOKENS: Statement keywords */
-%token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF BREAK CONTINUE CASE SWITCH
+%token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF BREAK CONTINUE CASE SWITCH DEFAULT
 
 /* TOKENS: Type keywords */
 %token <token> TYPE_VOID TYPE_CHAR TYPE_SHORT TYPE_INT TYPE_LONG TYPE_FLOAT TYPE_DOUBLE CONST UNSIGNED SIGNED
@@ -140,7 +141,7 @@ void yyerror(const char *str);
 %type <variable> var_decl var_decl_no_init
 %type <array> array_decl array_decl_no_init
 %type <block> block stmts block_or_stmt
-%type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm stmt_break stmt_continue stmt_case stmt_switch
+%type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm stmt_break stmt_continue stmt_case stmt_switch stmt_default
 %type <token> assignop
 
 /* OPERATOR PRECEDENCE (LOWEST -> HIGHEST) */
@@ -462,6 +463,7 @@ stmt:
 		stmt_break |
 		stmt_continue |
 		stmt_case |
+		stmt_default |
 		stmt_switch |
 		stmt_debug |
 		stmt_asm |
@@ -517,6 +519,12 @@ stmt_case:
 		CASE CHARACTER COLON
 		{
 			$$ = new NCaseStatement(*$2);
+		} ;
+		
+stmt_default:
+		DEFAULT COLON
+		{
+			$$ = new NDefaultStatement();
 		} ;
 		
 stmt_switch:

@@ -76,6 +76,7 @@ extern "C"
 "break"					{ HANDLE; return BREAK; }
 "continue"				{ HANDLE; return CONTINUE; }
 "case"					{ HANDLE; return CASE; }
+"default"				{ HANDLE; return DEFAULT; }
 "switch"				{ HANDLE; return SWITCH; }
 "if"					{ HANDLE; return IF; }
 "else"					{ HANDLE; return ELSE; }

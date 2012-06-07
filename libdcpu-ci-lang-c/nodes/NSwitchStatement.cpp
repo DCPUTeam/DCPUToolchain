@@ -15,6 +15,7 @@
 #include <CompilerException.h>
 #include "NSwitchStatement.h"
 #include "NCaseStatement.h"
+#include "NDefaultStatement.h"
 #include "Lists.h"
 
 AsmBlock* NSwitchStatement::compile(AsmGenerator& context)
@@ -36,6 +37,8 @@ AsmBlock* NSwitchStatement::compile(AsmGenerator& context)
 	*block << *eval;
 	delete eval;
 
+	NDefaultStatement* defaultStmt = NULL;
+
 	// loop through all statements looking for case or default statement
 	for (StatementList::iterator i = this->innerBlock.statements.begin(); i != this->innerBlock.statements.end(); i++)
 	{
@@ -54,10 +57,23 @@ AsmBlock* NSwitchStatement::compile(AsmGenerator& context)
 		else if ((*i)->cType == "statement-default")
 		{
 			// default case 
+			NDefaultStatement* nds = (NDefaultStatement*) (*i);
+			if (defaultStmt != NULL)
+				throw new CompilerException(this->line, this->file, "Invalid multiple default statements within switch statement.");
+				
+			nds->setLabelPrefix(caselbl);
+			defaultStmt = nds;
 		}
 	}
 
-
+	if (defaultStmt == NULL)
+	{
+		*block <<	"	SET PC, " << endlbl << std::endl;
+	}
+	else
+	{
+		*block <<	"	SET PC, " << caselbl << "default" << std::endl;
+	}
 
 	// Compile the main block.
 	AsmBlock* expr = this->innerBlock.compile(context);
@@ -75,5 +91,5 @@ AsmBlock* NSwitchStatement::compile(AsmGenerator& context)
 
 AsmBlock* NSwitchStatement::reference(AsmGenerator& context)
 {
-	throw new CompilerException(this->line, this->file, "Unable to get a reference to the result of a while statement.");
+	throw new CompilerException(this->line, this->file, "Unable to get a reference to the result of a switch statement.");
 }
