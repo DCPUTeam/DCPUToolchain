@@ -28,6 +28,8 @@ AsmGenerator::AsmGenerator(std::string target)
 	// Set the global frame to NULL as it doesn't
 	// exist until the NDeclarations root node is processed.
 	this->m_GlobalFrame = NULL;
+	
+	this->m_loopStack = std::deque<std::pair<std::string,std::string> >();
 }
 
 // Return the specified function or NULL if none is defined.
@@ -69,6 +71,47 @@ void AsmGenerator::finishStackFrame(StackFrame* frame)
 	}
 	else
 		delete frame;
+}
+
+void AsmGenerator::initLoopStack()
+{
+	this->m_loopStack.clear();
+}
+
+void AsmGenerator::popLoopStack()
+{
+	this->m_loopStack.pop_back();
+}
+
+void AsmGenerator::pushLoopStack(std::string breakLabel, std::string continueLabel)
+{
+	this->m_loopStack.push_back(std::pair<std::string, std::string>(breakLabel, continueLabel));
+}
+
+std::string AsmGenerator::getContinueLabel()
+{
+	std::string result = "";
+	for (std::deque<std::pair<std::string,std::string> >::reverse_iterator it = this->m_loopStack.rbegin(); it != this->m_loopStack.rend(); it++)
+	{
+		if (it->second != result)
+		{
+			result = it->second;
+			return result;
+		}
+	}
+	return result;
+}
+
+std::string AsmGenerator::getBreakLabel()
+{
+	if (this->m_loopStack.size() > 0)
+	{
+		return this->m_loopStack.back().first;
+	}
+	else
+	{
+		return std::string("");
+	}
 }
 
 // Generates a random, unique label for use in code.

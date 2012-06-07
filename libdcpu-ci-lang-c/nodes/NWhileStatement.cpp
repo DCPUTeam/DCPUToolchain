@@ -27,6 +27,9 @@ AsmBlock* NWhileStatement::compile(AsmGenerator& context)
 	std::string startlbl = context.getRandomLabel("while");
 	std::string endlbl = context.getRandomLabel("endwhile");
 
+	// push stack for loop control statements
+	context.pushLoopStack(endlbl, startlbl);
+
 	// Output the start label.
 	*block << ":" << startlbl << std::endl;
 
@@ -49,6 +52,9 @@ AsmBlock* NWhileStatement::compile(AsmGenerator& context)
 
 	// And insert the end label.
 	*block << ":" << endlbl << std::endl;
+	
+	// pop stack for loop control statements
+	context.popLoopStack();
 
 	return block;
 }

@@ -73,6 +73,8 @@ extern "C"
 	/* Statement keywords */
 
 "return"				{ HANDLE; return RETURN; }
+"break"					{ HANDLE; return BREAK; }
+"continue"				{ HANDLE; return CONTINUE; }
 "if"					{ HANDLE; return IF; }
 "else"					{ HANDLE; return ELSE; }
 "while"					{ HANDLE; return WHILE; }

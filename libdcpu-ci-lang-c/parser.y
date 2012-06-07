@@ -33,6 +33,8 @@ class NInteger;
 #include "nodes/NExpressionStatement.h"
 #include "nodes/NIfStatement.h"
 #include "nodes/NReturnStatement.h"
+#include "nodes/NBreakStatement.h"
+#include "nodes/NContinueStatement.h"
 #include "nodes/NDebugStatement.h"
 #include "nodes/NWhileStatement.h"
 #include "nodes/NForStatement.h"
@@ -117,7 +119,7 @@ void yyerror(const char *str);
 %token <token> TRUE FALSE
 
 /* TOKENS: Statement keywords */
-%token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF
+%token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF BREAK CONTINUE
 
 /* TOKENS: Type keywords */
 %token <token> TYPE_VOID TYPE_CHAR TYPE_SHORT TYPE_INT TYPE_LONG TYPE_FLOAT TYPE_DOUBLE CONST UNSIGNED SIGNED
@@ -136,7 +138,7 @@ void yyerror(const char *str);
 %type <variable> var_decl var_decl_no_init
 %type <array> array_decl array_decl_no_init
 %type <block> block stmts block_or_stmt
-%type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm
+%type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm stmt_break stmt_continue
 %type <token> assignop
 
 /* OPERATOR PRECEDENCE (LOWEST -> HIGHEST) */
@@ -454,6 +456,8 @@ stmt:
 		stmt_while |
 		stmt_for |
 		stmt_return |
+		stmt_break |
+		stmt_continue |
 		stmt_debug |
 		stmt_asm |
 		expr SEMICOLON
@@ -486,6 +490,17 @@ stmt_return:
 		RETURN expr SEMICOLON
 		{
 			$$ = new NReturnStatement(*$2);
+		} ;
+		
+stmt_break:
+		BREAK SEMICOLON
+		{
+			$$ = new NBreakStatement();
+		} ;
+stmt_continue:
+		CONTINUE SEMICOLON
+		{
+			$$ = new NContinueStatement();
 		} ;
 
 stmt_debug:

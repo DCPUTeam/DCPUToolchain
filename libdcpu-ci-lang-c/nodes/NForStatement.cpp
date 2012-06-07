@@ -22,9 +22,13 @@ AsmBlock* NForStatement::compile(AsmGenerator& context)
 	// Add file and line information.
 	*block << this->getFileAndLineState();
 
-	// Create label for the while statement.
+	// Create label for the for statement.
 	std::string startlbl = context.getRandomLabel("for");
 	std::string endlbl = context.getRandomLabel("endfor");
+	std::string continuelbl = context.getRandomLabel("continuefor");
+	
+	// push stack for loop control statements
+	context.pushLoopStack(endlbl, continuelbl);
 
 	// Do the initalization statement.
 	AsmBlock* initEval = this->initEval.compile(context);
@@ -47,6 +51,9 @@ AsmBlock* NForStatement::compile(AsmGenerator& context)
 	AsmBlock* expr = this->expr.compile(context);
 	*block << *expr;
 	delete expr;
+	
+	// Output the continue label.
+	*block << ":" << continuelbl << std::endl;
 
 	// Do the loop statement.
 	AsmBlock* loopEval = this->loopEval.compile(context);
@@ -58,6 +65,9 @@ AsmBlock* NForStatement::compile(AsmGenerator& context)
 
 	// And insert the end label.
 	*block << ":" << endlbl << std::endl;
+	
+	// pop stack for loop control statements
+	context.popLoopStack();
 
 	return block;
 }

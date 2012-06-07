@@ -69,6 +69,7 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 
 	// Calculate total stack space required.
 	StackFrame* frame = context.generateStackFrame(this, false);
+	context.initLoopStack();
 
 	// Output the leading information and immediate jump.
 	*block <<  ":cfunc_" << this->id.name << std::endl;
@@ -94,6 +95,7 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
 
 	// Clean up frame.
 	context.finishStackFrame(frame);
+	context.initLoopStack();
 
 	return block;
 }
