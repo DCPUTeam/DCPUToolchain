@@ -35,6 +35,8 @@ class NInteger;
 #include "nodes/NReturnStatement.h"
 #include "nodes/NBreakStatement.h"
 #include "nodes/NContinueStatement.h"
+#include "nodes/NSwitchStatement.h"
+#include "nodes/NCaseStatement.h"
 #include "nodes/NDebugStatement.h"
 #include "nodes/NWhileStatement.h"
 #include "nodes/NForStatement.h"
@@ -101,7 +103,7 @@ void yyerror(const char *str);
 
 /* TOKENS: Identifiers, numbers and basic lexical components */
 %token <token> CURVED_OPEN CURVED_CLOSE BRACE_OPEN BRACE_CLOSE SQUARE_OPEN SQUARE_CLOSE COMMA
-%token <token> STAR SEMICOLON DOT STRUCT
+%token <token> STAR SEMICOLON DOT STRUCT COLON
 %token <number> NUMBER
 %token <string> IDENTIFIER CHARACTER STRING ASSEMBLY
 
@@ -119,7 +121,7 @@ void yyerror(const char *str);
 %token <token> TRUE FALSE
 
 /* TOKENS: Statement keywords */
-%token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF BREAK CONTINUE
+%token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF BREAK CONTINUE CASE SWITCH
 
 /* TOKENS: Type keywords */
 %token <token> TYPE_VOID TYPE_CHAR TYPE_SHORT TYPE_INT TYPE_LONG TYPE_FLOAT TYPE_DOUBLE CONST UNSIGNED SIGNED
@@ -138,11 +140,12 @@ void yyerror(const char *str);
 %type <variable> var_decl var_decl_no_init
 %type <array> array_decl array_decl_no_init
 %type <block> block stmts block_or_stmt
-%type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm stmt_break stmt_continue
+%type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm stmt_break stmt_continue stmt_case stmt_switch
 %type <token> assignop
 
 /* OPERATOR PRECEDENCE (LOWEST -> HIGHEST) */
 %left COMMA
+%left COLON
 %right ASSIGN_EQUAL ASSIGN_ADD ASSIGN_SUBTRACT ASSIGN_MULTIPLY ASSIGN_DIVIDE ASSIGN_MOD ASSIGN_BAND ASSIGN_BOR ASSIGN_BXOR ASSIGN_SHL ASSIGN_SHR
 %left BOOLEAN_OR
 %left BOOLEAN_AND
@@ -458,6 +461,8 @@ stmt:
 		stmt_return |
 		stmt_break |
 		stmt_continue |
+		stmt_case |
+		stmt_switch |
 		stmt_debug |
 		stmt_asm |
 		expr SEMICOLON
@@ -497,10 +502,27 @@ stmt_break:
 		{
 			$$ = new NBreakStatement();
 		} ;
+		
 stmt_continue:
 		CONTINUE SEMICOLON
 		{
 			$$ = new NContinueStatement();
+		} ;
+		
+stmt_case:
+		CASE NUMBER COLON
+		{
+			$$ = new NCaseStatement($2);
+		} |
+		CASE CHARACTER COLON
+		{
+			$$ = new NCaseStatement(*$2);
+		} ;
+		
+stmt_switch:
+		SWITCH CURVED_OPEN expr CURVED_CLOSE block
+		{
+			$$ = new NSwitchStatement(*$3, *$5);
 		} ;
 
 stmt_debug:

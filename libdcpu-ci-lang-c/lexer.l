@@ -75,6 +75,8 @@ extern "C"
 "return"				{ HANDLE; return RETURN; }
 "break"					{ HANDLE; return BREAK; }
 "continue"				{ HANDLE; return CONTINUE; }
+"case"					{ HANDLE; return CASE; }
+"switch"				{ HANDLE; return SWITCH; }
 "if"					{ HANDLE; return IF; }
 "else"					{ HANDLE; return ELSE; }
 "while"					{ HANDLE; return WHILE; }
@@ -147,6 +149,7 @@ extern "C"
 ","					{ HANDLE; return yylval.token = COMMA; }
 "*"					{ HANDLE; return yylval.token = STAR; }
 ";"					{ HANDLE; return yylval.token = SEMICOLON; }
+":"					{ HANDLE; return yylval.token = COLON; }
 "."					{ HANDLE; return yylval.token = DOT; }
 
 	/* Assignment, equivilance and mathematical operators */
