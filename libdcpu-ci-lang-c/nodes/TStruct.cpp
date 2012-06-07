@@ -187,11 +187,13 @@ AsmBlock* TStruct::initStruct(AsmGenerator& context, char structAdr) {
 				memAdr = 'I';
 			else
 				memAdr = 'B';
+			*block << "	SET PUSH, " << memAdr << std::endl;
 			*block << "	SET " << memAdr << ", " << structAdr << std::endl;
 			*block << "	ADD " << memAdr << ", 1" << std::endl;
 			
 			*block << *(nad->initPointerTable(context, structAdr, memAdr));
 			
+			*block << "	SET " << memAdr << ", POP" << std::endl;
 			*block << "	SET " << structAdr << ", POP" << std::endl;
 			
 			pos += nad->getPointerType()->getWordSize(*m_context);
@@ -273,15 +275,28 @@ IType* TStruct::getStructFieldType(std::string name)
 // indirect copy given references (copies values)
 AsmBlock* TStruct::copyByRef(AsmGenerator& context, char fromRef, char toRef)
 {
+	
 	AsmBlock* block = new AsmBlock();
-	for (unsigned int pos = 0; pos < this->getWordSize(); ++pos)
+	if (fromRef != toRef)
 	{
-		*block <<	"	SET [" << toRef << "], [" << fromRef << "]" << std::endl;
-		*block <<	"	ADD " << toRef << ", 1" << std::endl;
-		*block <<	"	ADD " << fromRef << ", 1" << std::endl;
+		for (unsigned int pos = 0; pos < this->getWordSize(); ++pos)
+		{
+			*block <<	"	SET [" << toRef << "], [" << fromRef << "]" << std::endl;
+			*block <<	"	ADD " << toRef << ", 1" << std::endl;
+			*block <<	"	ADD " << fromRef << ", 1" << std::endl;
+		}
+		*block <<	"	SUB " << toRef << ", " << this->getWordSize() << std::endl;
+		*block <<	"	SUB " << fromRef << ", " << this->getWordSize() << std::endl;
 	}
-	*block <<	"	SUB " << toRef << ", " << this->getWordSize() << std::endl;
-	*block <<	"	SUB " << fromRef << ", " << this->getWordSize() << std::endl;
+	
+	// reset the pointer table of the source
+	// TODO FIXME only copy content, and leave the pointer tables as they are
+	*block <<	"	SET PUSH, " << fromRef << std::endl;
+	*block <<	"	SET PUSH, " << toRef << std::endl;
+	*block << *(this->initStruct(context, toRef));
+	*block <<	"	SET " << toRef << ", POP" << std::endl;
+	*block <<	"	SET " << fromRef << ", POP" << std::endl;
+	
 	return block;
 }
 
@@ -301,7 +316,12 @@ AsmBlock* TStruct::saveToRef(AsmGenerator& context, char from, char toRef)
 // load from a reference into a value
 AsmBlock* TStruct::loadFromRef(AsmGenerator& context, char fromRef, char to)
 {
-	return copyByRef(context, fromRef, to);
+	AsmBlock* block = new AsmBlock();
+	if (fromRef != to)
+	{
+		*block <<	"	SET " << to << ", " << fromRef << std::endl;
+	}
+	return block;
 }
 
 
@@ -318,6 +338,7 @@ AsmBlock* TStruct::setToZero(AsmGenerator& context, char toRef)
 
 AsmBlock* TStruct::pushStack(AsmGenerator& context, char a)
 {
+	// TODO fix pointer tables
 	AsmBlock* block = new AsmBlock();
 	*block <<	"	SUB SP, " << this->getWordSize() << std::endl;
 	for (unsigned int pos = 0; pos < this->getWordSize(); ++pos)
@@ -328,6 +349,15 @@ AsmBlock* TStruct::pushStack(AsmGenerator& context, char a)
 	}
 	*block <<	"	SUB SP, " << this->getWordSize() << std::endl;
 	*block <<	"	SUB " << a << ", " << this->getWordSize() << std::endl;
+	
+	// reset the pointer table of the source
+	// TODO FIXME only copy content, and leave the pointer tables as they are
+	*block <<	"	SET PUSH, " << a << std::endl;
+	*block <<	"	SET " << a << ", SP" << std::endl;
+	*block <<	"	ADD " << a << ", 1" << std::endl;
+	*block << *(this->initStruct(context, a));
+	*block <<	"	SET " << a << ", POP" << std::endl;
+	
 	return block;
 }
 
