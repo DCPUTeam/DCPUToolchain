@@ -36,7 +36,7 @@ not have a look around?
 Build Server
 ----------------
 
-We now have a build server producing builds for each commit.  Check out the `build server <http://irc.lysdev.com:8010/>`_ if you're interested in living on the edge
+We now have a build server producing builds for each commit.  Check out the `build server <http://irc.lysdev.com:8080/>`_ if you're interested in living on the edge
 or if you need a fix for an immediate problem.  Linux and Windows builds are provided by the build server, unfortunately Mac can not be cross-compiled for and thus
 we are limited in the binary releases we can do for this platform.
 
