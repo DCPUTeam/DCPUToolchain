@@ -23,9 +23,6 @@ NFunctionDeclaration::NFunctionDeclaration(const IType* type, const NIdentifier&
 	// We need to generate an NFunctionPointerType for when we are resolved
 	// as a pointer (for storing a reference to us into a variable).
 	this->pointerType = new NFunctionPointerType(type, arguments);
-
-	// FIXME remove debug output
-	//std::cout << "Parsed Function " << this->id.name << " and signature " << this->getSignature() << std::endl;
 }
 
 NFunctionDeclaration::~NFunctionDeclaration()
@@ -121,6 +118,17 @@ StackMap NFunctionDeclaration::generateLocalsStackMap()
 		if ((*i)->cType == "statement-declaration-variable")
 		{
 			NVariableDeclaration* nvd = (NVariableDeclaration*)(*i);
+			
+			// pseudo code for typedef resolval
+			// 1. if nvd->type is a typedef:
+			// 1.a resolve typedef type
+			// 1.1 if type->baseDecl is an array declaration?
+			// 1.1.1 replace variable declaration with new array declaration (direct replacement)
+			// 1.1.2 something like --i, continue (replaced declaration, which is handled again)
+			// 1.2 if type->baseDecl is a variable declaration?
+			// 1.2.1 replace variable decl with the new typedef decl
+			// 1.2.2 something like --i, continue
+			
 			map.insert(map.end(), StackPair(nvd->id.name, nvd->type));
 			// FIXME: Check to make sure variables do not clash with arguments
 			//	  or other variable declarations (hint: check the map to
@@ -128,7 +136,20 @@ StackMap NFunctionDeclaration::generateLocalsStackMap()
 		}
 		else if ((*i)->cType == "statement-declaration-array")
 		{
-			// for arrays we have to push
+			// pseudo code for typedef resolval
+			// 1. if nad->basetype is a typedef:
+			// 1.a resolve typedef type
+			// 1.1 if type->baseDecl is an array declaration?
+			// 1.1.1 merge array declarations:
+			// 1.1.2 add dimensions of this decl to the array decl, creating a new array decl
+			// 1.1.3 something like --i, continue (replaced declaration, which is handled again)
+			// 1.2 if type->baseDecl is a variable declaration?
+			// 1.2.1 replace with new array declaration of this type and dimensions from this
+			// 	 currently handled array delaration
+			// 1.2.2 --i, continue
+			
+			// for arrays we have to push both the pointer and
+			// the memory area onto the stack
 			NArrayDeclaration* nad = (NArrayDeclaration*)(*i);
 			std::string pointerName = nad->id.name;
 			std::string memAreaName = "<arraymem>_" + pointerName;
@@ -153,6 +174,8 @@ StackMap NFunctionDeclaration::generateParametersStackMap()
 	// Add stack frame data for arguments.
 	for (VariableList::const_iterator i = this->arguments.begin(); i != this->arguments.end(); i++)
 	{
+		// TODO same thing here, replace typedefs
+		
 		map.insert(map.end(), StackPair((*i)->id.name, (*i)->type));
 		// FIXME: Check to make sure arguments do not clash with any
 		//	  other argument declarations (hint: check the map to

@@ -29,6 +29,7 @@ class NInteger;
 #include "nodes/NArrayDeclaration.h"
 #include "nodes/NFunctionDeclaration.h"
 #include "nodes/NStructureDeclaration.h"
+#include "nodes/NTypedefDeclaration.h"
 #include "nodes/NEmptyStatement.h"
 #include "nodes/NExpressionStatement.h"
 #include "nodes/NIfStatement.h"
@@ -86,7 +87,7 @@ void yyerror(const char *str);
 	NStructureDeclaration* structure;
 	NVariableDeclaration *variable;
 	NArrayDeclaration *array;
-	NTypedefDeclaration *typedef;
+	NTypedefDeclaration *tydef;
 	std::vector<NExpression*> *exprvec;
 	std::vector<NDeclaration*> *declvec;
 	std::vector<NVariableDeclaration*> *varvec;
@@ -138,10 +139,10 @@ void yyerror(const char *str);
 %type <dimvec> array_dims
 %type <decls> program prog_decl
 %type <function> func_decl
-%type <typedef> typedef_decl
 %type <structure> struct_decl
 %type <variable> var_decl var_decl_no_init
 %type <array> array_decl array_decl_no_init
+%type <tydef> typedef_decl
 %type <block> block stmts block_or_stmt
 %type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm stmt_break stmt_continue stmt_case stmt_switch stmt_default
 %type <token> assignop
@@ -199,7 +200,7 @@ prog_decl:
 		typedef_decl SEMICOLON
 		{
 			$$ = new NDeclarations();
-			$$->definitions.push_back($<typedef>1);
+			$$->definitions.push_back($<tydef>1);
 		} |
 		array_decl SEMICOLON
 		{

@@ -20,6 +20,13 @@
 #include <stdint.h>
 #include <nodes/IType.h>
 #include "NBinaryOperator.h"
+#include "Lists.h"
+#include "NDeclaration.h"
+#include "NDeclarations.h"
+#include "NTypedefDeclaration.h"
+#include "NArrayDeclaration.h"
+#include "NVariableDeclaration.h"
+#include "NIdentifier.h"
 
 class TTypedefType: public IType
 {
@@ -27,9 +34,13 @@ class TTypedefType: public IType
 
 	public:
 		IType* baseType;
+		NDeclaration* baseDeclaration;
 		NIdentifier& id;
 
-		void resolveType(AsmGenerator& context);
+		void resolve(AsmGenerator& context);
+		
+		static void resolveTypedefs(DeclarationList* declList);
+		static void resolveTypedefs(StatementList* declList);
 
 		virtual uint16_t getWordSize(AsmGenerator& context);
 
