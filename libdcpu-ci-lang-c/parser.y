@@ -86,6 +86,7 @@ void yyerror(const char *str);
 	NStructureDeclaration* structure;
 	NVariableDeclaration *variable;
 	NArrayDeclaration *array;
+	NTypedefDeclaration *typedef;
 	std::vector<NExpression*> *exprvec;
 	std::vector<NDeclaration*> *declvec;
 	std::vector<NVariableDeclaration*> *varvec;
@@ -122,7 +123,7 @@ void yyerror(const char *str);
 %token <token> TRUE FALSE
 
 /* TOKENS: Statement keywords */
-%token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF BREAK CONTINUE CASE SWITCH DEFAULT
+%token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF BREAK CONTINUE CASE SWITCH DEFAULT TYPEDEF
 
 /* TOKENS: Type keywords */
 %token <token> TYPE_VOID TYPE_CHAR TYPE_SHORT TYPE_INT TYPE_LONG TYPE_FLOAT TYPE_DOUBLE CONST UNSIGNED SIGNED
@@ -137,6 +138,7 @@ void yyerror(const char *str);
 %type <dimvec> array_dims
 %type <decls> program prog_decl
 %type <function> func_decl
+%type <typedef> typedef_decl
 %type <structure> struct_decl
 %type <variable> var_decl var_decl_no_init
 %type <array> array_decl array_decl_no_init
@@ -194,6 +196,11 @@ prog_decl:
 			$$ = new NDeclarations();
 			$$->definitions.push_back($<variable>1);
 		} |
+		typedef_decl SEMICOLON
+		{
+			$$ = new NDeclarations();
+			$$->definitions.push_back($<typedef>1);
+		} |
 		array_decl SEMICOLON
 		{
 			$$ = new NDeclarations();
@@ -208,6 +215,10 @@ prog_decl:
 			$1->definitions.push_back($<structure>2);
 		} |
 		prog_decl var_decl SEMICOLON
+		{
+			$1->definitions.push_back($<variable>2);
+		} |
+		prog_decl typedef_decl SEMICOLON
 		{
 			$1->definitions.push_back($<variable>2);
 		} |
@@ -351,6 +362,16 @@ array_init_list:
 			$1->insert( $1->end(), $3->begin(), $3->end() );
 			$$ = $1;
 		} ;
+		
+typedef_decl:
+		TYPEDEF var_decl_no_init
+		{
+			$$ = new NTypedefDeclaration($2);
+		} |
+		TYPEDEF array_decl_no_init
+		{
+			$$ = new NTypedefDeclaration($2);
+		} ;
 
 ident:
 		IDENTIFIER
@@ -453,6 +474,10 @@ stmt:
 			$$ = $1;
 		} |
 		array_decl SEMICOLON
+		{
+			$$ = $1;
+		} |
+		typedef_decl SEMICOLON
 		{
 			$$ = $1;
 		} |

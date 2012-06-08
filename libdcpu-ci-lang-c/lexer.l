@@ -85,6 +85,7 @@ extern "C"
 "debug"					{ HANDLE; return DEBUG; }
 "struct"				{ HANDLE; return STRUCT; }
 "sizeof"				{ HANDLE; return SIZEOF; }
+"typedef"				{ HANDLE; return TYPEDEF; }
 
 	/* Inline assembly */
 
