@@ -265,7 +265,15 @@ void vm_hw_lua_init(vm_t* vm)
 		}
 
 		// Check to see if it is a normal file.
+#if defined(DT_REG)
 		if (entry->d_type != DT_REG)
+#elif defined(DT_DIR)
+		if (entry->d_type == DT_DIR)
+#elif defined(DT_UNKNOWN)
+		if (entry->d_type == DT_UNKNOWN)
+#else
+#error Build system must support DT_REG, DT_DIR or DT_UNKNOWN in dirent.h.
+#endif
 		{
 			// Not a file, skip over and then
 			// continue.

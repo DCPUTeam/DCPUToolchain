@@ -95,7 +95,7 @@ static bool key_status[TCODK_CHAR+1];
 static int oldFade=-1;
 
 /* convert SDL vk to a char (depends on the keyboard layout) */
-static char vk_to_c[SDLK_LAST];
+static char vk_to_c[256]; //SDLK_LAST];
 
 /* convert ASCII code to TCOD layout position */
 static int init_ascii_to_tcod[256] = {

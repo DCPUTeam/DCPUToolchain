@@ -164,3 +164,32 @@ $ make
 ```
 
 If everything looks like it didn't crash and burn, then you should find everything you need in ```dcputoolchain/Debug```
+
+### Instructions for Emscripten
+
+The toolchain has experimental and (currently) limited support for Emscripten.  Ensure you have recursively updated all submodules
+in the repository and then follow the instructions below.
+
+```
+$ mkdir build-emcc
+$ cd build-emcc
+$ cmake -C ../html5/emscripten/Emscripten.cmake .. 
+$ make dtemu
+```
+
+Note that currently only building `dtemu` works due to a conflict that exists when building the preprocessor parser inside the
+static library.  We hope to have this issue sorted so that all tools can be built successfully.
+
+#### Testing
+
+In order to run the toolchain, you must be running it from a web server (due to cross-HTTP request restrictions).  To run the
+toolchain, start a web server local to the _build directory_ (in the case above, this is in the `build-emcc` folder).  For example,
+if you have Python installed, you can easily do:
+
+```
+$ cd build-emcc
+$ python -m SimpleHTTPServer 8888
+```
+
+Then navigate your web browser to http://localhost:8888/.
+

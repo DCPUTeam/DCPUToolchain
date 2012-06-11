@@ -23,7 +23,7 @@ if(MSVC OR TOOLCHAIN_ON_CYGWIN)
 	# Copy supporting files.
 	file(GLOB_RECURSE libtcod_to_copy RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/bin" bin/*)
 	foreach(i ${libtcod_to_copy})
-		file(COPY ./bin/${i} DESTINATION "${ROOT_DIR}/Debug" USE_SOURCE_PERMISSIONS)
+		file(COPY ./bin/${i} DESTINATION "${OUTPUT_DIR}" USE_SOURCE_PERMISSIONS)
 	endforeach(i ${libtcod_to_copy})
 else(MSVC OR TOOLCHAIN_ON_CYGWIN)
 	# Define a project we will compile ourselves.
@@ -47,7 +47,7 @@ else(MSVC OR TOOLCHAIN_ON_CYGWIN)
 	# Copy supporting files.
 	file(GLOB_RECURSE libtcod_to_copy RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/bin" bin/*)
 	foreach(i ${libtcod_to_copy})
-		file(COPY ./bin/${i} DESTINATION "${ROOT_DIR}/Debug" USE_SOURCE_PERMISSIONS)
+		file(COPY ./bin/${i} DESTINATION "${OUTPUT_DIR}" USE_SOURCE_PERMISSIONS)
 	endforeach(i ${libtcod_to_copy})
 endif(MSVC OR TOOLCHAIN_ON_CYGWIN)
 
