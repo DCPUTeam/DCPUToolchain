@@ -23,18 +23,20 @@
 
 class NArrayDeclaration : public NDeclaration
 {
-		DimensionsList* m_dims;
+		
 		
 
 		uint16_t m_numElements;
 
+
+
+	public:
+		DimensionsList* m_dims;
+		ExpressionList* m_initExprs;
+		NIdentifier& id;
 		IType* m_baseType;
 		IType* m_pointerType;
 		IType* m_memAreaType;
-
-	public:
-		ExpressionList* m_initExprs;
-		NIdentifier& id;
 
 		IType* getPointerType();
 		IType* getMemAreaType();

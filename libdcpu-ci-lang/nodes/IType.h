@@ -38,6 +38,7 @@ class IType
 
 		virtual bool isBasicType() const INTERNAL_TYPE_EXCEPTION("get type info of")
 		virtual bool isStruct() const INTERNAL_TYPE_EXCEPTION("get type info of")
+		virtual bool isTypedef() const INTERNAL_TYPE_EXCEPTION("get type info of")
 		virtual bool isPointer() const INTERNAL_TYPE_EXCEPTION("get type info of")
 		virtual bool isConst() const INTERNAL_TYPE_EXCEPTION("get type info of")
 		virtual void setConst() INTERNAL_TYPE_EXCEPTION("get type info of")

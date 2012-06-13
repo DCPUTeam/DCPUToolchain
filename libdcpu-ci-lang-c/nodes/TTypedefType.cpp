@@ -22,9 +22,9 @@ void TTypedefType::resolveTypedefs(DeclarationList* declList)
 	TTypedefType::resolveTypedefs((StatementList*) declList);
 }
 
-static void resolveTypedefs(StatementList* declList)
+static void resolveTypedefs(AsmGenerator& context, StatementList* declList)
 {
-	for (StatementList::iterator i = declList->begin(); i != declList->end(); i++)
+	for (StatementList::iterator i = declList->begin(); i != declList->end(); )
 	{
 		if ((*i)->cType == "statement-declaration-variable")
 		{
@@ -38,6 +38,25 @@ static void resolveTypedefs(StatementList* declList)
 			// 1.2 if type->baseDecl is a variable declaration?
 			// 1.2.1 replace variable decl with the new typedef decl
 			// 1.2.2 something like --i, continue
+			if (nvd->type->isTypedef())
+			{
+				TTypedefType* tdt = (TTypedefType*) nvd->type;
+				tdt->resolve(context);
+				if (tdt->baseDeclaration->cType == "statement-declaration-variable")
+				{
+					*i = tdt->baseDeclaration;
+					// TODO replay type modifiers (e.g. const)
+					continue;
+				}
+				else if (tdt->baseDeclaration->cType == "statement-declaration-array")
+				{
+					*i = tdt->baseDeclaration;
+					// TODO replay type modifiers (e.g. const)
+					continue;
+				}
+				else
+					throw new CompilerException(0, "<internal>", "Invalid typdef declaration '" + this->id.name + "' encountered!");
+			}
 		}
 		else if ((*i)->cType == "statement-declaration-array")
 		{
@@ -52,7 +71,28 @@ static void resolveTypedefs(StatementList* declList)
 			// 1.2.1 replace with new array declaration of this type and dimensions from this
 			// 	 currently handled array delaration
 			// 1.2.2 --i, continue
+			
+			NArrayDeclaration* nad = (NArrayDeclaration*)(*i);
+			if (nad->m_baseType->isTypedef())
+			{
+				TTypedefType* tdt = (TTypedefType*) nad->m_baseType;
+				tdt->resolve(context);
+				if (tdt->baseDeclaration->cType == "statement-declaration-variable")
+				{
+					IType* basetype = tdt->baseType;
+					*i = new NArrayDeclaration(basetype, this->id, nad->m_dims, nad->m_initExprList);
+					continue;
+				}
+				else if (tdt->baseDeclaration->cType == "statement-declaration-array")
+				{
+					// TODO
+					continue;
+				}
+				else
+					throw new CompilerException(0, "<internal>", "Invalid typdef declaration '" + this->id.name + "' encountered!");
+			}
 		}
+		i++;
 	}
 
 }
@@ -116,6 +156,10 @@ void TTypedefType::resolve(AsmGenerator& context)
 		bool TTypedefType::isStruct() const
 		{
 			return this->baseType->isStruct();
+		}
+		bool TTypedefType::isTypedef() const
+		{
+			return true;
 		}
 		bool TTypedefType::isPointer() const
 		{

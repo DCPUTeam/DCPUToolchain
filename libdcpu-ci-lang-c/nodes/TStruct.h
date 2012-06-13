@@ -38,6 +38,7 @@ class TStruct: public IType
 
 		bool isBasicType() const;
 		bool isStruct() const;
+		bool isTypedef() const
 		bool isPointer() const;
 
 		bool isConst() const;

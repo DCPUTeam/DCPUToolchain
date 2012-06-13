@@ -49,6 +49,7 @@ class TTypedefType: public IType
 
 		virtual bool isBasicType() const;
 		virtual bool isStruct() const;
+		virtual bool isTypedef() const;
 		virtual bool isPointer() const;
 		virtual bool isConst() const;
 		virtual void setConst();

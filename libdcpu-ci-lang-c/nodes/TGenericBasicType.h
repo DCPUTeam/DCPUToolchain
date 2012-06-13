@@ -42,6 +42,7 @@ class TGenericBasicType: public IType
 
 		bool isBasicType() const;
 		bool isStruct() const;
+		bool isTypedef() const
 		bool isPointer() const;
 
 		static IType* promoteTypes(IType* typeA, IType* typeB);

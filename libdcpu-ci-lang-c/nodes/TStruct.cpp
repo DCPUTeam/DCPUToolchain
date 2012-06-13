@@ -56,6 +56,11 @@ bool TStruct::isStruct() const
 	return true;
 }
 
+bool TStruct::isTypedef() const
+{
+	return false;
+}
+
 bool TStruct::implicitCastable(AsmGenerator& context, const IType* toType)
 {
 	std::string to = toType->getInternalName();
