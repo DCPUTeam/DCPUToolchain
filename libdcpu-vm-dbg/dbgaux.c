@@ -382,6 +382,7 @@ void ddbg_flash_vm()
 void ddbg_run_vm()
 {
 	vm->halted = false;
+	vm->sleep_cycles = 0;
 	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("run")), 0);
 	vm_execute(vm, NULL);
 	printd(LEVEL_DEFAULT, "\n");
@@ -390,6 +391,7 @@ void ddbg_run_vm()
 void ddbg_continue_vm()
 {
 	vm->halted = false;
+	vm->sleep_cycles = 0;
 	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("continue")), 0);
 	vm_execute(vm, NULL);
 	printd(LEVEL_DEFAULT, "\n");
@@ -591,6 +593,7 @@ void ddbg_delete_breakpoint_identifier(bstring ident)
 
 void ddbg_step_into()
 {
+	vm->sleep_cycles = 0;
 	vm_cycle(vm);
 
 	// Handle custom Lua commands.
@@ -603,6 +606,7 @@ void ddbg_step_over()
 	inst = INSTRUCTION_GET_OP(vm->ram[vm->pc]);
 	op_a = INSTRUCTION_GET_A(vm->ram[vm->pc]);
 	op_b = INSTRUCTION_GET_B(vm->ram[vm->pc]);
+	vm->sleep_cycles = 0;
 
 	if (op_a == NXT)
 		offset += 1;

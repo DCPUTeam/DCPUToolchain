@@ -519,6 +519,22 @@ bracketed_added_address:
 			$$->bracketed = 1;
 			$$->added = 1;
 			$$->addcmpt = $2;
+		} |
+		BRACKET_OPEN expr SUBTRACT WORD BRACKET_CLOSE
+		{
+			$$ = malloc(sizeof(struct ast_node_address));
+			$$->value = expr_new(expr_new_number(0x0), EXPR_OP_SUBTRACT, $2);
+			$$->bracketed = 1;
+			$$->added = 1;
+			$$->addcmpt = $4;
+		} |
+		BRACKET_OPEN WORD SUBTRACT expr BRACKET_CLOSE
+		{
+			$$ = malloc(sizeof(struct ast_node_address));
+			$$->value = expr_new(expr_new_number(0x0), EXPR_OP_SUBTRACT, $4);
+			$$->bracketed = 1;
+			$$->added = 1;
+			$$->addcmpt = $2;
 		};
 
 expr:
