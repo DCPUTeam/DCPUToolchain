@@ -18,6 +18,7 @@
 #include <setjmp.h>
 #include <bstring.h>
 #include <bfile.h>
+#include <iio.h>
 #include <pp.h>
 #include <ppfind.h>
 #include <assert.h>
@@ -520,21 +521,21 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 			if (bname == NULL)
 				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
 
-			temp = bopen((const char*)(bname->data), "rb");
+			temp = bfopen((const char*)(bname->data), "rb");
 
 			if (temp == NULL)
 				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
 
 			// Copy binary data.
-			while (!beof(temp))
+			while (!bfeof(temp))
 			{
 				// TODO: This could be faster if we didn't do it character
 				// by character.
-				fputc(bgetc(temp), out);
+				fputc(bfgetc(temp), out);
 			}
 
 			// Finalize.
-			bclose(temp);
+			bfclose(temp);
 			bdestroy(bname);
 		}
 		else if (current_outer->type == AOUT_TYPE_NORMAL)
@@ -546,12 +547,12 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 			if (current_outer->raw_used == true)
 			{
 				inst = current_outer->raw;
-				fwrite(&inst, sizeof(uint16_t), 1, out);
+				iwrite(&inst, out);
 			}
 			else if (current_outer->label == NULL)
 			{
 				inst = INSTRUCTION_CREATE(current_outer->opcode, current_outer->a, current_outer->b);
-				fwrite(&inst, sizeof(uint16_t), 1, out);
+				iwrite(&inst, out);
 			}
 		}
 

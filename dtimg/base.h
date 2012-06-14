@@ -17,13 +17,14 @@
 
 #include <stdio.h>
 #include <bstring.h>
+#include <bfile.h>
 
 struct fs_writer
 {
-	void (*init)(FILE* out);
-	void (*write_kernel)(FILE* out, FILE* in, int count);
-	void (*write_file)(FILE* out, FILE* in, freed_bstring name);
-	void (*close)(FILE* out);
+	void (*init)(BFILE* out);
+	void (*write_kernel)(BFILE* out, BFILE* in, int count);
+	void (*write_file)(BFILE* out, BFILE* in, freed_bstring name);
+	void (*close)(BFILE* out);
 };
 
 #endif

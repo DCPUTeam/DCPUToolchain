@@ -20,18 +20,18 @@ int btell_01()
 	BFILE* f;
 	int i = 0;
 
-	f = bopen("test.txt", "rb");
+	f = bfopen("test.txt", "rb");
 	TEST_EXPECT(f != NULL);
-	TEST_EXPECT(btell(f) == 0);
+	TEST_EXPECT(bftell(f) == 0);
 
-	while (!beof(f))
+	while (!bfeof(f))
 	{
-		bgetc(f);
+		bfgetc(f);
 		i++;
-		TEST_EXPECT(btell(f) == i);
+		TEST_EXPECT(bftell(f) == i);
 	}
 
-	bclose(f);
+	bfclose(f);
 
 	TEST_SUCCESS;
 }

@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <ppexpr.h>
 #include <debug.h>
+#include <iio.h>
 #include "treloc.h"
 #include "aout.h"
 #include "aerr.h"

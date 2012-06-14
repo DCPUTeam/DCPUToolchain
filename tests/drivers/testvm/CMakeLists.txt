@@ -25,4 +25,4 @@ endfunction(add_unit_test tname)
 # Define the tests.
 enable_testing()
 add_unit_test(math-shr)
-
+add_unit_test(general-pick)

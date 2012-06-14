@@ -19,11 +19,11 @@ int bread_02()
 {
 	BFILE* f;
 
-	f = bopen("empty.txt", "rb");
+	f = bfopen("empty.txt", "rb");
 	TEST_EXPECT(f != NULL);
-	TEST_EXPECT(bgetc(f) == EOF);
-	TEST_EXPECT(beof(f));
-	bclose(f);
+	TEST_EXPECT(bfgetc(f) == EOF);
+	TEST_EXPECT(bfeof(f));
+	bfclose(f);
 
 	TEST_SUCCESS;
 }

@@ -19,10 +19,10 @@ int btell_02()
 {
 	BFILE* f;
 
-	f = bopen("empty.txt", "rb");
+	f = bfopen("empty.txt", "rb");
 	TEST_EXPECT(f != NULL);
-	TEST_EXPECT(btell(f) == 0);
-	bclose(f);
+	TEST_EXPECT(bftell(f) == 0);
+	bfclose(f);
 
 	TEST_SUCCESS;
 }

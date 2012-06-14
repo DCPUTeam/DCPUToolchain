@@ -33,6 +33,7 @@
 #include <version.h>
 #include <ldata.h>
 #include <debug.h>
+#include <iio.h>
 
 #ifdef __APPLE__
 #define main SDL_main
@@ -44,8 +45,7 @@ int main(int argc, char* argv[])
 	FILE* load;
 	uint16_t flash[0x10000];
 	char leading[0x100];
-	unsigned int i, a;
-	int cread;
+	unsigned int i;
 	bool uread = true;
 	vm_t* vm;
 	int nerrors;
@@ -58,10 +58,11 @@ int main(int argc, char* argv[])
 	struct arg_lit* debug_mode = arg_lit0("d", "debug", "Show each executed instruction.");
 	struct arg_lit* terminate_mode = arg_lit0("t", "show-on-terminate", "Show state of machine when program is terminated.");
 	struct arg_lit* legacy_mode = arg_lit0("l", "legacy", "Automatically initialize hardware to legacy values.");
+	struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { input_file, debug_mode, execution_dump_file, terminate_mode, legacy_mode, verbose, quiet, end };
+	void* argtable[] = { input_file, debug_mode, execution_dump_file, terminate_mode, legacy_mode, little_endian_mode, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -85,6 +86,9 @@ int main(int argc, char* argv[])
 
 	// Set global path variable.
 	osutil_setarg0(bautofree(bfromcstr(argv[0])));
+
+	// Set endianness.
+	isetmode(little_endian_mode->count == 0 ? IMODE_BIG : IMODE_LITTLE);
 
 	// Zero out the flash space.
 	for (i = 0; i < 0x10000; i++)
@@ -118,21 +122,9 @@ int main(int argc, char* argv[])
 		load = stdin;
 	}
 
-	// Read up to 0x20000 bytes (as 16-bit words).
-	a = 0;
-	for (i = 0; i < 0x20000; i++)
-	{
-		cread = fgetc(load);
-		if (i < 0x100)
-			leading[i] = cread;
-		if (cread == -1) break;
-		if (uread)
-			cread <<= 8;
-		flash[a] += ((cread << 8) | (cread >> 8));
-		if (!uread)
-			a += 1;
-		uread = !uread;
-	}
+	// Read up to 0x10000 words.
+	for (i = 0; i < 0x10000 && !feof(load); i++)
+		iread(&flash[i], load);
 	fclose(load);
 
 	// Check to see if the first X bytes matches the header

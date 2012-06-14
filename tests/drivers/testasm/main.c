@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_lit* gen_relocatable = arg_lit0("r", "relocatable", "Generate relocatable code.");
 	struct arg_lit* gen_intermediate = arg_lit0("i", "intermediate", "Generate intermediate code for use with the linker.");
+	struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input assembly file.");
 	struct arg_file* expect_file = arg_file0("e", "expect", "<file>", "The output file that contains expected output.");
 	struct arg_file* actual_file = arg_file1("a", "actual", "<file>", "The output file where actual output will be placed.");
@@ -41,7 +42,7 @@ int main(int argc, char* argv[])
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, gen_relocatable, gen_intermediate, symbols_file, input_file, expect_file, actual_file, fail_opt, verbose, quiet, end };
+	void* argtable[] = { show_help, gen_relocatable, gen_intermediate, little_endian_mode, symbols_file, input_file, expect_file, actual_file, fail_opt, verbose, quiet, end };
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
@@ -102,6 +103,11 @@ int main(int argc, char* argv[])
 		for (i = 0; i < gen_intermediate->count; i++) bconchar(ldargs, 'i');
 		bconchar(ldargs, ' ');
 	}
+	if (little_endian_mode->count > 0)
+	{
+		for (i = 0; i < little_endian_mode->count; i++)
+			bcatcstr(ldargs, "--little-endian ");
+	}
 
 	// Unlink the actual file so that if we are expecting
 	// failure, we won't return incorrectly.
@@ -142,18 +148,18 @@ int main(int argc, char* argv[])
 	{
 		// Assembler failed and we expected it to.  Return success only
 		// if the output file does not exist.
-		actual = bopen(actual_file->filename[0], "rb");
+		actual = bfopen(actual_file->filename[0], "rb");
 		if (actual != NULL)
 		{
 			printd(LEVEL_ERROR, "error: expected failure but actual output file exists.\n");
-			bclose(actual);
+			bfclose(actual);
 			return 1;
 		}
 		return 0;
 	}
 
 	// Open expect data.
-	expect = bopen(expect_file->filename[0], "rb");
+	expect = bfopen(expect_file->filename[0], "rb");
 	if (expect == NULL)
 	{
 		// The expect file was not provided.
@@ -162,11 +168,11 @@ int main(int argc, char* argv[])
 	}
 
 	// Open actual data.
-	actual = bopen(actual_file->filename[0], "rb");
+	actual = bfopen(actual_file->filename[0], "rb");
 	if (actual == NULL)
 	{
 		// The expect file was not provided.
-		bclose(expect);
+		bfclose(expect);
 		printd(LEVEL_ERROR, "error: expected data but actual output file does not exist after running assembler.\n");
 		return 1;
 	}
@@ -174,27 +180,27 @@ int main(int argc, char* argv[])
 	// Now compare raw bytes.
 	while (true)
 	{
-		if (!beof(actual) && !beof(expect))
+		if (!bfeof(actual) && !bfeof(expect))
 		{
-			ca = bgetc(actual);
-			ce = bgetc(expect);
+			ca = bfgetc(actual);
+			ce = bfgetc(expect);
 			if (ca == ce)
 				match++;
 			else
 			{
-				printd(LEVEL_WARNING, "warning: byte at 0x%04X is different (got 0x%02X, expected 0x%02X)!\n", btell(actual), ca, ce);
+				printd(LEVEL_WARNING, "warning: byte at 0x%04X is different (got 0x%02X, expected 0x%02X)!\n", bftell(actual), ca, ce);
 				unmatch++;
 			}
 		}
-		else if (!beof(actual))
+		else if (!bfeof(actual))
 		{
-			ca = bgetc(actual);
+			ca = bfgetc(actual);
 			printd(LEVEL_ERROR, "error: actual output contained trailing byte 0x%02X.\n", (unsigned char)ca);
 			unmatch++;
 		}
-		else if (!beof(expect))
+		else if (!bfeof(expect))
 		{
-			ce = bgetc(expect);
+			ce = bfgetc(expect);
 			printd(LEVEL_ERROR, "error: expected actual output to contain 0x%02X.\n", (unsigned char)ce);
 			unmatch++;
 		}
@@ -204,17 +210,17 @@ int main(int argc, char* argv[])
 	if (unmatch > 0)
 	{
 		printd(LEVEL_ERROR, "error: actual output differs from expected output in content (%f%%, %i bytes different).\n", 100.f / (unmatch + match) * unmatch, unmatch);
-		if (btell(actual) != btell(expect))
-			printd(LEVEL_ERROR, "error: actual output differs from expected output in length (%i bytes larger).\n", btell(actual) - btell(expect));
-		bclose(actual);
-		bclose(expect);
+		if (bftell(actual) != bftell(expect))
+			printd(LEVEL_ERROR, "error: actual output differs from expected output in length (%i bytes larger).\n", bftell(actual) - bftell(expect));
+		bfclose(actual);
+		bfclose(expect);
 		return 1;
 	}
 
 	// Close files and delete actual because we have
 	// succeeded.
-	bclose(actual);
-	bclose(expect);
+	bfclose(actual);
+	bfclose(expect);
 	unlink(actual_file->filename[0]);
 
 	return 0;

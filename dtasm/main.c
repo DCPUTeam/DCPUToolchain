@@ -18,6 +18,7 @@
 #include <argtable2.h>
 #include <bstring.h>
 #include <bfile.h>
+#include <iio.h>
 #include <osutil.h>
 #include <pp.h>
 #include <ppfind.h>
@@ -59,11 +60,12 @@ int main(int argc, char* argv[])
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	struct arg_file* symbols_file = arg_file0("s", "debug-symbols", "<file>", "The debugging symbol output file.");
+	struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, output_file, symbols_file, gen_relocatable, gen_intermediate, include_dirs, input_file, verbose, quiet, end };
-	
+	void* argtable[] = { show_help, output_file, symbols_file, gen_relocatable, gen_intermediate, little_endian_mode, include_dirs, input_file, verbose, quiet, end };
+
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
 
@@ -86,6 +88,9 @@ int main(int argc, char* argv[])
 
 	// Set global path variable.
 	osutil_setarg0(bautofree(bfromcstr(argv[0])));
+
+	// Set endianness.
+	isetmode(little_endian_mode->count == 0 ? IMODE_BIG : IMODE_LITTLE);
 
 	// Set up error handling.
 	errval = (struct errinfo*)setjmp(errjmp);
@@ -189,7 +194,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Re-open the temporary file for reading.
-	imgb = bopen(temp->data, "rb");
+	imgb = bfopen(temp->data, "rb");
 	if (imgb == NULL)
 	{
 		printd(LEVEL_ERROR, "assembler: temporary file not readable.\n");
@@ -201,7 +206,7 @@ int main(int argc, char* argv[])
 	if (strcmp(output_file->filename[0], "-") != 0)
 	{
 		// Write to file.
-		out = bopen(output_file->filename[0], "wb");
+		out = bfopen(output_file->filename[0], "wb");
 
 		if (imgb == NULL)
 		{
@@ -216,16 +221,16 @@ int main(int argc, char* argv[])
 		osutil_makebinary(stdout);
 
 		// Set img to stdout.
-		out = bwrap(stdout, "w");
+		out = bfwrap(stdout, "w");
 	}
 
 	// Copy data.
-	while (!beof(imgb))
-		bputc(bgetc(imgb), out);
+	while (!bfeof(imgb))
+		bfputc(bfgetc(imgb), out);
 
 	// Close files and delete temporary.
-	bclose(imgb);
-	bclose(out);
+	bfclose(imgb);
+	bfclose(out);
 	unlink(temp->data);
 
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));

@@ -26,8 +26,9 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <argtable2.h>
-#include <dcpu.h>
 #include <bstring.h>
+#include <iio.h>
+#include <dcpu.h>
 #include <dbgaux.h>
 #include <dbglua.h>
 #include <lexfix.h>
@@ -76,10 +77,11 @@ int main(int argc, char** argv)
 	struct arg_str* command_arg = arg_str0("c", NULL, "<command>", "Run a single debugger command and exit with the result.");
 	struct arg_file* symbols_file = arg_file0("s", "symbols", "<file>", "The file to load symbols from.");
 	struct arg_file* input_file = arg_file0(NULL, NULL, "<file>", "The file to initially load.");
+	struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, command_arg, symbols_file, input_file, verbose, quiet, end };
+	void* argtable[] = { show_help, command_arg, symbols_file, input_file, little_endian_mode, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -103,6 +105,9 @@ int main(int argc, char** argv)
 
 	// Set global path variable.
 	osutil_setarg0(bautofree(bfromcstr(argv[0])));
+
+	// Set endianness.
+	isetmode(little_endian_mode->count == 0 ? IMODE_BIG : IMODE_LITTLE);
 
 	// Register signal handler.
 	signal(SIGINT, ddbg_sigint);
@@ -133,12 +138,12 @@ int main(int argc, char** argv)
 		dbg_yylex_destroy(scanner);
 		return ddbg_return_code;
 	}
-	
+
 	// Create SDP thread if supported.
 #ifdef FEATURE_SDP
 	pthread_create(&sdp_thread, NULL, (void*)ddbg_sdp_thread, vm);
 #endif
-	
+
 	// We always want to show the debugger start message.
 	debug_setlevel(LEVEL_VERBOSE + verbose->count - quiet->count);
 	version_print(bautofree(bfromcstr("Debugger")));

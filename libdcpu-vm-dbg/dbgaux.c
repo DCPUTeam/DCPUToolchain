@@ -17,6 +17,7 @@
 #include <string.h>
 #include <bstring.h>
 #include <simclist.h>
+#include <iio.h>
 #include <dcpu.h>
 #include <dcpubase.h>
 #include <dcpuhook.h>
@@ -284,8 +285,7 @@ void ddbg_set(bstring object, bstring value)
 void ddbg_load(bstring path)
 {
 	FILE* load;
-	unsigned int a = 0, i = 0;
-	int cread;
+	unsigned int i = 0;
 	bool uread = true;
 
 	load = fopen(path->data, "rb");
@@ -296,27 +296,12 @@ void ddbg_load(bstring path)
 		return;
 	}
 
-	for (i = 0; i < 0x20000; i++)
-	{
-		cread = fgetc(load);
-
-		if (cread == -1) break;
-
-		if (uread)
-			cread <<= 8;
-
-		flash[a] += ((cread << 8) | (cread >> 8));
-
-		if (!uread)
-			a += 1;
-
-		uread = !uread;
-	}
-
+	for (i = 0; i < 0x10000 && !feof(load); i++)
+		iread(&flash[i], load);
 	fclose(load);
 
-	printd(LEVEL_DEFAULT, "Loaded 0x%04X words from %s.\n", a, path->data);
-	flash_size = a;
+	printd(LEVEL_DEFAULT, "Loaded 0x%04X words from %s.\n", i, path->data);
+	flash_size = i;
 	ignore_next_breakpoint = false;
 }
 

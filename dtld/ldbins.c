@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <simclist.h>
+#include <iio.h>
 #include <ldata.h>
 #include <objfile.h>
 #include <assert.h>
@@ -166,7 +167,7 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
 		// get set until we actually attempt to read past
 		// the end-of-file.  If we don't do this, we get a
 		// double read of the same data.
-		fread(&store, sizeof(uint16_t), 1, in);
+		iread(&store, in);
 		if (feof(in))
 			break;
 		bin_write(bin, store);
@@ -241,7 +242,7 @@ void bins_save(freed_bstring name, freed_bstring path, freed_bstring target, boo
 	// Write each byte from the bin.
 	list_iterator_start(&bin->words);
 	while (list_iterator_hasnext(&bin->words))
-		fwrite(list_iterator_next(&bin->words), sizeof(uint16_t), 1, out);
+		iwrite(list_iterator_next(&bin->words), out);
 	list_iterator_stop(&bin->words);
 
 	// Close the output file.
@@ -665,8 +666,8 @@ void bins_resolve(bool keepProvided)
 		// Insert the required code.
 		word = list_get_at(&bin->words, required->address);
 		*word = provided->address;
-		
-		
+
+
 		// Add the deleted requirement as adjustment
 		adjustment = malloc(sizeof(struct lconv_entry));
 		if (provided->label == NULL)
@@ -680,7 +681,8 @@ void bins_resolve(bool keepProvided)
 		adjustment->bin = bfromcstr("");
 		bassign(adjustment->bin, bin->name);
 		adjustment->address = required->address;
-		if (bin->adjustment == NULL) {
+		if (bin->adjustment == NULL)
+		{
 			list_init(bin->adjustment);
 		}
 		list_append(bin->adjustment, adjustment);
@@ -755,7 +757,7 @@ void bins_resolve(bool keepProvided)
 void bins_free()
 {
 	struct ldbin* bin;
-	
+
 	// Delete all of the bins.
 	list_iterator_start(&ldbins.bins);
 	while (list_iterator_hasnext(&ldbins.bins))

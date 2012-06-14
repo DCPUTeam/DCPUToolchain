@@ -25,6 +25,9 @@ endfunction(add_assemble_test tname)
 function(add_assemble_fail tname)
 	add_test(${tname} ${OUTPUT_DIR}/testasm -f -a "${BASE_DIR}/${tname}.oa" "${BASE_DIR}/${input}.i")
 endfunction(add_assemble_fail tname)
+function(add_assemble_little tname input)
+	add_test(${tname} ${OUTPUT_DIR}/testasm --little-endian -e "${BASE_DIR}/${tname}.oe" -a "${BASE_DIR}/${tname}.oa" "${BASE_DIR}/${input}.i")
+endfunction(add_assemble_little tname)
 
 # Define the tests.
 enable_testing()
@@ -36,4 +39,5 @@ add_assemble_test(stress-04 stress-04)
 add_assemble_test(stress-05 stress-05)
 add_assemble_test(stress-06 stress-06)
 add_assemble_test(stress-07 stress-07)
-
+add_assemble_test(endian-big endian)
+add_assemble_little(endian-little endian)

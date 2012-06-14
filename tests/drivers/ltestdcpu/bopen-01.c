@@ -20,11 +20,11 @@ int bopen_01()
 {
 	BFILE* f;
 
-	f = bopen("nonexistant.blah", "rb");
+	f = bfopen("nonexistant.blah", "rb");
 	TEST_EXPECT(f == NULL);
-	f = bopen("test.txt", "rb");
+	f = bfopen("test.txt", "rb");
 	TEST_EXPECT(f != NULL);
-	bclose(f);
+	bfclose(f);
 
 	TEST_SUCCESS;
 }

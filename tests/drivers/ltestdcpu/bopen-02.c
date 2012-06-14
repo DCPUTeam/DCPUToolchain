@@ -20,9 +20,9 @@ int bopen_02()
 {
 	BFILE* f;
 
-	f = bopen("nonexistant.blah", "wb");
+	f = bfopen("nonexistant.blah", "wb");
 	TEST_EXPECT(f != NULL);
-	bclose(f);
+	bfclose(f);
 	unlink("nonexistant.blah");
 
 	TEST_SUCCESS;
