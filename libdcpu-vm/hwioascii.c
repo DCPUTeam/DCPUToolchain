@@ -37,9 +37,11 @@ uint16_t vm_hw_io_ascii_get_map(TCOD_key_t key)
 			break;
 
 		case TCODK_SHIFT:
+			ascii = 0x90;
 			break;
 
 		case TCODK_CONTROL:
+			ascii = 0x91;
 			break;
 
 		case TCODK_ALT:
@@ -67,15 +69,15 @@ uint16_t vm_hw_io_ascii_get_map(TCOD_key_t key)
 			ascii = 0x80;
 			break;
 
-		case TCODK_LEFT:
+		case TCODK_DOWN:
 			ascii = 0x81;
 			break;
 
-		case TCODK_RIGHT:
+		case TCODK_LEFT:
 			ascii = 0x82;
 			break;
 
-		case TCODK_DOWN:
+		case TCODK_RIGHT:
 			ascii = 0x83;
 			break;
 
@@ -83,9 +85,11 @@ uint16_t vm_hw_io_ascii_get_map(TCOD_key_t key)
 			break;
 
 		case TCODK_INSERT:
+			ascii = 0x12;
 			break;
 
 		case TCODK_DELETE:
+			ascii = 0x13;
 			break;
 
 		case TCODK_LWIN:

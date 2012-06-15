@@ -108,7 +108,6 @@ void vm_hw_lem1802_mem_init(vm_t* vm)
 #else
 	TCOD_console_init_root(HW_LEM1802_SCREEN_WIDTH + 2, HW_LEM1802_SCREEN_HEIGHT + 2, "Toolchain Emulator", false);
 #endif
-	TCOD_console_set_keyboard_repeat(200, 10);
 	TCOD_sys_set_fps(10000);
 	font_image = TCOD_image_load(font_path->data);
 	font_default = TCOD_image_load(font_path->data);
@@ -253,16 +252,16 @@ uint32_t vm_hw_lem1802_mem_get_font_default_representation(uint16_t idx)
 	uint16_t second = 0;
 	uint16_t result = 0;
 	TCOD_color_t color;
-	
+
 	// Get the font character width / height.
 	char_width = vm_hw_lem1802_mem_get_font_char_width();
 	char_height = vm_hw_lem1802_mem_get_font_char_height();
 	char_image = vm_hw_lem1802_mem_get_default_font_image();
-	
+
 	// Work out the position of the character in the font.
 	fx = idx / 16 * char_width;
 	fy = idx % 16 * char_height;
-	
+
 	// For each pixel in the image, grab it's on / off value
 	// from the memory location.
 	for (x = 0; x < 4; x++)
@@ -271,8 +270,8 @@ uint32_t vm_hw_lem1802_mem_get_font_default_representation(uint16_t idx)
 		for (y = 0; y < 8; y++)
 		{
 			// TEMPORARY: Some loaded fonts may have characters wider
-			//            or higher than the addressable font size and thus
-			//            we must skip over intermediate pixels.
+			//	      or higher than the addressable font size and thus
+			//	      we must skip over intermediate pixels.
 			for (ax = 0; ax < char_width; ax += char_width / HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH)
 			{
 				for (ay = 0; ay < char_height; ay += char_height / HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT)
@@ -283,14 +282,14 @@ uint32_t vm_hw_lem1802_mem_get_font_default_representation(uint16_t idx)
 						result = 1;
 					else
 						result = 0;
-					
+
 					// Shift across 8-bits if needed.
 					if (x == 0 || x == 2)
 						result = result << 8;
-					
+
 					// Shift back based on the row.
 					result = result >> y;
-					
+
 					// Set in the correct upper or lower field.
 					if (x == 0 || x == 1)
 						first += result;
@@ -300,7 +299,7 @@ uint32_t vm_hw_lem1802_mem_get_font_default_representation(uint16_t idx)
 			}
 		}
 	}
-	
+
 	// Combine first and second values into
 	// a single uint32_t and return.
 	return ((uint32_t)first << 16) + (uint32_t)second;

@@ -106,6 +106,9 @@ void vm_hw_io_init(vm_t* vm)
 	keyboard.manufacturer = 0x1C6C8B36;
 	keyboard.handler = &vm_hwio_interrupt;
 
+	// Stop LibTCOD key repeat.
+	TCOD_console_disable_keyboard_repeat();
+
 	// Register hooks.
 	vm_cycle_update = vm_hook_register(vm, &vm_hw_io_cycle, HOOK_ON_POST_CYCLE, NULL);
 	vm_hw_register(vm, keyboard);
