@@ -24,6 +24,7 @@
 #include <debug.h>
 #include "ldbins.h"
 #include "ldbin.h"
+#include "ldlua.h"
 #include "ldconv.h"
 #include "ddata.h"
 
@@ -627,11 +628,37 @@ void bins_flatten(freed_bstring name)
 }
 
 ///
+/// Runs each bin through the optimization infrastructure, reduce the size and
+/// required number of cycles for the code.
+///
+/// @param mode The optimization mode.
+///
+void bins_optimize(int target, int level)
+{
+	unsigned int i;
+	struct ldbin* bin;
+
+	// Check to see whether we should skip optimizations altogether.
+	if (level == OPTIMIZE_NONE)
+	{
+		printd(LEVEL_VERBOSE, "skipping optimizations as requested.\n");
+		return;
+	}
+
+	// Loop through each bin and run the optimizers on it.
+	for (i = 0; i < list_size(&ldbins.bins); i++)
+	{
+		bin = list_get_at(&ldbins.bins, i);
+		bin_lua_optimize(bin);
+	}
+}
+
+///
 /// Resolves all of the required and provided labels in a program.  The bins
 /// must be flattened at this point.
 ///
-/// @param Whether the provided label entries should be kept in the flattened
-///	   bin for re-exporting (for example in static libraries).
+/// @param keepProvided Whether the provided label entries should be kept in the flattened
+///			bin for re-exporting (for example in static libraries).
 ///
 void bins_resolve(bool keepProvided)
 {

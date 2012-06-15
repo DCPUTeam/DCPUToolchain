@@ -210,6 +210,18 @@ bool do_uninstall(CURL* curl, bstring name)
 	return 0;
 }
 
+bool do_enable(CURL* curl, bstring name)
+{
+	printd(LEVEL_ERROR, "not implemented.\n");
+	return 1;
+}
+
+bool do_disable(CURL* curl, bstring name)
+{
+	printd(LEVEL_ERROR, "not implemented.\n");
+	return 1;
+}
+
 int main(int argc, char* argv[])
 {
 	CURL* curl;
@@ -219,19 +231,22 @@ int main(int argc, char* argv[])
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
-	struct arg_str* cmdopt = arg_str1(NULL, NULL, "<command>", "The command; either 'search', 'install' or 'uninstall'.");
-	struct arg_str* nameopt = arg_str1(NULL, NULL, "<name>", "The name of the module to search for, install or uninstall.");
+	struct arg_str* cmdopt = arg_str1(NULL, NULL, "<command>", "The command; either 'search', 'install', 'uninstall', 'enable' or 'disable'.");
+	struct arg_str* nameopt = arg_str0(NULL, NULL, "<name>", "The name of the module to search for, install, uninstall, enable or disable.");
+	struct arg_lit* all = arg_lit0("a", "all", "Apply this command to all available / installed modules.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, cmdopt, nameopt, verbose, quiet, end };
+	void* argtable[] = { show_help, cmdopt, all, nameopt, verbose, quiet, end };
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
 
 	version_print(bautofree(bfromcstr("Module Manager")));
-	if (nerrors != 0 || show_help->count != 0)
+	if (nerrors != 0 || show_help->count != 0 || (all->count == 0 && nameopt->count == 0))
 	{
+		if (all->count == 0 && nameopt->count == 0)
+			printd(LEVEL_ERROR, "error: must have either module name or -a.");
 		if (show_help->count != 0)
 			arg_print_errors(stderr, end, "mm");
 
@@ -274,9 +289,13 @@ int main(int argc, char* argv[])
 		return do_install(curl, name);
 	else if (biseqcstrcaseless(command, "uninstall") || biseqcstrcaseless(command, "rm"))
 		return do_uninstall(curl, name);
+	else if (biseqcstrcaseless(command, "enable") || biseqcstrcaseless(command, "en"))
+		return do_enable(curl, name);
+	else if (biseqcstrcaseless(command, "disable") || biseqcstrcaseless(command, "di") || biseqcstrcaseless(command, "dis"))
+		return do_disable(curl, name);
 	else
 	{
-		printd(LEVEL_ERROR, "unknown command (must be search, install or uninstall).");
+		printd(LEVEL_ERROR, "unknown command (must be search, install, uninstall, enable or disable).");
 		return 1;
 	}
 

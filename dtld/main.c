@@ -39,6 +39,8 @@ int main(int argc, char* argv[])
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	struct arg_lit* keep_output_arg = arg_lit0(NULL, "keep-outputs", "Keep the .OUTPUT entries in the final static library (used for stdlib).");
 	struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
+	struct arg_int* opt_level = arg_int0("O", NULL, "<level>", "The optimization level.");
+	struct arg_lit* opt_mode = arg_lit0("S", NULL, "Favour runtime speed over size when optimizing.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
@@ -101,6 +103,7 @@ int main(int argc, char* argv[])
 	bins_associate();
 	bins_sectionize();
 	bins_flatten(bautofree(bfromcstr("output")));
+	bins_optimize(OPTIMIZE_SPEED, OPTIMIZE_NONE);
 	// TODO: This is where we would perform short literal optimizations
 	//	 with bins_compress(); when it's implemented.
 	bins_resolve(biseqcstr(target, "static") == true);
