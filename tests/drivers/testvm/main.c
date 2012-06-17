@@ -127,6 +127,9 @@ int main(int argc, char* argv[])
 	bconchar(cmdargs, '"');
 	bconchar(cmdargs, ' ');
 
+	// Do not attach devices during testing.
+	bcatcstr(cmdargs, "-n ");
+
 	// Run the 'test' command automatically.
 	bcatcstr(cmdargs, "-c test ");
 

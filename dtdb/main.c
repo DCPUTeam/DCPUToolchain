@@ -78,10 +78,11 @@ int main(int argc, char** argv)
 	struct arg_file* symbols_file = arg_file0("s", "symbols", "<file>", "The file to load symbols from.");
 	struct arg_file* input_file = arg_file0(NULL, NULL, "<file>", "The file to initially load.");
 	struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
+	struct arg_lit* no_attach_mode = arg_lit0("n", "no-attachment", "Do not attach default devices when launched.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, command_arg, symbols_file, input_file, little_endian_mode, verbose, quiet, end };
+	void* argtable[] = { show_help, no_attach_mode, command_arg, symbols_file, input_file, little_endian_mode, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -115,12 +116,17 @@ int main(int argc, char** argv)
 	// Initialize debugger.
 	ddbg_init();
 
-	// Load file if filename is specified.
-	if (input_file->count > 0)
+	// Initialize devices unless not requested.
+	if (no_attach_mode->count == 0)
 	{
 		ddbg_attach(bfromcstr("clock"));
 		ddbg_attach(bfromcstr("keyboard"));
 		ddbg_attach(bfromcstr("lem1802"));
+	}
+
+	// Load file if filename is specified.
+	if (input_file->count > 0)
+	{
 		ddbg_load(bfromcstr(input_file->filename[0]));
 		ddbg_flash_vm();
 	}
