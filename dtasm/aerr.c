@@ -19,7 +19,7 @@
 #include "aerr.h"
 
 // Error strings
-const char* err_strings[20] =
+const char* err_strings[21] =
 {
 	"assembler: generic assembling error.\n",
 	"assembler: label '%s' not found.\n",
@@ -40,7 +40,8 @@ const char* err_strings[20] =
 	"assembler: unable to resolve '%s' as label resolution is not permitted at this time.\n",
 	"assembler: the imported label '%s' may not be used as a component of an expression.\n",
 	"assembler: expression '%s' evaluates to zero while being used as a divisor.\n",
-	"assembler: .OUTPUT is not permitted prior to .SECTION.\n"
+	"assembler: .OUTPUT is not permitted prior to .SECTION.\n",
+	"assembler: invalid parameter count for instruction.\n"
 };
 
 // Error definition

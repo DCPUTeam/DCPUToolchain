@@ -55,10 +55,16 @@ void reverse_lines(struct ast_node_lines* lines)
 void reverse_parameters(struct ast_node_parameters* params)
 {
 	struct ast_node_parameters* nlines = (struct ast_node_parameters*)malloc(sizeof(struct ast_node_parameters));
-	struct ast_node_parameter* current = params->last;
+	struct ast_node_parameter* current = NULL;
 	struct ast_node_parameter* nprev = NULL;
 	struct ast_node_parameter* cnext = NULL;
 	nlines->last = NULL;
+	if (params == NULL)
+	{
+		free(nlines);
+		return;
+	}
+	current = params->last;
 
 	while (current != NULL)
 	{
@@ -472,6 +478,20 @@ void process_line(struct ast_node_line* line)
 					ahalt(ERR_UNKNOWN_OPCODE, line->instruction->instruction);
 
 				printd(LEVEL_VERBOSE, "EMIT %s", insttype->name);
+
+				// Check parameter count.
+				if (line->instruction->parameters == NULL && strcmp(line->instruction->instruction, "RFI") == 0)
+				{
+					// Handle RFI (which can accept no parameters).
+					result = aout_emit(aout_create_opcode(insttype->opcode, insttype->nbopcode, 0x21 /* 0 literal */));
+					printd(LEVEL_VERBOSE, "\n");
+					break;
+				}
+				else if (line->instruction->parameters == NULL)
+				{
+					// Halt and error.
+					ahalt(ERR_INVALID_PARAMETER_COUNT, NULL);
+				}
 
 				// Process parameters normally.
 				ppresults = process_parameters(line->instruction->parameters);
