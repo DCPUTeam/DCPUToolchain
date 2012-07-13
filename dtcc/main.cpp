@@ -22,6 +22,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include <argtable2.h>
+#include <unistd.h>
 
 extern "C"
 {
