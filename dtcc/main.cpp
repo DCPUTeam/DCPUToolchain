@@ -22,10 +22,10 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include <argtable2.h>
-#include <unistd.h>
 
 extern "C"
 {
+#include <unistd.h>
 #include <version.h>
 #include <pp.h>
 #include <ppfind.h>
