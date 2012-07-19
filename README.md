@@ -180,9 +180,9 @@ $ make dtemu
 Note that currently only building `dtemu` works due to a conflict that exists when building the preprocessor parser inside the
 static library.  We hope to have this issue sorted so that all tools can be built successfully.
 
-#### Testing
+#### Testing with Emscripten
 
-In order to run the toolchain, you must be running it from a web server (due to cross-HTTP request restrictions).  To run the
+In order to run the toolchain under Emscripten, you must be running it from a web server (due to cross-HTTP request restrictions).  To run the
 toolchain, start a web server local to the _build directory_ (in the case above, this is in the `build-emcc` folder).  For example,
 if you have Python installed, you can easily do:
 
