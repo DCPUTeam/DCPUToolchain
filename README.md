@@ -50,13 +50,6 @@ First install a few required packages with
 $ sudo apt-get install bison flex cmake build-essential libreadline-dev libsdl1.2-dev libcurl4-openssl-dev
 ```
 
-Download [libtcod](http://doryen.eptalys.net/libtcod/download/) and copy
-
-```
-$ sudo cp libtcod*.so /usr/lib
-$ sudo cp -r include /usr/include/libtcod
-```
-
 Next clone the repository into a new folder
 
 ```
@@ -82,13 +75,6 @@ installed aswell
 ```
 $ sudo yum install bison flex cmake mesa-lib* zlib-devel libpng-devel
 $ sudo yum groupinstall "Development Tools"
-```
-
-Download [libtcod](http://doryen.eptalys.net/libtcod/download/) and copy
-
-```
-$ sudo cp libtcod*.so /usr/lib
-$ sudo cp -r include /usr/include/libtcod
 ```
 
 Next clone the repository into a new folder
