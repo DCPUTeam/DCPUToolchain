@@ -17,7 +17,7 @@ dt_needs(simclist)
 dt_needs(libdcpu-pp-expr)
 
 find_package(GLU REQUIRED)
-target_link_libraries(libdcpu-vm ${GLU_LIBRARY})
+#target_link_libraries(libdcpu-vm ${GLU_LIBRARY})
 
 #find_package(X11 REQUIRED)
 #target_link_libraries(libdcpu-vm ${X11_LIBRARIES})
@@ -25,4 +25,5 @@ target_link_libraries(libdcpu-vm ${GLU_LIBRARY})
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lGLU")
 
 dt_needs(glfw)
+target_link_libraries(libdcpu-vm ${GLFW_LIBRARIES} ${GLU_LIBRARY})
 
