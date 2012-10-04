@@ -15,3 +15,5 @@ dt_needs(libdcpu)
 dt_needs(bstring)
 dt_needs(simclist)
 dt_needs(libdcpu-pp-expr)
+dt_needs(glfw)
+
