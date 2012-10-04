@@ -18,6 +18,6 @@
 #include "ldbin.h"
 
 void bin_lua_init();
-void bin_lua_optimize(struct ldbin* bin);
+int32_t bin_lua_optimize(struct ldbin* bin);
 
 #endif

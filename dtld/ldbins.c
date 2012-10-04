@@ -29,14 +29,6 @@
 #include "ddata.h"
 
 ///
-/// The global bin storage.
-///
-struct
-{
-	list_t bins;
-} ldbins;
-
-///
 /// Finds a bin in the bin list by it's name.
 ///
 int bin_seeker(const void* el, const void* indicator)
@@ -632,25 +624,30 @@ void bins_flatten(freed_bstring name)
 /// required number of cycles for the code.
 ///
 /// @param mode The optimization mode.
+/// @returns The number of words saved during optimization.
 ///
-void bins_optimize(int target, int level)
+int32_t bins_optimize(int target, int level)
 {
 	unsigned int i;
 	struct ldbin* bin;
+	int32_t saved = 0;
 
 	// Check to see whether we should skip optimizations altogether.
 	if (level == OPTIMIZE_NONE)
 	{
 		printd(LEVEL_VERBOSE, "skipping optimizations as requested.\n");
-		return;
+		return 0;
 	}
 
 	// Loop through each bin and run the optimizers on it.
 	for (i = 0; i < list_size(&ldbins.bins); i++)
 	{
 		bin = list_get_at(&ldbins.bins, i);
-		bin_lua_optimize(bin);
+		saved += bin_lua_optimize(bin);
 	}
+
+	// Return total number of words saved.
+	return saved;
 }
 
 ///
@@ -840,7 +837,7 @@ uint16_t bins_compress()
 					entry = NULL;
 					for (j = 0; j < list_size(bin->required); j++)
 					{
-						entry = list_get_at(bin->required, i);
+						entry = list_get_at(bin->required, j);
 						if (i + 1 == entry->address)
 						{
 							apply = false;
@@ -848,12 +845,12 @@ uint16_t bins_compress()
 						}
 					}
 				}
-				if (bin->adjustment != NULL && !apply)
+				if (bin->adjustment != NULL && apply)
 				{
 					entry = NULL;
 					for (j = 0; j < list_size(bin->adjustment); j++)
 					{
-						entry = list_get_at(bin->adjustment, i);
+						entry = list_get_at(bin->adjustment, j);
 						if (i + 1 == entry->address)
 						{
 							apply = false;

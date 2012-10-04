@@ -28,6 +28,14 @@
 #define OPTIMIZE_AGGRESSIVE 2
 #define OPTIMIZE_DANGEROUS 3
 
+///
+/// The global bin storage.
+///
+struct
+{
+	list_t bins;
+} ldbins;
+
 void bins_init();
 struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct lprov_entry* required, struct lprov_entry* adjustment, struct lprov_entry* section, struct lprov_entry* output);
 bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbolExtension);
@@ -36,7 +44,7 @@ bool bins_write(freed_bstring name, uint16_t word);
 void bins_associate();
 void bins_sectionize();
 void bins_flatten(freed_bstring name);
-void bins_optimize(int target, int level);
+int32_t bins_optimize(int target, int level);
 void bins_resolve(bool keepProvided);
 uint16_t bins_compress();
 void bins_free();
