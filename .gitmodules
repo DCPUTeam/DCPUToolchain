@@ -13,6 +13,3 @@
 [submodule "third-party/zlib/emscripten"]
 	path = third-party/zlib/emscripten
 	url = git://github.com/hachque-Emscripten/zlib-1.2.5.git
-[submodule "third-party/glfw"]
-	path = third-party/glfw
-	url = git://github.com/elmindreda/glfw.git
