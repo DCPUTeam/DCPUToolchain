@@ -31,7 +31,6 @@ int sped3_width = 800, sped3_height = 600;
 uint16_t sped3_mem = 0;
 
 void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
-    printf("sped3 cycle\n");
     glfwMakeContextCurrent(sped3_window);
     glfwGetWindowSize(sped3_window, &sped3_width, &sped3_height);
     sped3_height = sped3_height > 0 ? sped3_height : 1;
