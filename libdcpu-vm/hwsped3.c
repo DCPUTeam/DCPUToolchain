@@ -1,13 +1,13 @@
 /**
 
-	File:		hwsped3.c
+    File:	hwsped3.c
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-vm
+    Project:	DCPU-16 Tools
+    Component:	LibDCPU-vm
 
-	Authors:    Jose Manuel Diez	
+    Authors:	Jose Manuel Diez    
 
-	Description: Implements the SPED-3 specification.	
+    Description: Implements the SPED-3 specification.	
 **/
 
 #include <GL/glfw3.h>
@@ -52,21 +52,21 @@ void vm_hw_sped3_set_color(uint8_t cc, uint8_t intensity) {
     float k = 1.f;
 
     if(intensity == 1)
-	k = 0.5f;
-	
+    k = 0.5f;
+    
     switch(cc) {
-	case 0: 
-	    glColor3f(0.05f * k, 0.05f * k, 0.05f * k);
-	    break;
-	case 1:
-	    glColor3f(1.f * k, 0.f, 0.f);
-	    break;
-	case 2:
-	    glColor3f(0.f, 1.f * k, 0.f);
-	    break;
-	case 3:
-	    glColor3f(0.f, 0.f, 1.f * k);
-	    break;
+    case 0: 
+	glColor3f(0.05f * k, 0.05f * k, 0.05f * k);
+	break;
+    case 1:
+	glColor3f(1.f * k, 0.f, 0.f);
+	break;
+    case 2:
+	glColor3f(0.f, 1.f * k, 0.f);
+	break;
+    case 3:
+	glColor3f(0.f, 0.f, 1.f * k);
+	break;
     }
 }
 
@@ -80,44 +80,40 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
 
     if((glfwGetTime() - last_redraw > 0.1)) {
 	if(sped3_rot_current != sped3_rot_target) {
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(  0.f, -4.f, 0.f,
-			    0.f, 0.f, 0.f,
-			    0.f, 0.f, 1.f);
+	    glMatrixMode(GL_MODELVIEW);
+	    glLoadIdentity();
+	    gluLookAt(	0.f, -4.f, 0.f,
+			0.f, 0.f, 0.f,
+			0.f, 0.f, 1.f);
  
-		last_redraw = glfwGetTime();
+	    last_redraw = glfwGetTime();
 	
-		vm_hw_sped3_update_rot();
+	    vm_hw_sped3_update_rot();
        
-		glRotatef(sped3_rot_current, 0.f, 0.f, 1.f);
-		glTranslatef(0.f, 0.f, 2.f);
+	    glRotatef(sped3_rot_current, 0.f, 0.f, 1.f);
 	    
 	    glClearColor(0.f, 0.f, 0.f, 0.f);
 	    glClear(GL_COLOR_BUFFER_BIT);
 
-		glBegin(GL_LINE_STRIP);
-		for(i = 0; i < sped3_num; i++) {
-		    firstword  = vm->ram[sped3_mem + i * 2];
-		    secondword = vm->ram[sped3_mem + (i * 2) + 1];
+	    glBegin(GL_LINE_STRIP);
+	    for(i = 0; i < sped3_num; i++) {
+		firstword  = vm->ram[sped3_mem + i * 2];
+		secondword = vm->ram[sped3_mem + (i * 2) + 1];
 	
-		    // Translate SPED-3 coordinates into OpenGL coordinates. 
-		    x = (float) (firstword & 0xff) / 256 * 2 - 1;
-		    // y+ is into the world in SPED-3, z- is into the screen in OpenGL
-		    z = -(float) (firstword >> 8) / 256 * 2 - 1; 
-		    // z+ is up in SPED-3, y+ is up in OpenGL
-		    y = (float) (secondword & 0xff) / 256 * 2 - 1;
+		x = (float) (firstword & 0xff) / 256 * 2 - 1;
+		y = (float) (firstword >> 8) / 256 * 2 - 1; 
+		z = (float) (secondword & 0xff) / 256 * 2 - 1;
 	    
-		    cc = (secondword >> 8) & 0x3;
-		    intensity = secondword >> 11; 
-		 
-		    glColor3f(1.f, 1.f, 1.f);
-		    vm_hw_sped3_set_color(cc, intensity);
-		    glVertex3f(x, y, z);
-		}
-		glEnd();
+		cc = (secondword >> 8) & 0x3;
+		intensity = secondword >> 11; 
+	     
+		glColor3f(1.f, 1.f, 1.f);
+		vm_hw_sped3_set_color(cc, intensity);
+		glVertex3f(x, y, z);
+	    }
+	    glEnd();
 	
-		glfwSwapBuffers(sped3_window);
+	    glfwSwapBuffers(sped3_window);
 	}
     }
     
@@ -126,21 +122,21 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
 
 void vm_hw_sped3_interrupt(vm_t* vm, void* ud) {
     switch(vm->registers[REG_A]) {
-	case SPED3_INTERRUPT_POLL:
-	    vm->registers[REG_B] = vm_hw_sped3_state();
+    case SPED3_INTERRUPT_POLL:
+	vm->registers[REG_B] = vm_hw_sped3_state();
 
-	    break;
-	case SPED3_INTERRUPT_MAP:
-	    sped3_mem = vm->registers[REG_X];
-	    sped3_num = vm->registers[REG_Y];
+	break;
+    case SPED3_INTERRUPT_MAP:
+	sped3_mem = vm->registers[REG_X];
+	sped3_num = vm->registers[REG_Y];
 	sped3_state = SPED3_STATE_RUNNING;
 
-	    break;
-	case SPED3_INTERRUPT_ROTATE:
-	    sped3_rot_target = vm->registers[REG_X] % 360;
+	break;
+    case SPED3_INTERRUPT_ROTATE:
+	sped3_rot_target = vm->registers[REG_X] % 360;
 	sped3_state = SPED3_STATE_TURNING;
 
-	    break;
+	break;
    }
 }
 
@@ -150,15 +146,15 @@ int vm_hw_sped3_close(GLFWwindow w) {
 
 void vm_hw_sped3_init(vm_t* vm)
 {
-	hw_t sped3;
+    hw_t sped3;
 
-	sped3.id = 0x42babf3c;
+    sped3.id = 0x42babf3c;
     sped3.version = 0x0003;
-	sped3.manufacturer = 0x1eb37e91;
-	sped3.handler = &vm_hw_sped3_interrupt;
+    sped3.manufacturer = 0x1eb37e91;
+    sped3.handler = &vm_hw_sped3_interrupt;
 
-	sped3_cycle_hook = vm_hook_register(vm, &vm_hw_sped3_cycle, HOOK_ON_POST_CYCLE, NULL);
-	sped3_hw_id = vm_hw_register(vm, sped3);
+    sped3_cycle_hook = vm_hook_register(vm, &vm_hw_sped3_cycle, HOOK_ON_POST_CYCLE, NULL);
+    sped3_hw_id = vm_hw_register(vm, sped3);
 
 
     // TODO: check for errors and cry about it
@@ -182,7 +178,7 @@ void vm_hw_sped3_init(vm_t* vm)
 
 void vm_hw_sped3_free(vm_t* vm)
 {
-	glfwDestroyWindow(sped3_window);
+    glfwDestroyWindow(sped3_window);
     vm_hook_unregister(vm, sped3_cycle_hook);
-	vm_hw_unregister(vm, sped3_hw_id);
+    vm_hw_unregister(vm, sped3_hw_id);
 }
