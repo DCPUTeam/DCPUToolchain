@@ -18,6 +18,8 @@
 #else
 #include <libgen.h>
 #endif
+
+#include <GL/glfw3.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -141,6 +143,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+    glfwInit();
 	// And then use the VM.
 	vm = vm_create();
 	vm->debug = (debug_mode->count > 0);
@@ -179,9 +182,11 @@ int main(int argc, char* argv[])
 	vm_hw_timer_free(vm);
 	vm_hw_io_free(vm);
 	vm_hw_lem1802_free(vm);
+    vm_hw_sped3_free(vm);
 	vm_free(vm);
 
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+    glfwTerminate();
 	return 0;
 #endif
 }
