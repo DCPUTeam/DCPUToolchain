@@ -34,6 +34,8 @@ uint16_t sped3_num = 0;
 uint16_t sped3_rot_target = 0;
 float sped3_rot_current = 0;
 
+uint16_t sped3_state = SPED3_STATE_NO_DATA;
+
 vm_t* g_vm;
 
 uint16_t vm_hw_sped3_state(void) {
@@ -43,7 +45,7 @@ uint16_t vm_hw_sped3_state(void) {
 void vm_hw_sped3_update_rot() {
     if(sped3_rot_current != sped3_rot_target) {
 	sped3_rot_current += 0.8f;
-    }
+    } else sped3_state = SPED3_STATE_RUNNING;
 }
 
 void vm_hw_sped3_set_color(uint8_t cc, uint8_t intensity) {
@@ -83,30 +85,30 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
 	glClearColor(0.f, 0.f, 0.f, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	last_redraw = glfwGetTime();
-
+    
 	vm_hw_sped3_update_rot();
-
+    
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(  0.f, -4.f, 0.f,
 		    0.f, 0.f, 0.f,
 		    0.f, 0.f, 1.f);
-
+    
 	glRotatef(sped3_rot_current, 0.f, 0.f, 1.f);
 	glTranslatef(0.f, 0.f, 2.f);
-
+    
 	glBegin(GL_LINE_STRIP);
 	for(i = 0; i < sped3_num; i++) {
 	    firstword  = vm->ram[sped3_mem + i * 2];
 	    secondword = vm->ram[sped3_mem + (i * 2) + 1];
-
+    
 	    // Translate SPED-3 coordinates into OpenGL coordinates. 
 	    x = (float) (firstword & 0xff) / 256 * 2 - 1;
 	    // y+ is into the world in SPED-3, z- is into the screen in OpenGL
 	    z = -(float) (firstword >> 8) / 256 * 2 - 1; 
 	    // z+ is up in SPED-3, y+ is up in OpenGL
 	    y = (float) (secondword & 0xff) / 256 * 2 - 1;
-    
+	
 	    cc = (secondword >> 8) & 0x3;
 	    intensity = secondword >> 11; 
 	 
@@ -115,7 +117,7 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
 	    glVertex3f(x, y, z);
 	}
 	glEnd();
-
+    
 	glfwSwapBuffers(sped3_window);
     }
     
@@ -126,13 +128,18 @@ void vm_hw_sped3_interrupt(vm_t* vm, void* ud) {
     switch(vm->registers[REG_A]) {
 	case SPED3_INTERRUPT_POLL:
 	    vm->registers[REG_B] = vm_hw_sped3_state();
+
 	    break;
 	case SPED3_INTERRUPT_MAP:
 	    sped3_mem = vm->registers[REG_X];
 	    sped3_num = vm->registers[REG_Y];
+	sped3_state = SPED3_STATE_RUNNING;
+
 	    break;
 	case SPED3_INTERRUPT_ROTATE:
 	    sped3_rot_target = vm->registers[REG_X] % 360;
+	sped3_state = SPED3_STATE_ROTATING;
+
 	    break;
    }
 }
