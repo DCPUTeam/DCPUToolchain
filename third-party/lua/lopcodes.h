@@ -175,6 +175,15 @@ typedef enum
 	OP_DIV,/*	A B C	R(A) := RK(B) / RK(C)				*/
 	OP_MOD,/*	A B C	R(A) := RK(B) % RK(C)				*/
 	OP_POW,/*	A B C	R(A) := RK(B) ^ RK(C)				*/
+#if defined(LUA_BITWISE_OPERATORS)
+	OP_BOR,/*	A B C	R(A) := RK(B) | RK(C)				*/
+	OP_BAND,/*	A B C	R(A) := RK(B) & RK(C)				*/
+	OP_BXOR,/*	A B C	R(A) := RK(B) ^| RK(C)				*/
+	OP_BLSHFT,/*	A B C	R(A) := RK(B) << RK(C)				*/
+	OP_BRSHFT,/*	A B C	R(A) := RK(B) >> RK(C)				*/
+	OP_BNOT,/*	A B	R(A) := ~ R(B)					*/
+	OP_INTDIV,/*	A B C	R(A) := RK(B) // RK(C)				*/
+#endif
 	OP_UNM,/*	A B	R(A) := -R(B)					*/
 	OP_NOT,/*	A B	R(A) := not R(B)				*/
 	OP_LEN,/*	A B	R(A) := length of R(B)				*/
@@ -245,10 +254,10 @@ typedef enum
 
 enum OpArgMask
 {
-	OpArgN,  /* argument is not used */
-	OpArgU,  /* argument is used */
-	OpArgR,  /* argument is a register or a jump offset */
-	OpArgK   /* argument is a constant or register/constant */
+	OpArgN,	 /* argument is not used */
+	OpArgU,	 /* argument is used */
+	OpArgR,	 /* argument is a register or a jump offset */
+	OpArgK	 /* argument is a constant or register/constant */
 };
 
 LUAI_DATA const lu_byte luaP_opmodes[NUM_OPCODES];

@@ -41,6 +41,7 @@
 #define ERR_EXPRESSION_NOT_PERMITTED 17
 #define ERR_EXPRESSION_DIVIDE_BY_ZERO 18
 #define ERR_OUTPUT_BEFORE_SECTION 19
+#define ERR_INVALID_PARAMETER_COUNT 20
 
 // Variables
 extern const char* err_strings[];

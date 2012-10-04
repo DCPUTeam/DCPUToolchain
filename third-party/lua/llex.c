@@ -36,11 +36,14 @@
 /* ORDER RESERVED */
 const char* const luaX_tokens [] =
 {
-	"and", "break", "do", "else", "elseif",
+	"and", "break", "continue", "do", "else", "elseif",
 	"end", "false", "for", "function", "if",
 	"in", "local", "nil", "not", "or", "repeat",
 	"return", "then", "true", "until", "while",
 	"..", "...", "==", ">=", "<=", "~=",
+#ifdef LUA_BITWISE_OPERATORS
+	">>", "<<", "//", "^^", "!=",
+#endif
 	"<number>", "<name>", "<string>", "<eof>",
 	NULL
 };
@@ -249,7 +252,7 @@ static void read_long_string(LexState* ls, SemInfo* seminfo, int sep)
 	int cont = 0;
 	(void)(cont);	 /* avoid warnings when `cont' is not used */
 	save_and_next(ls);  /* skip 2nd `[' */
-	if (currIsNewline(ls))  /* string starts with a newline? */
+	if (currIsNewline(ls))	/* string starts with a newline? */
 		inclinenumber(ls);	/* skip it */
 	for (;;)
 	{
@@ -361,7 +364,7 @@ static void read_string(LexState* ls, int del, SemInfo* seminfo)
 					{
 						if (!isdigit(ls->current))
 							save_and_next(ls);  /* handles \\, \", \', and \? */
-						else    /* \xxx */
+						else	/* \xxx */
 						{
 							int i = 0;
 							c = 0;
@@ -448,6 +451,58 @@ static int llex(LexState* ls, SemInfo* seminfo)
 					return TK_EQ;
 				}
 			}
+#ifdef LUA_BITWISE_OPERATORS
+			case '<':
+			{
+				next(ls);
+				if (ls->current == '=')
+				{
+					next(ls);
+					return TK_LE;
+				}
+				else if (ls->current == '<')
+				{
+					next(ls);
+					return TK_LSHFT;
+				}
+				else  return '<';
+			}
+			case '>':
+			{
+				next(ls);
+				if (ls->current == '=')
+				{
+					next(ls);
+					return TK_GE;
+				}
+				else if (ls->current == '>')
+				{
+					next(ls);
+					return TK_RSHFT;
+				}
+				else return '>';
+			}
+			case '^':
+			{
+				next(ls);
+				if (ls->current != '^') return '^';
+				else
+				{
+					next(ls);
+					return TK_XOR;
+				}
+			}
+			case '!':
+			{
+				next(ls);
+				if (ls->current != '=') return '!';
+				else
+				{
+					next(ls);
+					return TK_NE;
+				}
+			}
+#else
 			case '<':
 			{
 				next(ls);
@@ -468,6 +523,7 @@ static int llex(LexState* ls, SemInfo* seminfo)
 					return TK_GE;
 				}
 			}
+#endif
 			case '~':
 			{
 				next(ls);
@@ -490,8 +546,8 @@ static int llex(LexState* ls, SemInfo* seminfo)
 				if (check_next(ls, "."))
 				{
 					if (check_next(ls, "."))
-						return TK_DOTS;   /* ... */
-					else return TK_CONCAT;   /* .. */
+						return TK_DOTS;	  /* ... */
+					else return TK_CONCAT;	 /* .. */
 				}
 				else if (!isdigit(ls->current)) return '.';
 				else
@@ -551,13 +607,13 @@ static int llex(LexState* ls, SemInfo* seminfo)
 void luaX_next(LexState* ls)
 {
 	ls->lastline = ls->linenumber;
-	if (ls->lookahead.token != TK_EOS)  	/* is there a look-ahead token? */
+	if (ls->lookahead.token != TK_EOS)	/* is there a look-ahead token? */
 	{
-		ls->t = ls->lookahead;  /* use this one */
+		ls->t = ls->lookahead;	/* use this one */
 		ls->lookahead.token = TK_EOS;  /* and discharge it */
 	}
 	else
-		ls->t.token = llex(ls, &ls->t.seminfo);  /* read next token */
+		ls->t.token = llex(ls, &ls->t.seminfo);	 /* read next token */
 }
 
 

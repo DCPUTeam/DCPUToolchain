@@ -25,6 +25,7 @@
 
 extern "C"
 {
+#include <unistd.h>
 #include <version.h>
 #include <pp.h>
 #include <ppfind.h>

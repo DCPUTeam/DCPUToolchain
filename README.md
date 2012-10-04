@@ -50,13 +50,6 @@ First install a few required packages with
 $ sudo apt-get install bison flex cmake build-essential libreadline-dev libsdl1.2-dev libcurl4-openssl-dev
 ```
 
-Download [libtcod](http://doryen.eptalys.net/libtcod/download/) and copy
-
-```
-$ sudo cp libtcod*.so /usr/lib
-$ sudo cp -r include /usr/include/libtcod
-```
-
 Next clone the repository into a new folder
 
 ```
@@ -67,9 +60,7 @@ $ cd dcputoolchain
 Now generate the makefiles and and compile with
 
 ```
-dcputoolchain$ cd build
-dcputoolchain/build$ cmake ..
-dcputoolchain/build$ make
+[dcputoolchain]$ cmake . && make
 ```
 
 If everything went well the binaries are in ```dcputoolchain/Debug```
@@ -77,18 +68,11 @@ If everything went well the binaries are in ```dcputoolchain/Debug```
 #### Fedora 16
 First install a few required packages with
 
-**IMPORTANT NOTICE: Build Instructions outdated** libcurl dev headers need to be
-installed aswell
+**IMPORTANT NOTICE: Build Instructions outdated** libcurl dev headers need to be installed aswell
+
 ```
 $ sudo yum install bison flex cmake mesa-lib* zlib-devel libpng-devel
 $ sudo yum groupinstall "Development Tools"
-```
-
-Download [libtcod](http://doryen.eptalys.net/libtcod/download/) and copy
-
-```
-$ sudo cp libtcod*.so /usr/lib
-$ sudo cp -r include /usr/include/libtcod
 ```
 
 Next clone the repository into a new folder
@@ -101,9 +85,7 @@ $ cd dcputoolchain
 Now generate the makefiles and and compile with
 
 ```
-dcputoolchain$ cd build
-dcputoolchain/build$ cmake ..
-dcputoolchain/build$ make
+[dcputoolchain]$ cmake . && make
 ```
 
 If everything went well the binaries are in ```dcputoolchain/Debug```
@@ -114,53 +96,27 @@ First install Xcode which should install everything you need to compile.
 
 Next, you'll need to install a few other things, I'll be using homebrew for this, which you can download [here](https://github.com/mxcl/homebrew/wiki/installation), but you could use port, fink or any other way you want to install it.
 
-You will need to install cmake, git, hg and sdl.
+You will need to install cmake, git and sdl.
 
-**IMPORTANT NOTICE: Build Instructions outdated** libcurl dev headers need to be
-installed aswell
+**IMPORTANT NOTICE: Build Instructions outdated** libcurl dev headers need to be installed aswell
+
 ```
 $ brew install cmake
 $ brew install git
-$ brew install hg
 $ brew install sdl
 ```
 
-Once all of these are installed, you're first going to want to clone the libtcod source from [here](https://bitbucket.org/jice/libtcod).  The reason we are building it from scratch, is because the downloads only has a i386 built dylib, and most likely your going to be building with x64_86, so we'll just build manually.
-
-Clone the repo to a folder on your computer, and then enter the directory.
+Now that you've installed git, you should be able to clone DCPUToolchain if you haven't already.
 
 ```
-$ hg clone https://bitbucket.org/jice/libtcod
-$ cd libtcod
-```
-
-Now we can build libtcod with cmake and make.
-
-```
-$ cmake .
-$ make
-```
-
-You may see a few warnings, as long as it says 100% at the end, you should be just fine.  In order to create the dylib you need, you'll need to use make install, and then copy it to your lib folder, I use /usr/local/lib, but you can use /usr/lib if that's what you use/prefer.
-
-```
-$ make install
-$ sudo cp libtcod.dylib /usr/local/lib
-$ sudo cp -r include /usr/include/libtcod
-```
-
-Now that you've copied the dylib for libtcod, you should be able to clone DCPUToolchain if you haven't already.
-
-```
-$ git clone https://github.com/DCPUTeam/DCPUToolchain.git
-$ cd DCPUToolchain/build
+$ git clone https://github.com/DCPUTeam/DCPUToolchain.git dcputoolchain
+$ cd dcputoolchain
 ```
 
 Now we can build it.
 
 ```
-$ cmake ..
-$ make
+[dcputoolchain]$ cmake . && make
 ```
 
 If everything looks like it didn't crash and burn, then you should find everything you need in ```dcputoolchain/Debug```
@@ -180,9 +136,9 @@ $ make dtemu
 Note that currently only building `dtemu` works due to a conflict that exists when building the preprocessor parser inside the
 static library.  We hope to have this issue sorted so that all tools can be built successfully.
 
-#### Testing
+#### Testing with Emscripten
 
-In order to run the toolchain, you must be running it from a web server (due to cross-HTTP request restrictions).  To run the
+In order to run the toolchain under Emscripten, you must be running it from a web server (due to cross-HTTP request restrictions).  To run the
 toolchain, start a web server local to the _build directory_ (in the case above, this is in the `build-emcc` folder).  For example,
 if you have Python installed, you can easily do:
 

@@ -21,7 +21,7 @@ typedef enum
 	TM_NEWINDEX,
 	TM_GC,
 	TM_MODE,
-	TM_EQ,  /* last tag method with `fast' access */
+	TM_EQ,	/* last tag method with `fast' access */
 	TM_ADD,
 	TM_SUB,
 	TM_MUL,
@@ -34,6 +34,15 @@ typedef enum
 	TM_LE,
 	TM_CONCAT,
 	TM_CALL,
+#ifdef LUA_BITWISE_OPERATORS
+	TM_BOR,
+	TM_BAND,
+	TM_BXOR,
+	TM_BLSHFT,
+	TM_BRSHFT,
+	TM_BNOT,
+	TM_INTDIV,
+#endif
 	TM_N		/* number of elements in the enum */
 } TMS;
 

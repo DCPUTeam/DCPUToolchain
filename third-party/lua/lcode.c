@@ -36,9 +36,9 @@ static int isnumeral(expdesc* e)
 void luaK_nil(FuncState* fs, int from, int n)
 {
 	Instruction* previous;
-	if (fs->pc > fs->lasttarget)    /* no jumps to current position? */
+	if (fs->pc > fs->lasttarget)	/* no jumps to current position? */
 	{
-		if (fs->pc == 0)  	/* function start? */
+		if (fs->pc == 0)	/* function start? */
 		{
 			if (from >= fs->nactvar)
 				return;	 /* positions are already clean */
@@ -112,8 +112,8 @@ int luaK_getlabel(FuncState* fs)
 static int getjump(FuncState* fs, int pc)
 {
 	int offset = GETARG_sBx(fs->f->code[pc]);
-	if (offset == NO_JUMP)  /* point to itself represents end of list */
-		return NO_JUMP;  /* end of list */
+	if (offset == NO_JUMP)	/* point to itself represents end of list */
+		return NO_JUMP;	 /* end of list */
 	else
 		return (pc + 1) + offset; /* turn offset into absolute position */
 }
@@ -269,7 +269,7 @@ static int addk(FuncState* fs, TValue* k, TValue* v)
 		lua_assert(luaO_rawequalObj(&fs->f->k[cast_int(nvalue(idx))], v));
 		return cast_int(nvalue(idx));
 	}
-	else    /* constant not found; create a new entry */
+	else	/* constant not found; create a new entry */
 	{
 		setnvalue(idx, cast_num(fs->nk));
 		luaM_growvector(L, f->k, fs->nk, f->sizek, TValue,
@@ -318,7 +318,7 @@ static int nilK(FuncState* fs)
 
 void luaK_setreturns(FuncState* fs, expdesc* e, int nresults)
 {
-	if (e->k == VCALL)  	/* expression is an open function call? */
+	if (e->k == VCALL)	/* expression is an open function call? */
 	{
 		SETARG_C(getcode(fs, e), nresults + 1);
 	}
@@ -333,7 +333,7 @@ void luaK_setreturns(FuncState* fs, expdesc* e, int nresults)
 
 void luaK_setoneret(FuncState* fs, expdesc* e)
 {
-	if (e->k == VCALL)  	/* expression is an open function call? */
+	if (e->k == VCALL)	/* expression is an open function call? */
 	{
 		e->k = VNONRELOC;
 		e->u.s.info = GETARG_A(getcode(fs, e));
@@ -382,7 +382,7 @@ void luaK_dischargevars(FuncState* fs, expdesc* e)
 			break;
 		}
 		default:
-			break;  /* there is one value available (somewhere) */
+			break;	/* there is one value available (somewhere) */
 	}
 }
 
@@ -435,7 +435,7 @@ static void discharge2reg(FuncState* fs, expdesc* e, int reg)
 		default:
 		{
 			lua_assert(e->k == VVOID || e->k == VJMP);
-			return;  /* nothing to do... */
+			return;	 /* nothing to do... */
 		}
 	}
 	e->u.s.info = reg;
@@ -495,7 +495,7 @@ int luaK_exp2anyreg(FuncState* fs, expdesc* e)
 	if (e->k == VNONRELOC)
 	{
 		if (!hasjumps(e)) return e->u.s.info;  /* exp is already in a register */
-		if (e->u.s.info >= fs->nactvar)    /* reg. is not a local? */
+		if (e->u.s.info >= fs->nactvar)	   /* reg. is not a local? */
 		{
 			exp2reg(fs, e, e->u.s.info);  /* put value on it */
 			return e->u.s.info;
@@ -537,7 +537,7 @@ int luaK_exp2RK(FuncState* fs, expdesc* e)
 		}
 		case VK:
 		{
-			if (e->u.s.info <= MAXINDEXRK)  /* constant fit in argC? */
+			if (e->u.s.info <= MAXINDEXRK)	/* constant fit in argC? */
 				return RKASK(e->u.s.info);
 			else break;
 		}
@@ -579,7 +579,7 @@ void luaK_storevar(FuncState* fs, expdesc* var, expdesc* ex)
 		}
 		default:
 		{
-			lua_assert(0);  /* invalid var kind to store */
+			lua_assert(0);	/* invalid var kind to store */
 			break;
 		}
 	}
@@ -630,7 +630,7 @@ static int jumponcond(FuncState* fs, expdesc* e, int cond)
 
 void luaK_goiftrue(FuncState* fs, expdesc* e)
 {
-	int pc;  /* pc of last jump */
+	int pc;	 /* pc of last jump */
 	luaK_dischargevars(fs, e);
 	switch (e->k)
 	{
@@ -661,7 +661,7 @@ void luaK_goiftrue(FuncState* fs, expdesc* e)
 
 static void luaK_goiffalse(FuncState* fs, expdesc* e)
 {
-	int pc;  /* pc of last jump */
+	int pc;	 /* pc of last jump */
 	luaK_dischargevars(fs, e);
 	switch (e->k)
 	{
@@ -722,7 +722,7 @@ static void codenot(FuncState* fs, expdesc* e)
 		}
 		default:
 		{
-			lua_assert(0);  /* cannot happen */
+			lua_assert(0);	/* cannot happen */
 			break;
 		}
 	}
@@ -762,11 +762,11 @@ static int constfolding(OpCode op, expdesc* e1, expdesc* e2)
 			r = luai_nummul(v1, v2);
 			break;
 		case OP_DIV:
-			if (v2 == 0) return 0;  /* do not attempt to divide by 0 */
+			if (v2 == 0) return 0;	/* do not attempt to divide by 0 */
 			r = luai_numdiv(v1, v2);
 			break;
 		case OP_MOD:
-			if (v2 == 0) return 0;  /* do not attempt to divide by 0 */
+			if (v2 == 0) return 0;	/* do not attempt to divide by 0 */
 			r = luai_nummod(v1, v2);
 			break;
 		case OP_POW:
@@ -777,12 +777,36 @@ static int constfolding(OpCode op, expdesc* e1, expdesc* e2)
 			break;
 		case OP_LEN:
 			return 0;  /* no constant folding for 'len' */
+#ifdef LUA_BITWISE_OPERATORS
+		case OP_BOR:
+			luai_logor(r, v1, v2);
+			break;
+		case OP_BAND:
+			luai_logand(r, v1, v2);
+			break;
+		case OP_BXOR:
+			luai_logxor(r, v1, v2);
+			break;
+		case OP_BLSHFT:
+			luai_loglshft(r, v1, v2);
+			break;
+		case OP_BRSHFT:
+			luai_logrshft(r, v1, v2);
+			break;
+		case OP_BNOT:
+			luai_lognot(r, v1);
+			break;
+		case OP_INTDIV:
+			if (v2 == 0) return 0;	/* do not attempt to divide by 0 */
+			r = luai_numintdiv(v1, v2);
+			break;
+#endif
 		default:
 			lua_assert(0);
 			r = 0;
 			break;
 	}
-	if (luai_numisnan(r)) return 0;  /* do not attempt to produce NaN */
+	if (luai_numisnan(r)) return 0;	 /* do not attempt to produce NaN */
 	e1->u.nval = r;
 	return 1;
 }
@@ -794,7 +818,11 @@ static void codearith(FuncState* fs, OpCode op, expdesc* e1, expdesc* e2)
 		return;
 	else
 	{
+#ifdef LUA_BITWISE_OPERATORS
+		int o2 = (op != OP_UNM && op != OP_LEN && op != OP_BNOT) ? luaK_exp2RK(fs, e2) : 0;
+#else
 		int o2 = (op != OP_UNM && op != OP_LEN) ? luaK_exp2RK(fs, e2) : 0;
+#endif
 		int o1 = luaK_exp2RK(fs, e1);
 		if (o1 > o2)
 		{
@@ -840,6 +868,15 @@ void luaK_prefix(FuncState* fs, UnOpr op, expdesc* e)
 	e2.u.nval = 0;
 	switch (op)
 	{
+#ifdef LUA_BITWISE_OPERATORS
+		case OPR_BNOT:
+		{
+			if (e->k == VK)
+				luaK_exp2anyreg(fs, e);	 /* cannot operate on non-numeric constants */
+			codearith(fs, OP_BNOT, e, &e2);
+			break;
+		}
+#endif
 		case OPR_MINUS:
 		{
 			if (!isnumeral(e))
@@ -852,7 +889,7 @@ void luaK_prefix(FuncState* fs, UnOpr op, expdesc* e)
 			break;
 		case OPR_LEN:
 		{
-			luaK_exp2anyreg(fs, e);  /* cannot operate on constants */
+			luaK_exp2anyreg(fs, e);	 /* cannot operate on constants */
 			codearith(fs, OP_LEN, e, &e2);
 			break;
 		}
@@ -956,6 +993,26 @@ void luaK_posfix(FuncState* fs, BinOpr op, expdesc* e1, expdesc* e2)
 		case OPR_POW:
 			codearith(fs, OP_POW, e1, e2);
 			break;
+#if defined(LUA_BITWISE_OPERATORS)
+		case OPR_BOR:
+			codearith(fs, OP_BOR, e1, e2);
+			break;
+		case OPR_BAND:
+			codearith(fs, OP_BAND, e1, e2);
+			break;
+		case OPR_BXOR:
+			codearith(fs, OP_BXOR, e1, e2);
+			break;
+		case OPR_BLSHFT:
+			codearith(fs, OP_BLSHFT, e1, e2);
+			break;
+		case OPR_BRSHFT:
+			codearith(fs, OP_BRSHFT, e1, e2);
+			break;
+		case OPR_INTDIV:
+			codearith(fs, OP_INTDIV, e1, e2);
+			break;
+#endif
 		case OPR_EQ:
 			codecomp(fs, OP_EQ, 1, e1, e2);
 			break;
@@ -1031,6 +1088,6 @@ void luaK_setlist(FuncState* fs, int base, int nelems, int tostore)
 		luaK_codeABC(fs, OP_SETLIST, base, b, 0);
 		luaK_code(fs, cast(Instruction, c), fs->ls->lastline);
 	}
-	fs->freereg = base + 1;  /* free registers with list values */
+	fs->freereg = base + 1;	 /* free registers with list values */
 }
 

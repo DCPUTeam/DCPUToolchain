@@ -105,9 +105,13 @@ int luaO_str2d(const char* s, lua_Number* result)
 	if (endptr == s) return 0;  /* conversion failed */
 	if (*endptr == 'x' || *endptr == 'X')	 /* maybe an hexadecimal constant? */
 		*result = cast_num(strtoul(s, &endptr, 16));
-	if (*endptr == '\0') return 1;  /* most common case */
+	if ((*endptr == 'o' || *endptr == 'O') && (*(endptr + 1) != '\0'))
+		*result = cast_num(strtoul(endptr + 1, &endptr, 8));
+	if ((*endptr == 'b' || *endptr == 'B') && (*(endptr + 1) != '\0'))
+		*result = cast_num(strtoul(endptr + 1, &endptr, 2));
+	if (*endptr == '\0') return 1;	/* most common case */
 	while (isspace(cast(unsigned char, *endptr))) endptr++;
-	if (*endptr != '\0') return 0;  /* invalid trailing characters? */
+	if (*endptr != '\0') return 0;	/* invalid trailing characters? */
 	return 1;
 }
 
@@ -210,7 +214,7 @@ void luaO_chunkid(char* out, const char* source, size_t bufflen)
 		strncpy(out, source + 1, bufflen); /* remove first char */
 		out[bufflen - 1] = '\0'; /* ensures null termination */
 	}
-	else    /* out = "source", or "...source" */
+	else	/* out = "source", or "...source" */
 	{
 		if (*source == '@')
 		{
@@ -226,7 +230,7 @@ void luaO_chunkid(char* out, const char* source, size_t bufflen)
 			}
 			strcat(out, source);
 		}
-		else    /* out = [string "string"] */
+		else	/* out = [string "string"] */
 		{
 			size_t len = strcspn(source, "\n\r");  /* stop at first newline */
 			bufflen -= sizeof(" [string \"...\"] ");
