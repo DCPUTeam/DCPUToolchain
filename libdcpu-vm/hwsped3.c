@@ -53,7 +53,7 @@ void vm_hw_sped3_init(vm_t* vm)
     // TODO: check for errors and cry about it
     glfwInit(); 
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
-    window = (GLFWwindow) glFwCreateWindow(sped3_width, sped3_height, GLFW_WINDOWED, "SPED-3", NULL);
+    window = (GLFWwindow) glfwCreateWindow(sped3_width, sped3_height, GLFW_WINDOWED, "SPED-3", NULL);
 
 }
 
