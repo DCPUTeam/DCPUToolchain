@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <hwluacpu.h>
 #include <ddata.h>
+#include <luaglob.h>
 #include "dbglua.h"
 #include "dcpu.h"
 
@@ -110,6 +111,9 @@ struct lua_debugst* dbg_lua_load(bstring name)
 	assert(ds->state != NULL);
 	luaL_openlibs(ds->state);
 	luaX_loadexpressionlib(ds->state);
+
+	// Load globals.
+	dcpu_lua_set_constants(ds->state);
 
 	// Execute the code in the new Lua context.
 	if (luaL_dofile(ds->state, path->data) != 0)

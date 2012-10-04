@@ -16,7 +16,7 @@
 #define __DCPU_LIBDCPU_PP_LUA_H
 
 #include <bstring.h>
-#include "dcpu.h"
+#include <dcpu.h>
 
 struct pp_state
 {
