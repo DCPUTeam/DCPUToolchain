@@ -38,6 +38,7 @@ void bins_sectionize();
 void bins_flatten(freed_bstring name);
 void bins_optimize(int target, int level);
 void bins_resolve(bool keepProvided);
+uint16_t bins_compress();
 void bins_free();
 
 #endif

@@ -39,12 +39,13 @@ int main(int argc, char* argv[])
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	struct arg_lit* keep_output_arg = arg_lit0(NULL, "keep-outputs", "Keep the .OUTPUT entries in the final static library (used for stdlib).");
 	struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
+	struct arg_lit* no_short_literals_arg = arg_lit0(NULL, "no-short-literals", "Do not compress literals to short literals.");
 	struct arg_int* opt_level = arg_int0("O", NULL, "<level>", "The optimization level.");
 	struct arg_lit* opt_mode = arg_lit0("S", NULL, "Favour runtime speed over size when optimizing.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, target_arg, keep_output_arg, little_endian_mode, symbol_ext, symbol_file, output_file, input_files, verbose, quiet, end };
+	void* argtable[] = { show_help, target_arg, keep_output_arg, little_endian_mode, no_short_literals_arg, symbol_ext, symbol_file, output_file, input_files, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -107,6 +108,12 @@ int main(int argc, char* argv[])
 	// TODO: This is where we would perform short literal optimizations
 	//	 with bins_compress(); when it's implemented.
 	bins_resolve(biseqcstr(target, "static") == true);
+	if (no_short_literals_arg->count == 0 && biseqcstr(target, "static") != true)
+		printd(LEVEL_VERBOSE, "linker: saved %u words through short literal compression.\n", bins_compress());
+	else if (no_short_literals_arg->count == 0)
+		printd(LEVEL_VERBOSE, "linker: skipping short literal compression due to target type.\n");
+	else
+		printd(LEVEL_VERBOSE, "linker: skipping short literal compression on request.\n");
 	bins_save(bautofree(bfromcstr("output")), bautofree(bfromcstr(output_file->filename[0])), bautofree(target), keep_output_arg->count > 0, symbol_file->count > 0 ? symbol_file->filename[0] : NULL);
 	bins_free();
 

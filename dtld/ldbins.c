@@ -779,6 +779,117 @@ void bins_resolve(bool keepProvided)
 }
 
 ///
+/// Compresses all parameters into short literals if possible for
+/// all of the current bins defined.
+///
+/// @return The amount of words that were saved in compression.
+///
+uint16_t bins_compress()
+{
+	struct ldbin* bin;
+	struct lconv_entry* entry;
+	size_t i, j, size;
+	uint16_t* inst;
+	uint16_t op, a, b, value;
+	uint8_t store;
+	bool apply;
+	uint16_t saved = 0;
+
+	// Iterate through all of the bins.
+	list_iterator_start(&ldbins.bins);
+	while (list_iterator_hasnext(&ldbins.bins))
+	{
+		bin = list_iterator_next(&ldbins.bins);
+
+		// Iterate through all of the instructions in the bin, disassembling
+		// each one and keeping track of how much space we save in the process.
+		for (i = 0; i < list_size(&bin->words); i += size)
+		{
+			// Retrieve the instruction.
+			inst = list_get_at(&bin->words, i);
+
+			// Decode the instruction.
+			op = INSTRUCTION_GET_OP(*inst);
+			a = INSTRUCTION_GET_A(*inst);
+			b = INSTRUCTION_GET_B(*inst);
+
+			// Since B is never reduced according to the spec,
+			// we have no need to handle non-basic opcodes since
+			// the parameter to reduce will always be in the 'a' field.
+
+			// Calculate total size of this instruction.
+			size = 1;
+			if (a == NXT_LIT || a == NXT || a == PICK)
+				size++;
+			if (b == NXT_LIT || b == NXT || b == PICK)
+				size++;
+
+			// Check if A operand can be reduced.
+			if (a == NXT_LIT)
+			{
+				if (i < list_size(&bin->words))
+					value = *(uint16_t*)(list_get_at(&bin->words, i + 1));
+				else
+					continue;
+
+				// Check if the next word is the position
+				// of a required or adjustment.
+				apply = true;
+				if (bin->required != NULL)
+				{
+					entry = NULL;
+					for (j = 0; j < list_size(bin->required); j++)
+					{
+						entry = list_get_at(bin->required, i);
+						if (i + 1 == entry->address)
+						{
+							apply = false;
+							break;
+						}
+					}
+				}
+				if (bin->adjustment != NULL && !apply)
+				{
+					entry = NULL;
+					for (j = 0; j < list_size(bin->adjustment); j++)
+					{
+						entry = list_get_at(bin->adjustment, i);
+						if (i + 1 == entry->address)
+						{
+							apply = false;
+							break;
+						}
+					}
+				}
+				if (!apply)
+					continue;
+
+				// Calculate replacement.
+				if (value == 0xffff)
+					store = 0x20;
+				else if (value >= 0x0 && value <= 0x1e)
+					store = value + 0x21;
+				else
+					continue;
+
+				// Construct new instruction.
+				*inst = INSTRUCTION_CREATE(op, b, store);
+
+				// Delete unneeded word.
+				assert(size > 1);
+				bin_remove(&ldbins.bins, bin, i + 1, 1);
+				size--;
+				saved++;
+			}
+		}
+	}
+	list_iterator_stop(&ldbins.bins);
+
+	// Return the amount of words saved.
+	return saved;
+}
+
+///
 /// Clears the list of bins, freeing all associated memory.
 ///
 void bins_free()
