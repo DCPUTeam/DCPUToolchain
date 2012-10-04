@@ -98,7 +98,7 @@ static int traceback(lua_State* L)
 		return 1;
 	}
 	lua_pushvalue(L, 1);	/* pass error message */
-	lua_pushinteger(L, 2);  /* skip this function and traceback */
+	lua_pushinteger(L, 2);	/* skip this function and traceback */
 	lua_call(L, 2, 1);  /* call debug.traceback */
 	return 1;
 }
@@ -132,7 +132,7 @@ static int getargs(lua_State* L, char** argv, int n)
 	int i;
 	int argc = 0;
 	while (argv[argc]) argc++;  /* count total number of arguments */
-	narg = argc - (n + 1);  /* number of arguments to the script */
+	narg = argc - (n + 1);	/* number of arguments to the script */
 	luaL_checkstack(L, narg + 3, "too many arguments to script");
 	for (i = n + 1; i < argc; i++)
 		lua_pushstring(L, argv[i]);
@@ -174,7 +174,7 @@ static const char* get_prompt(lua_State* L, int firstline)
 	lua_getfield(L, LUA_GLOBALSINDEX, firstline ? "_PROMPT" : "_PROMPT2");
 	p = lua_tostring(L, -1);
 	if (p == NULL) p = (firstline ? LUA_PROMPT : LUA_PROMPT2);
-	lua_pop(L, 1);  /* remove global */
+	lua_pop(L, 1);	/* remove global */
 	return p;
 }
 
@@ -247,7 +247,7 @@ static void dotty(lua_State* L)
 	{
 		if (status == 0) status = docall(L, 0, 0);
 		report(L, status);
-		if (status == 0 && lua_gettop(L) > 0)    /* any result to print? */
+		if (status == 0 && lua_gettop(L) > 0)	 /* any result to print? */
 		{
 			lua_getglobal(L, "print");
 			lua_insert(L, 1);
@@ -268,7 +268,7 @@ static int handle_script(lua_State* L, char** argv, int n)
 {
 	int status;
 	const char* fname;
-	int narg = getargs(L, argv, n);  /* collect arguments */
+	int narg = getargs(L, argv, n);	 /* collect arguments */
 	lua_setglobal(L, "arg");
 	fname = argv[n];
 	if (strcmp(fname, "-") == 0 && strcmp(argv[n - 1], "--") != 0)
@@ -292,7 +292,7 @@ static int collectargs(char** argv, int* pi, int* pv, int* pe)
 	int i;
 	for (i = 1; argv[i] != NULL; i++)
 	{
-		if (argv[i][0] != '-')  /* not an option? */
+		if (argv[i][0] != '-')	/* not an option? */
 			return i;
 		switch (argv[i][1])    /* option */
 		{
@@ -393,7 +393,7 @@ static int pmain(lua_State* L)
 	s->status = handle_luainit(L);
 	if (s->status != 0) return 0;
 	script = collectargs(argv, &has_i, &has_v, &has_e);
-	if (script < 0)    /* invalid args? */
+	if (script < 0)	   /* invalid args? */
 	{
 		print_usage();
 		s->status = 1;

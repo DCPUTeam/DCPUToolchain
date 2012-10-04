@@ -6,7 +6,7 @@
 	Component:	LibDCPU-vm
 
 	Authors:    Jose Manuel Diez
-    	
+	
 	Description: Function signatures and sped-3 modes.	
 **/
 
