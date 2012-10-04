@@ -39,7 +39,7 @@ uint16_t sped3_state = SPED3_STATE_NO_DATA;
 vm_t* g_vm;
 
 uint16_t vm_hw_sped3_state(void) {
-    return SPED3_STATE_RUNNING;
+    return sped3_state;
 }
 
 void vm_hw_sped3_update_rot() {
@@ -138,7 +138,7 @@ void vm_hw_sped3_interrupt(vm_t* vm, void* ud) {
 	    break;
 	case SPED3_INTERRUPT_ROTATE:
 	    sped3_rot_target = vm->registers[REG_X] % 360;
-	sped3_state = SPED3_STATE_ROTATING;
+	sped3_state = SPED3_STATE_TURNING;
 
 	    break;
    }
