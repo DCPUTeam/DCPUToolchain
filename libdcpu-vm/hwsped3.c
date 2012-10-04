@@ -22,7 +22,7 @@
 #include "dcpuhook.h"
 #include "dcpuops.h"
 
-uint16_t sped3_hook_id = 0;
+uint16_t sped3_cycle_hook = 0;
 uint16_t sped3_hw_id = 0;
 
 GLFWwindow sped3_window;
@@ -70,9 +70,6 @@ void vm_hw_sped3_set_color(uint8_t cc, uint8_t intensity) {
     }
 }
 
-
-
-
 void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
     int i;
     uint16_t firstword, secondword;
@@ -82,43 +79,46 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
     glfwMakeContextCurrent(sped3_window);
 
     if((glfwGetTime() - last_redraw > 0.1)) {
-	glClearColor(0.f, 0.f, 0.f, 0.f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	last_redraw = glfwGetTime();
-    
-	vm_hw_sped3_update_rot();
-    
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(  0.f, -4.f, 0.f,
-		    0.f, 0.f, 0.f,
-		    0.f, 0.f, 1.f);
-    
-	glRotatef(sped3_rot_current, 0.f, 0.f, 1.f);
-	glTranslatef(0.f, 0.f, 2.f);
-    
-	glBegin(GL_LINE_STRIP);
-	for(i = 0; i < sped3_num; i++) {
-	    firstword  = vm->ram[sped3_mem + i * 2];
-	    secondword = vm->ram[sped3_mem + (i * 2) + 1];
-    
-	    // Translate SPED-3 coordinates into OpenGL coordinates. 
-	    x = (float) (firstword & 0xff) / 256 * 2 - 1;
-	    // y+ is into the world in SPED-3, z- is into the screen in OpenGL
-	    z = -(float) (firstword >> 8) / 256 * 2 - 1; 
-	    // z+ is up in SPED-3, y+ is up in OpenGL
-	    y = (float) (secondword & 0xff) / 256 * 2 - 1;
+	if(sped3_rot_current != sped3_rot_target) {
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(  0.f, -4.f, 0.f,
+			    0.f, 0.f, 0.f,
+			    0.f, 0.f, 1.f);
+ 
+		last_redraw = glfwGetTime();
 	
-	    cc = (secondword >> 8) & 0x3;
-	    intensity = secondword >> 11; 
-	 
-	    glColor3f(1.f, 1.f, 1.f);
-	    vm_hw_sped3_set_color(cc, intensity);
-	    glVertex3f(x, y, z);
+		vm_hw_sped3_update_rot();
+       
+		glRotatef(sped3_rot_current, 0.f, 0.f, 1.f);
+		glTranslatef(0.f, 0.f, 2.f);
+	    
+	    glClearColor(0.f, 0.f, 0.f, 0.f);
+	    glClear(GL_COLOR_BUFFER_BIT);
+
+		glBegin(GL_LINE_STRIP);
+		for(i = 0; i < sped3_num; i++) {
+		    firstword  = vm->ram[sped3_mem + i * 2];
+		    secondword = vm->ram[sped3_mem + (i * 2) + 1];
+	
+		    // Translate SPED-3 coordinates into OpenGL coordinates. 
+		    x = (float) (firstword & 0xff) / 256 * 2 - 1;
+		    // y+ is into the world in SPED-3, z- is into the screen in OpenGL
+		    z = -(float) (firstword >> 8) / 256 * 2 - 1; 
+		    // z+ is up in SPED-3, y+ is up in OpenGL
+		    y = (float) (secondword & 0xff) / 256 * 2 - 1;
+	    
+		    cc = (secondword >> 8) & 0x3;
+		    intensity = secondword >> 11; 
+		 
+		    glColor3f(1.f, 1.f, 1.f);
+		    vm_hw_sped3_set_color(cc, intensity);
+		    glVertex3f(x, y, z);
+		}
+		glEnd();
+	
+		glfwSwapBuffers(sped3_window);
 	}
-	glEnd();
-    
-	glfwSwapBuffers(sped3_window);
     }
     
     glfwPollEvents();
@@ -157,7 +157,7 @@ void vm_hw_sped3_init(vm_t* vm)
 	sped3.manufacturer = 0x1eb37e91;
 	sped3.handler = &vm_hw_sped3_interrupt;
 
-	sped3_hook_id = vm_hook_register(vm, &vm_hw_sped3_cycle, HOOK_ON_POST_CYCLE, NULL);
+	sped3_cycle_hook = vm_hook_register(vm, &vm_hw_sped3_cycle, HOOK_ON_POST_CYCLE, NULL);
 	sped3_hw_id = vm_hw_register(vm, sped3);
 
 
@@ -176,12 +176,13 @@ void vm_hw_sped3_init(vm_t* vm)
     glLoadIdentity();
     gluPerspective(65.f, (GLfloat) sped3_width / (GLfloat) sped3_height, 1.f, 1000.f);
 
+
     g_vm = vm;
 }
 
 void vm_hw_sped3_free(vm_t* vm)
 {
 	glfwDestroyWindow(sped3_window);
-    vm_hook_unregister(vm, sped3_hook_id);
+    vm_hook_unregister(vm, sped3_cycle_hook);
 	vm_hw_unregister(vm, sped3_hw_id);
 }
