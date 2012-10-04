@@ -47,7 +47,7 @@ When using Cygwin, then there are some important notes:
 First install a few required packages with
 
 ```
-$ sudo apt-get install bison flex cmake build-essential libreadline-dev libsdl1.2-dev libcurl4-openssl-dev
+$ sudo apt-get install bison flex cmake build-essential libreadline-dev libsdl1.2-dev libcurl4-openssl-dev 
 ```
 
 Next clone the repository into a new folder
