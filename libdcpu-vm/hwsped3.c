@@ -25,11 +25,44 @@
 uint16_t sped3_hook_id = 0;
 uint16_t sped3_hw_id = 0;
 
-GLFWwindow window;
+GLFWwindow sped3_window;
 int sped3_width = 800, sped3_height = 600;
 
+uint16_t sped3_mem = 0;
+
 void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
-    // opengl here
+    glfwMakeContextCurrent(sped3_window);
+    glfwGetWindowSize(sped3_window, &sped3_width, &sped3_height);
+    sped3_height = sped3_height > 0 ? sped3_height : 1;
+
+    glViewport(0, 0, sped3_width, sped3_height);
+    glClearColor(0.f, 0.f, 0.f, 0.f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(65.f, (GLfloat) sped3_width / (GLfloat) sped3_height, 1.f, 100.f);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glLookAt(	0.f, 1.f, 0.f,
+		0.f, 20.f, 0.f,
+		0.f, 0.f, 1.f);
+
+    glTranslatef(0.f, 14.f, 0.f);
+    glRotatef(0.3f * 100.f, 0.f, 0.f, 1.f);
+
+    glBegin(GL_TRIANGLES);
+    glColor3f(1.f, 0.f, 0.f);
+    glVertex3f(-5.f, 0.f, -4.f);
+    glColor3f(0.f, 1.f, 0.f);
+    glVertex3f(5.f, 0.f, -4.f);
+    glColor3f(0.f, 0.f, 1.f);
+    glVertex3f(0.f, 0.f, 6.f);
+    glEnd();
+
+    glfwSwapBuffers(sped3_window);
+    
 }
 
 void vm_hw_sped3_interrupt(vm_t* vm, void* ud) {
@@ -53,8 +86,12 @@ void vm_hw_sped3_init(vm_t* vm)
     // TODO: check for errors and cry about it
     glfwInit(); 
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
-    window = (GLFWwindow) glfwCreateWindow(sped3_width, sped3_height, GLFW_WINDOWED, "SPED-3", NULL);
-
+    sped3_window = (GLFWwindow) glfwCreateWindow(sped3_width, sped3_height, GLFW_WINDOWED, "SPED-3", NULL);
+    
+    glfwMakeContextCurrent(sped3_window);
+    glfwSwapInterval(1);
+    
+    glfwSetTime(0.0);	 
 }
 
 void vm_hw_sped3_free(vm_t* vm)
