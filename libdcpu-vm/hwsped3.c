@@ -62,68 +62,70 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
 	
 	glfwMakeContextCurrent(hw->window);
 
-    if((glfwGetTime() - hw->last_redraw > 0.1)) {
-	if(hw->rot_current != hw->rot_target) {
-	    glMatrixMode(GL_MODELVIEW);
-	    glLoadIdentity();
-	    gluLookAt(	0.f, -4.f, 0.f,
-			0.f, 0.f, 0.f,
-			0.f, 0.f, 1.f);
- 
-	    hw->last_redraw = glfwGetTime();
+	if((glfwGetTime() - hw->last_redraw > 0.1)) {
+		if(hw->rot_current != hw->rot_target) {
+		    glMatrixMode(GL_MODELVIEW);
+		    glLoadIdentity();
+		    gluLookAt(	0.f, -4.f, 0.f,
+				0.f, 0.f, 0.f,
+				0.f, 0.f, 1.f);
+	 
+		    hw->last_redraw = glfwGetTime();
+		
+		    vm_hw_sped3_update_rot(hw);
+	       
+		    glRotatef(hw->rot_current, 0.f, 0.f, 1.f);
+		    
+		    glClearColor(0.f, 0.f, 0.f, 0.f);
+		    glClear(GL_COLOR_BUFFER_BIT);
 	
-	    vm_hw_sped3_update_rot(hw);
-       
-	    glRotatef(hw->rot_current, 0.f, 0.f, 1.f);
-	    
-	    glClearColor(0.f, 0.f, 0.f, 0.f);
-	    glClear(GL_COLOR_BUFFER_BIT);
-
-	    glBegin(GL_LINE_STRIP);
-	    for(i = 0; i < hw->num; i++) {
-			firstword  = vm->ram[hw->mem + i * 2];
-			secondword = vm->ram[hw->mem + (i * 2) + 1];
-	
-			x = (float) (firstword & 0xff) / 256 * 2 - 1;
-			y = (float) (firstword >> 8) / 256 * 2 - 1; 
-			z = (float) (secondword & 0xff) / 256 * 2 - 1;
-	    
-			cc = (secondword >> 8) & 0x3;
-			intensity = secondword >> 11; 
-	     
-			glColor3f(1.f, 1.f, 1.f);
-			vm_hw_sped3_set_color(hw, cc, intensity);
-			glVertex3f(x, y, z);
-	    }
-	    glEnd();
-	
-	    glfwSwapBuffers(hw->window);
+		    glBegin(GL_LINE_STRIP);
+		    for(i = 0; i < hw->num; i++) {
+				firstword  = vm->ram[hw->mem + i * 2];
+				secondword = vm->ram[hw->mem + (i * 2) + 1];
+		
+				x = (float) (firstword & 0xff) / 256 * 2 - 1;
+				y = (float) (firstword >> 8) / 256 * 2 - 1; 
+				z = (float) (secondword & 0xff) / 256 * 2 - 1;
+		    
+				cc = (secondword >> 8) & 0x3;
+				intensity = secondword >> 11; 
+		     
+				glColor3f(1.f, 1.f, 1.f);
+				vm_hw_sped3_set_color(hw, cc, intensity);
+				glVertex3f(x, y, z);
+		    }
+		    glEnd();
+		
+		    glfwSwapBuffers(hw->window);
+		}
 	}
-    }
     
-    glfwPollEvents();
+	glfwPollEvents();
 }
 
-void vm_hw_sped3_interrupt(vm_t* vm, void* ud) {
+void vm_hw_sped3_interrupt(vm_t* vm, void* ud)
+{
 	struct sped3_hardware* hw = (struct sped3_hardware*)ud;
 	
 	switch(vm->registers[REG_A]) {
-	case SPED3_INTERRUPT_POLL:
-		vm->registers[REG_B] = hw->state;
-		break;
-	case SPED3_INTERRUPT_MAP:
-		hw->mem = vm->registers[REG_X];
-		hw->num = vm->registers[REG_Y];
-		hw->state = SPED3_STATE_RUNNING;
-		break;
-	case SPED3_INTERRUPT_ROTATE:
-		hw->rot_target = vm->registers[REG_X] % 360;
-		hw->state = SPED3_STATE_TURNING;
-		break;
-   }
+		case SPED3_INTERRUPT_POLL:
+			vm->registers[REG_B] = hw->state;
+			break;
+		case SPED3_INTERRUPT_MAP:
+			hw->mem = vm->registers[REG_X];
+			hw->num = vm->registers[REG_Y];
+			hw->state = SPED3_STATE_RUNNING;
+			break;
+		case SPED3_INTERRUPT_ROTATE:
+			hw->rot_target = vm->registers[REG_X] % 360;
+			hw->state = SPED3_STATE_TURNING;
+			break;
+	}
 }
 
-int vm_hw_sped3_close(GLFWwindow w) {
+int vm_hw_sped3_close(GLFWwindow w)
+{
 	void* ud = glfwGetWindowUserPointer(w);
   
 	vm_hw_sped3_free(ud);
