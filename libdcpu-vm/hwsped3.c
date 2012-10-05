@@ -6,7 +6,7 @@
     Component:	LibDCPU-vm
 
     Authors:	Jose Manuel Diez
-				David Herberth
+            	David Herberth
 
     Description: Implements the SPED-3 specification.	
 **/
@@ -27,7 +27,7 @@
 
 void vm_hw_sped3_update_rot(struct sped3_hardware* hw) {
 	if(hw->rot_current != hw->rot_target) {
-	hw->rot_current += 0.8f;
+		hw->rot_current += 0.8f;
 	} else hw->state = SPED3_STATE_RUNNING;
 }
 
@@ -39,17 +39,17 @@ void vm_hw_sped3_set_color(struct sped3_hardware* hw, uint8_t cc, uint8_t intens
     
 	switch(cc) {
 	case 0: 
-	glColor3f(0.05f * k, 0.05f * k, 0.05f * k);
-	break;
+		glColor3f(0.05f * k, 0.05f * k, 0.05f * k);
+		break;
 	case 1:
-	glColor3f(1.f * k, 0.f, 0.f);
-	break;
+		glColor3f(1.f * k, 0.f, 0.f);
+		break;
 	case 2:
-	glColor3f(0.f, 1.f * k, 0.f);
-	break;
+		glColor3f(0.f, 1.f * k, 0.f);
+		break;
 	case 3:
-	glColor3f(0.f, 0.f, 1.f * k);
-	break;
+		glColor3f(0.f, 0.f, 1.f * k);
+		break;
     }
 }
 
@@ -81,19 +81,19 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
 
 	    glBegin(GL_LINE_STRIP);
 	    for(i = 0; i < hw->num; i++) {
-		firstword  = vm->ram[hw->mem + i * 2];
-		secondword = vm->ram[hw->mem + (i * 2) + 1];
+			firstword  = vm->ram[hw->mem + i * 2];
+			secondword = vm->ram[hw->mem + (i * 2) + 1];
 	
-		x = (float) (firstword & 0xff) / 256 * 2 - 1;
-		y = (float) (firstword >> 8) / 256 * 2 - 1; 
-		z = (float) (secondword & 0xff) / 256 * 2 - 1;
+			x = (float) (firstword & 0xff) / 256 * 2 - 1;
+			y = (float) (firstword >> 8) / 256 * 2 - 1; 
+			z = (float) (secondword & 0xff) / 256 * 2 - 1;
 	    
-		cc = (secondword >> 8) & 0x3;
-		intensity = secondword >> 11; 
+			cc = (secondword >> 8) & 0x3;
+			intensity = secondword >> 11; 
 	     
-		glColor3f(1.f, 1.f, 1.f);
-		vm_hw_sped3_set_color(hw, cc, intensity);
-		glVertex3f(x, y, z);
+			glColor3f(1.f, 1.f, 1.f);
+			vm_hw_sped3_set_color(hw, cc, intensity);
+			glVertex3f(x, y, z);
 	    }
 	    glEnd();
 	
@@ -109,20 +109,17 @@ void vm_hw_sped3_interrupt(vm_t* vm, void* ud) {
 	
 	switch(vm->registers[REG_A]) {
 	case SPED3_INTERRUPT_POLL:
-	vm->registers[REG_B] = hw->state;
-
-	break;
+		vm->registers[REG_B] = hw->state;
+		break;
 	case SPED3_INTERRUPT_MAP:
-	hw->mem = vm->registers[REG_X];
-	hw->num = vm->registers[REG_Y];
-	hw->state = SPED3_STATE_RUNNING;
-
-	break;
+		hw->mem = vm->registers[REG_X];
+		hw->num = vm->registers[REG_Y];
+		hw->state = SPED3_STATE_RUNNING;
+		break;
 	case SPED3_INTERRUPT_ROTATE:
-	hw->rot_target = vm->registers[REG_X] % 360;
-	hw->state = SPED3_STATE_TURNING;
-
-	break;
+		hw->rot_target = vm->registers[REG_X] % 360;
+		hw->state = SPED3_STATE_TURNING;
+		break;
    }
 }
 
@@ -158,8 +155,8 @@ void vm_hw_sped3_init(vm_t* vm)
 	hw->hw_id = vm_hw_register(vm, hw->device);
 
 
-    // TODO: check for errors and cry about it
-    //glfwWindowHint(GLFW_DEPTH_BITS, 16);
+	// TODO: check for errors and cry about it
+	//glfwWindowHint(GLFW_DEPTH_BITS, 16);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	hw->window = (GLFWwindow) glfwCreateWindow(hw->width, hw->height, GLFW_WINDOWED, "SPED-3", NULL);
     
@@ -180,9 +177,9 @@ void vm_hw_sped3_init(vm_t* vm)
 void vm_hw_sped3_free(void* ud)
 {
 	struct sped3_hardware* hw = (struct sped3_hardware*)ud;
-	
-    glfwDestroyWindow(hw->window);
-    vm_hook_unregister(hw->vm, hw->cycle_hook);
-    vm_hw_unregister(hw->vm, hw->hw_id);
+
+	glfwDestroyWindow(hw->window);
+	vm_hook_unregister(hw->vm, hw->cycle_hook);
+	vm_hw_unregister(hw->vm, hw->hw_id);
 	free(hw);
 }

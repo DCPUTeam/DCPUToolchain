@@ -5,8 +5,8 @@
 	Project:	DCPU-16 Tools
 	Component:	LibDCPU-vm
 
-	Authors:    Jose Manuel Diez
-				David Herberth
+	Authors:	Jose Manuel Diez
+	        	David Herberth
 	
 	Description: Function signatures and sped-3 modes.	
 **/
