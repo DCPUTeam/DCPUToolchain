@@ -6,6 +6,7 @@
 	Component:	LibDCPU-vm
 
 	Authors:    Jose Manuel Diez
+				David Herberth
 	
 	Description: Function signatures and sped-3 modes.	
 **/
@@ -26,9 +27,29 @@
 #define SPED3_ERROR_NONE    0
 #define SPED3_ERROR_BROKEN  0xffff
 
-uint16_t vm_hw_sped3_state(void);
+
+struct sped3_hardware
+{
+	hw_t device;
+	
+	uint16_t cycle_hook;
+	uint16_t hw_id;
+
+	GLFWwindow window;
+	int width, height;
+	double last_redraw;
+
+	uint16_t mem;
+	uint16_t num;
+	uint16_t rot_target;
+	float rot_current;
+
+	uint16_t state;
+	vm_t* vm;
+};
+
 void vm_hw_sped3_init(vm_t* vm);
 void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud);
-void vm_hw_sped3_free(vm_t* vm);
+void vm_hw_sped3_free(void* ud);
 
 #endif
