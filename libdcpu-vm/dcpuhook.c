@@ -7,6 +7,7 @@
 
 	Authors:	James Rhodes
 			Aaron Miller
+			Jose Manuel Diez
 
 	Description:	Handles opcode instructions in the
 			virtual machine.
