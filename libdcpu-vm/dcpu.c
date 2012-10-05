@@ -116,7 +116,7 @@ void vm_execute(vm_t* vm, const char* execution_dump)
 #else
 void vm_execute(vm_t* vm, const char* execution_dump)
 {
-    long cycles = 0;
+	long cycles = 0;
 	
 	if (execution_dump != NULL)
 		vm->dump = fopen(execution_dump, "w");
@@ -126,7 +126,7 @@ void vm_execute(vm_t* vm, const char* execution_dump)
 	{
 		vm_cycle(vm);
 		cycles++;
-	usleep(10);
+		usleep(10);
 	}
 	
 	if (vm->dump != NULL)
