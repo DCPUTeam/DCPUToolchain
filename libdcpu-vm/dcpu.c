@@ -127,15 +127,7 @@ void vm_execute(vm_t* vm, const char* execution_dump)
 	{
 		vm_cycle(vm);
 		cycles++;
-
-		if (cycles >= 100000.f / CLOCKS_PER_SEC)
-		{
-			//printd(LEVEL_DEFAULT, "clock is %u, will wait until %u\n", clock(), start + (1.0f / CLOCKS_PER_SEC));
-			while (clock() < start + 1) ;
-			start += 1;
-			cycles -= 100000.f / CLOCKS_PER_SEC;
-			//printd(LEVEL_DEFAULT, "executed %f cycles (waited %u clocks)", (100000.f / CLOCKS_PER_SEC), 1);
-		}
+	usleep(10);
 	}
 	
 	if (vm->dump != NULL)
