@@ -6,7 +6,7 @@
     Component:	LibDCPU-vm
 
     Authors:	Jose Manuel Diez
-            	David Herberth
+		David Herberth
 
     Description: Implements the SPED-3 specification.	
 **/
@@ -35,21 +35,21 @@ void vm_hw_sped3_set_color(struct sped3_hardware* hw, uint8_t cc, uint8_t intens
 	float k = 1.f;
 
 	if(intensity == 1)
-	k = 0.5f;
+		k = 0.5f;
     
 	switch(cc) {
-	case 0: 
-		glColor3f(0.05f * k, 0.05f * k, 0.05f * k);
-		break;
-	case 1:
-		glColor3f(1.f * k, 0.f, 0.f);
-		break;
-	case 2:
-		glColor3f(0.f, 1.f * k, 0.f);
-		break;
-	case 3:
-		glColor3f(0.f, 0.f, 1.f * k);
-		break;
+		case 0: 
+			glColor3f(0.05f * k, 0.05f * k, 0.05f * k);
+			break;
+		case 1:
+			glColor3f(1.f * k, 0.f, 0.f);
+			break;
+		case 2:
+			glColor3f(0.f, 1.f * k, 0.f);
+			break;
+		case 3:
+			glColor3f(0.f, 0.f, 1.f * k);
+			break;
     }
 }
 
