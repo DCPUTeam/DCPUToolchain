@@ -7,12 +7,12 @@
 
 	Authors:	Jose Manuel Diez
 			David Herberth
-	
-	Description: Function signatures and sped-3 modes.	
+
+	Description: Function signatures and sped-3 modes.
 **/
 
 #ifndef __DCPUHWSPED3_H
-#define __DCPUHWSPED3_H 
+#define __DCPUHWSPED3_H
 
 #include "dcpu.h"
 
@@ -33,7 +33,7 @@
 struct sped3_hardware
 {
 	hw_t device;
-	
+
 	uint16_t cycle_hook;
 	uint16_t hw_id;
 

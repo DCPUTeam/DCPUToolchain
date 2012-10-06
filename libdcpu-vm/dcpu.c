@@ -102,7 +102,7 @@ void __emscripten_vm_cycle()
 {
 	if (__emscripten_vm->halted)
 		emscripten_cancel_main_loop();
-	
+
 	vm_cycle(__emscripten_vm);
 }
 
@@ -116,8 +116,6 @@ void vm_execute(vm_t* vm, const char* execution_dump)
 #else
 void vm_execute(vm_t* vm, const char* execution_dump)
 {
-	long cycles = 0;
-	
 	if (execution_dump != NULL)
 		vm->dump = fopen(execution_dump, "w");
 
@@ -125,10 +123,9 @@ void vm_execute(vm_t* vm, const char* execution_dump)
 	while (!vm->halted)
 	{
 		vm_cycle(vm);
-		cycles++;
 		usleep(10);
 	}
-	
+
 	if (vm->dump != NULL)
 	{
 		fclose(vm->dump);
