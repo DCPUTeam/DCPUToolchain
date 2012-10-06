@@ -49,20 +49,20 @@ cdef class DCPURegisters:
 	}
 
 	def __getitem__(self, key):
-		register = self.reg_mapping.get(key)
-
-		if register != None:
-			return self._vm.registers[register]
-		else:
+		try:
+			register = self.reg_mapping[key]
+		except KeyError:
 			raise RegisterException("There is no register by that name")
+
+		return self._vm.registers[register]
 	
 	def __setitem__(self, key, value):
-		register = self.reg_mapping.get(key)
-
-		if register != None:
-			self._vm.registers[register] = value
-		else:
+		try:
+			register = self.reg_mapping[key]
+		except KeyError:
 			raise RegisterException("There is no register by that name")
+
+		self._vm.registers[register] = value
 	
 	def __repr__(self):
 		d = {}
