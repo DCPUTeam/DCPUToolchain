@@ -15,4 +15,13 @@ cdef extern from "dcpu.h":
 	void vm_execute(vm_t* vm, char* execution_dump)
 	void vm_free(vm_t* vm)
 
+	cdef enum:
+		REG_A = 0x00
+		REG_B = 0x01
+		REG_C = 0x02
+		REG_X = 0x03
+		REG_Y = 0x04
+		REG_Z = 0x05
+		REG_I = 0x06
+		REG_J = 0x07
 
