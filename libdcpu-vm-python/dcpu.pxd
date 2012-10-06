@@ -1,4 +1,4 @@
-from libc.stdint cimport uint16_t
+from libc.stdint cimport uint16_t, uint8_t
 
 cdef extern from "dcpu.h":
 	ctypedef struct vm_t:
@@ -8,12 +8,14 @@ cdef extern from "dcpu.h":
 		uint16_t ia
 		uint16_t ex
 		uint16_t ram[0x10000]
+		uint8_t halted
 
 	vm_t* vm_create()
 	void vm_init(vm_t* vm, bint init_memory)
 	void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 	void vm_execute(vm_t* vm, char* execution_dump)
 	void vm_free(vm_t* vm)
+	void vm_cycle(vm_t* vm)
 
 	cdef enum:
 		REG_A = 0x00
