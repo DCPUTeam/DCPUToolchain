@@ -1,6 +1,9 @@
 cimport dcpu
 from libc.stdint cimport uint16_t
 
+class RegisterException(Exception):
+	pass
+
 cdef class DCPU:
 	cdef dcpu.vm_t *_vm
 
@@ -51,7 +54,10 @@ cdef class DCPU:
 	
 	def setregisters(self, r):
 		for register in r:
-			self._vm.registers[self.reg_mapping[register]] = r[register]
+			try:
+				self._vm.registers[self.reg_mapping[register]] = r[register]
+			except KeyError:
+				raise RegisterException("There is no register called " + register)
 
 	# NOTE: Cython doesn't seem to like decorators, so I'm declaring the properties manually.	
 	registers = property(getregisters, setregisters)
@@ -64,4 +70,3 @@ cdef class DCPU:
 	
 	def cycle(self):
 		dcpu.vm_cycle(self._vm)
-		return None
