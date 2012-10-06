@@ -23,6 +23,7 @@
 #define HOOK_ON_BREAK		3
 #define HOOK_ON_PRE_CYCLE	4
 #define HOOK_ON_INTERRUPT	5
+#define HOOK_ON_60HZ		6
 
 #ifdef PRIVATE_VM_ACCESS
 void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode);

@@ -21,6 +21,8 @@
 #include <string.h>
 #include <debug.h>
 #include <imap.h>
+#include <sys/time.h>
+
 #include "dcpubase.h"
 #include "dcpuops.h"
 #include "dcpuhook.h"
@@ -243,6 +245,9 @@ void vm_dump_state(vm_t* vm)
 
 void vm_cycle(vm_t* vm)
 {
+	static struct timeval t;
+	static long int usec = 0;
+
 	uint16_t instruction;
 	uint16_t op;
 	uint16_t b;
@@ -252,6 +257,15 @@ void vm_cycle(vm_t* vm)
 	{
 		vm->sleep_cycles--;
 		return;
+	}
+
+	gettimeofday(&t, NULL);
+
+	if((t.tv_usec - usec < 0) ? usec - t.tv_usec  > 
+				   16000 : t.tv_usec - usec > 16000)
+	{
+		usec = t.tv_usec;
+		vm_hook_fire(vm, 0, HOOK_ON_60HZ);
 	}
 
 	if (!vm->queue_interrupts && vm->irq_count > 0)

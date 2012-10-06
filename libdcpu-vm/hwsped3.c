@@ -62,45 +62,39 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
 	
 	glfwMakeContextCurrent(hw->window);
 
-	if((glfwGetTime() - hw->last_redraw > 0.1)) {
-		if(hw->rot_current != hw->rot_target) {
-		    glMatrixMode(GL_MODELVIEW);
-		    glLoadIdentity();
-		    gluLookAt(	0.f, -4.f, 0.f,
-				0.f, 0.f, 0.f,
-				0.f, 0.f, 1.f);
-	 
-		    hw->last_redraw = glfwGetTime();
-		
-		    vm_hw_sped3_update_rot(hw);
-	       
-		    glRotatef(hw->rot_current, 0.f, 0.f, 1.f);
-		    
-		    glClearColor(0.f, 0.f, 0.f, 0.f);
-		    glClear(GL_COLOR_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(	0.f, -4.f, 0.f,
+		0.f, 0.f, 0.f,
+		0.f, 0.f, 1.f);
 	
-		    glBegin(GL_LINE_STRIP);
-		    for(i = 0; i < MIN(hw->num, 128); i++) {
-				firstword  = vm->ram[hw->mem + i * 2];
-				secondword = vm->ram[hw->mem + (i * 2) + 1];
-		
-				x = (float) (firstword & 0xff) / 256 * 2 - 1;
-				y = (float) (firstword >> 8) / 256 * 2 - 1; 
-				z = (float) (secondword & 0xff) / 256 * 2 - 1;
-		    
-				cc = (secondword >> 8) & 0x3;
-				intensity = secondword >> 11; 
-		     
-				glColor3f(1.f, 1.f, 1.f);
-				vm_hw_sped3_set_color(hw, cc, intensity);
-				glVertex3f(x, y, z);
-		    }
-		    glEnd();
-		
-		    glfwSwapBuffers(hw->window);
-		}
+	vm_hw_sped3_update_rot(hw);
+	
+	glRotatef(hw->rot_current, 0.f, 0.f, 1.f);
+	
+	glClearColor(0.f, 0.f, 0.f, 0.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	
+	glBegin(GL_LINE_STRIP);
+	for(i = 0; i < MIN(hw->num, 128); i++) {
+		firstword  = vm->ram[hw->mem + i * 2];
+		secondword = vm->ram[hw->mem + (i * 2) + 1];
+	
+		x = (float) (firstword & 0xff) / 256 * 2 - 1;
+		y = (float) (firstword >> 8) / 256 * 2 - 1; 
+		z = (float) (secondword & 0xff) / 256 * 2 - 1;
+	
+		cc = (secondword >> 8) & 0x3;
+		intensity = secondword >> 11; 
+	 
+		glColor3f(1.f, 1.f, 1.f);
+		vm_hw_sped3_set_color(hw, cc, intensity);
+		glVertex3f(x, y, z);
 	}
-    
+	glEnd();
+	
+	glfwSwapBuffers(hw->window);
+
 	glfwPollEvents();
 }
 
@@ -139,7 +133,6 @@ void vm_hw_sped3_init(vm_t* vm)
 	hw->cycle_hook = 0;
 	hw->width = 400;
 	hw->height = 400;
-	hw->last_redraw = 0;
 	hw->mem = 0;
 	hw->num = 0;
 	hw->rot_target = 0;
@@ -153,7 +146,7 @@ void vm_hw_sped3_init(vm_t* vm)
 	hw->device.handler = &vm_hw_sped3_interrupt;
 	hw->device.userdata = hw;
 
-	hw->cycle_hook = vm_hook_register(vm, &vm_hw_sped3_cycle, HOOK_ON_POST_CYCLE, hw);
+	hw->cycle_hook = vm_hook_register(vm, &vm_hw_sped3_cycle, HOOK_ON_60HZ, hw);
 	hw->hw_id = vm_hw_register(vm, hw->device);
 
 

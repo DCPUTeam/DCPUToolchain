@@ -39,7 +39,6 @@ struct sped3_hardware
 
 	GLFWwindow window;
 	int width, height;
-	double last_redraw;
 
 	uint16_t mem;
 	uint16_t num;
