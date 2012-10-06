@@ -23,7 +23,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error -Wno-declaration-after-statement"
 #dt_folder("third-party")
 
 set(glfw_Unix glfw PARENT_SCOPE)
-set(glfw_cygwin glfw PARENT_SCOPE)
+set(glfw_Windows glfw PARENT_SCOPE)
 
 
 
