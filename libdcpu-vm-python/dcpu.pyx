@@ -64,6 +64,14 @@ cdef class DCPURegisters:
 		else:
 			raise RegisterException("There is no register by that name")
 	
+	def __repr__(self):
+		d = {}
+
+		for register in self.reg_mapping:
+			d[register] = self[register]
+
+		return repr(d)
+	
 cdef make_memory(vm_t* vm):
 	obj = DCPUMemory()
 	obj._vm = vm
