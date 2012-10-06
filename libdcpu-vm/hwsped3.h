@@ -6,7 +6,7 @@
 	Component:	LibDCPU-vm
 
 	Authors:	Jose Manuel Diez
-	        	David Herberth
+			David Herberth
 	
 	Description: Function signatures and sped-3 modes.	
 **/
@@ -27,6 +27,8 @@
 #define SPED3_ERROR_NONE    0
 #define SPED3_ERROR_BROKEN  0xffff
 
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
 
 struct sped3_hardware
 {

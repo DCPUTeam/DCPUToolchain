@@ -80,7 +80,7 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud) {
 		    glClear(GL_COLOR_BUFFER_BIT);
 	
 		    glBegin(GL_LINE_STRIP);
-		    for(i = 0; i < hw->num; i++) {
+		    for(i = 0; i < MIN(hw->num, 128); i++) {
 				firstword  = vm->ram[hw->mem + i * 2];
 				secondword = vm->ram[hw->mem + (i * 2) + 1];
 		
