@@ -4,9 +4,40 @@ from libc.stdint cimport uint16_t
 class RegisterException(Exception):
 	pass
 
-cdef class DCPU:
+class MemoryException(Exception):
+	pass
+
+cdef class DCPUMemory:
 	cdef dcpu.vm_t *_vm
 
+	def __getitem__(self, key):
+		if isinstance(key, slice):
+			indices = key.indices(0x10000)
+			return [self[i] for i in range(*indices)]
+			
+		if key > 0x10000 or key < 0:
+			raise IndexError
+
+		return self._vm.ram[key]
+	
+	def __setitem__(self, key, value):
+		if isinstance(key, slice):
+			indices = key.indices(0x10000)
+			for i in range(*indices):
+				self[i] = value[i]
+		else:
+			if key > 0x10000 or key < 0:
+				raise IndexError
+			
+			self._vm.ram[key] = value
+
+	def __iter__(self):
+		for i in range(0x10000):
+			yield self._vm.ram[i]
+
+cdef class DCPURegisters:
+	cdef dcpu.vm_t *_vm
+	
 	reg_mapping = {
 		'A': dcpu.REG_A,
 		'B': dcpu.REG_B,
@@ -16,52 +47,49 @@ cdef class DCPU:
 		'I': dcpu.REG_I,
 		'J': dcpu.REG_J
 	}
+
+	def __getitem__(self, key):
+		register = self.reg_mapping.get(key)
+
+		if register != None:
+			return self._vm.registers[register]
+		else:
+			raise RegisterException("There is no register by that name")
 	
+	def __setitem__(self, key, value):
+		register = self.reg_mapping.get(key)
+
+		if register != None:
+			self._vm.registers[register] = value
+		else:
+			raise RegisterException("There is no register by that name")
+	
+cdef make_memory(vm_t* vm):
+	obj = DCPUMemory()
+	obj._vm = vm
+
+	return obj 
+
+cdef make_registers(vm_t* vm):
+	obj = DCPURegisters()
+	obj._vm = vm
+
+	return obj
+
+cdef class DCPU:
+	cdef dcpu.vm_t *_vm
+	cdef readonly object memory
+	cdef readonly object registers
+
 	def __cinit__(self):
-		self._vm = vm_create()
+		self._vm = dcpu.vm_create()
+		self.memory = make_memory(self._vm)
+		self.registers = make_registers(self._vm)
 
 	def __dealloc__(self):
 		if self._vm is not NULL:
 			dcpu.vm_free(self._vm)
-	
-	def getmemory(self):
-		memory = []
-		for i in range(0x10000):
-			memory.append(self._vm.ram[i])
-	
-		return memory
-	
-	def setmemory(self, memory):
-		cdef uint16_t[0x10000] c_memory
-		cdef int i
 
-		for i in range(0x10000):
-			try:
-				c_memory[i] = memory[i]
-			except IndexError:
-				c_memory[i] = 0
-
-		dcpu.vm_flash(self._vm, c_memory)
-
-	memory = property(getmemory, setmemory)
-
-	def getregisters(self):
-		registers = {}
-		for register in self.reg_mapping:
-			registers[register] = self._vm.registers[self.reg_mapping[register]]
-
-		return registers
-	
-	def setregisters(self, r):
-		for register in r:
-			try:
-				self._vm.registers[self.reg_mapping[register]] = r[register]
-			except KeyError:
-				raise RegisterException("There is no register called " + register)
-
-	# NOTE: Cython doesn't seem to like decorators, so I'm declaring the properties manually.	
-	registers = property(getregisters, setregisters)
-	
 	def execute(self):
 		dcpu.vm_execute(self._vm, NULL)
 	
@@ -70,3 +98,4 @@ cdef class DCPU:
 	
 	def cycle(self):
 		dcpu.vm_cycle(self._vm)
+
