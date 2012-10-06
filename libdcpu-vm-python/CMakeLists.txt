@@ -10,6 +10,7 @@ endif(NOT DEFINED IS_ROOT)
 # Define the pydcpu project.
 dt_project(library)
 dt_needs(libdcpu-vm)
+dt_needs(libdcpu)
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake )
 include(UseCython)
@@ -19,4 +20,6 @@ add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
 	${CMAKE_CURRENT_BINARY_DIR}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
-cython_add_module(dcpu dcpu.c)
+cython_add_module(dcpu dcpu.pyx)
+target_link_libraries(dcpu libdcpu)
+target_link_libraries(dcpu libdcpu-vm)

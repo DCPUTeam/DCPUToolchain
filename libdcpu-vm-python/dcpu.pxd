@@ -1,6 +1,6 @@
 from libc.stdint cimport uint16_t
 
-cdef extern from "libdcpu/dcpu.h":
+cdef extern from "dcpu.h":
 	ctypedef struct vm_t:
 		uint16_t registers[8]
 		uint16_t pc
