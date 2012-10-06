@@ -12,7 +12,7 @@ dt_project(library)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
 
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake )
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake)
 include(UseCython)
 
 add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
