@@ -151,8 +151,10 @@ int main(int argc, char* argv[])
 	vm_hw_timer_init(vm);
 	vm_hw_io_init(vm);
 	vm_hw_lem1802_init(vm);
-    vm_hw_sped3_init(vm);
+	vm_hw_sped3_init(vm);
+	vm_hw_m35fd_init(vm);
 	vm_hw_lua_init(vm);
+
 	if (legacy_mode->count > 0)
 	{
 		vm_hw_lem1802_mem_set_screen(vm, 0x8000);
@@ -182,7 +184,7 @@ int main(int argc, char* argv[])
 	vm_hw_timer_free(vm);
 	vm_hw_io_free(vm);
 	vm_hw_lem1802_free(vm);
-    vm_hw_sped3_free(vm);
+	vm_hw_sped3_free(vm);
 	vm_free(vm);
 
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
