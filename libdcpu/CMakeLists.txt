@@ -1,12 +1,28 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
-
-# Define the libvm project.
-dt_project(library)
-dt_needs(bstring)
+include_directories(${bstring_SOURCE_DIR})
+add_library(dcpu STATIC
+	bfile.h
+	dcpu.h
+	dirent.portable.h
+	imap.h
+	luaglob.h
+	posix.h
+	version.h
+	bstring.h
+	debug.h
+	iio.h
+	lexfix.h
+	osutil.h
+	rparse.h
+	bfile.c
+	bstring.c
+	debug.c
+	iio.c
+	imap.c
+	osutil.c
+	rparse.c
+	version.c
+)
+target_link_libraries(dcpu bstring)
