@@ -17,6 +17,8 @@
 #include <string.h>
 #include <bstring.h>
 #include <debug.h>
+#include <GL/glfw3.h>
+#include <stdlib.h>
 #include "hw.h"
 #include "hwlem1802.h"
 #include "hwlem1802mem.h"
@@ -31,8 +33,16 @@ uint16_t hook_cycle_id;
 uint16_t hook_break_id;
 uint16_t hw_id;
 
+int blink_status = 1;
+unsigned int blink_tick = 0;
+
+unsigned char screen_texture[3*HW_LEM1802_SCREEN_TEXTURE_HEIGHT*HW_LEM1802_SCREEN_TEXTURE_WIDTH];
+GLint texture_id = 13;
+GLFWwindow glfw_window;
+
 void vm_hw_lem1802_write(vm_t* vm, uint16_t pos, void* ud)
 {
+	/*
 	unsigned int i = 0, x = 0, y = 0, fx = 0, fy = 0;
 	uint16_t val, fore, back, chr;
 	TCOD_color_t foreclr, backclr;
@@ -132,10 +142,14 @@ void vm_hw_lem1802_write(vm_t* vm, uint16_t pos, void* ud)
 		// Update the bitmap.
 		TCOD_sys_update_char(i, fx / char_width, fy / char_height, char_image, fx, fy);
 	}
+	* */
 }
 
 void vm_hw_lem1802_set_border(vm_t* vm, uint16_t idx)
 {
+	// TODO implement border for OpenGL screen
+	
+	/*
 	unsigned int x = 0, y = 0;
 	TCOD_color_t clr;
 
@@ -162,11 +176,16 @@ void vm_hw_lem1802_set_border(vm_t* vm, uint16_t idx)
 	for (y = 1; y < HW_LEM1802_SCREEN_HEIGHT + 1; y++)
 		TCOD_console_set_back(NULL, HW_LEM1802_SCREEN_WIDTH + 1, y, clr, TCOD_BKGND_SET);
 #endif
+* */
 }
 
 void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos, void* ud)
 {
+	
+	// TODO: ask jdiez what the hell is going on with the ticks :D
+	
 	// Only continue if we have done 2500 ticks.
+	
 	if (screen_tick < 2500)
 	{
 		screen_tick += 1;
@@ -174,7 +193,29 @@ void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos, void* ud)
 	}
 	else
 		screen_tick = 0;
+	
 
+
+
+	// blink every 40 frames (2/3 of a second)
+	// TODO: ask community (e.g. SirCmpwn) what their blinking freq is
+	if (blink_tick < 2)
+	{
+		blink_tick++;
+	}
+	else
+	{
+		blink_tick = 0;
+		blink_status = 1 - blink_status;
+	}
+
+
+	// update the texture from the screen and font memory
+	vm_hw_lem1802_update_texture(vm);
+	vm_hw_lem1802_glfw_draw();
+	
+
+	/*
 	// Check to see if window is closed.
 	if (TCOD_console_is_window_closed())
 	{
@@ -194,6 +235,8 @@ void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos, void* ud)
 	// non-blocking, it shouldn't consume a character from the
 	// input, but this is not confirmed!
 	TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+	* 
+	* */
 }
 
 void vm_hw_lem1802_break(vm_t* vm, uint16_t pos, void* ud)
@@ -245,10 +288,126 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 		case LEM1802_MEM_DUMP_PALETTE:
 			printd(LEVEL_DEBUG, "LEM1802 DUMP PALETTE.\n");
 			vm->sleep_cycles += 16;
-			for (idx = 0; idx < 16; idx++)
-				vm->ram[val_b + idx] = vm_hw_lem1802_util_get_raw(vm_hw_lem1802_mem_get_default_palette_color(idx));
+			vm_hw_lem1802_mem_dump_default_palette(vm, val_b);
 			break;
 	}
+}
+
+
+void vm_hw_lem1802_glfw_resize_handler(GLFWwindow window, int w, int h)
+{
+	
+	double originalAspectRatio, newAspectRatio, xFrust, yFrust;
+	
+	originalAspectRatio = (double)HW_LEM1802_SCREEN_TEXTURE_WIDTH/(double)HW_LEM1802_SCREEN_TEXTURE_HEIGHT;
+	newAspectRatio = (double)w/(double)h;
+	
+	glfwMakeContextCurrent(window);
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	
+	if (newAspectRatio > originalAspectRatio) {
+		// black areas on the sides
+		xFrust = (double)w/(h * originalAspectRatio);
+		glOrtho(-xFrust, xFrust, -1.0, 1.0, -1.0, 2.0);
+	} else {
+		// black areas top and bottom
+		yFrust = (h * originalAspectRatio)/((double) w);
+		glOrtho(-1.0, 1.0, -yFrust, yFrust, -1.0, 2.0);
+	}
+	
+	// redraw
+	vm_hw_lem1802_glfw_draw();
+}
+
+
+void vm_hw_lem1802_init_glfw()
+{
+	// Initialize GLFW
+	if( !glfwInit() )
+	{
+		printf("Error: Couldn't initialize GLFW.");
+		exit( EXIT_FAILURE );
+	}
+	
+	glfwSetWindowSizeCallback(&vm_hw_lem1802_glfw_resize_handler);
+	
+	// Open an OpenGL window  GLFW_WINDOWED
+	glfw_window = glfwCreateWindow(4*HW_LEM1802_SCREEN_TEXTURE_WIDTH, 4*HW_LEM1802_SCREEN_TEXTURE_HEIGHT, GLFW_WINDOWED, "LEM1802", NULL);
+	
+	glEnable (GL_DEPTH_TEST);
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+
+	glBindTexture (GL_TEXTURE_2D, texture_id);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	
+	glfwMakeContextCurrent(glfw_window);
+	//glfwSwapInterval(1);
+}
+
+void vm_hw_lem1802_glfw_draw()
+{
+	glfwMakeContextCurrent(glfw_window);
+	glBindTexture (GL_TEXTURE_2D, texture_id);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, HW_LEM1802_SCREEN_TEXTURE_WIDTH, HW_LEM1802_SCREEN_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, screen_texture);
+
+	glfwMakeContextCurrent(glfw_window);
+
+	// OpenGL rendering goes here...
+	glClear( GL_COLOR_BUFFER_BIT );
+
+
+	glEnable (GL_TEXTURE_2D); /* enable texture mapping */
+	glBindTexture (GL_TEXTURE_2D, texture_id); /* bind to our texture, has id of 13 */
+
+	glBegin(GL_QUADS);
+		glTexCoord2f (0.0f,0.0f); /* lower left corner of image */
+		glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner
+	
+		glTexCoord2f (0.0f, 1.0f); /* upper left corner of image */
+		glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
+	
+		glTexCoord2f (1.0f, 1.0f); /* upper right corner of image */
+		glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner
+	
+		glTexCoord2f (1.0f, 0.0f); /* lower right corner of image */
+		glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner
+
+	glEnd();
+
+	glDisable (GL_TEXTURE_2D); /* disable texture mapping */
+
+
+	// Swap front and back rendering buffers
+	glfwSwapBuffers(glfw_window);
+}
+
+void vm_hw_lem1802_update_texture(vm_t* vm)
+{
+	uint16_t pos, val,location_screen;
+	unsigned int x, y, i;
+	
+	location_screen = vm_hw_lem1802_mem_get_screen(vm);
+	
+	printf("updating texture with screen location 0x%x\n", location_screen);
+	printf("values: 0x%x, 0x%x, 0x%x, 0x%x, ...\n", vm->ram[location_screen], vm->ram[location_screen+1], vm->ram[location_screen+2], vm->ram[location_screen+3]);
+	
+	//if (location_screen != 0)
+	//{
+		i = 0;
+		for (pos = location_screen; pos <= location_screen + 0x17F; pos++)
+		{
+			val = vm->ram[pos];
+			x = i % HW_LEM1802_SCREEN_WIDTH;
+			y = i / HW_LEM1802_SCREEN_WIDTH;
+			vm_hw_lem1802_mem_put_char_to_screen(vm, val, x, y, screen_texture, blink_status);
+			i++;
+		}
+	//}
 }
 
 void vm_hw_lem1802_init(vm_t* vm)
@@ -257,6 +416,9 @@ void vm_hw_lem1802_init(vm_t* vm)
 
 	// Initialize the memory for LEM1802.
 	vm_hw_lem1802_mem_init(vm);
+	vm_hw_lem1802_init_glfw();
+	
+	
 	// Set up the LEM1802 hardware information.
 	screen.id = 0x7349F615;
 	screen.version = 0x1802;

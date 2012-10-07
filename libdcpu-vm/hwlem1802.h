@@ -15,6 +15,7 @@
 #ifndef __DCPU_HW_LEM1802_H
 #define __DCPU_HW_LEM1802_H
 
+#include <GL/glfw3.h>
 #include <libtcod.h>
 #include "dcpu.h"
 
@@ -29,5 +30,11 @@ void vm_hw_lem1802_init(vm_t* vm);
 void vm_hw_lem1802_write(vm_t* vm, uint16_t pos, void* ud);
 void vm_hw_lem1802_free(vm_t* vm);
 void vm_hw_lem1802_interrupt(vm_t* vm, void* ud);
+
+// TODO relocate the functions somewhere else:
+void vm_hw_lem1802_glfw_resize_handler(GLFWwindow window, int w, int h);
+void vm_hw_lem1802_init_glfw();
+void vm_hw_lem1802_glfw_draw();
+void vm_hw_lem1802_update_texture(vm_t* vm);
 
 #endif
