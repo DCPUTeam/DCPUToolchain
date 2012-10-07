@@ -174,8 +174,8 @@ void vm_op_sub(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(2);
 
 	VM_SKIP_RESET;
@@ -189,8 +189,8 @@ void vm_op_mul(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(2);
 
 	VM_SKIP_RESET;
@@ -205,8 +205,8 @@ void vm_op_mli(vm_t* vm, uint16_t b, uint16_t a)
 	int16_t val_b;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = (int16_t)vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(2);
 
 	VM_SKIP_RESET;
@@ -220,8 +220,8 @@ void vm_op_div(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(3);
 
 	VM_SKIP_RESET;
@@ -246,8 +246,8 @@ void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a)
 	int16_t val_b;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = (int16_t)vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(3);
 
 	VM_SKIP_RESET;
@@ -273,8 +273,8 @@ void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
 	int16_t val_b_signed;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(3);
 
 	VM_SKIP_RESET;
@@ -298,8 +298,8 @@ void vm_op_mod(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(3);
 
 	VM_SKIP_RESET;
@@ -318,8 +318,8 @@ void vm_op_and(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(1);
 
 	VM_SKIP_RESET;
@@ -332,8 +332,8 @@ void vm_op_bor(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(1);
 
 	VM_SKIP_RESET;
@@ -346,8 +346,8 @@ void vm_op_xor(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(1);
 
 	VM_SKIP_RESET;
@@ -360,8 +360,8 @@ void vm_op_shr(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(1);
 
 	VM_SKIP_RESET;
@@ -379,8 +379,8 @@ void vm_op_asr(vm_t* vm, uint16_t b, uint16_t a)
 	int16_t val_b, val_a;
 	uint16_t* store_b;
 	val_a = (int16_t)vm_resolve_value(vm, a, POS_A);
-	val_b = (int16_t)vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(1);
 
 	VM_SKIP_RESET;
@@ -394,8 +394,8 @@ void vm_op_shl(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(1);
 
 	VM_SKIP_RESET;
@@ -489,8 +489,8 @@ void vm_op_adx(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a, val_ex;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(3);
 
 	val_ex = vm->ex;
@@ -505,8 +505,8 @@ void vm_op_sbx(vm_t* vm, uint16_t b, uint16_t a)
 	uint16_t val_b, val_a, val_ex;
 	uint16_t* store_b;
 	val_a = vm_resolve_value(vm, a, POS_A);
-	val_b = vm_resolve_value_once(vm, b, POS_B);
 	store_b = vm_internal_get_store(vm, b, POS_B);
+	val_b = *store_b;
 	OP_NUM_CYCLES(3);
 
 	val_ex = vm->ex;
