@@ -27,3 +27,6 @@ find_package(GLU REQUIRED)
 dt_needs(glfw)
 target_link_libraries(libdcpu-vm ${GLFW_LIBRARIES} ${GLU_LIBRARY})
 
+# Copy the default font to the output directory
+file(COPY ./defaultfont.png DESTINATION "${OUTPUT_DIR}" USE_SOURCE_PERMISSIONS)
+
