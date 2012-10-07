@@ -166,7 +166,6 @@ void vm_hw_sped3_init(vm_t* vm)
 	glfwSetWindowUserPointer(hw->window, hw);
 
 	glfwMakeContextCurrent(hw->window);
-	glfwSwapInterval(1);
 
 	glfwSetTime(0.0);
 	glfwSetWindowCloseCallback(&vm_hw_sped3_close);
