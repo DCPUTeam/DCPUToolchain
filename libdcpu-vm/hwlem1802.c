@@ -393,9 +393,6 @@ void vm_hw_lem1802_update_texture(vm_t* vm)
 	
 	location_screen = vm_hw_lem1802_mem_get_screen(vm);
 	
-	printf("updating texture with screen location 0x%x\n", location_screen);
-	printf("values: 0x%x, 0x%x, 0x%x, 0x%x, ...\n", vm->ram[location_screen], vm->ram[location_screen+1], vm->ram[location_screen+2], vm->ram[location_screen+3]);
-	
 	//if (location_screen != 0)
 	//{
 		i = 0;
