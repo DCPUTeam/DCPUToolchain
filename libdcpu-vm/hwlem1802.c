@@ -186,14 +186,14 @@ void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos, void* ud)
 	
 	// Only continue if we have done 2500 ticks.
 	
-	if (screen_tick < 2500)
+/*	if (screen_tick < 2500)
 	{
 		screen_tick += 1;
 		return;
 	}
 	else
 		screen_tick = 0;
-	
+*/	
 
 
 
@@ -427,7 +427,7 @@ void vm_hw_lem1802_init(vm_t* vm)
 
 	// Register hooks.
 	hook_write_id = vm_hook_register(vm, &vm_hw_lem1802_write, HOOK_ON_WRITE, NULL);
-	hook_cycle_id = vm_hook_register(vm, &vm_hw_lem1802_cycle, HOOK_ON_POST_CYCLE, NULL);
+	hook_cycle_id = vm_hook_register(vm, &vm_hw_lem1802_cycle, HOOK_ON_60HZ, NULL);
 	hook_break_id = vm_hook_register(vm, &vm_hw_lem1802_break, HOOK_ON_BREAK, NULL);
 	hw_id = vm_hw_register(vm, screen);
 }
