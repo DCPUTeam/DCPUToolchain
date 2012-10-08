@@ -37,7 +37,7 @@ Otherwise, this should work correctly and produce a Visual Studio 2010 solution 
 When using Cygwin, then there are some important notes:
 
 * You must use the Windows version of CMake.  You can't have this installed as part of Cygwin.
-* **and most importantly** you must initially run `cmake -G "Visual Studio 10"` from the command prompt.  Cygwin's case sensitivity causes the initial configuration and detection of the C compiler to screw up _badly_ and the only way to fix it is to _restart your computer_. You will get errors like "unable to set key 'TMP', key 'Tmp' already exists" which will also affect Visual Studio until you restart if you don't adhere to this!
+* **and most importantly** you must initially run `cmake -G "Visual Studio 10"` from the command prompt.  Cygwin's case sensitivity causes the initial configuration and detection of the C compiler to fail.  You will need to terminate all instances of MSBuild.exe and run the configuration again from the command prompt if this occurs.
 * Once you have done the initial configuration, you may then run cmake from Cygwin to update project files; it's just the initial configuration that can't be done in Cygwin.
 
 ### Instructions for Linux
