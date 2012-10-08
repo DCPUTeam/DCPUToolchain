@@ -27,6 +27,23 @@
 // We can't set a window pointer, so a global variable will have to do here. Ugly...
 struct keyboard_hardware* g_hw;
 
+void vm_hw_keyboard_append_to_buffer(struct keyboard_hardware* hw, int index)
+{
+	hw->buffer[hw->buffer_idx_w++] = index;
+	if(hw->buffer_idx_w == KB_BUFFER_COUNT)
+	{
+		hw->buffer_idx_w = 0;
+		hw->buffer_idx_r = 0;
+	}
+}
+
+
+void vm_hw_keyboard_handle_char(GLFWwindow w, int c)
+{
+	if(c > 0x20 || c < 0x7f)
+		vm_hw_keyboard_append_to_buffer(g_hw, c);
+}
+
 void vm_hw_keyboard_handle_key(GLFWwindow w, int key, int state)
 {
 	uint16_t keycode = 0;
@@ -96,14 +113,10 @@ void vm_hw_keyboard_handle_key(GLFWwindow w, int key, int state)
 			break;
 	}
 
-	if(state == true)
+	// Char events are handled by the char handler.
+	if(state == true && (index < 0x20 || index > 0x7f))
 	{
-		g_hw->buffer[g_hw->buffer_idx_w++] = index;
-		if(g_hw->buffer_idx_w == KB_BUFFER_COUNT)
-		{
-			g_hw->buffer_idx_w = 0;
-			g_hw->buffer_idx_r = 0;
-		}
+		vm_hw_keyboard_append_to_buffer(g_hw, index);
 	}
 
 	if(g_hw->interrupt_message)

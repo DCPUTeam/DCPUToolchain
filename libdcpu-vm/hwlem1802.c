@@ -432,6 +432,7 @@ void vm_hw_lem1802_init(vm_t* vm)
 	// Set up the keyboard.
 	vm_hw_keyboard_init(vm);
 	glfwSetKeyCallback(&vm_hw_keyboard_handle_key);
+	glfwSetCharCallback(&vm_hw_keyboard_handle_char);
 }
 
 void vm_hw_lem1802_free(vm_t* vm)

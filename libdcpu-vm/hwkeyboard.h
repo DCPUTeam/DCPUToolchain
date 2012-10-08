@@ -41,7 +41,9 @@ struct keyboard_hardware
 	bool lowercase;
 };
 
+void vm_hw_keyboard_handle_char(GLFWwindow w, int key);
 void vm_hw_keyboard_handle_key(GLFWwindow w, int key, int state);
+
 void vm_hw_keyboard_interrupt(vm_t* vm, void* ud);
 void vm_hw_keyboard_init(vm_t* vm);
 void vm_hw_keyboard_free(void* ud);
