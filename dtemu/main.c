@@ -162,9 +162,6 @@ int main(int argc, char* argv[])
 	}
 	vm_execute(vm, execution_dump_file->count > 0 ? execution_dump_file->filename[0] : NULL);
 
-#ifdef __EMSCRIPTEN__
-	printd(LEVEL_WARNING, "warning: not cleaning up resources in Emscripten.\n");
-#else
 	if (terminate_mode->count > 0)
 	{
 		fprintf(stderr, "\n");
@@ -190,5 +187,4 @@ int main(int argc, char* argv[])
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
     glfwTerminate();
 	return 0;
-#endif
 }

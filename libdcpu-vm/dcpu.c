@@ -12,9 +12,6 @@
 
 **/
 
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif
 #include <libtcod.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -95,25 +92,6 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 		vm->ram[i] = memory[i];
 }
 
-#ifdef __EMSCRIPTEN__
-vm_t* __emscripten_vm;
-
-void __emscripten_vm_cycle()
-{
-	if (__emscripten_vm->halted)
-		emscripten_cancel_main_loop();
-
-	vm_cycle(__emscripten_vm);
-}
-
-void vm_execute(vm_t* vm, const char* execution_dump)
-{
-	__emscripten_vm = vm;
-
-	// FIXME: Emscripten ignores execution dump option.
-	emscripten_set_main_loop(__emscripten_vm_cycle, 60);
-}
-#else
 void vm_execute(vm_t* vm, const char* execution_dump)
 {
 	if (execution_dump != NULL)
@@ -132,4 +110,3 @@ void vm_execute(vm_t* vm, const char* execution_dump)
 		vm->dump = NULL;
 	}
 }
-#endif
