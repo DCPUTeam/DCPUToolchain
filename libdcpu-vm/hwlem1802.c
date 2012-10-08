@@ -20,6 +20,7 @@
 #include <GL/glfw3.h>
 #include <stdlib.h>
 #include "hw.h"
+#include "hwkeyboard.h"
 #include "hwlem1802.h"
 #include "hwlem1802mem.h"
 #include "hwlem1802util.h"
@@ -427,6 +428,10 @@ void vm_hw_lem1802_init(vm_t* vm)
 	hook_cycle_id = vm_hook_register(vm, &vm_hw_lem1802_cycle, HOOK_ON_60HZ, NULL);
 	hook_break_id = vm_hook_register(vm, &vm_hw_lem1802_break, HOOK_ON_BREAK, NULL);
 	hw_id = vm_hw_register(vm, screen);
+
+	// Set up the keyboard.
+	vm_hw_keyboard_init(vm);
+	glfwSetKeyCallback(&vm_hw_keyboard_handle_key);
 }
 
 void vm_hw_lem1802_free(vm_t* vm)
