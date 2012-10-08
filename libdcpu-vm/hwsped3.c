@@ -170,6 +170,8 @@ void vm_hw_sped3_init(vm_t* vm)
 	glfwSetTime(0.0);
 	glfwSetWindowCloseCallback(&vm_hw_sped3_close);
 
+    glfwSwapInterval(0);
+
 	glViewport(0, 0, hw->width, hw->height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();

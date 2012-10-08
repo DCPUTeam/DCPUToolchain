@@ -344,7 +344,7 @@ void vm_hw_lem1802_init_glfw()
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	
 	glfwMakeContextCurrent(glfw_window);
-	//glfwSwapInterval(1);
+	glfwSwapInterval(0);
 }
 
 void vm_hw_lem1802_glfw_draw()
