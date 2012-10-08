@@ -7,6 +7,7 @@
 
 	Authors:	James Rhodes
 			Tyrel Haveman
+			Jose Manuel Diez
 
 	Description:	Main entry point.
 
