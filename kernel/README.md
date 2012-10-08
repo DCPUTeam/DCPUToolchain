@@ -1,6 +1,6 @@
 This is the folder under which support for kernels is defined.  Each kernel can be
-specified to support a certain functionality set, of which only 'malloc' and 'free'
-are absolutely required.
+specified to support a certain functionality set, of which only 'malloc', 'free' and
+'errno' are absolutely required.
 
 Each kernel defines the available functions according to it's config.lua file, which
 is read in during compilation of DCPU-16 programs.  Where functionality is not provided
