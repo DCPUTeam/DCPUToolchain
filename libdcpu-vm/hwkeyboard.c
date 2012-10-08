@@ -91,8 +91,8 @@ void vm_hw_keyboard_handle_key(GLFWwindow w, int key, int state)
 				keycode = key;
 			}
 
-			g_hw->pressed[0x20 + keycode] = state;
-			index = 0x20 + keycode;
+			g_hw->pressed[keycode] = state;
+			index = keycode;
 			break;
 	}
 
@@ -133,8 +133,7 @@ void vm_hw_keyboard_interrupt(vm_t* vm, void* ud)
 
 				if(hw->buffer_idx_r <= KB_BUFFER_COUNT)
 				{
-					// They ask for ASCII keys, so we have to substract 0x20.
-					vm->registers[REG_C] = hw->buffer[hw->buffer_idx_r - 1] - 0x20;
+					vm->registers[REG_C] = hw->buffer[hw->buffer_idx_r - 1];
 				}
 
 				hw->buffer_idx_w--;
