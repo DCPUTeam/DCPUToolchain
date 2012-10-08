@@ -164,6 +164,7 @@ void vm_hw_sped3_init(vm_t* vm)
 	hw->window = (GLFWwindow) glfwCreateWindow(hw->width, hw->height, GLFW_WINDOWED, "SPED-3", NULL);
 
 	glfwSetWindowUserPointer(hw->window, hw);
+	glfwSwapInterval(0);
 
 	glfwMakeContextCurrent(hw->window);
 
