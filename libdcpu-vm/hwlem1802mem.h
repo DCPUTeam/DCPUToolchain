@@ -18,8 +18,11 @@
 
 #include <stdint.h>
 #include "dcpu.h"
+#include "hwlem1802.h"
 
 #define HW_LEM1802_DISCONNECTED				0
+#define HW_LEM1802_DEFAULT_FONT_LOC			0
+#define HW_LEM1802_DEFAULT_PALETTE_LOC			0
 #define HW_LEM1802_INTERNAL				0
 #define HW_LEM1802_SCREEN_WIDTH				32
 #define HW_LEM1802_SCREEN_HEIGHT			12
@@ -36,22 +39,20 @@
 #define HW_LEM1802_SCREEN_RGB_COOR(x, y) (3*((y*HW_LEM1802_SCREEN_TEXTURE_WIDTH)+x))
 
 
-void vm_hw_lem1802_mem_init(vm_t* vm);
+void vm_hw_lem1802_mem_init(struct lem1802_hardware* hw);
 void vm_hw_lem1802_mem_free(vm_t* vm);
-void vm_hw_lem1802_mem_set_palette(vm_t* vm, uint16_t pos);
+void vm_hw_lem1802_mem_set_palette(struct lem1802_hardware* hw, uint16_t pos);
 void vm_hw_lem1802_mem_dump_default_palette(vm_t* vm, uint16_t pos);
-void vm_hw_lem1802_mem_get_palette_color(vm_t* vm, uint16_t idx, unsigned char * rgb);
+void vm_hw_lem1802_mem_get_palette_color(struct lem1802_hardware* hw, uint16_t idx, unsigned char * rgb);
 void vm_hw_lem1802_mem_get_default_palette_color(uint16_t idx, unsigned char * rgb);
-void vm_hw_lem1802_mem_set_font(vm_t* vm, uint16_t pos);
-uint16_t vm_hw_lem1802_mem_get_font();
-uint16_t vm_hw_lem1802_mem_get_font_char_width();
-uint16_t vm_hw_lem1802_mem_get_font_char_height();
+void vm_hw_lem1802_mem_set_font(struct lem1802_hardware* hw, uint16_t pos);
+uint16_t vm_hw_lem1802_mem_get_font(struct lem1802_hardware* hw);
 void vm_hw_lem1802_mem_load_default_font();
-void vm_hw_lem1802_mem_put_char_to_screen(vm_t* vm, uint16_t val, unsigned int screenX, unsigned int screenY, unsigned char * texture, int blink_on);
+void vm_hw_lem1802_mem_put_char_to_screen(struct lem1802_hardware* hw, uint16_t val, unsigned int screenX, unsigned int screenY);
 uint32_t vm_hw_lem1802_mem_get_font_default_representation(uint16_t idx);
 
-void vm_hw_lem1802_mem_set_screen(vm_t* vm, uint16_t pos);
-uint16_t vm_hw_lem1802_mem_get_screen();
+void vm_hw_lem1802_mem_set_screen(struct lem1802_hardware* hw, uint16_t pos);
+uint16_t vm_hw_lem1802_mem_get_screen(struct lem1802_hardware* hw);
 
 #endif
 
