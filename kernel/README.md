@@ -20,14 +20,14 @@ Memory Management
 
 void\* malloc(int size)
 --------------------------
-*Desciption:* Allocates a block of memory and returns the address.
-*Semantics:* If there is no available memory, this function should return a pointer
+**Desciption:** Allocates a block of memory and returns the address.<br/>
+**Semantics:** If there is no available memory, this function should return a pointer
 to 0x0.  Thus 0x0 can never be allocated as memory to a C program.
 
 void free(void\* ptr)
 --------------------------
-*Description:* Frees previously allocated memory.
-*Semantics:* If the passed pointer is within the program's address space, in the heap,
+**Description:** Frees previously allocated memory.<br/>
+**Semantics:** If the passed pointer is within the program's address space, in the heap,
 but not the start of an allocated block, the kernel may handle the request however it
 deems best necessary, including ignoring the request, or free'ing the block the pointer
 is in.
@@ -43,8 +43,8 @@ Error Handling
 
 int errno()
 -------------
-*Description:* Returns the error number from the last kernel call.
-*Semantics:* After each successful kernel call (except for this one), the error number
+**Description:** Returns the error number from the last kernel call.<br/>
+**Semantics:** After each successful kernel call (except for this one), the error number
 maintained by the kernel should be 0.  Error numbers should be maintained unique to each
 process and the kernel should not expose, without good reason such as debugging purposes,
 the ability for processes to change the error number of another process.
@@ -54,15 +54,15 @@ codes that the kernel may return from this call.
 
 File Management
 ==================
-*Notice:* If the kernel does not provide these functions, the C system library will
+**Notice:** If the kernel does not provide these functions, the C system library will
 directly provide them by talking to the appropriate hardware and constructing an
 appropriate filesystem (not specified).  If the kernel is handling disk devices,
 it must expose these APIs or risk corrupting data on the disk.
 
 void\* open(const char\* path, int path\_size)
 ------------------------------------------------
-*Description:* Opens a handle to a path and returns a pointer to kernel-specific data.
-*Semantics:* The `path_size` parameter provides the length of the path string.  This allows
+**Description:** Opens a handle to a path and returns a pointer to kernel-specific data.<br/>
+**Semantics:** The `path_size` parameter provides the length of the path string.  This allows
 either C strings or Pascal strings to be used inside the kernel.
 
 When the application closes, the kernel must close any handles previously opened by the
@@ -72,10 +72,10 @@ If there is an error opening the handle, the kernel must return NULL.
 
 uint16_t read(void* handle, void* out, uint16_t offset, uint16_t size)
 -----------------------------------------------------------------------
-*Description:* Reads data from the file handle and stores the data in the memory pointed to
+**Description:** Reads data from the file handle and stores the data in the memory pointed to
 by out.  The offset specifies the position in the file.  The size is the maximum number of
-bytes to read and the call returns the actual number of bytes read.
-*Semantics:* The kernel must read up to size bytes from the file, but MUST store them in
+bytes to read and the call returns the actual number of bytes read.<br/>
+**Semantics:** The kernel must read up to size bytes from the file, but MUST store them in
 the out parameter as individual bytes in memory.  It is up to the kernel to handle unpacking
 if stored on a disk format that deals with words instead of bytes, but the kernel should enable
 access to all data on the disk.  The kernel should return the actual number of bytes read, which
@@ -84,11 +84,11 @@ requested past the end of the file the kernel must return 0 and perform no readi
 
 uint16_t write(void* handle, void* in, uint16_t offset, uint16_t size)
 -----------------------------------------------------------------------
-*Description:* Writes data from memory pointed to by in to the file handle.  Writing begins
+**Description:** Writes data from memory pointed to by in to the file handle.  Writing begins
 in the file at the specified offset.  The size is the maximum number of bytes the kernel
 is permitted to write to the file from memory and the call returns the number of actual
-bytes written.
-*Semantics:* The kernel must write up to size bytes from the file, but MUST treat the memory
+bytes written.<br/>
+**Semantics:** The kernel must write up to size bytes from the file, but MUST treat the memory
 source as individual bytes in memory.  It is up to the kernel to handle packing of bytes
 if stored on a disk format that deals with words instead of bytes, but the kernel should
 enable writing to all data on disk (except where permissions otherwise disallow).  The kernel
@@ -99,27 +99,27 @@ until the disk is full.
 
 void close(void* handle)
 -------------------------
-*Description:* Closes an existing file handle.
-*Semantics:* If the address that is passed is not to a valid handle, the kernel may silently
+**Description:** Closes an existing file handle.<br/>
+**Semantics:** If the address that is passed is not to a valid handle, the kernel may silently
 ignore the request or initiate a segmentation fault in the program (recommended).
 
 Other I/O Management
 ======================
-*Notice:* If the kernel does not provide these functions, the C system library will
+**Notice:** If the kernel does not provide these functions, the C system library will
 directly provide them by talking to the appropriate hardware and constructing an
 appropriate filesystem (not specified).  If the kernel is handling disk devices,
 it must expose these APIs or risk corrupting data on the disk.
 
 void mkdir(const char\* path, int path\_size)
 -----------------------------------------------
-*Description:* Creates a new directory at the specified path.
-*Semantics:* The `path_size` parameter provides the length of the path string.  This allows
+**Description:** Creates a new directory at the specified path.<br/>
+**Semantics:** The `path_size` parameter provides the length of the path string.  This allows
 either C strings or Pascal strings to be used inside the kernel.
 
 void rmdir(const char\* path, int path\_size)
 -----------------------------------------------
-*Description:* Removes an empty directory at the specified path.
-*Semantics:* The `path_size` parameter provides the length of the path string.  This allows
+**Description:** Removes an empty directory at the specified path.<br/>
+**Semantics:** The `path_size` parameter provides the length of the path string.  This allows
 either C strings or Pascal strings to be used inside the kernel.
 
 The kernel must not remove the directory if it is not empty.
