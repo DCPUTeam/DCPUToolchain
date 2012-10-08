@@ -356,7 +356,7 @@ add_subdirectory(libdcpu-pp)
 add_subdirectory(libdcpu-ci-objfmt)
 add_subdirectory(libdcpu-ci-lang)
 add_subdirectory(libdcpu-ci-lang-c)
-add_subdirectory(libdcpu-vm-python)
+#add_subdirectory(libdcpu-vm-python)
 
 # Add executable folders.
 add_subdirectory(dtpp)
@@ -375,7 +375,7 @@ endif(${BUILD_EMULATOR})
 
 # Add documentation.
 if(${BUILD_DOCUMENTATION})
-	add_subdirectory(docs)
+#	add_subdirectory(docs)
 endif(${BUILD_DOCUMENTATION})
 
 # Add scripts.

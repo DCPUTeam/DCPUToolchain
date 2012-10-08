@@ -142,9 +142,9 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 	*/
 	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, png_voidp_NULL);
 
-	* out_width = info_ptr->width;
-	* out_height = info_ptr->height;
-	switch (info_ptr->color_type) {
+	* out_width = png_get_image_width(png_ptr, info_ptr);
+	* out_height = png_get_image_height(png_ptr, info_ptr);
+	switch (png_get_color_type(png_ptr, info_ptr)) {
 		case PNG_COLOR_TYPE_RGBA:
 		* out_has_alpha = 1;
 		break;
