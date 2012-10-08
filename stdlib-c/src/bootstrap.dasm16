@@ -1,8 +1,3 @@
-; Immediately jump to _setup.
-SET PC, _setup
-
-.BOUNDARY
-
 ; Sets up the stack to hold data of the size
 ; specified in the X register + 2.  It copies
 ; the value of Z register (which should be the
@@ -94,73 +89,9 @@ SET PC, _setup
 
 .BOUNDARY
 
-; Halts the CPU.
-.EXPORT _halt
-:_halt
-	SET PC, _halt
-
-.BOUNDARY
-
-; Halts the CPU clearing all registers except for
-; the A register.
-.EXPORT _halt_debug
-:_halt_debug
-	SET B, 0
-	SET C, 0
-	SET X, 0
-	SET Y, 0
-	SET Z, 0
-	SET I, 0
-	SET J, 0
-	SET SP, 0
-	SET EX, 0
-	SET PC, _halt
-
-; Locates a hardware device based on the specified
-; ID loaded into registers A and B.  The resulting
-; message ID is loaded into register A.
-:_locate_device
-	SET PUSH, A
-	SET PUSH, B
-	SET I, 0 ; I is the hardware number being checke
-	:_locate_enum
-		IFE I, 0xFFFF
-			SET PC, _locate_none_found
-		SET J, SP
-	:_hw_searchloop ; Compare the hwq'd information to the requested device
-		HWQ I ; Get hardware info for this device
-		IFN A, [J] ; compare it to the current driver's ID
-			SET PC, _hw_searchloop_continue
-	:_hw_searchloop_a_e
-		IFE B, [J + 1]
-			SET PC, _locate_found
-		SET PC, _hw_searchloop_continue
-	:_hw_searchloop_continue
-		ADD I, 1
-		SET PC, _hw_searchloop
-	:_locate_none_found
-		SET A, 0
-		SET PC, POP
-	:_locate_found
-		ADD SP, 2
-		SET A, I
-		SET PC, POP
-	
-; Safety boundary
-.BOUNDARY
-
 ; Handles initially jumping into the main function
 ; that the user has provided.
-:_setup
-	
-	; Initialize the screen.
-	SET A, 0x7349
-	SET B, 0xf615
-	JSR _locate_device
-	SET PUSH, A
-	SET A, 0x0
-	SET B, 0x8000
-	HWI POP
-	
+.EXPORT _start
+:_start	
 	.OUTPUT INIT
 	.OUTPUT CODE
