@@ -38,10 +38,6 @@
 #include <hwlem1802.h>
 #include <hwtimer.h>
 
-#ifdef __APPLE__
-#define main SDL_main
-#endif
-
 int main(int argc, char* argv[])
 {
 	// Define our variables.
