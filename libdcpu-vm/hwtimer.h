@@ -15,7 +15,6 @@
 #ifndef __DCPUHWTIMER_H
 #define __DCPUHWTIMER_H
 
-#include <libtcod.h>
 #include "dcpu.h"
 
 #define TIMER_SET_ENABLED	0

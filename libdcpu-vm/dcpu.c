@@ -7,13 +7,13 @@
 
 	Authors:	James Rhodes
 			Patrick Flick
+			Jose Manuel Diez
 
 	Description:	Handles high-level operations performed
 			on the virtual machine (such as creation).
 
 **/
 
-#include <libtcod.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -23,7 +23,6 @@
 #include "dcpu.h"
 #include "dcpubase.h"
 #include "dcpuhook.h"
-#include "hwio.h"
 #include "hwtimer.h"
 #include "hw.h"
 #include "timing.h"
@@ -76,9 +75,7 @@ vm_t* vm_create()
 
 void vm_free(vm_t* vm)
 {
-	// Shutdown components.
-	vm_hw_io_free(vm);
-	vm_hw_timer_free(vm);
+	// TODO: Add a `free` field to hw_t with a free function. Then loop through hardware to dealloc them here.
 
 	// Free the memory.
 	free(vm);

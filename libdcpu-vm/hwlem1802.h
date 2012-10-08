@@ -16,7 +16,6 @@
 #define __DCPU_HW_LEM1802_H
 
 #include <GL/glfw3.h>
-#include <libtcod.h>
 #include "dcpu.h"
 
 #define LEM1802_MEM_MAP_SCREEN		0

@@ -140,7 +140,7 @@ typedef uint8_t bool;
 
 // Timing and Frequency settings
 #define DCPU_TICKS_KHZ			100
-#define DCPU_NUM_TIMING_TICKS		100
+#define DCPU_NUM_TIMING_TICKS		1000
 #define DCPU_MICS_PER_CYCLE		(1000/DCPU_TICKS_KHZ)
 
 ///
