@@ -92,3 +92,7 @@ docs/html/*
 *.os
 *.dcpu16
 *.dobj16
+
+# Cython build artifacts #
+*.so
+cython_debug
