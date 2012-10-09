@@ -18,6 +18,8 @@
 #define M35FD_STATE_NO_MEDIA	 0
 #define M35FD_STATE_READY	 1
 #define M35FD_STATE_READY_WP	 2
+#define M35FD_STATE_READING	 3
+#define M35FD_STATE_WRITING	 4
 
 #define M35FD_ERROR_NONE	 0
 #define M35FD_ERROR_BUSY	 1
@@ -46,8 +48,10 @@ struct m35fd_hardware
 	FILE* disk;
 	uint16_t sector;
 	uint16_t position;
+
 	bool reading;
 	bool writing;
+	bool write_protected;
 
 	vm_t* vm;
 };

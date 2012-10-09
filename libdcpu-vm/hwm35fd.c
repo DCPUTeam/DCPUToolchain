@@ -20,6 +20,24 @@
 #include "dcpuhook.h"
 #include "dcpuops.h"
 
+void vm_hw_m35fd_set_state(struct m35fd_hardware* hw, uint16_t state)
+{
+	hw->state = state;
+	if(hw->interrupt_msg)
+	{
+		vm_interrupt(hw->vm, hw->interrupt_msg);
+	}
+}
+
+void vm_hw_m35fd_set_error(struct m35fd_hardware* hw, uint16_t error)
+{
+	hw->last_error = error;
+	if(hw->interrupt_msg)
+	{
+		vm_interrupt(hw->vm, hw->interrupt_msg);
+	}
+}
+
 void vm_hw_m35fd_interrupt(vm_t* vm, void* ud)
 {
 	struct m35fd_hardware* hw = (struct m35fd_hardware*)ud;
@@ -42,32 +60,32 @@ void vm_hw_m35fd_interrupt(vm_t* vm, void* ud)
 				hw->sector = vm->registers[REG_X];
 				hw->position = vm->registers[REG_Y];
 
+				vm_hw_m35fd_set_state(hw, M35FD_STATE_READING);
 				vm->registers[REG_B] = 1;
 			}
 			else
 			{
 				vm->registers[REG_B] = 0;
-				hw->last_error = M35FD_ERROR_BUSY;
+				vm_hw_m35fd_set_error(hw, M35FD_ERROR_BUSY);
 			}
 			break;
 		case M35FD_INTERRUPT_WRITE:
-			if((hw->state == M35FD_STATE_READY || hw->state == M35FD_STATE_READY_WP) 
+			if((hw->state == M35FD_STATE_READY) 
 				&& hw->reading == false && hw->writing == false)
 			{
 				hw->writing = true;
 				hw->sector = vm->registers[REG_X];
 				hw->position = vm->registers[REG_Y];
 
+				vm_hw_m35fd_set_state(hw, M35FD_STATE_WRITING);
 				vm->registers[REG_B] = 1;
 			}
 			else
 			{
 				vm->registers[REG_B] = 0;
-				hw->last_error = M35FD_ERROR_BUSY;
+				vm_hw_m35fd_set_error(hw, M35FD_ERROR_BUSY);
 			}
 			break;
-
-
 	}
 }
 
@@ -77,6 +95,7 @@ void vm_hw_m35fd_reset_state(struct m35fd_hardware* hw)
 	hw->reading = false;
 	hw->writing = false;
 	hw->position = 0;
+	vm_hw_m35fd_set_state(hw, (hw->write_protected) ? M35FD_STATE_READY_WP : M35FD_STATE_READY);
 }	
 
 void vm_hw_m35fd_cycle(vm_t* vm, uint16_t pos, void* ud) 
@@ -87,8 +106,22 @@ void vm_hw_m35fd_cycle(vm_t* vm, uint16_t pos, void* ud)
 
 	if(hw->state == M35FD_STATE_NO_MEDIA && (hw->reading || hw->writing))
 	{
-		hw->last_error = M35FD_ERROR_NO_MEDIA;
+		vm_hw_m35fd_set_error(hw, M35FD_ERROR_NO_MEDIA);
+		vm_hw_m35fd_reset_state(hw);
 		return;
+	}
+
+	if(hw->disk == NULL)
+	{
+		vm_hw_m35fd_set_error(hw, M35FD_ERROR_EJECT);
+		vm_hw_m35fd_reset_state(hw);
+	}
+
+	if(hw->sector > 1440)
+	{
+		// There is no error for "The requested sector does not exist."
+
+		vm_hw_m35fd_reset_state(hw);
 	}
 
 	if(hw->reading) 
@@ -120,7 +153,7 @@ void vm_hw_m35fd_load_disk(struct m35fd_hardware* hw, const char* path)
 	hw->disk = fopen(path, "rb+");
 	if(hw->disk != NULL)
 	{
-		hw->state = M35FD_STATE_READY;
+		vm_hw_m35fd_set_state(hw, (hw->write_protected) ? M35FD_STATE_READY_WP : M35FD_STATE_READY);
 	}
 }
 
@@ -142,6 +175,7 @@ void vm_hw_m35fd_init(vm_t* vm)
 
 	hw->reading = false;
 	hw->writing = false;
+	hw->write_protected = false;
 
 	hw->vm = vm;
 
