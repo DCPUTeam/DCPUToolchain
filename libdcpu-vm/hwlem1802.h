@@ -37,6 +37,10 @@ struct lem1802_hardware
 	uint16_t palette_location;
 	uint16_t font_location;
 	uint16_t screen_location;
+	uint16_t border_color;
+	
+	uint16_t border_was_updated;
+	//uint16_t 
 	
 	uint16_t blink_status;
 	unsigned int blink_tick;

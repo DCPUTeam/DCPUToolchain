@@ -54,35 +54,7 @@ void vm_hw_lem1802_write(vm_t* vm, uint16_t pos, void* ud)
 void vm_hw_lem1802_set_border(struct lem1802_hardware* hw , uint16_t idx)
 {
 	// TODO implement border for OpenGL screen
-	
-	/*
-	unsigned int x = 0, y = 0;
-	TCOD_color_t clr;
-
-	// Create the TCOD color.
-	clr = vm_hw_lem1802_mem_get_palette_color(vm, idx & 0xF);
-
-	// Redraw frame.
-#if TCOD_HEXVERSION > 0x010500
-	for (x = 0; x < HW_LEM1802_SCREEN_WIDTH + 2; x++)
-		TCOD_console_set_char_background(NULL, x, 0, clr, TCOD_BKGND_SET);
-	for (x = 0; x < HW_LEM1802_SCREEN_WIDTH + 2; x++)
-		TCOD_console_set_char_background(NULL, x, HW_LEM1802_SCREEN_HEIGHT + 1, clr, TCOD_BKGND_SET);
-	for (y = 1; y < HW_LEM1802_SCREEN_HEIGHT + 1; y++)
-		TCOD_console_set_char_background(NULL, 0, y, clr, TCOD_BKGND_SET);
-	for (y = 1; y < HW_LEM1802_SCREEN_HEIGHT + 1; y++)
-		TCOD_console_set_char_background(NULL, HW_LEM1802_SCREEN_WIDTH + 1, y, clr, TCOD_BKGND_SET);
-#else
-	for (x = 0; x < HW_LEM1802_SCREEN_WIDTH + 2; x++)
-		TCOD_console_set_back(NULL, x, 0, clr, TCOD_BKGND_SET);
-	for (x = 0; x < HW_LEM1802_SCREEN_WIDTH + 2; x++)
-		TCOD_console_set_back(NULL, x, HW_LEM1802_SCREEN_HEIGHT + 1, clr, TCOD_BKGND_SET);
-	for (y = 1; y < HW_LEM1802_SCREEN_HEIGHT + 1; y++)
-		TCOD_console_set_back(NULL, 0, y, clr, TCOD_BKGND_SET);
-	for (y = 1; y < HW_LEM1802_SCREEN_HEIGHT + 1; y++)
-		TCOD_console_set_back(NULL, HW_LEM1802_SCREEN_WIDTH + 1, y, clr, TCOD_BKGND_SET);
-#endif
-* */
+	hw->border_color = idx & 0xF;
 }
 
 void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos, void* ud)
@@ -275,6 +247,9 @@ void vm_hw_lem1802_update_texture(struct lem1802_hardware* hw)
 			vm_hw_lem1802_mem_put_char_to_screen(hw, val, x, y);
 			i++;
 		}
+		// update border
+		// TODO: no need to redraw this every time!
+		vm_hw_lem1802_mem_draw_border(hw);
 	}
 	else
 	{
@@ -296,6 +271,7 @@ void vm_hw_lem1802_init(vm_t* vm)
 	// setting up some status values
 	hw->blink_status = 1;
 	hw->blink_tick = 0;
+	hw->border_color = 0;
 
 	// Set up the LEM1802 hardware information.
 	hw->device.id = 0x7349F615;

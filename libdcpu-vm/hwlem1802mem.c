@@ -316,6 +316,47 @@ void vm_hw_lem1802_mem_put_char_to_screen(struct lem1802_hardware* hw, uint16_t 
 	}
 }
 
+void vm_hw_lem1802_mem_draw_border(struct lem1802_hardware* hw)
+{
+	int x, y;
+	unsigned char borderclr[3];
+	vm_hw_lem1802_mem_get_palette_color(hw, hw->border_color, borderclr);
+	
+	// top border:
+	for (y = 0; y < HW_LEM1802_SCREEN_BORDER_HEIGHT; y++)
+		for (x = 0; x < HW_LEM1802_SCREEN_TEXTURE_WIDTH; x++)
+		{
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)] = borderclr[0];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+1] = borderclr[1];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+2] = borderclr[2];
+		}
+	
+	// left and right border
+	for (y = HW_LEM1802_SCREEN_BORDER_HEIGHT; y < (HW_LEM1802_SCREEN_TEXTURE_HEIGHT-HW_LEM1802_SCREEN_BORDER_HEIGHT); y++)
+	{
+		for (x = 0; x < HW_LEM1802_SCREEN_BORDER_WIDTH; x++)
+		{
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)] = borderclr[0];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+1] = borderclr[1];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+2] = borderclr[2];
+		}
+		for (x = HW_LEM1802_SCREEN_TEXTURE_WIDTH-HW_LEM1802_SCREEN_BORDER_WIDTH; x < HW_LEM1802_SCREEN_TEXTURE_WIDTH; x++)
+		{
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)] = borderclr[0];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+1] = borderclr[1];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+2] = borderclr[2];
+		}
+	}
+	// bottom border:
+	for (y = HW_LEM1802_SCREEN_TEXTURE_HEIGHT-HW_LEM1802_SCREEN_BORDER_HEIGHT; y < HW_LEM1802_SCREEN_TEXTURE_HEIGHT; y++)
+		for (x = 0; x < HW_LEM1802_SCREEN_TEXTURE_WIDTH; x++)
+		{
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)] = borderclr[0];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+1] = borderclr[1];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+2] = borderclr[2];
+		}
+}
+
 ///
 /// Returns a representation of a default character as it would
 /// appear in the DCPU-16 RAM.
