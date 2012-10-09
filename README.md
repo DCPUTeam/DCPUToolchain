@@ -1,5 +1,9 @@
 # DCPU-16 Toolchain
 
+ *  Windows build status; ![Windows build status](http://dms.dcputoolcha.in/status/windows.png)
+ *  Linux build status; ![Linux build status](http://dms.dcputoolcha.in/status/linux.png)
+ *  Mac build status; ![Mac build status](http://dms.dcputoolcha.in/status/mac.png)
+
 ## Binaries
 You can download binaries for Windows from the main http://dcputoolcha.in/ website.
 
@@ -37,7 +41,7 @@ Otherwise, this should work correctly and produce a Visual Studio 2010 solution 
 When using Cygwin, then there are some important notes:
 
 * You must use the Windows version of CMake.  You can't have this installed as part of Cygwin.
-* **and most importantly** you must initially run `cmake -G "Visual Studio 10"` from the command prompt.  Cygwin's case sensitivity causes the initial configuration and detection of the C compiler to screw up _badly_ and the only way to fix it is to _restart your computer_. You will get errors like "unable to set key 'TMP', key 'Tmp' already exists" which will also affect Visual Studio until you restart if you don't adhere to this!
+* **and most importantly** you must initially run `cmake -G "Visual Studio 10"` from the command prompt.  Cygwin's case sensitivity causes the initial configuration and detection of the C compiler to fail.  You will need to terminate all instances of MSBuild.exe and run the configuration again from the command prompt if this occurs.
 * Once you have done the initial configuration, you may then run cmake from Cygwin to update project files; it's just the initial configuration that can't be done in Cygwin.
 
 ### Instructions for Linux
@@ -123,29 +127,6 @@ If everything looks like it didn't crash and burn, then you should find everythi
 
 ### Instructions for Emscripten
 
-The toolchain has experimental and (currently) limited support for Emscripten.  Ensure you have recursively updated all submodules
-in the repository and then follow the instructions below.
-
-```
-$ mkdir build-emcc
-$ cd build-emcc
-$ cmake -C ../html5/emscripten/Emscripten.cmake .. 
-$ make dtemu
-```
-
-Note that currently only building `dtemu` works due to a conflict that exists when building the preprocessor parser inside the
-static library.  We hope to have this issue sorted so that all tools can be built successfully.
-
-#### Testing with Emscripten
-
-In order to run the toolchain under Emscripten, you must be running it from a web server (due to cross-HTTP request restrictions).  To run the
-toolchain, start a web server local to the _build directory_ (in the case above, this is in the `build-emcc` folder).  For example,
-if you have Python installed, you can easily do:
-
-```
-$ cd build-emcc
-$ python -m SimpleHTTPServer 8888
-```
-
-Then navigate your web browser to http://localhost:8888/.
+We have dropped support for Emscripten builds.  As the toolchain increases in functionality, having full Emscripten support was
+no longer practical.
 

@@ -22,9 +22,6 @@
 #include <dcpubase.h>
 #include <dcpuhook.h>
 #include <debug.h>
-#include <hwio.h>
-#include <hwlem1802.h>
-#include <hwtimer.h>
 #include <imap.h>
 #include <ddata.h>
 #include "breakpoint.h"
@@ -387,7 +384,8 @@ void ddbg_attach(bstring hw)
 	if (biseq(hw, bfromcstr("lem1802")))
 		vm_hw_lem1802_init(vm);
 	else if (biseq(hw, bfromcstr("keyboard")))
-		vm_hw_io_init(vm);
+		// TODO: keyboard
+		vm_hw_lem1802_init(vm);
 	else if (biseq(hw, bfromcstr("clock")))
 		vm_hw_timer_init(vm);
 	else

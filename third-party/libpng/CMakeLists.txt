@@ -8,15 +8,9 @@ if(NOT DEFINED IS_ROOT)
 endif(NOT DEFINED IS_ROOT)
 
 # Define linking information for each platform.
-set(${PROJECT_NAME}_Emscripten libpng PARENT_SCOPE)
-set(${PROJECT_NAME}_EmscriptenNoInclude true PARENT_SCOPE)
 set(${PROJECT_NAME}_Unix png PARENT_SCOPE) 
 set(${PROJECT_NAME}_UnixNoInclude true PARENT_SCOPE)
 
 # Define the libpng project.
-if(EMSCRIPTEN)
-	message("  >> ${PROJECT_NAME}: emscripten")
-else(EMSCRIPTEN)
-	message("  >> ${PROJECT_NAME}: prebuilt")
-	find_package(PNG REQUIRED)
-endif(EMSCRIPTEN)
+message("  >> ${PROJECT_NAME}: prebuilt")
+find_package(PNG REQUIRED)

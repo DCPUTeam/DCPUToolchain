@@ -262,7 +262,7 @@ void vm_cycle(vm_t* vm)
 	gettimeofday(&t, NULL);
 
 	if ((t.tv_usec - usec < 0) ? usec - t.tv_usec  >
-			16000 : t.tv_usec - usec > 16000)
+			10000 : t.tv_usec - usec > 10000)
 	{
 		usec = t.tv_usec;
 		vm_hook_fire(vm, 0, HOOK_ON_60HZ);

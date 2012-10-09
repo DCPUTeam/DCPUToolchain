@@ -6,16 +6,14 @@
 	Component:	LibDCPU-vm
 
 	Authors:	James Rhodes
+			Patrick Flick
+			Jose Manuel Diez
 
 	Description:	Handles high-level operations performed
 			on the virtual machine (such as creation).
 
 **/
 
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif
-#include <libtcod.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -25,9 +23,9 @@
 #include "dcpu.h"
 #include "dcpubase.h"
 #include "dcpuhook.h"
-#include "hwio.h"
 #include "hwtimer.h"
 #include "hw.h"
+#include "timing.h"
 
 void vm_init(vm_t* vm, bool init_memory)
 {
@@ -77,9 +75,7 @@ vm_t* vm_create()
 
 void vm_free(vm_t* vm)
 {
-	// Shutdown components.
-	vm_hw_io_free(vm);
-	vm_hw_timer_free(vm);
+	// TODO: Add a `free` field to hw_t with a free function. Then loop through hardware to dealloc them here.
 
 	// Free the memory.
 	free(vm);
@@ -95,35 +91,51 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 		vm->ram[i] = memory[i];
 }
 
-#ifdef __EMSCRIPTEN__
-vm_t* __emscripten_vm;
-
-void __emscripten_vm_cycle()
-{
-	if (__emscripten_vm->halted)
-		emscripten_cancel_main_loop();
-
-	vm_cycle(__emscripten_vm);
-}
-
 void vm_execute(vm_t* vm, const char* execution_dump)
 {
-	__emscripten_vm = vm;
-
-	// FIXME: Emscripten ignores execution dump option.
-	emscripten_set_main_loop(__emscripten_vm_cycle, 60);
-}
-#else
-void vm_execute(vm_t* vm, const char* execution_dump)
-{
+	struct vm_tod_timer freq_timer;
+	struct vm_tod_timer cycle_timer;
+	int cycle_count = 0;
+	long long freq_cycle_count = 0;
+	int sleep_mics = 0;
+	
+	
+	
 	if (execution_dump != NULL)
 		vm->dump = fopen(execution_dump, "w");
 
 	// Execute the memory using DCPU-16 specifications.
+	vm_timing_start_timer(&freq_timer);
+	vm_timing_start_timer(&cycle_timer);
 	while (!vm->halted)
 	{
+		if (vm_timing_has_reached_mics(&freq_timer, 1000000))
+		{
+			printf("current speed:	%lld kHz\n", freq_cycle_count/1000);
+			vm_timing_reset_timer(&freq_timer);
+			freq_cycle_count = 0;
+		}
+		
+
 		vm_cycle(vm);
-		usleep(10);
+		freq_cycle_count++;
+		cycle_count++;
+		
+		if (cycle_count == DCPU_NUM_TIMING_TICKS)
+		{
+			// setting to 950 instead of 1000 to account for the timing overhead
+			// of approx 50 mics
+			sleep_mics += (int)(DCPU_NUM_TIMING_TICKS*DCPU_MICS_PER_CYCLE - 50 - vm_timing_get_cur_elapsed_mics(&cycle_timer));
+			cycle_count = 0;
+			if (sleep_mics > 0)
+			{
+				vm_timing_sleep_microseconds(sleep_mics);
+				// set sleep counter to negative value
+				// (because of sleeping too long with usleep)
+				sleep_mics = (int)(DCPU_NUM_TIMING_TICKS*DCPU_MICS_PER_CYCLE - vm_timing_get_cur_elapsed_mics(&cycle_timer));
+			}
+			vm_timing_reset_timer(&cycle_timer);
+		}
 	}
 
 	if (vm->dump != NULL)
@@ -132,4 +144,3 @@ void vm_execute(vm_t* vm, const char* execution_dump)
 		vm->dump = NULL;
 	}
 }
-#endif

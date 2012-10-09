@@ -15,9 +15,8 @@
 #ifndef __DCPUHWIOASCII_H
 #define __DCPUHWIOASCII_H
 
-#include <libtcod.h>
 #include <stdint.h>
 
-uint16_t vm_hw_io_ascii_get_map(TCOD_key_t key);
+uint16_t vm_hw_io_ascii_get_map(int key);
 
 #endif

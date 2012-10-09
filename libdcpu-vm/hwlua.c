@@ -41,6 +41,7 @@ struct lua_hardware
 	lua_State* state;
 	uint16_t cycle_id;
 	uint16_t write_id;
+	uint16_t sixtyhz_id;
 };
 
 void vm_hw_lua_cycle(vm_t* vm, uint16_t pos, void* ud)
@@ -89,6 +90,32 @@ void vm_hw_lua_write(vm_t* vm, uint16_t pos, void* ud)
 	if (lua_pcall(hw->state, 2, 0, 0) != 0)
 	{
 		printf("lua error in write was %s.\n", lua_tostring(hw->state, -1));
+		lua_pop(hw->state, 1);
+	}
+	lua_pop(hw->state, 1);
+}
+
+void vm_hw_lua_60hz(vm_t* vm, uint16_t pos, void* ud)
+{
+	struct lua_hardware* hw = (struct lua_hardware*)ud;
+	int o60hz;
+	lua_getglobal(hw->state, "sixtyhz");
+	o60hz = lua_gettop(hw->state);
+	if (lua_isnoneornil(hw->state, o60hz))
+	{
+		lua_pop(hw->state, 1);
+		return;
+	}
+
+	// Load function and arguments.
+	lua_pushvalue(hw->state, o60hz);
+	vm_hw_lua_cpu_push_cpu(hw->state, vm);
+	lua_pushnumber(hw->state, pos);
+
+	// Call the function.
+	if (lua_pcall(hw->state, 2, 0, 0) != 0)
+	{
+		printf("lua error in 60hz was %s.\n", lua_tostring(hw->state, -1));
 		lua_pop(hw->state, 1);
 	}
 	lua_pop(hw->state, 1);
@@ -209,6 +236,7 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
 	// Register the hooks.
 	hw->cycle_id = vm_hook_register(vm, &vm_hw_lua_cycle, HOOK_ON_POST_CYCLE, hw);
 	hw->write_id = vm_hook_register(vm, &vm_hw_lua_write, HOOK_ON_WRITE, hw);
+	hw->sixtyhz_id = vm_hook_register(vm, &vm_hw_lua_60hz, HOOK_ON_60HZ, hw);
 
 	// Pop tables from stack.
 	lua_pop(hw->state, 2);

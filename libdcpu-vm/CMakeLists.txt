@@ -10,7 +10,6 @@ endif(NOT DEFINED IS_ROOT)
 # Define the libvm project.
 dt_project(library)
 dt_needs(lua)
-dt_needs(libtcod)
 dt_needs(libdcpu)
 dt_needs(bstring)
 dt_needs(simclist)
@@ -26,4 +25,7 @@ find_package(GLU REQUIRED)
 
 dt_needs(glfw)
 target_link_libraries(libdcpu-vm ${GLFW_LIBRARIES} ${GLU_LIBRARY})
+
+# Copy the default font to the output directory
+file(COPY ./defaultfont.png DESTINATION "${OUTPUT_DIR}" USE_SOURCE_PERMISSIONS)
 
