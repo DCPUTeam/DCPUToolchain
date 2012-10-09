@@ -41,12 +41,14 @@ struct lem1802_hardware
 	uint16_t screen_location;
 	uint16_t border_color;
 	
+	// status parameter for efficiency
 	uint16_t border_was_updated;
-	//uint16_t 
+	uint16_t screen_was_updated;
 	
 	uint16_t blink_status;
 	unsigned int blink_tick;
 	unsigned char * glfw_texture;
+	int texture_has_changed;
 	GLint texture_id;
 	
 	

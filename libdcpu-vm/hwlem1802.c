@@ -33,28 +33,35 @@ GLint next_texture_id = 13;
 
 void vm_hw_lem1802_write(vm_t* vm, uint16_t pos, void* ud)
 {
-	uint16_t location_screen, location_font;
+	uint16_t location_screen, location_font, location_palette;
 	struct lem1802_hardware* hw = (struct lem1802_hardware*)ud;
 	
 	location_screen = vm_hw_lem1802_mem_get_screen(hw);
 	location_font = vm_hw_lem1802_mem_get_font(hw);
+	location_palette = hw->palette_location;
 	
 	// Are we updating a general cell?
 	if (location_screen != HW_LEM1802_DISCONNECTED && pos >= location_screen && pos <= location_screen + 0x17F)
 	{
-
+		hw->screen_was_updated = 1;
 	}
 	// Are we updating a font character?
-	else if (location_font != HW_LEM1802_DEFAULT_FONT_LOC && pos >= location_font && pos <= location_font + 0x100)
+	else if (location_font != HW_LEM1802_DEFAULT_FONT_LOC && pos >= location_font && pos < location_font + 0x100)
 	{
-
+		hw->screen_was_updated = 1;
+	}
+	else if (location_palette != HW_LEM1802_DEFAULT_PALETTE_LOC && pos >= location_palette && pos < location_palette + 0x10)
+	{
+		hw->screen_was_updated = 1;
+		hw->border_was_updated = 1;
 	}
 }
 
 void vm_hw_lem1802_set_border(struct lem1802_hardware* hw , uint16_t idx)
 {
-	// TODO implement border for OpenGL screen
+	// border around the screen
 	hw->border_color = idx & 0xF;
+	hw->border_was_updated = 1;
 }
 
 void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos, void* ud)
@@ -96,18 +103,21 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 		case LEM1802_MEM_MAP_SCREEN:
 			printd(LEVEL_DEBUG, "LEM1802 SCREEN MAPPED.\n");
 			vm_hw_lem1802_mem_set_screen(hw, val_b);
-
 			vm_hook_fire_hardware_change(hw->vm, hw->hw_id, hw);
+			hw->screen_was_updated = 1;
 			break;
 
 		case LEM1802_MEM_MAP_FONT:
 			printd(LEVEL_DEBUG, "LEM1802 FONT MAPPED.\n");
 			vm_hw_lem1802_mem_set_font(hw, val_b);
+			hw->screen_was_updated = 1;
 			break;
 
 		case LEM1802_MEM_MAP_PALETTE:
 			printd(LEVEL_DEBUG, "LEM1802 PALETTE MAPPED.\n");
 			vm_hw_lem1802_mem_set_palette(hw, val_b);
+			hw->screen_was_updated = 1;
+			hw->border_was_updated = 1;
 			break;
 
 		case LEM1802_SET_BORDER_COLOR:
@@ -199,10 +209,14 @@ void vm_hw_lem1802_init_glfw(struct lem1802_hardware* hw)
 void vm_hw_lem1802_glfw_draw(struct lem1802_hardware* hw)
 {
 	glfwMakeContextCurrent(hw->window);
-	glBindTexture (GL_TEXTURE_2D, hw->texture_id);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, HW_LEM1802_SCREEN_TEXTURE_WIDTH, HW_LEM1802_SCREEN_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, hw->glfw_texture);
+	if (hw->texture_has_changed)
+	{
+		glBindTexture (GL_TEXTURE_2D, hw->texture_id);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, HW_LEM1802_SCREEN_TEXTURE_WIDTH, HW_LEM1802_SCREEN_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, hw->glfw_texture);
+		hw->texture_has_changed = 0;
+	}
 
 	// OpenGL rendering goes here...
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -241,17 +255,27 @@ void vm_hw_lem1802_update_texture(struct lem1802_hardware* hw)
 	if (location_screen != HW_LEM1802_DISCONNECTED)
 	{
 		i = 0;
-		for (pos = location_screen; pos <= location_screen + 0x17F; pos++)
+		if (hw->screen_was_updated)
 		{
-			val = hw->vm->ram[pos];
-			x = i % HW_LEM1802_SCREEN_WIDTH;
-			y = i / HW_LEM1802_SCREEN_WIDTH;
-			vm_hw_lem1802_mem_put_char_to_screen(hw, val, x, y);
-			i++;
+			for (pos = location_screen; pos <= location_screen + 0x17F; pos++)
+			{
+				val = hw->vm->ram[pos];
+				x = i % HW_LEM1802_SCREEN_WIDTH;
+				y = i / HW_LEM1802_SCREEN_WIDTH;
+				vm_hw_lem1802_mem_put_char_to_screen(hw, val, x, y);
+				i++;
+			}
+			hw->screen_was_updated = 0;
+			hw->texture_has_changed = 1;
 		}
+		
 		// update border
-		// TODO: no need to redraw this every time!
-		vm_hw_lem1802_mem_draw_border(hw);
+		if (hw->border_was_updated)
+		{
+			vm_hw_lem1802_mem_draw_border(hw);
+			hw->border_was_updated = 0;
+			hw->texture_has_changed = 1;
+		}
 	}
 	else
 	{
@@ -274,6 +298,10 @@ void vm_hw_lem1802_init(vm_t* vm)
 	hw->blink_status = 1;
 	hw->blink_tick = 0;
 	hw->border_color = 0;
+	//
+	hw->border_was_updated = 1;
+	hw->screen_was_updated = 1;
+	hw->texture_has_changed = 1;
 
 	// Set up the LEM1802 hardware information.
 	hw->device.id = 0x7349F615;
