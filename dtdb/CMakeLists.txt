@@ -21,6 +21,8 @@ dt_needs(libdcpu-ci-dbgfmt)
 dt_needs(libdcpu-vm-dbg)
 dt_needs(libdcpu-vm)
 dt_needs(libdcpu)
+dt_needs(libpng)
+dt_needs(glfw)
 
 if(DEFINED EXPERIMENTAL)
 	add_definitions(-DFEATURE_SDP)

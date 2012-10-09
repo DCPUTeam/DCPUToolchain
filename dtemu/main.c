@@ -7,6 +7,7 @@
 
 	Authors:	James Rhodes
 			Tyrel Haveman
+			Jose Manuel Diez
 
 	Description:	Main entry point.
 
@@ -26,16 +27,16 @@
 #include <bstring.h>
 #include <argtable2.h>
 #include <dcpu.h>
-#include <hwio.h>
-#include <hwtimer.h>
-#include <hwlem1802.h>
-#include <hwlem1802mem.h>
-#include <hwlua.h>
 #include <osutil.h>
 #include <version.h>
 #include <ldata.h>
 #include <debug.h>
 #include <iio.h>
+
+// hardware
+#include <hwsped3.h>
+#include <hwlem1802.h>
+#include <hwtimer.h>
 
 #ifdef __APPLE__
 #define main SDL_main
@@ -143,26 +144,26 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-    glfwInit();
+
+	glfwInit();
 	// And then use the VM.
 	vm = vm_create();
 	vm->debug = (debug_mode->count > 0);
 	vm_flash(vm, flash);
+
+	// Init hardware.
 	vm_hw_timer_init(vm);
-	vm_hw_io_init(vm);
 	vm_hw_lem1802_init(vm);
-    vm_hw_sped3_init(vm);
+	vm_hw_sped3_init(vm);
+	vm_hw_m35fd_init(vm);
 	vm_hw_lua_init(vm);
+
 	if (legacy_mode->count > 0)
 	{
 		vm_hw_lem1802_mem_set_screen(vm, 0x8000);
-		vm_hw_io_set_legacy(true);
 	}
 	vm_execute(vm, execution_dump_file->count > 0 ? execution_dump_file->filename[0] : NULL);
 
-#ifdef __EMSCRIPTEN__
-	printd(LEVEL_WARNING, "warning: not cleaning up resources in Emscripten.\n");
-#else
 	if (terminate_mode->count > 0)
 	{
 		fprintf(stderr, "\n");
@@ -180,13 +181,11 @@ int main(int argc, char* argv[])
 
 	vm_hw_lua_free(vm);
 	vm_hw_timer_free(vm);
-	vm_hw_io_free(vm);
 	vm_hw_lem1802_free(vm);
-    vm_hw_sped3_free(vm);
+	vm_hw_sped3_free(vm);
 	vm_free(vm);
 
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
     glfwTerminate();
 	return 0;
-#endif
 }
