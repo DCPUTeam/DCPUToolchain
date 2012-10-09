@@ -17,6 +17,7 @@
 #include <bstrlib.h>
 
 // import hardware
+#include <hw.h>
 #include <hwlem1802.h>
 #include <hwtimer.h>
 #include <hwsped3.h>

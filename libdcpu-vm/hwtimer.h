@@ -31,6 +31,7 @@ struct timer_hardware
 	uint16_t message;
 };
 
+#define TIMER_ID		0x12D0B402
 
 #define TIMER_SET_ENABLED	0
 #define TIMER_GET_ELAPSED	1

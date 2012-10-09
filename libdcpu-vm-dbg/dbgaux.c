@@ -278,11 +278,38 @@ void ddbg_interrupt_hook(vm_t* vm, uint16_t pos, void* ud)
 	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("interrupt")), pos);
 }
 
-void ddbg_hardware_change_hook(vm_t* vm, uint16_t id, void* hw)
+void ddbg_hardware_change_hook(vm_t* vm, uint16_t id, void* ud)
 {
 	FILE* output = (w == NULL) ? stdout : w;
+	hw_t device = vm_hw_get_device(vm, id);
 
-	fprintf(output, "Got hardware change event from device id %d\n", id);
+	// This switch uses curly braces because I need to be able to declare variables
+	// there, since I don't know the type of the struct without checking the ID.
+	switch(device.id)
+	{
+		case LEM1802_ID:
+		{
+			struct lem1802_hardware* hw = (struct lem1802_hardware*) ud;
+			fprintf(output, "%d:%04x:%u:%u:%u:%u\n", 
+				id, LEM1802_ID,
+				hw->palette_location,
+				hw->font_location, 
+				hw->screen_location,
+				hw->border_color);
+			break;
+		}
+		case TIMER_ID:
+		{
+			struct timer_hardware* hw = (struct timer_hardware*) ud;
+			fprintf(output, "%d:%04x:%f:%u\n",
+				id, TIMER_ID,
+				hw->clock_target,
+				hw->message);
+			break;
+		}
+	}
+			
+
 	fflush(output);
 }
 

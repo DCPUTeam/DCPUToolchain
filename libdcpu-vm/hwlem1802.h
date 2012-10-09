@@ -18,6 +18,8 @@
 #include <GL/glfw3.h>
 #include "dcpu.h"
 
+#define LEM1802_ID			0x7349F615
+
 #define LEM1802_MEM_MAP_SCREEN		0
 #define LEM1802_MEM_MAP_FONT		1
 #define LEM1802_MEM_MAP_PALETTE		2
