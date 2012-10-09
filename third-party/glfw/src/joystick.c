@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Any
+// Platform:    Any
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -32,7 +32,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			      GLFW public API			    //////
+//////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -43,14 +43,14 @@ GLFWAPI int glfwGetJoystickParam(int joy, int param)
 {
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return 0;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return 0;
     }
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
-	_glfwSetError(GLFW_INVALID_ENUM, NULL);
-	return 0;
+        _glfwSetError(GLFW_INVALID_ENUM, NULL);
+        return 0;
     }
 
     return _glfwPlatformGetJoystickParam(joy, param);
@@ -67,25 +67,25 @@ GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes)
 
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return 0;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return 0;
     }
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
-	_glfwSetError(GLFW_INVALID_ENUM, NULL);
-	return 0;
+        _glfwSetError(GLFW_INVALID_ENUM, NULL);
+        return 0;
     }
 
     if (axes == NULL || numaxes < 0)
     {
-	_glfwSetError(GLFW_INVALID_VALUE, NULL);
-	return 0;
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        return 0;
     }
 
     // Clear positions
-    for (i = 0;	 i < numaxes;  i++)
-	axes[i] = 0.0f;
+    for (i = 0;  i < numaxes;  i++)
+        axes[i] = 0.0f;
 
     return _glfwPlatformGetJoystickAxes(joy, axes, numaxes);
 }
@@ -96,32 +96,32 @@ GLFWAPI int glfwGetJoystickAxes(int joy, float* axes, int numaxes)
 //========================================================================
 
 GLFWAPI int glfwGetJoystickButtons(int joy,
-				   unsigned char* buttons,
-				   int numbuttons)
+                                   unsigned char* buttons,
+                                   int numbuttons)
 {
     int i;
 
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return 0;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return 0;
     }
 
     if (joy < 0 || joy > GLFW_JOYSTICK_LAST)
     {
-	_glfwSetError(GLFW_INVALID_ENUM, NULL);
-	return 0;
+        _glfwSetError(GLFW_INVALID_ENUM, NULL);
+        return 0;
     }
 
     if (buttons == NULL || numbuttons < 0)
     {
-	_glfwSetError(GLFW_INVALID_VALUE, NULL);
-	return 0;
+        _glfwSetError(GLFW_INVALID_VALUE, NULL);
+        return 0;
     }
 
     // Clear button states
-    for (i = 0;	 i < numbuttons;  i++)
-	buttons[i] = GLFW_RELEASE;
+    for (i = 0;  i < numbuttons;  i++)
+        buttons[i] = GLFW_RELEASE;
 
     return _glfwPlatformGetJoystickButtons(joy, buttons, numbuttons);
 }

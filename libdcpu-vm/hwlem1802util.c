@@ -53,18 +53,18 @@ uint16_t vm_hw_lem1802_util_rgb2raw(unsigned char * rgb)
 	return lem_color;
 }
 
-int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, int * out_has_alpha, unsigned char ** outData) {
+int vm_hw_lem1802_util_loadpng(char* name, int* out_width, int* out_height, int* out_has_alpha, unsigned char** outData)
+{
 	png_structp png_ptr;
 	png_infop info_ptr;
 	png_bytepp row_pointers;
 	unsigned int sig_read = 0;
 	unsigned int row_bytes;
 	int i;
-	int color_type, interlace_type;
 	FILE *fp;
 
 	if ((fp = fopen(name, "rb")) == NULL)
-	return 0;
+		return 0;
 
 	/* Create and initialize the png_struct
 	* with the desired error handler
@@ -77,10 +77,10 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 	* was compiled with a compatible version
 	* of the library.  REQUIRED
 	*/
-	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
-	NULL, NULL, NULL);
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
-	if (png_ptr == NULL) {
+	if (png_ptr == NULL)
+	{
 		fclose(fp);
 		return 0;
 	}
@@ -88,9 +88,10 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 	/* Allocate/initialize the memory
 	* for image information.  REQUIRED. */
 	info_ptr = png_create_info_struct(png_ptr);
-	if (info_ptr == NULL) {
+	if (info_ptr == NULL)
+	{
 		fclose(fp);
-		png_destroy_read_struct(&png_ptr, png_infopp_NULL, png_infopp_NULL);
+		png_destroy_read_struct(&png_ptr, NULL, NULL);
 		return 0;
 	}
 
@@ -103,10 +104,11 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 	* the png_create_read_struct()
 	* earlier.
 	*/
-	if (setjmp(png_jmpbuf(png_ptr))) {
+	if (setjmp(png_jmpbuf(png_ptr)))
+	{
 		/* Free all of the memory associated
 		* with the png_ptr and info_ptr */
-		png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		fclose(fp);
 		/* If we get here, we had a
 		* problem reading the file */
@@ -136,20 +138,21 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 	* call
 	*
 	* PNG_TRANSFORM_STRIP_16 |
-	* PNG_TRANSFORM_PACKING	 forces 8 bit
+	* PNG_TRANSFORM_PACKING  forces 8 bit
 	* PNG_TRANSFORM_EXPAND forces to
 	*  expand a palette into RGB
 	*/
-	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, png_voidp_NULL);
+	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, NULL);
 
-	* out_width = info_ptr->width;
-	* out_height = info_ptr->height;
-	switch (info_ptr->color_type) {
+	
+	*out_width = png_get_image_width(png_ptr, info_ptr);
+	*out_height = png_get_image_height(png_ptr, info_ptr);
+	switch (png_get_color_type(png_ptr, info_ptr)) {
 		case PNG_COLOR_TYPE_RGBA:
-		* out_has_alpha = 1;
+		*out_has_alpha = 1;
 		break;
 		case PNG_COLOR_TYPE_RGB:
-		* out_has_alpha	 = 0;
+		*out_has_alpha  = 0;
 		break;
 		default:
 		printf("Error loading default font: Color type not supported");
@@ -168,7 +171,7 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 
 	/* Clean up after the read,
 	* and free any memory allocated */
-	png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
 	/* Close the file */
 	fclose(fp);

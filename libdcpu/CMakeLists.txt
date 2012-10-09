@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu)
 
 include_directories(${bstring_SOURCE_DIR})
-add_library(dcpu STATIC
+add_library(libdcpu STATIC
 	bfile.h
 	dcpu.h
 	dirent.portable.h
@@ -25,4 +25,4 @@ add_library(dcpu STATIC
 	rparse.c
 	version.c
 )
-target_link_libraries(dcpu bstring)
+target_link_libraries(libdcpu bstring)

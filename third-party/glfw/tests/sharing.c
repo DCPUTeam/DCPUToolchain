@@ -42,7 +42,7 @@ static GLboolean closed = GL_FALSE;
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
-	closed = GL_TRUE;
+        closed = GL_TRUE;
 }
 
 static int window_close_callback(GLFWwindow window)
@@ -57,7 +57,7 @@ static GLFWwindow open_window(const char* title, GLFWwindow share)
 
     window = glfwCreateWindow(WIDTH, HEIGHT, GLFW_WINDOWED, title, share);
     if (!window)
-	return NULL;
+        return NULL;
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
@@ -77,10 +77,10 @@ static GLuint create_texture(void)
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    for (y = 0;	 y < 256;  y++)
+    for (y = 0;  y < 256;  y++)
     {
-	for (x = 0;  x < 256;  x++)
-	    pixels[y * 256 + x] = rand() % 256;
+        for (x = 0;  x < 256;  x++)
+            pixels[y * 256 + x] = rand() % 256;
     }
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 256, 256, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, pixels);
@@ -129,15 +129,15 @@ int main(int argc, char** argv)
 
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     windows[0] = open_window("First", NULL);
     if (!windows[0])
     {
-	fprintf(stderr, "Failed to open first GLFW window: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open first GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     // This is the one and only time we create a texture
@@ -148,8 +148,8 @@ int main(int argc, char** argv)
     windows[1] = open_window("Second", windows[0]);
     if (!windows[1])
     {
-	fprintf(stderr, "Failed to open second GLFW window: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open second GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     // Set drawing color for the first context and copy it to the second
@@ -163,16 +163,16 @@ int main(int argc, char** argv)
 
     while (!closed)
     {
-	glfwMakeContextCurrent(windows[0]);
-	draw_quad(texture);
+        glfwMakeContextCurrent(windows[0]);
+        draw_quad(texture);
 
-	glfwMakeContextCurrent(windows[1]);
-	draw_quad(texture);
+        glfwMakeContextCurrent(windows[1]);
+        draw_quad(texture);
 
-	glfwSwapBuffers(windows[0]);
-	glfwSwapBuffers(windows[1]);
+        glfwSwapBuffers(windows[0]);
+        glfwSwapBuffers(windows[1]);
 
-	glfwWaitEvents();
+        glfwWaitEvents();
     }
 
     glfwTerminate();

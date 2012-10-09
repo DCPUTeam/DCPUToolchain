@@ -51,20 +51,20 @@ static int window_close_callback(GLFWwindow window)
 static void key_callback(GLFWwindow window, int key, int action)
 {
     printf("%0.2f Key %s\n",
-	   glfwGetTime(),
-	   action == GLFW_PRESS ? "pressed" : "released");
+           glfwGetTime(),
+           action == GLFW_PRESS ? "pressed" : "released");
 
     if (action != GLFW_PRESS)
-	return;
+        return;
 
     switch (key)
     {
-	case GLFW_KEY_SPACE:
-	    glfwIconifyWindow(window);
-	    break;
-	case GLFW_KEY_ESCAPE:
-	    closed = GL_TRUE;
-	    break;
+        case GLFW_KEY_SPACE:
+            glfwIconifyWindow(window);
+            break;
+        case GLFW_KEY_ESCAPE:
+            closed = GL_TRUE;
+            break;
     }
 }
 
@@ -84,48 +84,48 @@ int main(int argc, char** argv)
 
     while ((ch = getopt(argc, argv, "fh")) != -1)
     {
-	switch (ch)
-	{
-	    case 'h':
-		usage();
-		exit(EXIT_SUCCESS);
+        switch (ch)
+        {
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
 
-	    case 'f':
-		mode = GLFW_FULLSCREEN;
-		break;
+            case 'f':
+                mode = GLFW_FULLSCREEN;
+                break;
 
-	    default:
-		usage();
-		exit(EXIT_FAILURE);
-	}
+            default:
+                usage();
+                exit(EXIT_FAILURE);
+        }
     }
 
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     if (mode == GLFW_FULLSCREEN)
     {
-	GLFWvidmode desktop_mode;
-	glfwGetDesktopMode(&desktop_mode);
-	width = desktop_mode.width;
-	height = desktop_mode.height;
+        GLFWvidmode desktop_mode;
+        glfwGetDesktopMode(&desktop_mode);
+        width = desktop_mode.width;
+        height = desktop_mode.height;
     }
     else
     {
-	width = 0;
-	height = 0;
+        width = 0;
+        height = 0;
     }
 
     window = glfwCreateWindow(width, height, mode, "Iconify", NULL);
     if (!window)
     {
-	glfwTerminate();
+        glfwTerminate();
 
-	fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     glfwMakeContextCurrent(window);
@@ -139,30 +139,30 @@ int main(int argc, char** argv)
 
     while (!closed)
     {
-	if (iconified != glfwGetWindowParam(window, GLFW_ICONIFIED) ||
-	    active != glfwGetWindowParam(window, GLFW_ACTIVE))
-	{
-	    iconified = glfwGetWindowParam(window, GLFW_ICONIFIED);
-	    active = glfwGetWindowParam(window, GLFW_ACTIVE);
+        if (iconified != glfwGetWindowParam(window, GLFW_ICONIFIED) ||
+            active != glfwGetWindowParam(window, GLFW_ACTIVE))
+        {
+            iconified = glfwGetWindowParam(window, GLFW_ICONIFIED);
+            active = glfwGetWindowParam(window, GLFW_ACTIVE);
 
-	    printf("%0.2f %s %s\n",
-		   glfwGetTime(),
-		   iconified ? "Iconified" : "Restored",
-		   active ? "Active" : "Inactive");
-	}
+            printf("%0.2f %s %s\n",
+                   glfwGetTime(),
+                   iconified ? "Iconified" : "Restored",
+                   active ? "Active" : "Inactive");
+        }
 
-	glfwGetWindowSize(window, &width, &height);
+        glfwGetWindowSize(window, &width, &height);
 
-	glScissor(0, 0, width, height);
-	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
+        glScissor(0, 0, width, height);
+        glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-	glScissor(0, 0, 640, 480);
-	glClearColor(1, 1, 1, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
+        glScissor(0, 0, 640, 480);
+        glClearColor(1, 1, 1, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-	glfwSwapBuffers(window);
-	glfwPollEvents();
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
     glfwTerminate();

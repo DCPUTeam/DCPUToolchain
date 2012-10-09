@@ -79,8 +79,8 @@ int main(void)
 
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
@@ -88,10 +88,10 @@ int main(void)
     window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Defaults", NULL);
     if (!window)
     {
-	glfwTerminate();
+        glfwTerminate();
 
-	fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     glfwMakeContextCurrent(window);
@@ -99,26 +99,26 @@ int main(void)
 
     printf("window size: %ix%i\n", width, height);
 
-    for (i = 0;	 glfw_params[i].name;	i++)
+    for (i = 0;  glfw_params[i].name;   i++)
     {
-	printf("%s: %i\n",
-	       glfw_params[i].name,
-	       glfwGetWindowParam(window, glfw_params[i].param));
+        printf("%s: %i\n",
+               glfw_params[i].name,
+               glfwGetWindowParam(window, glfw_params[i].param));
     }
 
-    for (i = 0;	 gl_params[i].name;   i++)
+    for (i = 0;  gl_params[i].name;   i++)
     {
-	GLint value = 0;
+        GLint value = 0;
 
-	if (gl_params[i].ext)
-	{
-	    if (!glfwExtensionSupported(gl_params[i].ext))
-		continue;
-	}
+        if (gl_params[i].ext)
+        {
+            if (!glfwExtensionSupported(gl_params[i].ext))
+                continue;
+        }
 
-	glGetIntegerv(gl_params[i].param, &value);
+        glGetIntegerv(gl_params[i].param, &value);
 
-	printf("%s: %i\n", gl_params[i].name, value);
+        printf("%s: %i\n", gl_params[i].name, value);
     }
 
     glfwDestroyWindow(window);

@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Any
+// Platform:    Any
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -68,7 +68,7 @@ static GLFWerrorfun _glfwErrorCallback = NULL;
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			     GLFW internal API			    //////
+//////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -79,35 +79,35 @@ void _glfwSetError(int error, const char* format, ...)
 {
     if (_glfwErrorCallback)
     {
-	char buffer[16384];
-	const char* description;
+        char buffer[16384];
+        const char* description;
 
-	if (format)
-	{
-	    int count;
-	    va_list vl;
+        if (format)
+        {
+            int count;
+            va_list vl;
 
-	    va_start(vl, format);
-	    count = vsnprintf(buffer, sizeof(buffer), format, vl);
-	    va_end(vl);
+            va_start(vl, format);
+            count = vsnprintf(buffer, sizeof(buffer), format, vl);
+            va_end(vl);
 
-	    if (count < 0)
-		buffer[sizeof(buffer) - 1] = '\0';
+            if (count < 0)
+                buffer[sizeof(buffer) - 1] = '\0';
 
-	    description = buffer;
-	}
-	else
-	    description = glfwErrorString(error);
+            description = buffer;
+        }
+        else
+            description = glfwErrorString(error);
 
-	_glfwErrorCallback(error, description);
+        _glfwErrorCallback(error, description);
     }
     else
-	_glfwError = error;
+        _glfwError = error;
 }
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			      GLFW public API			    //////
+//////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -117,7 +117,7 @@ void _glfwSetError(int error, const char* format, ...)
 GLFWAPI int glfwInit(void)
 {
     if (_glfwInitialized)
-	return GL_TRUE;
+        return GL_TRUE;
 
     memset(&_glfwLibrary, 0, sizeof(_glfwLibrary));
 
@@ -126,8 +126,8 @@ GLFWAPI int glfwInit(void)
 
     if (!_glfwPlatformInit())
     {
-	_glfwPlatformTerminate();
-	return GL_FALSE;
+        _glfwPlatformTerminate();
+        return GL_FALSE;
     }
 
     atexit(glfwTerminate);
@@ -145,17 +145,17 @@ GLFWAPI int glfwInit(void)
 GLFWAPI void glfwTerminate(void)
 {
     if (!_glfwInitialized)
-	return;
+        return;
 
     // Close all remaining windows
     while (_glfwLibrary.windowListHead)
-	glfwDestroyWindow(_glfwLibrary.windowListHead);
+        glfwDestroyWindow(_glfwLibrary.windowListHead);
 
     if (!_glfwPlatformTerminate())
-	return;
+        return;
 
     if (_glfwLibrary.modes)
-	free(_glfwLibrary.modes);
+        free(_glfwLibrary.modes);
 
     _glfwInitialized = GL_FALSE;
 }
@@ -169,13 +169,13 @@ GLFWAPI void glfwTerminate(void)
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)
 {
     if (major != NULL)
-	*major = GLFW_VERSION_MAJOR;
+        *major = GLFW_VERSION_MAJOR;
 
     if (minor != NULL)
-	*minor = GLFW_VERSION_MINOR;
+        *minor = GLFW_VERSION_MINOR;
 
     if (rev != NULL)
-	*rev = GLFW_VERSION_REVISION;
+        *rev = GLFW_VERSION_REVISION;
 }
 
 
@@ -212,28 +212,28 @@ GLFWAPI const char* glfwErrorString(int error)
 {
     switch (error)
     {
-	case GLFW_NO_ERROR:
-	    return "No error";
-	case GLFW_NOT_INITIALIZED:
-	    return "The GLFW library is not initialized";
-	case GLFW_NO_CURRENT_CONTEXT:
-	    return "There is no current OpenGL context";
-	case GLFW_INVALID_ENUM:
-	    return "Invalid argument for enum parameter";
-	case GLFW_INVALID_VALUE:
-	    return "Invalid value for parameter";
-	case GLFW_OUT_OF_MEMORY:
-	    return "Out of memory";
-	case GLFW_OPENGL_UNAVAILABLE:
-	    return "OpenGL is not available on this machine";
-	case GLFW_VERSION_UNAVAILABLE:
-	    return "The requested OpenGL version is unavailable";
-	case GLFW_PLATFORM_ERROR:
-	    return "A platform-specific error occurred";
-	case GLFW_WINDOW_NOT_ACTIVE:
-	    return "The specified window is not active";
-	case GLFW_FORMAT_UNAVAILABLE:
-	    return "The requested format is unavailable";
+        case GLFW_NO_ERROR:
+            return "No error";
+        case GLFW_NOT_INITIALIZED:
+            return "The GLFW library is not initialized";
+        case GLFW_NO_CURRENT_CONTEXT:
+            return "There is no current OpenGL context";
+        case GLFW_INVALID_ENUM:
+            return "Invalid argument for enum parameter";
+        case GLFW_INVALID_VALUE:
+            return "Invalid value for parameter";
+        case GLFW_OUT_OF_MEMORY:
+            return "Out of memory";
+        case GLFW_OPENGL_UNAVAILABLE:
+            return "OpenGL is not available on this machine";
+        case GLFW_VERSION_UNAVAILABLE:
+            return "The requested OpenGL version is unavailable";
+        case GLFW_PLATFORM_ERROR:
+            return "A platform-specific error occurred";
+        case GLFW_WINDOW_NOT_ACTIVE:
+            return "The specified window is not active";
+        case GLFW_FORMAT_UNAVAILABLE:
+            return "The requested format is unavailable";
     }
 
     return "ERROR: UNKNOWN ERROR TOKEN PASSED TO glfwErrorString";

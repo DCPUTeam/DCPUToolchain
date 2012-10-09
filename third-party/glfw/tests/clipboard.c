@@ -44,7 +44,7 @@ static void usage(void)
 static GLboolean control_is_down(GLFWwindow window)
 {
     return glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) ||
-	   glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL);
+           glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL);
 }
 
 static int window_close_callback(GLFWwindow window)
@@ -56,35 +56,35 @@ static int window_close_callback(GLFWwindow window)
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (action != GLFW_PRESS)
-	return;
+        return;
 
     switch (key)
     {
-	case GLFW_KEY_ESCAPE:
-	    closed = GL_TRUE;
-	    break;
+        case GLFW_KEY_ESCAPE:
+            closed = GL_TRUE;
+            break;
 
-	case GLFW_KEY_V:
-	    if (control_is_down(window))
-	    {
-		const char* string;
+        case GLFW_KEY_V:
+            if (control_is_down(window))
+            {
+                const char* string;
 
-		string = glfwGetClipboardString(window);
-		if (string)
-		    printf("Clipboard contains \"%s\"\n", string);
-		else
-		    printf("Clipboard does not contain a string\n");
-	    }
-	    break;
+                string = glfwGetClipboardString(window);
+                if (string)
+                    printf("Clipboard contains \"%s\"\n", string);
+                else
+                    printf("Clipboard does not contain a string\n");
+            }
+            break;
 
-	case GLFW_KEY_C:
-	    if (control_is_down(window))
-	    {
-		const char* string = "Hello GLFW World!";
-		glfwSetClipboardString(window, string);
-		printf("Setting clipboard to \"%s\"\n", string);
-	    }
-	    break;
+        case GLFW_KEY_C:
+            if (control_is_down(window))
+            {
+                const char* string = "Hello GLFW World!";
+                glfwSetClipboardString(window, string);
+                printf("Setting clipboard to \"%s\"\n", string);
+            }
+            break;
     }
 }
 
@@ -105,33 +105,33 @@ int main(int argc, char** argv)
 
     while ((ch = getopt(argc, argv, "h")) != -1)
     {
-	switch (ch)
-	{
-	    case 'h':
-		usage();
-		exit(EXIT_SUCCESS);
+        switch (ch)
+        {
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
 
-	    default:
-		usage();
-		exit(EXIT_FAILURE);
-	}
+            default:
+                usage();
+                exit(EXIT_FAILURE);
+        }
     }
 
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW\n");
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to initialize GLFW\n");
+        exit(EXIT_FAILURE);
     }
 
     window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Clipboard Test", NULL);
     if (!window)
     {
-	glfwTerminate();
+        glfwTerminate();
 
-	fprintf(stderr, "Failed to open GLFW window\n");
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open GLFW window\n");
+        exit(EXIT_FAILURE);
     }
 
     glfwMakeContextCurrent(window);
@@ -149,13 +149,13 @@ int main(int argc, char** argv)
 
     while (!closed)
     {
-	glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-	glColor3f(0.8f, 0.2f, 0.4f);
-	glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
+        glColor3f(0.8f, 0.2f, 0.4f);
+        glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 
-	glfwSwapBuffers(window);
-	glfwWaitEvents();
+        glfwSwapBuffers(window);
+        glfwWaitEvents();
     }
 
     glfwTerminate();

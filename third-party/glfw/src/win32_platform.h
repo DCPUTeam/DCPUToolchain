@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Win32/WGL
+// Platform:    Win32/WGL
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -132,22 +132,22 @@ typedef INT_PTR GLFWintptr;
 typedef struct _GLFWcontextWGL
 {
     // Platform specific window resources
-    HDC	      DC;	       // Private GDI device context
-    HGLRC     context;	       // Permanent rendering context
+    HDC       DC;              // Private GDI device context
+    HGLRC     context;         // Permanent rendering context
 
     // Platform specific extensions (context specific)
-    PFNWGLSWAPINTERVALEXTPROC		SwapIntervalEXT;
+    PFNWGLSWAPINTERVALEXTPROC           SwapIntervalEXT;
     PFNWGLGETPIXELFORMATATTRIBIVARBPROC GetPixelFormatAttribivARB;
-    PFNWGLGETEXTENSIONSSTRINGEXTPROC	GetExtensionsStringEXT;
-    PFNWGLGETEXTENSIONSSTRINGARBPROC	GetExtensionsStringARB;
-    PFNWGLCREATECONTEXTATTRIBSARBPROC	CreateContextAttribsARB;
-    GLboolean				EXT_swap_control;
-    GLboolean				ARB_multisample;
-    GLboolean				ARB_pixel_format;
-    GLboolean				ARB_create_context;
-    GLboolean				ARB_create_context_profile;
-    GLboolean				EXT_create_context_es2_profile;
-    GLboolean				ARB_create_context_robustness;
+    PFNWGLGETEXTENSIONSSTRINGEXTPROC    GetExtensionsStringEXT;
+    PFNWGLGETEXTENSIONSSTRINGARBPROC    GetExtensionsStringARB;
+    PFNWGLCREATECONTEXTATTRIBSARBPROC   CreateContextAttribsARB;
+    GLboolean                           EXT_swap_control;
+    GLboolean                           ARB_multisample;
+    GLboolean                           ARB_pixel_format;
+    GLboolean                           ARB_create_context;
+    GLboolean                           ARB_create_context_profile;
+    GLboolean                           EXT_create_context_es2_profile;
+    GLboolean                           ARB_create_context_robustness;
 } _GLFWcontextWGL;
 
 
@@ -157,15 +157,15 @@ typedef struct _GLFWcontextWGL
 typedef struct _GLFWwindowWin32
 {
     // Platform specific window resources
-    HWND      handle;	       // Window handle
-    DWORD     dwStyle;	       // Window styles used for window creation
+    HWND      handle;          // Window handle
+    DWORD     dwStyle;         // Window styles used for window creation
     DWORD     dwExStyle;       // --"--
 
     // Various platform specific internal variables
-    int	      desiredRefreshRate; // Desired vertical monitor refresh rate
+    int       desiredRefreshRate; // Desired vertical monitor refresh rate
     GLboolean cursorCentered;
     GLboolean cursorInside;
-    int	      oldCursorX, oldCursorY;
+    int       oldCursorX, oldCursorY;
 } _GLFWwindowWin32;
 
 
@@ -174,37 +174,37 @@ typedef struct _GLFWwindowWin32
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryWin32
 {
-    HINSTANCE		      instance;	    // Instance of the application
-    ATOM		      classAtom;    // Window class atom
-    HHOOK		      keyboardHook; // Keyboard hook handle
-    DWORD		      foregroundLockTimeout;
-    char*		      clipboardString;
+    HINSTANCE                 instance;     // Instance of the application
+    ATOM                      classAtom;    // Window class atom
+    HHOOK                     keyboardHook; // Keyboard hook handle
+    DWORD                     foregroundLockTimeout;
+    char*                     clipboardString;
 
     // Default monitor
     struct {
-	GLboolean	      modeChanged;
-	int		      width;
-	int		      height;
-	int		      bitsPerPixel;
-	int		      refreshRate;
+        GLboolean             modeChanged;
+        int                   width;
+        int                   height;
+        int                   bitsPerPixel;
+        int                   refreshRate;
     } monitor;
 
     // Timer data
     struct {
-	GLboolean	      hasPC;
-	double		      resolution;
-	unsigned int	      t0_32;
-	__int64		      t0_64;
+        GLboolean             hasPC;
+        double                resolution;
+        unsigned int          t0_32;
+        __int64               t0_64;
     } timer;
 
 #ifndef _GLFW_NO_DLOAD_WINMM
     // winmm.dll
     struct {
-	HINSTANCE	      instance;
-	JOYGETDEVCAPS_T	      joyGetDevCaps;
-	JOYGETPOS_T	      joyGetPos;
-	JOYGETPOSEX_T	      joyGetPosEx;
-	TIMEGETTIME_T	      timeGetTime;
+        HINSTANCE             instance;
+        JOYGETDEVCAPS_T       joyGetDevCaps;
+        JOYGETPOS_T           joyGetPos;
+        JOYGETPOSEX_T         joyGetPosEx;
+        TIMEGETTIME_T         timeGetTime;
     } winmm;
 #endif // _GLFW_NO_DLOAD_WINMM
 
@@ -234,14 +234,14 @@ void _glfwInitTimer(void);
 
 // OpenGL support
 int _glfwCreateContext(_GLFWwindow* window,
-		       const _GLFWwndconfig* wndconfig,
-		       const _GLFWfbconfig* fbconfig);
+                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
 
 // Fullscreen support
 void _glfwSetVideoMode(int* width, int* height,
-		       int* bpp, int* refreshRate,
-		       GLboolean exactBPP);
+                       int* bpp, int* refreshRate,
+                       GLboolean exactBPP);
 void _glfwRestoreVideoMode(void);
 
 

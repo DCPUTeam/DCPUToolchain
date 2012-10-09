@@ -10,22 +10,10 @@ set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
 set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
 set(LIB_SUFFIX "" CACHE STRING "Takes an empty string or 64. Directory where lib will be installed: lib or lib64")
 
-option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
-option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
+option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
+option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_NATIVE_API "Build the GLFW native API" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-
-# We also need to change our C compiler flags, since TCOD doesn't
-# conform to our compiling standards :P
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error -Wno-declaration-after-statement")
-
-#dt_project(library)
-#dt_folder("third-party")
-
-set(glfw_Unix glfw PARENT_SCOPE)
-set(glfw_Windows glfw PARENT_SCOPE)
-
-
 
 find_package(OpenGL REQUIRED)
 
@@ -254,11 +242,11 @@ endif()
 add_subdirectory(src)
 
 if (GLFW_BUILD_EXAMPLES)
-#    add_subdirectory(examples)
+    add_subdirectory(examples)
 endif()
 
 if (GLFW_BUILD_TESTS)
-#    add_subdirectory(tests)
+    add_subdirectory(tests)
 endif()
 
 #--------------------------------------------------------------------
@@ -308,5 +296,4 @@ if (NOT TARGET uninstall)
                       ${CMAKE_COMMAND} -P
                       ${GLFW_BINARY_DIR}/cmake_uninstall.cmake)
 endif()
-
 

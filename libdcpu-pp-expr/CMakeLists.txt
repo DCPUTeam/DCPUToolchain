@@ -1,15 +1,24 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu-pp-expr)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
-
-# Define the libvm project.
-dt_project(library)
-dt_needs(lua)
-dt_needs(bstring)
-dt_needs(simclist)
-dt_needs(libdcpu)
+add_library(libdcpu-pp-expr STATIC
+	ppexpr.c
+	ppexprlua.c
+	ppexpr.h
+	ppexprlua.h
+	parser.y
+	lexer.l
+)
+include_directories(
+	${bstring_SOURCE_DIR}
+	${libdcpu_SOURCE_DIR}
+	${simclist_SOURCE_DIR}
+	${lua_SOURCE_DIR}
+	${FLEX_UNISTD_INCLUDE}
+)
+target_link_libraries(libdcpu-pp-expr
+	lua
+	bstring
+	simclist
+	libdcpu
+)

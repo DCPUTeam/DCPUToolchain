@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Any
+// Platform:    Any
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -34,7 +34,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			      GLFW public API			    //////
+//////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -47,8 +47,8 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow handle, const char* string)
 
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
     }
 
     _glfwPlatformSetClipboardString(window, string);
@@ -65,8 +65,8 @@ GLFWAPI const char* glfwGetClipboardString(GLFWwindow handle)
 
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return NULL;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
     }
 
     return _glfwPlatformGetClipboardString(window);

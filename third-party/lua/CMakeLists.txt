@@ -1,12 +1,59 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(lua)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
-
-# Define the lua project.
-dt_project(library)
-dt_folder("third-party")
+add_library(lua STATIC
+	lapi.c
+	lauxlib.c
+	lbaselib.c
+	lcode.c
+	ldblib.c
+	ldebug.c
+	ldo.c
+	ldump.c
+	lfunc.c
+	lgc.c
+	linit.c
+	liolib.c
+	llex.c
+	lmathlib.c
+	lmem.c
+	loadlib.c
+	lobject.c
+	lopcodes.c
+	loslib.c
+	lparser.c
+	lstate.c
+	lstring.c
+	lstrlib.c
+	ltable.c
+	ltablib.c
+	ltm.c
+	lundump.c
+	lvm.c
+	lzio.c
+	print.c
+	lapi.h
+	lauxlib.h
+	lcode.h
+	ldebug.h
+	ldo.h
+	lfunc.h
+	lgc.h
+	llex.h
+	llimits.h
+	lmem.h
+	lobject.h
+	lopcodes.h
+	lparser.h
+	lstate.h
+	lstring.h
+	ltable.h
+	ltm.h
+	lua.h
+	luaconf.h
+	lualib.h
+	lundump.h
+	lvm.h
+	lzio.h
+)
+set_property(TARGET lua PROPERTY FOLDER "third-party")

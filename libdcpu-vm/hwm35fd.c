@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <debug.h>
+#include <iio.h>
 #include "hw.h"
 #include "hwm35fd.h"
 #include "dcpu.h"

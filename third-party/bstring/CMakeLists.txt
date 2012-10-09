@@ -8,3 +8,4 @@ add_library(bstring STATIC
 	bstraux.c
 	bstrlib.c
 )
+set_property(TARGET bstring PROPERTY FOLDER "third-party")

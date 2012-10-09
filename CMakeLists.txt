@@ -17,6 +17,7 @@ endif("${git_hash}" STREQUAL "")
 set(CMAKE_MODULE_PATH "${toolchain_SOURCE_DIR}/CMakeScripts")
 set(FLEX_UNISTD_INCLUDE "")
 set(CMAKE_BUILD_TYPE Debug)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 if(MSVC)
 	# Windows does not have unistd.h, but GnuWin32's Flex program
 	# provides it for us, so we need to add that as an include
@@ -74,24 +75,28 @@ message("  >> flex unistd is at: ${FLEX_UNISTD_INCLUDE}")
 message("  >> bison is at: ${BISON_EXECUTABLE}")
 message("   (must be Cygwin versions on Windows)")
 
+# Set GLFW options.
+set(GLFW_BUILD_EXAMPLES OFF)
+set(GLFW_BUILD_TESTS OFF)
+
 # Add library folders.
 #if(NOT MSVC AND NOT TOOLCHAIN_ON_CYGWIN)
 #	add_subdirectory(third-party/opengl)
-#	add_subdirectory(third-party/zlib)
-#	add_subdirectory(third-party/libpng)
+add_subdirectory(third-party/zlib)
+add_subdirectory(third-party/libpng)
 #	add_subdirectory(third-party/sdl)
 #endif(NOT MSVC AND NOT TOOLCHAIN_ON_CYGWIN)
-#add_subdirectory(third-party/glfw)
+add_subdirectory(third-party/glfw)
 #add_subdirectory(third-party/pthread)
-#add_subdirectory(third-party/readline)
-#add_subdirectory(third-party/argtable2)
+add_subdirectory(third-party/readline)
+add_subdirectory(third-party/argtable2)
 add_subdirectory(third-party/bstring)
-#add_subdirectory(third-party/simclist)
+add_subdirectory(third-party/simclist)
 #add_subdirectory(third-party/curl)
-#add_subdirectory(third-party/lua)
+add_subdirectory(third-party/lua)
 add_subdirectory(libdcpu)
-#add_subdirectory(libdcpu-pp-expr)
-#add_subdirectory(libdcpu-vm)
+add_subdirectory(libdcpu-pp-expr)
+add_subdirectory(libdcpu-vm)
 #add_subdirectory(libdcpu-ci-dbgfmt)
 #add_subdirectory(libdcpu-vm-dbg)
 #add_subdirectory(libdcpu-pp)
@@ -100,7 +105,11 @@ add_subdirectory(libdcpu)
 #add_subdirectory(libdcpu-ci-lang-c)
 #add_subdirectory(libdcpu-vm-python)
 
-# Add executable folders.
+# Put the GFLW projects in the correct directories.
+set_property(TARGET glfw PROPERTY FOLDER "third-party")
+set_property(TARGET uninstall PROPERTY FOLDER "third-party")
+
+## Add executable folders.
 #add_subdirectory(dtpp)
 #add_subdirectory(dtcc)
 #add_subdirectory(dtasm)

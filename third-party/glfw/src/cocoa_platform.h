@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Cocoa/NSOpenGL
+// Platform:    Cocoa/NSOpenGL
 // API Version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -63,8 +63,8 @@ typedef intptr_t GLFWintptr;
 //------------------------------------------------------------------------
 typedef struct _GLFWcontextNSGL
 {
-    id		 pixelFormat;
-    id		 context;
+    id           pixelFormat;
+    id	         context;
 } _GLFWcontextNSGL;
 
 
@@ -73,9 +73,9 @@ typedef struct _GLFWcontextNSGL
 //------------------------------------------------------------------------
 typedef struct _GLFWwindowNS
 {
-    id		 object;
-    id		 delegate;
-    id		 view;
+    id           object;
+    id	         delegate;
+    id           view;
     unsigned int modifierFlags;
 } _GLFWwindowNS;
 
@@ -86,16 +86,16 @@ typedef struct _GLFWwindowNS
 typedef struct _GLFWlibraryNS
 {
     struct {
-	double base;
-	double resolution;
+        double base;
+        double resolution;
     } timer;
 
     CGDisplayModeRef desktopMode;
     CGEventSourceRef eventSource;
-    id		     delegate;
-    id		     autoreleasePool;
+    id               delegate;
+    id               autoreleasePool;
 
-    char*	     clipboardString;
+    char*            clipboardString;
 } _GLFWlibraryNS;
 
 
@@ -105,7 +105,7 @@ typedef struct _GLFWlibraryNS
 typedef struct _GLFWlibraryNSGL
 {
     // dlopen handle for dynamically loading OpenGL extension entry points
-    void*	     framework;
+    void*            framework;
 } _GLFWlibraryNSGL;
 
 

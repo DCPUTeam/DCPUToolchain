@@ -80,11 +80,11 @@ void vm_hw_lem1802_mem_init(struct lem1802_hardware* hw)
 	
 		// Determine the font path.
 		font_path = osutil_getarg0path();
-	#ifdef WIN32
+#ifdef WIN32
 		bconcat(font_path, bfromcstr("\\defaultfont.png"));
-	#else
+#else
 		bconcat(font_path, bfromcstr("/defaultfont.png"));
-	#endif
+#endif
 
 		// load image with default font
 		if (!vm_hw_lem1802_util_loadpng(font_path->data, &font_img_width, &font_img_height, &has_alpha, &font_image)) {
@@ -349,15 +349,11 @@ uint32_t vm_hw_lem1802_mem_get_font_default_representation(uint16_t idx)
 ///
 void vm_hw_lem1802_mem_set_screen(struct lem1802_hardware* hw, uint16_t pos)
 {
-	uint16_t x, y, i;
-
 	// Set the new screen position.
 	hw->screen_location = pos;
 	
 	if (pos == 0)
-	{
 		hw->screen_location = HW_LEM1802_DISCONNECTED;
-	}
 }
 
 ///

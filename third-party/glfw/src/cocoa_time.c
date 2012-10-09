@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Cocoa
+// Platform:    Cocoa
 // API Version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -43,7 +43,7 @@ static uint64_t getRawTime(void)
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			     GLFW internal API			    //////
+//////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -61,7 +61,7 @@ void _glfwInitTimer(void)
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			     GLFW platform API			    //////
+//////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -71,7 +71,7 @@ void _glfwInitTimer(void)
 double _glfwPlatformGetTime(void)
 {
     return (double) (getRawTime() - _glfwLibrary.NS.timer.base) *
-	_glfwLibrary.NS.timer.resolution;
+        _glfwLibrary.NS.timer.resolution;
 }
 
 
@@ -82,6 +82,6 @@ double _glfwPlatformGetTime(void)
 void _glfwPlatformSetTime(double time)
 {
     _glfwLibrary.NS.timer.base = getRawTime() -
-	(uint64_t) (time / _glfwLibrary.NS.timer.resolution);
+        (uint64_t) (time / _glfwLibrary.NS.timer.resolution);
 }
 
