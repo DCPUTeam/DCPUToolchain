@@ -36,7 +36,11 @@
 // hardware
 #include <hwsped3.h>
 #include <hwlem1802.h>
+#include <hwlem1802mem.h>
 #include <hwtimer.h>
+#include <hwm35fd.h>
+#include <hwlua.h>
+#include <hw.h>
 
 #ifdef __APPLE__
 #define main SDL_main
@@ -160,7 +164,12 @@ int main(int argc, char* argv[])
 
 	if (legacy_mode->count > 0)
 	{
-		vm_hw_lem1802_mem_set_screen(vm, 0x8000);
+		for (i = 0; i < vm_hw_count(vm); i++)
+			if (vm_hw_get_device(vm, i).id == 0x7349F615 && vm_hw_get_device(vm, i).manufacturer == 0x1C6C8B36)
+			{
+				vm_hw_lem1802_mem_set_screen((struct lem1802_hardware*)vm_hw_get_device(vm, i).userdata, 0x8000);
+				break;
+			}
 	}
 	vm_execute(vm, execution_dump_file->count > 0 ? execution_dump_file->filename[0] : NULL);
 
