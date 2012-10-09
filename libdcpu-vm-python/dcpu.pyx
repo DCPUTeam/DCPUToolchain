@@ -25,11 +25,7 @@ cdef class DCPU:
 			dcpu.vm_free(self._vm)
 	
 	def getmemory(self):
-		memory = []
-		for i in range(0x10000):
-			memory.append(self._vm.ram[i])
-	
-		return memory
+		return [self._vm.ram[i] for i in range(0x10000)]
 	
 	def setmemory(self, memory):
 		cdef uint16_t[0x10000] c_memory
