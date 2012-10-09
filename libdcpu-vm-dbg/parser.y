@@ -8,6 +8,7 @@
 	Component:      LibDCPU-vm-dbg
 
 	Authors:        James Rhodes
+			Jose Manuel Diez
 
 	Description:    Defines parser for the debugger.
 
@@ -42,7 +43,8 @@ void yyerror(void* scanner, const char *str);
 // Define our lexical token names.
 %token <token> ID_LOAD ID_BREAKPOINT ID_RUN ID_CONTINUE ID_STOP ID_QUIT ID_ADD ID_DELETE
 %token <token> ID_ATTACH ID_INSPECT ID_HARDWARE ID_CPU ID_DETACH ID_LIST ID_MEMORY ID_HELP
-%token <token> ID_DISASSEMBLE ID_SYMBOLS COLON ID_STEP ID_SET ID_DEBUG ID_NEXT ID_BACKTRACE
+%token <token> ID_DISASSEMBLE ID_SYMBOLS COLON ID_STEP ID_SET ID_DEBUG ID_NEXT ID_BACKTRACE 
+%token <token> ID_REALTIME
 %token <string> PARAM PATH CHARACTER STRING CUSTOM
 %token <number> ADDRESS
 
@@ -64,6 +66,7 @@ void yyerror(void* scanner, const char *str);
 %%
 
 command:
+		realtime_command |
 		general_command |
 		breakpoint_command |
 		hardware_command |
@@ -79,6 +82,13 @@ command:
 param:
 		PATH |
 		PARAM ;
+
+realtime_command:
+		ID_REALTIME ADDRESS 
+		{
+			ddbg_set_write_pipe($2);
+		}
+
 	
 general_command:
 		ID_LOAD ID_SYMBOLS PATH

@@ -96,6 +96,8 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 		case LEM1802_MEM_MAP_SCREEN:
 			printd(LEVEL_DEBUG, "LEM1802 SCREEN MAPPED.\n");
 			vm_hw_lem1802_mem_set_screen(hw, val_b);
+
+			vm_hook_fire_hardware_change(hw->vm, hw->hw_id, hw);
 			break;
 
 		case LEM1802_MEM_MAP_FONT:
@@ -299,6 +301,9 @@ void vm_hw_lem1802_init(vm_t* vm)
 	vm_hw_keyboard_init(vm);
 	glfwSetKeyCallback(&vm_hw_keyboard_handle_key);
 	glfwSetCharCallback(&vm_hw_keyboard_handle_char);
+
+
+	vm_hook_fire_hardware_change(hw->vm, hw->hw_id, hw);
 }
 
 void vm_hw_lem1802_free(void *ud)

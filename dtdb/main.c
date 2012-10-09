@@ -120,8 +120,6 @@ int main(int argc, char** argv)
 	if (no_attach_mode->count == 0)
 	{
 		ddbg_attach(bfromcstr("clock"));
-		ddbg_attach(bfromcstr("keyboard"));
-		ddbg_attach(bfromcstr("lem1802"));
 	}
 
 	// Load file if filename is specified.
