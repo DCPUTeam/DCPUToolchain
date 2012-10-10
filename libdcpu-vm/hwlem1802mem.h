@@ -8,6 +8,7 @@
 	Authors:	James Rhodes
 			José Manuel Díez
 			Tyrel Haveman
+			Patrick Flick
 
 	Description:	Handles internal LEM1802 memory.
 

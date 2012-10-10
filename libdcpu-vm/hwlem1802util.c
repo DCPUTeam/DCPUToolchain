@@ -80,7 +80,8 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
 	NULL, NULL, NULL);
 
-	if (png_ptr == NULL) {
+	if (png_ptr == NULL)
+	{
 		fclose(fp);
 		return 0;
 	}
@@ -88,7 +89,8 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 	/* Allocate/initialize the memory
 	* for image information.  REQUIRED. */
 	info_ptr = png_create_info_struct(png_ptr);
-	if (info_ptr == NULL) {
+	if (info_ptr == NULL)
+	{
 		fclose(fp);
 		png_destroy_read_struct(&png_ptr, png_infopp_NULL, png_infopp_NULL);
 		return 0;
@@ -103,7 +105,8 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 	* the png_create_read_struct()
 	* earlier.
 	*/
-	if (setjmp(png_jmpbuf(png_ptr))) {
+	if (setjmp(png_jmpbuf(png_ptr)))
+	{
 		/* Free all of the memory associated
 		* with the png_ptr and info_ptr */
 		png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
@@ -144,25 +147,27 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 
 	* out_width = info_ptr->width;
 	* out_height = info_ptr->height;
-	switch (info_ptr->color_type) {
+	switch (info_ptr->color_type)
+	{
 		case PNG_COLOR_TYPE_RGBA:
-		* out_has_alpha = 1;
-		break;
+			* out_has_alpha = 1;
+			break;
 		case PNG_COLOR_TYPE_RGB:
-		* out_has_alpha  = 0;
-		break;
+			* out_has_alpha = 0;
+			break;
 		default:
-		printf("Error loading default font: Color type not supported");
-		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-		fclose(fp);
-		return 0;
+			printf("Error loading default font: Color type not supported");
+			png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+			fclose(fp);
+			return 0;
 	}
 	row_bytes = png_get_rowbytes(png_ptr, info_ptr);
 	*outData = (unsigned char*) malloc(row_bytes * (*out_height));
 
 	row_pointers = png_get_rows(png_ptr, info_ptr);
 
-	for (i = 0; i < (*out_height); i++) {
+	for (i = 0; i < (*out_height); i++)
+	{
 		memcpy(*outData+(row_bytes * i), row_pointers[i], row_bytes);
 	}
 

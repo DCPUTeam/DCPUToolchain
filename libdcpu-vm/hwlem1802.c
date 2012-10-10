@@ -147,27 +147,29 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 
 void vm_hw_lem1802_glfw_resize_handler(GLFWwindow window, int w, int h)
 {
-	
-	double originalAspectRatio, newAspectRatio, xFrust, yFrust;
+	double original_aspect_ratio, new_aspect_ratio, x_frust, y_frust;
 	
 	struct lem1802_hardware* hw = (struct lem1802_hardware*) glfwGetWindowUserPointer(window);
 	
-	originalAspectRatio = (double)HW_LEM1802_SCREEN_TEXTURE_WIDTH/(double)HW_LEM1802_SCREEN_TEXTURE_HEIGHT;
-	newAspectRatio = (double)w/(double)h;
+	original_aspect_ratio = (double)HW_LEM1802_SCREEN_TEXTURE_WIDTH/(double)HW_LEM1802_SCREEN_TEXTURE_HEIGHT;
+	new_aspect_ratio = (double)w/(double)h;
 	
 	glfwMakeContextCurrent(hw->window);
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	
-	if (newAspectRatio > originalAspectRatio) {
+	if (new_aspect_ratio > original_aspect_ratio)
+	{
 		// black areas on the sides
-		xFrust = (double)w/(h * originalAspectRatio);
-		glOrtho(-xFrust, xFrust, -1.0, 1.0, -1.0, 2.0);
-	} else {
+		x_frust = (double)w/(h * original_aspect_ratio);
+		glOrtho(-x_frust, x_frust, -1.0, 1.0, -1.0, 2.0);
+	}
+	else
+	{
 		// black areas top and bottom
-		yFrust = (h * originalAspectRatio)/((double) w);
-		glOrtho(-1.0, 1.0, -yFrust, yFrust, -1.0, 2.0);
+		y_frust = (h * original_aspect_ratio)/((double) w);
+		glOrtho(-1.0, 1.0, -y_frust, y_frust, -1.0, 2.0);
 	}
 	
 	// redraw
@@ -178,7 +180,7 @@ void vm_hw_lem1802_glfw_resize_handler(GLFWwindow window, int w, int h)
 void vm_hw_lem1802_init_glfw(struct lem1802_hardware* hw)
 {
 	// Initialize GLFW
-	if( !glfwInit() )
+	if(!glfwInit())
 	{
 		printf("Error: Couldn't initialize GLFW.");
 		exit( EXIT_FAILURE );
@@ -225,16 +227,16 @@ void vm_hw_lem1802_glfw_draw(struct lem1802_hardware* hw)
 	glBindTexture (GL_TEXTURE_2D, hw->texture_id); /* bind to our texture, has id of 13 */
 
 	glBegin(GL_QUADS);
-		glTexCoord2f (0.0f,0.0f); /* lower left corner of image */
+		glTexCoord2f(0.0f,0.0f); /* lower left corner of image */
 		glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner
 	
-		glTexCoord2f (0.0f, 1.0f); /* upper left corner of image */
+		glTexCoord2f(0.0f, 1.0f); /* upper left corner of image */
 		glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
 	
-		glTexCoord2f (1.0f, 1.0f); /* upper right corner of image */
+		glTexCoord2f(1.0f, 1.0f); /* upper right corner of image */
 		glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner
 	
-		glTexCoord2f (1.0f, 0.0f); /* lower right corner of image */
+		glTexCoord2f(1.0f, 0.0f); /* lower right corner of image */
 		glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner
 
 	glEnd();

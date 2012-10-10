@@ -210,48 +210,46 @@ uint16_t vm_hw_lem1802_mem_get_font(struct lem1802_hardware* hw)
 
 
 void vm_hw_lem1802_mem_load_default_font() {
-	unsigned int character, fontRow, fontCol, outputIndex;
-	int imgTopLeftX, imgTopLeftY, x, y;
+	unsigned int character, font_row, font_col, output_index;
+	int img_top_left_x, img_top_left_y, x, y;
 	uint16_t word1, word2, shift;
 	
 	
-	for (character = 0; character < HW_LEM1802_FONT_NUM_CHARS; character++) {
+	for (character = 0; character < HW_LEM1802_FONT_NUM_CHARS; character++)
+	{
+		font_row = character / HW_LEM1802_FONT_IMG_COLS;
+		font_col = character % HW_LEM1802_FONT_IMG_COLS;
+		output_index = 2*character;
 		
-		fontRow = character / HW_LEM1802_FONT_IMG_COLS;
-		fontCol = character % HW_LEM1802_FONT_IMG_COLS;
-		outputIndex = 2*character;
-		
-		imgTopLeftX = fontCol * HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH;
-		imgTopLeftY = fontRow * HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT;
+		img_top_left_x = font_col * HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH;
+		img_top_left_y = font_row * HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT;
 		
 		// TODO do this in one pass, by starting with MSB first
 		
 		// get first word
 		word1 = 0x0;
 		shift = 0;
-		for (x = imgTopLeftX+1; x >= imgTopLeftX; x--) {
-			for (y = imgTopLeftY; y < imgTopLeftY+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT; y++) {
-				if (font_image[HW_LEM1802_FONT_RGB_COOR(x,y)] > 128) {
+		for (x = img_top_left_x+1; x >= img_top_left_x; x--)
+			for (y = img_top_left_y; y < img_top_left_y+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT; y++)
+			{
+				if (font_image[HW_LEM1802_FONT_RGB_COOR(x,y)] > 128)
 					// foreground
 					word1 |= (0x1 << shift);
-				}
 				
 				shift++;
 			}
-		}
 		
 		// get second word
 		word2 = 0x0;
 		shift = 0;
-		for (x = imgTopLeftX+3; x >= imgTopLeftX+2; x--) {
-			for (y = imgTopLeftY; y < imgTopLeftY+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT; y++) {
-				if (font_image[HW_LEM1802_FONT_RGB_COOR(x,y)] > 128) {
+		for (x = img_top_left_x+3; x >= img_top_left_x+2; x--)
+			for (y = img_top_left_y; y < img_top_left_y+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT; y++)
+			{
+				if (font_image[HW_LEM1802_FONT_RGB_COOR(x,y)] > 128)
 					// foreground
 					word2 |= (0x1 << shift);
-				}
 				shift++;
 			}
-		}
 		
 		// save to default font
 		font_default[2*character] = word1;
@@ -269,7 +267,7 @@ void vm_hw_lem1802_mem_put_char_to_screen(struct lem1802_hardware* hw, uint16_t 
 	unsigned char foreclr[3];
 	unsigned char backclr[3];
 	unsigned int shift;
-	int textureTopLeftX, textureTopLeftY, x, y;
+	int texture_top_left_x, texture_top_left_y, x, y;
 	
 	fore = (val & 0xF000) >> 12;
 	back = (val & 0x0F00) >> 8;
@@ -287,25 +285,31 @@ void vm_hw_lem1802_mem_put_char_to_screen(struct lem1802_hardware* hw, uint16_t 
 	{
 		fontval_word1 = font_default[2*chr];
 		fontval_word2 = font_default[2*chr+1];
-	} else {
+	}
+	else
+	{
 		fontval_word1 = hw->vm->ram[fontloc+2*chr];
 		fontval_word2 = hw->vm->ram[fontloc+2*chr+1];
 	}
 	fontval32bit = (fontval_word1 << 16) | fontval_word2;
 	
 	// get coordinates of character in texture
-	textureTopLeftX = screenX * HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH;
-	textureTopLeftY = screenY * HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT;
+	texture_top_left_x = screenX * HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH;
+	texture_top_left_y = screenY * HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT;
 	
 	shift = 31;
-	for (x = textureTopLeftX; x < textureTopLeftX+HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH; x++) {
-		for (y = textureTopLeftY+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT-1; y >= textureTopLeftY; y--) {
-			if ((fontval32bit >> shift) & 1 & show_foreground) {
+	for (x = texture_top_left_x; x < texture_top_left_x+HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH; x++)
+		for (y = texture_top_left_y+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT-1; y >= texture_top_left_y; y--)
+		{
+			if ((fontval32bit >> shift) & 1 & show_foreground)
+			{
 				// foreground
 				hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)] = foreclr[0];
 				hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)+1] = foreclr[1];
 				hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)+2] = foreclr[2];
-			} else {
+			}
+			else
+			{
 				// foreground
 				hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)] = backclr[0];
 				hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)+1] = backclr[1];
@@ -313,7 +317,6 @@ void vm_hw_lem1802_mem_put_char_to_screen(struct lem1802_hardware* hw, uint16_t 
 			}
 			shift--;
 		}
-	}
 }
 
 void vm_hw_lem1802_mem_draw_border(struct lem1802_hardware* hw)

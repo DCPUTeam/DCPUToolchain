@@ -7,6 +7,7 @@
 
 	Authors:	James Rhodes
 			José manuel Díez
+			Patrick Flick
 
 	Description:	Handles LEM1802 functions
 
