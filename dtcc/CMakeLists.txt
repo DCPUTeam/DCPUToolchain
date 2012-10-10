@@ -1,18 +1,24 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(dtcc)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
-
-# Define the compiler project.
-dt_project(executable)
-dt_needs(bstring)
-dt_needs(argtable2)
-dt_needs(libdcpu)
-dt_needs(libdcpu-pp)
-dt_needs(libdcpu-ci-lang)
-dt_needs(libdcpu-ci-lang-c)
+add_executable(dtcc
+	main.cpp
+)
+include_directories(
+	${bstring_SOURCE_DIR}
+	${argtable2_SOURCE_DIR}
+	${libdcpu_SOURCE_DIR}
+	${libdcpu-pp_SOURCE_DIR}
+	${libdcpu-ci-lang_SOURCE_DIR}
+	${libdcpu-ci-lang-c_SOURCE_DIR}
+	${FLEX_UNISTD_INCLUDE}
+)
+target_link_libraries(dtcc
+	argtable2
+	bstring
+	libdcpu
+	libdcpu-pp
+	libdcpu-ci-lang
+	libdcpu-ci-lang-c
+)
 

@@ -1,15 +1,19 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(dtlua)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
-
-# Define the lua runtime project.
-dt_project(executable)
-dt_needs(bstring)
-dt_needs(libdcpu)
-dt_needs(lua)
+add_executable(dtlua
+	lua.c
+)
+include_directories(
+	${bstring_SOURCE_DIR}
+	${argtable2_SOURCE_DIR}
+	${libdcpu_SOURCE_DIR}
+	${lua_SOURCE_DIR}
+)
+target_link_libraries(dtlua
+	argtable2
+	bstring
+	lua
+	libdcpu
+)
 

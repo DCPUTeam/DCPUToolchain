@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu-vm)
 
+add_executable(embedfont embedfont.c)
+include_directories(${libdcpu_SOURCE_DIR})
+target_link_libraries(embedfont libdcpu)
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/font.c
+	COMMAND embedfont ${CMAKE_CURRENT_BINARY_DIR}/font.c ${CMAKE_CURRENT_SOURCE_DIR}/font.png
+	DEPENDS font.png embedfont)
+
 find_package(OpenGL REQUIRED)
 add_library(libdcpu-vm STATIC
 	dcpu.c
@@ -36,6 +44,7 @@ add_library(libdcpu-vm STATIC
 	hwsped3.c
 	hwtimer.c
 	timing.c
+	${CMAKE_CURRENT_BINARY_DIR}/font.c
 )
 include_directories(
 	${png_SOURCE_DIR}

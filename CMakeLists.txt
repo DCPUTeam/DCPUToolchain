@@ -111,13 +111,13 @@ set_property(TARGET uninstall PROPERTY FOLDER "third-party")
 
 ## Add executable folders.
 add_subdirectory(dtpp)
-#add_subdirectory(dtcc)
+add_subdirectory(dtcc)
 add_subdirectory(dtasm)
 add_subdirectory(dtld)
-#add_subdirectory(dtimg)
-#add_subdirectory(dtlua)
+add_subdirectory(dtimg)
+add_subdirectory(dtlua)
 add_subdirectory(dtmm)
-#add_subdirectory(dtdb)
+add_subdirectory(dtdb)
 add_subdirectory(dtemu)
 
 # Add documentation.

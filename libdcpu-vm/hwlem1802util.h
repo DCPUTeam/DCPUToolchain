@@ -21,7 +21,7 @@
 
 void vm_hw_lem1802_util_raw2rgb(uint16_t raw, unsigned char * rgb);
 uint16_t vm_hw_lem1802_util_rgb2raw(unsigned char * rgb);
-int vm_hw_lem1802_util_loadpng(char* name, int* out_width, int* out_height, int* out_has_alpha, unsigned char** outData);
+int vm_hw_lem1802_util_loadpng(int* out_width, int* out_height, int* out_has_alpha, unsigned char** outData);
 
 #endif
 
