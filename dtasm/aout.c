@@ -508,12 +508,13 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 
 	while (current_outer != NULL)
 	{
+		/*
 		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
 		{
 			// Adjust origin.
-			fseek(out, true_origin + current_outer->opcode * 2 /* double because the number is in words, not bytes */, SEEK_SET);
+			fseek(out, true_origin + current_outer->opcode * 2, SEEK_SET);
 		}
-		else if (current_outer->type == AOUT_TYPE_METADATA_INCBIN)
+		else*/if (current_outer->type == AOUT_TYPE_METADATA_INCBIN)
 		{
 			// Include binary file.
 			bname = ppfind_locate(bautofree(bfromcstr(current_outer->label)));
