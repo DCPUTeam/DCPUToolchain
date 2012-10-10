@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu-ci-lang-c)
 
-bison_target(parser parser.y parser.cpp COMPILE_FLAGS "-d -y")
-flex_target(lexer lexer.l lexer.cpp COMPILE_FLAGS "--header-file=lexer.hpp")
-add_flex_bison_dependency(lexer parser)
+bison_target(libdcpu-ci-lang-c-parser parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp COMPILE_FLAGS "-d -y")
+flex_target(libdcpu-ci-lang-c-lexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp COMPILE_FLAGS "--header-file=lexer.hpp")
+add_flex_bison_dependency(libdcpu-ci-lang-c-lexer libdcpu-ci-lang-c-parser)
 add_library(libdcpu-ci-lang-c STATIC
 	nodes/Lists.h
 	nodes/NAddressOfOperator.cpp
@@ -100,10 +100,10 @@ add_library(libdcpu-ci-lang-c STATIC
 	nodes/TStruct.h
 	nodes/TUnsignedInt16.cpp
 	nodes/TUnsignedInt16.h
+	${FLEX_libdcpu-ci-lang-c-lexer_OUTPUTS}
+	${BISON_libdcpu-ci-lang-c-parser_OUTPUTS}
 	parser.y
 	lexer.l
-	${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/lexer.cpp
 )
 
 include_directories(

@@ -87,9 +87,11 @@ void vm_hw_lem1802_mem_init(struct lem1802_hardware* hw)
 #endif
 
 		// load image with default font
-		if (!vm_hw_lem1802_util_loadpng(font_path->data, &font_img_width, &font_img_height, &has_alpha, &font_image)) {
+		if (!vm_hw_lem1802_util_loadpng(font_path->data, &font_img_width, &font_img_height, &has_alpha, &font_image))
+		{
 			printf("Error loading default font.");
-			exit( EXIT_FAILURE );
+			bdestroy(font_path);
+			return;
 		}
 		
 		// load default font from loaded image

@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu-vm-dbg)
 
-bison_target(parser parser.y parser.c COMPILE_FLAGS "-d -y")
-flex_target(lexer lexer.l lexer.c COMPILE_FLAGS "--header-file=lexer.h")
-add_flex_bison_dependency(lexer parser)
+bison_target(libdcpu-vm-dbg-parser parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c COMPILE_FLAGS "-d -y")
+flex_target(libdcpu-vm-dbg-lexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c COMPILE_FLAGS "--header-file=lexer.h")
+add_flex_bison_dependency(libdcpu-vm-dbg-lexer libdcpu-vm-dbg-parser)
 add_library(libdcpu-vm-dbg STATIC
 	backtrace.c
 	breakpoint.c
@@ -13,10 +13,10 @@ add_library(libdcpu-vm-dbg STATIC
 	breakpoint.h
 	dbgaux.h
 	dbglua.h
+	${FLEX_libdcpu-vm-dbg-lexer_OUTPUTS}
+	${BISON_libdcpu-vm-dbg-parser_OUTPUTS}
 	parser.y
 	lexer.l
-	${CMAKE_CURRENT_SOURCE_DIR}/parser.c
-	${CMAKE_CURRENT_SOURCE_DIR}/lexer.c
 )
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}	

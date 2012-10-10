@@ -15,9 +15,6 @@ option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_NATIVE_API "Build the GLFW native API" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
-# Don't treat glfw warnings as errors.
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error")
-
 find_package(OpenGL REQUIRED)
 
 if (NOT WIN32)

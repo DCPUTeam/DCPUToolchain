@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu-pp)
 
-bison_target(parser parser.y parser.c COMPILE_FLAGS "-d -y")
-flex_target(lexer lexer.l lexer.c COMPILE_FLAGS "--header-file=lexer.h")
-add_flex_bison_dependency(lexer parser)
+bison_target(libdcpu-pp-parser parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c COMPILE_FLAGS "-d -y")
+flex_target(libdcpu-pp-lexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c COMPILE_FLAGS "--header-file=lexer.h")
+add_flex_bison_dependency(libdcpu-pp-lexer libdcpu-pp-parser)
 add_library(libdcpu-pp STATIC
 	pp.h
 	ppfind.h
@@ -11,10 +11,10 @@ add_library(libdcpu-pp STATIC
 	pp.c
 	ppfind.c
 	pplua.c
+	${FLEX_libdcpu-pp-lexer_OUTPUTS}
+	${BISON_libdcpu-pp-parser_OUTPUTS}
 	parser.y
 	lexer.l
-	${CMAKE_CURRENT_SOURCE_DIR}/parser.c
-	${CMAKE_CURRENT_SOURCE_DIR}/lexer.c
 )
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
