@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(dtemu)
 
-add_library(dtemu STATIC
+find_package(OpenGL REQUIRED)
+add_executable(dtemu
 	main.c
 )
 include_directories(
@@ -28,5 +29,6 @@ target_link_libraries(dtemu
 	glfw
 	png
 	z
+	${OPENGL_LIBRARIES}
 )
 

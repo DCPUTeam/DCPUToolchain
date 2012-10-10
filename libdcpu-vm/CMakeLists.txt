@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu-vm)
 
+find_package(OpenGL REQUIRED)
 add_library(libdcpu-vm STATIC
 	dcpu.c
 	dcpubase.h
@@ -46,16 +47,7 @@ include_directories(
 	${simclist_SOURCE_DIR}
 	${libdcpu-pp-expr_SOURCE_DIR}
 	${GLFW_SOURCE_DIR}/include
-)
-target_link_libraries(libdcpu-vm
-	bstring
-	lua
-	libdcpu
-	simclist
-	libdcpu-pp-expr
-	glfw
-	png
-	z
+	${OPENGL_INCLUDE_DIR}
 )
 
 # Copy the default font to the output directory

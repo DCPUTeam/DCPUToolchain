@@ -25,4 +25,3 @@ add_library(libdcpu STATIC
 	rparse.c
 	version.c
 )
-target_link_libraries(libdcpu bstring)

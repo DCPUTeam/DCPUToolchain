@@ -13,6 +13,7 @@ add_library(z STATIC
 	infback.c
 	inffast.c
 	inftrees.c
+	inflate.c
 	trees.c
 	uncompr.c
 	zutil.c
@@ -23,6 +24,7 @@ add_library(z STATIC
 	inffixed.h
 	inflate.h
 	inftrees.h
+	inflate.h
 	trees.h
 	zconf.h
 	zlib.h

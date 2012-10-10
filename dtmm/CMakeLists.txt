@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(dtmm)
 
-add_library(dtmm STATIC
+add_executable(dtmm 
 	main.c
 )
 include_directories(
@@ -12,10 +12,11 @@ include_directories(
 	${toolchain_SOURCE_DIR}/third-party/curl/include
 )
 target_link_libraries(dtmm
+	argtable2
 	bstring
 	simclist
 	lua
-	curl
+	${toolchain_SOURCE_DIR}/third-party/curl/lib/libcurl.lib
 	libdcpu
 )
 

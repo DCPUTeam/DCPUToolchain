@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(dtpp)
 
-add_library(dtpp STATIC
+add_executable(dtpp
 	main.c
 )
 include_directories(
@@ -18,4 +18,5 @@ target_link_libraries(dtpp
 	simclist
 	libdcpu
 	libdcpu-pp
+	libdcpu-pp-expr
 )

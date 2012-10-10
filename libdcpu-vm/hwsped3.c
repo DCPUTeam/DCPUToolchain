@@ -11,6 +11,12 @@
     Description: Implements the SPED-3 specification.
 **/
 
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <GL/GL.h>
+#include <GL/GLU.h>
+#endif
 #include <GL/glfw3.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,13 +28,6 @@
 #include "dcpubase.h"
 #include "dcpuhook.h"
 #include "dcpuops.h"
-
-#ifdef WIN32
-void extern gluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
-void extern gluLookAt(GLdouble eyex, GLdouble eyey, GLdouble eyez,
-	GLdouble centerx, GLdouble centery, GLdouble centerz,
-	GLdouble upx, GLdouble upy, GLdouble upz);
-#endif
 
 void vm_hw_sped3_update_rot(struct sped3_hardware* hw)
 {

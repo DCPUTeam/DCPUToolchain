@@ -13,7 +13,3 @@ include_directories(
 	${bstring_SOURCE_DIR}
 	${libdcpu_SOURCE_DIR}
 )
-target_link_libraries(libdcpu-ci-objfmt
-	bstring
-	libdcpu
-)

@@ -113,8 +113,3 @@ include_directories(
 	${libdcpu-ci-lang_SOURCE_DIR}
 	${FLEX_UNISTD_INCLUDE}
 )
-target_link_libraries(libdcpu-ci-lang-c
-	bstring
-	libdcpu
-	libdcpu-ci-lang
-)

@@ -10,8 +10,3 @@ include_directories(
 	${libdcpu_SOURCE_DIR}
 	${simclist_SOURCE_DIR}
 )
-target_link_libraries(libdcpu-ci-dbgfmt
-	bstring
-	libdcpu
-	simclist
-)

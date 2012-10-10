@@ -22,9 +22,3 @@ include_directories(
 	${lua_SOURCE_DIR}
 	${FLEX_UNISTD_INCLUDE}
 )
-target_link_libraries(libdcpu-pp-expr
-	lua
-	bstring
-	simclist
-	libdcpu
-)

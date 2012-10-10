@@ -8,6 +8,9 @@ add_library(libdcpu-pp STATIC
 	pp.h
 	ppfind.h
 	pplua.h
+	pp.c
+	ppfind.c
+	pplua.c
 	parser.y
 	lexer.l
 	${CMAKE_CURRENT_SOURCE_DIR}/parser.c
