@@ -18,7 +18,7 @@ target_link_libraries(dtcc
 	bstring
 	libdcpu
 	libdcpu-pp
-	libdcpu-ci-lang
 	libdcpu-ci-lang-c
+	libdcpu-ci-lang
 )
 

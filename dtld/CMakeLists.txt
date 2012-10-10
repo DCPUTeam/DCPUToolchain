@@ -29,8 +29,8 @@ target_link_libraries(dtld
 	bstring
 	simclist
 	lua
-	libdcpu
 	libdcpu-vm
+	libdcpu
 	libdcpu-pp-expr
 	libdcpu-ci-objfmt
 	libdcpu-ci-dbgfmt
