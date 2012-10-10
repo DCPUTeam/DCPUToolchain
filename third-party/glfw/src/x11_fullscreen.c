@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:    X11
+// Platform:	X11
 // API version: 3.0
-// WWW:         http://www.glfw.org/
+// WWW:		http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -52,7 +52,6 @@ typedef struct
 
 static _GLFWvidsize* getResolutions(int* found)
 {
-    int i, j;
     _GLFWvidsize* result = NULL;
 
     *found = 0;
@@ -62,70 +61,70 @@ static _GLFWvidsize* getResolutions(int* found)
     if (_glfwLibrary.X11.RandR.available)
     {
 #if defined(_GLFW_HAS_XRANDR)
-        XRRScreenConfiguration* sc;
-        XRRScreenSize* sizes;
+	XRRScreenConfiguration* sc;
+	XRRScreenSize* sizes;
 
-        sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
-        sizes = XRRConfigSizes(sc, found);
+	sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
+	sizes = XRRConfigSizes(sc, found);
 
-        result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * *found);
+	result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * *found);
 
-        for (i = 0;  i < *found;  i++)
-        {
-            result[i].width  = sizes[i].width;
-            result[i].height = sizes[i].height;
-        }
+	for (i = 0;  i < *found;  i++)
+	{
+	    result[i].width  = sizes[i].width;
+	    result[i].height = sizes[i].height;
+	}
 
-        XRRFreeScreenConfigInfo(sc);
+	XRRFreeScreenConfigInfo(sc);
 #endif /*_GLFW_HAS_XRANDR*/
     }
     else if (_glfwLibrary.X11.VidMode.available)
     {
 #if defined(_GLFW_HAS_XF86VIDMODE)
-        XF86VidModeModeInfo** modes;
-        int modeCount;
+	XF86VidModeModeInfo** modes;
+	int modeCount;
 
-        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
-                                   _glfwLibrary.X11.screen,
-                                   &modeCount, &modes);
+	XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
+				   _glfwLibrary.X11.screen,
+				   &modeCount, &modes);
 
-        result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * modeCount);
+	result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize) * modeCount);
 
-        for (i = 0;  i < modeCount;  i++)
-        {
-            _GLFWvidsize size;
-            size.width  = modes[i]->hdisplay;
-            size.height = modes[i]->vdisplay;
+	for (i = 0;  i < modeCount;  i++)
+	{
+	    _GLFWvidsize size;
+	    size.width	= modes[i]->hdisplay;
+	    size.height = modes[i]->vdisplay;
 
-            for (j = 0;  j < *found;  j++)
-            {
-                if (memcmp(result + j, &size, sizeof(_GLFWvidsize)) == 0)
-                    break;
-            }
+	    for (j = 0;	 j < *found;  j++)
+	    {
+		if (memcmp(result + j, &size, sizeof(_GLFWvidsize)) == 0)
+		    break;
+	    }
 
-            if (j < *found)
-            {
-                // This size is a duplicate, so skip it
-                continue;
-            }
+	    if (j < *found)
+	    {
+		// This size is a duplicate, so skip it
+		continue;
+	    }
 
-            result[*found] = size;
-            (*found)++;
-        }
+	    result[*found] = size;
+	    (*found)++;
+	}
 
-        XFree(modes);
+	XFree(modes);
 #endif /*_GLFW_HAS_XF86VIDMODE*/
     }
 
     if (result == NULL)
     {
-        *found = 1;
-        result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize));
+	*found = 1;
+	result = (_GLFWvidsize*) malloc(sizeof(_GLFWvidsize));
 
-        result[0].width = DisplayWidth(_glfwLibrary.X11.display,
-                                       _glfwLibrary.X11.screen);
-        result[0].height = DisplayHeight(_glfwLibrary.X11.display,
-                                         _glfwLibrary.X11.screen);
+	result[0].width = DisplayWidth(_glfwLibrary.X11.display,
+				       _glfwLibrary.X11.screen);
+	result[0].height = DisplayHeight(_glfwLibrary.X11.display,
+					 _glfwLibrary.X11.screen);
     }
 
     return result;
@@ -134,7 +133,7 @@ static _GLFWvidsize* getResolutions(int* found)
 
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
+//////			     GLFW internal API			    //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -143,108 +142,107 @@ static _GLFWvidsize* getResolutions(int* found)
 
 int _glfwGetClosestVideoMode(int* width, int* height, int* rate)
 {
-    int i, match, bestmatch;
 
     if (_glfwLibrary.X11.RandR.available)
     {
 #if defined(_GLFW_HAS_XRANDR)
-        int sizecount, bestsize;
-        int ratecount, bestrate;
-        short* ratelist;
-        XRRScreenConfiguration* sc;
-        XRRScreenSize* sizelist;
+	int sizecount, bestsize;
+	int ratecount, bestrate;
+	short* ratelist;
+	XRRScreenConfiguration* sc;
+	XRRScreenSize* sizelist;
 
-        sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
+	sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
 
-        sizelist = XRRConfigSizes(sc, &sizecount);
+	sizelist = XRRConfigSizes(sc, &sizecount);
 
-        // Find the best matching mode
-        bestsize  = -1;
-        bestmatch = INT_MAX;
-        for (i = 0;  i < sizecount;  i++)
-        {
-            match = (*width - sizelist[i].width) *
-                    (*width - sizelist[i].width) +
-                    (*height - sizelist[i].height) *
-                    (*height - sizelist[i].height);
-            if (match < bestmatch)
-            {
-                bestmatch = match;
-                bestsize  = i;
-            }
-        }
+	// Find the best matching mode
+	bestsize  = -1;
+	bestmatch = INT_MAX;
+	for (i = 0;  i < sizecount;  i++)
+	{
+	    match = (*width - sizelist[i].width) *
+		    (*width - sizelist[i].width) +
+		    (*height - sizelist[i].height) *
+		    (*height - sizelist[i].height);
+	    if (match < bestmatch)
+	    {
+		bestmatch = match;
+		bestsize  = i;
+	    }
+	}
 
-        if (bestsize != -1)
-        {
-            // Report width & height of best matching mode
-            *width = sizelist[bestsize].width;
-            *height = sizelist[bestsize].height;
+	if (bestsize != -1)
+	{
+	    // Report width & height of best matching mode
+	    *width = sizelist[bestsize].width;
+	    *height = sizelist[bestsize].height;
 
-            if (*rate > 0)
-            {
-                ratelist = XRRConfigRates(sc, bestsize, &ratecount);
+	    if (*rate > 0)
+	    {
+		ratelist = XRRConfigRates(sc, bestsize, &ratecount);
 
-                bestrate = -1;
-                bestmatch = INT_MAX;
-                for (i = 0;  i < ratecount;  i++)
-                {
-                    match = abs(ratelist[i] - *rate);
-                    if (match < bestmatch)
-                    {
-                        bestmatch = match;
-                        bestrate = ratelist[i];
-                    }
-                }
+		bestrate = -1;
+		bestmatch = INT_MAX;
+		for (i = 0;  i < ratecount;  i++)
+		{
+		    match = abs(ratelist[i] - *rate);
+		    if (match < bestmatch)
+		    {
+			bestmatch = match;
+			bestrate = ratelist[i];
+		    }
+		}
 
-                if (bestrate != -1)
-                    *rate = bestrate;
-            }
-        }
+		if (bestrate != -1)
+		    *rate = bestrate;
+	    }
+	}
 
-        XRRFreeScreenConfigInfo(sc);
+	XRRFreeScreenConfigInfo(sc);
 
-        if (bestsize != -1)
-            return bestsize;
+	if (bestsize != -1)
+	    return bestsize;
 #endif /*_GLFW_HAS_XRANDR*/
     }
     else if (_glfwLibrary.X11.VidMode.available)
     {
 #if defined(_GLFW_HAS_XF86VIDMODE)
-        XF86VidModeModeInfo** modelist;
-        int bestmode, modecount;
+	XF86VidModeModeInfo** modelist;
+	int bestmode, modecount;
 
-        // Get a list of all available display modes
-        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
-                                   _glfwLibrary.X11.screen,
-                                   &modecount, &modelist);
+	// Get a list of all available display modes
+	XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
+				   _glfwLibrary.X11.screen,
+				   &modecount, &modelist);
 
-        // Find the best matching mode
-        bestmode  = -1;
-        bestmatch = INT_MAX;
-        for (i = 0;  i < modecount;  i++)
-        {
-            match = (*width - modelist[i]->hdisplay) *
-                    (*width - modelist[i]->hdisplay) +
-                    (*height - modelist[i]->vdisplay) *
-                    (*height - modelist[i]->vdisplay);
-            if (match < bestmatch)
-            {
-                bestmatch = match;
-                bestmode  = i;
-            }
-        }
+	// Find the best matching mode
+	bestmode  = -1;
+	bestmatch = INT_MAX;
+	for (i = 0;  i < modecount;  i++)
+	{
+	    match = (*width - modelist[i]->hdisplay) *
+		    (*width - modelist[i]->hdisplay) +
+		    (*height - modelist[i]->vdisplay) *
+		    (*height - modelist[i]->vdisplay);
+	    if (match < bestmatch)
+	    {
+		bestmatch = match;
+		bestmode  = i;
+	    }
+	}
 
-        if (bestmode != -1)
-        {
-            // Report width & height of best matching mode
-            *width = modelist[bestmode]->hdisplay;
-            *height = modelist[bestmode]->vdisplay;
-        }
+	if (bestmode != -1)
+	{
+	    // Report width & height of best matching mode
+	    *width = modelist[bestmode]->hdisplay;
+	    *height = modelist[bestmode]->vdisplay;
+	}
 
-        XFree(modelist);
+	XFree(modelist);
 
-        if (bestmode != -1)
-            return bestmode;
+	if (bestmode != -1)
+	    return bestmode;
 #endif /*_GLFW_HAS_XF86VIDMODE*/
     }
 
@@ -265,91 +263,91 @@ void _glfwSetVideoModeMODE(int mode, int rate)
     if (_glfwLibrary.X11.RandR.available)
     {
 #if defined(_GLFW_HAS_XRANDR)
-        XRRScreenConfiguration* sc;
-        Window root;
+	XRRScreenConfiguration* sc;
+	Window root;
 
-        root = _glfwLibrary.X11.root;
-        sc   = XRRGetScreenInfo(_glfwLibrary.X11.display, root);
+	root = _glfwLibrary.X11.root;
+	sc   = XRRGetScreenInfo(_glfwLibrary.X11.display, root);
 
-        // Remember old size and flag that we have changed the mode
-        if (!_glfwLibrary.X11.FS.modeChanged)
-        {
-            _glfwLibrary.X11.FS.oldSizeID = XRRConfigCurrentConfiguration(sc, &_glfwLibrary.X11.FS.oldRotation);
-            _glfwLibrary.X11.FS.oldWidth  = DisplayWidth(_glfwLibrary.X11.display,
-                                                         _glfwLibrary.X11.screen);
-            _glfwLibrary.X11.FS.oldHeight = DisplayHeight(_glfwLibrary.X11.display,
-                                                          _glfwLibrary.X11.screen);
+	// Remember old size and flag that we have changed the mode
+	if (!_glfwLibrary.X11.FS.modeChanged)
+	{
+	    _glfwLibrary.X11.FS.oldSizeID = XRRConfigCurrentConfiguration(sc, &_glfwLibrary.X11.FS.oldRotation);
+	    _glfwLibrary.X11.FS.oldWidth  = DisplayWidth(_glfwLibrary.X11.display,
+							 _glfwLibrary.X11.screen);
+	    _glfwLibrary.X11.FS.oldHeight = DisplayHeight(_glfwLibrary.X11.display,
+							  _glfwLibrary.X11.screen);
 
-            _glfwLibrary.X11.FS.modeChanged = GL_TRUE;
-        }
+	    _glfwLibrary.X11.FS.modeChanged = GL_TRUE;
+	}
 
-        if (rate > 0)
-        {
-            // Set desired configuration
-            XRRSetScreenConfigAndRate(_glfwLibrary.X11.display,
-                                      sc,
-                                      root,
-                                      mode,
-                                      RR_Rotate_0,
-                                      (short) rate,
-                                      CurrentTime);
-        }
-        else
-        {
-            // Set desired configuration
-            XRRSetScreenConfig(_glfwLibrary.X11.display,
-                               sc,
-                               root,
-                               mode,
-                               RR_Rotate_0,
-                               CurrentTime);
-        }
+	if (rate > 0)
+	{
+	    // Set desired configuration
+	    XRRSetScreenConfigAndRate(_glfwLibrary.X11.display,
+				      sc,
+				      root,
+				      mode,
+				      RR_Rotate_0,
+				      (short) rate,
+				      CurrentTime);
+	}
+	else
+	{
+	    // Set desired configuration
+	    XRRSetScreenConfig(_glfwLibrary.X11.display,
+			       sc,
+			       root,
+			       mode,
+			       RR_Rotate_0,
+			       CurrentTime);
+	}
 
-        XRRFreeScreenConfigInfo(sc);
+	XRRFreeScreenConfigInfo(sc);
 #endif /*_GLFW_HAS_XRANDR*/
     }
     else if (_glfwLibrary.X11.VidMode.available)
     {
 #if defined(_GLFW_HAS_XF86VIDMODE)
-        XF86VidModeModeInfo **modelist;
-        int modecount;
+	XF86VidModeModeInfo **modelist;
+	int modecount;
 
-        // Get a list of all available display modes
-        XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
-                                   _glfwLibrary.X11.screen,
-                                   &modecount, &modelist);
+	// Get a list of all available display modes
+	XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
+				   _glfwLibrary.X11.screen,
+				   &modecount, &modelist);
 
-        // Unlock mode switch if necessary
-        if (_glfwLibrary.X11.FS.modeChanged)
-        {
-            XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
-                                      _glfwLibrary.X11.screen,
-                                      0);
-        }
+	// Unlock mode switch if necessary
+	if (_glfwLibrary.X11.FS.modeChanged)
+	{
+	    XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
+				      _glfwLibrary.X11.screen,
+				      0);
+	}
 
-        // Change the video mode to the desired mode
-        XF86VidModeSwitchToMode(_glfwLibrary.X11.display,
-                                _glfwLibrary.X11.screen,
-                                modelist[mode]);
+	// Change the video mode to the desired mode
+	XF86VidModeSwitchToMode(_glfwLibrary.X11.display,
+				_glfwLibrary.X11.screen,
+				modelist[mode]);
 
-        // Set viewport to upper left corner (where our window will be)
-        XF86VidModeSetViewPort(_glfwLibrary.X11.display,
-                               _glfwLibrary.X11.screen,
-                               0, 0);
+	// Set viewport to upper left corner (where our window will be)
+	XF86VidModeSetViewPort(_glfwLibrary.X11.display,
+			       _glfwLibrary.X11.screen,
+			       0, 0);
 
-        // Lock mode switch
-        XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
-                                  _glfwLibrary.X11.screen,
-                                  1);
+	// Lock mode switch
+	XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
+				  _glfwLibrary.X11.screen,
+				  1);
 
-        // Remember old mode and flag that we have changed the mode
-        if (!_glfwLibrary.X11.FS.modeChanged)
-        {
-            _glfwLibrary.X11.FS.oldMode = *modelist[0];
-            _glfwLibrary.X11.FS.modeChanged = GL_TRUE;
-        }
+	// Remember old mode and flag that we have changed the mode
+	if (!_glfwLibrary.X11.FS.modeChanged)
+	{
+	    _glfwLibrary.X11.FS.oldMode = *modelist[0];
+	    _glfwLibrary.X11.FS.modeChanged = GL_TRUE;
+	}
 
-        XFree(modelist);
+	XFree(modelist);
 #endif /*_GLFW_HAS_XF86VIDMODE*/
     }
 }
@@ -379,49 +377,49 @@ void _glfwRestoreVideoMode(void)
 {
     if (_glfwLibrary.X11.FS.modeChanged)
     {
-        if (_glfwLibrary.X11.RandR.available)
-        {
+	if (_glfwLibrary.X11.RandR.available)
+	{
 #if defined(_GLFW_HAS_XRANDR)
-            XRRScreenConfiguration* sc;
+	    XRRScreenConfiguration* sc;
 
-            if (_glfwLibrary.X11.RandR.available)
-            {
-                sc = XRRGetScreenInfo(_glfwLibrary.X11.display,
-                                      _glfwLibrary.X11.root);
+	    if (_glfwLibrary.X11.RandR.available)
+	    {
+		sc = XRRGetScreenInfo(_glfwLibrary.X11.display,
+				      _glfwLibrary.X11.root);
 
-                XRRSetScreenConfig(_glfwLibrary.X11.display,
-                                   sc,
-                                   _glfwLibrary.X11.root,
-                                   _glfwLibrary.X11.FS.oldSizeID,
-                                   _glfwLibrary.X11.FS.oldRotation,
-                                   CurrentTime);
+		XRRSetScreenConfig(_glfwLibrary.X11.display,
+				   sc,
+				   _glfwLibrary.X11.root,
+				   _glfwLibrary.X11.FS.oldSizeID,
+				   _glfwLibrary.X11.FS.oldRotation,
+				   CurrentTime);
 
-                XRRFreeScreenConfigInfo(sc);
-            }
+		XRRFreeScreenConfigInfo(sc);
+	    }
 #endif /*_GLFW_HAS_XRANDR*/
-        }
-        else if (_glfwLibrary.X11.VidMode.available)
-        {
+	}
+	else if (_glfwLibrary.X11.VidMode.available)
+	{
 #if defined(_GLFW_HAS_XF86VIDMODE)
-            // Unlock mode switch
-            XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
-                                      _glfwLibrary.X11.screen,
-                                      0);
+	    // Unlock mode switch
+	    XF86VidModeLockModeSwitch(_glfwLibrary.X11.display,
+				      _glfwLibrary.X11.screen,
+				      0);
 
-            // Change the video mode back to the old mode
-            XF86VidModeSwitchToMode(_glfwLibrary.X11.display,
-                                    _glfwLibrary.X11.screen,
-                                    &_glfwLibrary.X11.FS.oldMode);
+	    // Change the video mode back to the old mode
+	    XF86VidModeSwitchToMode(_glfwLibrary.X11.display,
+				    _glfwLibrary.X11.screen,
+				    &_glfwLibrary.X11.FS.oldMode);
 #endif /*_GLFW_HAS_XF86VIDMODE*/
-        }
+	}
 
-        _glfwLibrary.X11.FS.modeChanged = GL_FALSE;
+	_glfwLibrary.X11.FS.modeChanged = GL_FALSE;
     }
 }
 
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
+//////			     GLFW platform API			    //////
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -441,9 +439,9 @@ GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
     visuals = XGetVisualInfo(_glfwLibrary.X11.display, 0, &dummy, &visualCount);
     if (visuals == NULL)
     {
-        _glfwSetError(GLFW_PLATFORM_ERROR,
-                      "X11: Failed to retrieve the available visuals");
-        return 0;
+	_glfwSetError(GLFW_PLATFORM_ERROR,
+		      "X11: Failed to retrieve the available visuals");
+	return 0;
     }
 
     // Build array of available RGB channel depths
@@ -451,37 +449,37 @@ GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
     rgbs = (int*) malloc(sizeof(int) * visualCount);
     rgbCount = 0;
 
-    for (i = 0;  i < visualCount;  i++)
+    for (i = 0;	 i < visualCount;  i++)
     {
-        int gl, rgba, rgb, r, g, b;
+	int gl, rgba, rgb, r, g, b;
 
-        glXGetConfig(_glfwLibrary.X11.display, &visuals[i], GLX_USE_GL, &gl);
-        glXGetConfig(_glfwLibrary.X11.display, &visuals[i], GLX_RGBA, &rgba);
+	glXGetConfig(_glfwLibrary.X11.display, &visuals[i], GLX_USE_GL, &gl);
+	glXGetConfig(_glfwLibrary.X11.display, &visuals[i], GLX_RGBA, &rgba);
 
-        if (!gl || !rgba)
-        {
-            // The visual lacks OpenGL or true color, so skip it
-            continue;
-        }
+	if (!gl || !rgba)
+	{
+	    // The visual lacks OpenGL or true color, so skip it
+	    continue;
+	}
 
-        // Convert to RGB channel depths and encode
-        _glfwSplitBPP(visuals[i].depth, &r, &g, &b);
-        rgb = (r << 16) | (g << 8) | b;
+	// Convert to RGB channel depths and encode
+	_glfwSplitBPP(visuals[i].depth, &r, &g, &b);
+	rgb = (r << 16) | (g << 8) | b;
 
-        for (j = 0;  j < rgbCount;  j++)
-        {
-            if (rgbs[j] == rgb)
-                break;
-        }
+	for (j = 0;  j < rgbCount;  j++)
+	{
+	    if (rgbs[j] == rgb)
+		break;
+	}
 
-        if (j < rgbCount)
-        {
-            // This channel depth is a duplicate, so skip it
-            continue;
-        }
+	if (j < rgbCount)
+	{
+	    // This channel depth is a duplicate, so skip it
+	    continue;
+	}
 
-        rgbs[rgbCount] = rgb;
-        rgbCount++;
+	rgbs[rgbCount] = rgb;
+	rgbCount++;
     }
 
     XFree(visuals);
@@ -493,18 +491,18 @@ GLFWvidmode* _glfwPlatformGetVideoModes(int* found)
     result = (GLFWvidmode*) malloc(sizeof(GLFWvidmode) * rgbCount * sizeCount);
     *found = 0;
 
-    for (i = 0;  i < rgbCount;  i++)
+    for (i = 0;	 i < rgbCount;	i++)
     {
-        for (j = 0;  j < sizeCount;  j++)
-        {
-            result[*found].width     = sizes[j].width;
-            result[*found].height    = sizes[j].height;
-            result[*found].redBits   = (rgbs[i] >> 16) & 255;
-            result[*found].greenBits = (rgbs[i] >> 8) & 255;
-            result[*found].blueBits  = rgbs[i] & 255;
+	for (j = 0;  j < sizeCount;  j++)
+	{
+	    result[*found].width     = sizes[j].width;
+	    result[*found].height    = sizes[j].height;
+	    result[*found].redBits   = (rgbs[i] >> 16) & 255;
+	    result[*found].greenBits = (rgbs[i] >> 8) & 255;
+	    result[*found].blueBits  = rgbs[i] & 255;
 
-            (*found)++;
-        }
+	    (*found)++;
+	}
     }
 
     free(sizes);
@@ -528,27 +526,27 @@ void _glfwPlatformGetDesktopMode(GLFWvidmode* mode)
 
     if (_glfwLibrary.X11.FS.modeChanged)
     {
-        if (_glfwLibrary.X11.RandR.available)
-        {
+	if (_glfwLibrary.X11.RandR.available)
+	{
 #if defined(_GLFW_HAS_XRANDR)
-            mode->width  = _glfwLibrary.X11.FS.oldWidth;
-            mode->height = _glfwLibrary.X11.FS.oldHeight;
+	    mode->width	 = _glfwLibrary.X11.FS.oldWidth;
+	    mode->height = _glfwLibrary.X11.FS.oldHeight;
 #endif /*_GLFW_HAS_XRANDR*/
-        }
-        else if (_glfwLibrary.X11.VidMode.available)
-        {
+	}
+	else if (_glfwLibrary.X11.VidMode.available)
+	{
 #if defined(_GLFW_HAS_XF86VIDMODE)
-            mode->width  = _glfwLibrary.X11.FS.oldMode.hdisplay;
-            mode->height = _glfwLibrary.X11.FS.oldMode.vdisplay;
+	    mode->width	 = _glfwLibrary.X11.FS.oldMode.hdisplay;
+	    mode->height = _glfwLibrary.X11.FS.oldMode.vdisplay;
 #endif /*_GLFW_HAS_XF86VIDMODE*/
-        }
+	}
     }
     else
     {
-        mode->width = DisplayWidth(_glfwLibrary.X11.display,
-                                   _glfwLibrary.X11.screen);
-        mode->height = DisplayHeight(_glfwLibrary.X11.display,
-                                     _glfwLibrary.X11.screen);
+	mode->width = DisplayWidth(_glfwLibrary.X11.display,
+				   _glfwLibrary.X11.screen);
+	mode->height = DisplayHeight(_glfwLibrary.X11.display,
+				     _glfwLibrary.X11.screen);
     }
 }
 
