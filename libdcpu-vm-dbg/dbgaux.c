@@ -435,6 +435,8 @@ void ddbg_attach(bstring hw)
 		vm_hw_lem1802_init(vm);
 	else if (biseq(hw, bfromcstr("clock")))
 		vm_hw_timer_init(vm);
+	else if (biseq(hw, bfromcstr("m35fd")))
+		vm_hw_m35fd_init(vm);
 	else
 		printd(LEVEL_DEFAULT, "Unrecognized hardware.\n");
 }

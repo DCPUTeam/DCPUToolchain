@@ -21,6 +21,7 @@
 #include <hwlem1802.h>
 #include <hwtimer.h>
 #include <hwsped3.h>
+#include <hwm35fd.h>
 
 
 ///
