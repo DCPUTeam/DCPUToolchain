@@ -21,7 +21,7 @@
 #include <windows.h>
 #else
 #include <libgen.h>
-#include <sys/time.h>
+#include <time.h>
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -224,8 +224,8 @@ int osutil_gettimeofday(struct ostimeval* tv, void* unused)
 #else
 	struct timeval t;
 	int res = gettimeofday(&t, NULL);
-	timeval->tv_sec = t.tv_sec;
-	timeval->tv_usec = t.tv_usec;
+	tv->tv_sec = t.tv_sec;
+	tv->tv_usec = t.tv_usec;
 	return res;
 #endif
 }
