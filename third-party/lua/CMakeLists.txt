@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(lua)
 
+if(CMAKE_COMPILER_IS_GNUCC)
+	set(ADDITIONAL_LIBRARIES m)
+else()
+	set(ADDITIONAL_LIBRARIES "")
+endif()
+
 add_library(lua STATIC
 	lapi.c
 	lauxlib.c
@@ -56,4 +62,6 @@ add_library(lua STATIC
 	lvm.h
 	lzio.h
 )
+
+target_link_libraries(lua ${ADDITIONAL_LIBRARIES})
 set_property(TARGET lua PROPERTY FOLDER "third-party")
