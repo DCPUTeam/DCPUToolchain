@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <debug.h>
+#include <math.h>
+
 #include "hw.h"
 #include "hwsped3.h"
 #include "dcpu.h"
