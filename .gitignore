@@ -76,6 +76,10 @@ CMakeFiles/*
 */lexer.hpp
 */parser.cpp
 */parser.hpp
+cmake_install.cmake
+CTestTestfile.cmake
+*mingw32*.cmake
+curlbuild.h.cmake
 
 # Documentation files #
 #######################

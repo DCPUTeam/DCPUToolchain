@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8.5)
 
 if(MSVC OR MINGW)
-	set(readline_LIBRARY "${toolchain_SOURCE_DIR}/third-party/readline/readline.lib
-	${toolchain_SOURCE_DIR}/third-party/readline/history.lib" PARENT_SCOPE)
+	set(readline_LIBRARY ${toolchain_SOURCE_DIR}/third-party/readline/lib/readline.lib PARENT_SCOPE)
+	list(APPEND readline_LIBRARY ${toolchain_SOURCE_DIR}/third-party/readline/lib/history.lib)
 	set(readline_SOURCE_DIR ${toolchain_SOURCE_DIR}/third-party/readline/include PARENT_SCOPE)
 else()
 	find_package(Readline REQUIRED)
