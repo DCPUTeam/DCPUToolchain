@@ -35,10 +35,13 @@ int main(int argc, char* argv[])
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input assembly file containing unit tests.");
+    struct arg_file* path_asm = arg_file1("a", NULL, "<path>", "The path to the assembler.");
+    struct arg_file* path_db = arg_file1("d", NULL, "<path>", "The path to the debugger.");
+    struct arg_file* path_modules = arg_file1("m", NULL, "<path>", "The path to the modules directory.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, input_file, verbose, quiet, end };
+	void* argtable[] = { show_help, input_file, path_asm, path_db, path_modules, verbose, quiet, end };
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
@@ -64,26 +67,14 @@ int main(int argc, char* argv[])
 	file_cpu = tempnam(NULL, "vtcpu");
 	file_sym = tempnam(NULL, "vtsym");
 
-#ifndef _WIN32
 	// We need to get the existing TOOLCHAIN_MODULES
 	// environment variable so we can set it back later
 	// on.
 	mod_path = getenv("TOOLCHAIN_MODULES");
-	bassigncstr(cmdargs, argv[0]);
-	btrunc(cmdargs, binstr(cmdargs, 0, bfromcstr("testvm")));
-	bcatcstr(cmdargs, "../tests/drivers/testvm/modules"); // Totally not portable!
-	printd(LEVEL_DEFAULT, "%s\n", cmdargs->data);
-	setenv("TOOLCHAIN_MODULES", temp = bstr2cstr(cmdargs, '0'), 1);
-	bcstrfree(temp);
-#else
-	printd(LEVEL_WARNING, "warning: Unable to set TOOLCHAIN_MODULES temporarily on Windows systems for\n");
-	printd(LEVEL_WARNING, "		testing purposes.  Install units, unitsdbg, assert and assertdbg\n");
-	printd(LEVEL_WARNING, "		globally to ensure that the test suite runs correctly.\n");
-#endif
+	setenv("TOOLCHAIN_MODULES", path_modules->filename[0], 1);
 
 	// Generate the argument list for the assembler.
-	bassigncstr(cmdargs, argv[0]);
-	bfindreplace(cmdargs, bfromcstr("testvm"), bfromcstr("dtasm"), 0);
+	bassigncstr(cmdargs, path_asm->filename[0]);
 	binsertch(cmdargs, 0, 1, '"');
 	bconchar(cmdargs, '"');
 	bconchar(cmdargs, ' ');
@@ -121,8 +112,7 @@ int main(int argc, char* argv[])
 
 	// We now need to set up the command to
 	// run the debugger to invoke the unit tests.
-	bassigncstr(cmdargs, argv[0]);
-	bfindreplace(cmdargs, bfromcstr("testvm"), bfromcstr("dtdb"), 0);
+    bassigncstr(cmdargs, path_db->filename[0]);
 	binsertch(cmdargs, 0, 1, '"');
 	bconchar(cmdargs, '"');
 	bconchar(cmdargs, ' ');
@@ -158,7 +148,6 @@ int main(int argc, char* argv[])
 		unlink(file_cpu);
 		unlink(file_sym);
 
-#ifndef _WIN32
 		// Restore TOOLCHAIN_MODULES.
 		if (mod_path == NULL)
 			unsetenv("TOOLCHAIN_MODULES");
@@ -168,7 +157,6 @@ int main(int argc, char* argv[])
 			setenv("TOOLCHAIN_MODULES", temp = bstr2cstr(cmdargs, '0'), 1);
 			bcstrfree(temp);
 		}
-#endif
 
 		// Show error message.
 #ifdef _WIN32
@@ -184,7 +172,6 @@ int main(int argc, char* argv[])
 	unlink(file_cpu);
 	unlink(file_sym);
 
-#ifndef _WIN32
 	// Restore TOOLCHAIN_MODULES.
 	if (mod_path == NULL)
 		unsetenv("TOOLCHAIN_MODULES");
@@ -194,7 +181,6 @@ int main(int argc, char* argv[])
 		setenv("TOOLCHAIN_MODULES", temp = bstr2cstr(cmdargs, '0'), 1);
 		bcstrfree(temp);
 	}
-#endif
 
 	return 0;
 }

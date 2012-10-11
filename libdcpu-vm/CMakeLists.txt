@@ -5,59 +5,59 @@ add_executable(embedfont embedfont.c)
 include_directories(${libdcpu_SOURCE_DIR})
 target_link_libraries(embedfont libdcpu)
 add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/font.c
-	COMMAND  ${CMAKE_CURRENT_BINARY_DIR}/embedfont${CMAKE_EXECUTABLE_SUFFIX} ${CMAKE_CURRENT_BINARY_DIR}/font.c ${CMAKE_CURRENT_SOURCE_DIR}/font.png
-	DEPENDS font.png embedfont)
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/font.c
+    COMMAND  ${CMAKE_CURRENT_BINARY_DIR}/embedfont${CMAKE_EXECUTABLE_SUFFIX} ${CMAKE_CURRENT_BINARY_DIR}/font.c ${CMAKE_CURRENT_SOURCE_DIR}/font.png
+    DEPENDS font.png embedfont)
 
 find_package(OpenGL REQUIRED)
 add_library(libdcpu-vm STATIC
-	dcpu.c
-	dcpubase.h
-	dcpudis.h
-	dcpuhook.h
-	dcpuops.h
-	hw.h
-	hwioascii.h
-	hwkeyboard.h
-	hwlem1802.h
-	hwlem1802mem.h
-	hwlem1802util.h
-	hwlua.h
-	hwluacpu.h
-	hwm35fd.h
-	hwsped3.h
-	hwtimer.h
-	timing.h
-	dcpubase.c
-	dcpudis.c
-	dcpuhook.c
-	dcpuops.c
-	hw.c
-	hwioascii.c
-	hwkeyboard.c
-	hwlem1802.c
-	hwlem1802mem.c
-	hwlem1802util.c
-	hwlua.c
-	hwluacpu.c
-	hwm35fd.c
-	hwsped3.c
-	hwtimer.c
-	timing.c
-	${CMAKE_CURRENT_BINARY_DIR}/font.c
+    dcpu.c
+    dcpubase.h
+    dcpudis.h
+    dcpuhook.h
+    dcpuops.h
+    hw.h
+    hwioascii.h
+    hwkeyboard.h
+    hwlem1802.h
+    hwlem1802mem.h
+    hwlem1802util.h
+    hwlua.h
+    hwluacpu.h
+    hwm35fd.h
+    hwsped3.h
+    hwtimer.h
+    timing.h
+    dcpubase.c
+    dcpudis.c
+    dcpuhook.c
+    dcpuops.c
+    hw.c
+    hwioascii.c
+    hwkeyboard.c
+    hwlem1802.c
+    hwlem1802mem.c
+    hwlem1802util.c
+    hwlua.c
+    hwluacpu.c
+    hwm35fd.c
+    hwsped3.c
+    hwtimer.c
+    timing.c
+    ${CMAKE_CURRENT_BINARY_DIR}/font.c
 )
 include_directories(
-	${png_SOURCE_DIR}
-	${png_BINARY_DIR}
-	${z_SOURCE_DIR}
-	${bstring_SOURCE_DIR}
-	${libdcpu_SOURCE_DIR}
-	${lua_SOURCE_DIR}
-	${simclist_SOURCE_DIR}
-	${libdcpu-pp-expr_SOURCE_DIR}
-	${GLFW_SOURCE_DIR}/include
-	${OPENGL_INCLUDE_DIR}
+    ${png_SOURCE_DIR}
+    ${png_BINARY_DIR}
+    ${z_SOURCE_DIR}
+    ${bstring_SOURCE_DIR}
+    ${libdcpu_SOURCE_DIR}
+    ${lua_SOURCE_DIR}
+    ${simclist_SOURCE_DIR}
+    ${libdcpu-pp-expr_SOURCE_DIR}
+    ${GLFW_SOURCE_DIR}/include
+    ${OPENGL_INCLUDE_DIR}
 )
 target_link_libraries(libdcpu-vm
-	libdcpu
+    libdcpu
 )
