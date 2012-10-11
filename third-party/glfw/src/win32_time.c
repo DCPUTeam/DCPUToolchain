@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Win32
+// Platform:    Win32
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -32,7 +32,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			     GLFW internal API			    //////
+//////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -45,21 +45,21 @@ void _glfwInitTimer(void)
 
     if (QueryPerformanceFrequency((LARGE_INTEGER*) &freq))
     {
-	_glfwLibrary.Win32.timer.hasPC = GL_TRUE;
-	_glfwLibrary.Win32.timer.resolution = 1.0 / (double) freq;
-	QueryPerformanceCounter((LARGE_INTEGER*) &_glfwLibrary.Win32.timer.t0_64);
+        _glfwLibrary.Win32.timer.hasPC = GL_TRUE;
+        _glfwLibrary.Win32.timer.resolution = 1.0 / (double) freq;
+        QueryPerformanceCounter((LARGE_INTEGER*) &_glfwLibrary.Win32.timer.t0_64);
     }
     else
     {
-	_glfwLibrary.Win32.timer.hasPC = GL_FALSE;
-	_glfwLibrary.Win32.timer.resolution = 0.001; // winmm resolution is 1 ms
-	_glfwLibrary.Win32.timer.t0_32 = _glfw_timeGetTime();
+        _glfwLibrary.Win32.timer.hasPC = GL_FALSE;
+        _glfwLibrary.Win32.timer.resolution = 0.001; // winmm resolution is 1 ms
+        _glfwLibrary.Win32.timer.t0_32 = _glfw_timeGetTime();
     }
 }
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			     GLFW platform API			    //////
+//////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -73,11 +73,11 @@ double _glfwPlatformGetTime(void)
 
     if (_glfwLibrary.Win32.timer.hasPC)
     {
-	QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
-	t =  (double)(t_64 - _glfwLibrary.Win32.timer.t0_64);
+        QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
+        t =  (double)(t_64 - _glfwLibrary.Win32.timer.t0_64);
     }
     else
-	t = (double)(_glfw_timeGetTime() - _glfwLibrary.Win32.timer.t0_32);
+        t = (double)(_glfw_timeGetTime() - _glfwLibrary.Win32.timer.t0_32);
 
     return t * _glfwLibrary.Win32.timer.resolution;
 }
@@ -93,10 +93,10 @@ void _glfwPlatformSetTime(double t)
 
     if (_glfwLibrary.Win32.timer.hasPC)
     {
-	QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
-	_glfwLibrary.Win32.timer.t0_64 = t_64 - (__int64) (t / _glfwLibrary.Win32.timer.resolution);
+        QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
+        _glfwLibrary.Win32.timer.t0_64 = t_64 - (__int64) (t / _glfwLibrary.Win32.timer.resolution);
     }
     else
-	_glfwLibrary.Win32.timer.t0_32 = _glfw_timeGetTime() - (int)(t * 1000.0);
+        _glfwLibrary.Win32.timer.t0_32 = _glfw_timeGetTime() - (int)(t * 1000.0);
 }
 

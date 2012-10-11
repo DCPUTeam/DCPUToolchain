@@ -1,31 +1,70 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu-vm)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
+add_executable(embedfont embedfont.c)
+include_directories(${libdcpu_SOURCE_DIR})
+target_link_libraries(embedfont libdcpu)
+if(MINGW)
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/font.c
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/embedfont${CMAKE_EXECUTABLE_SUFFIX} ${CMAKE_CURRENT_BINARY_DIR}/font.c ${CMAKE_CURRENT_SOURCE_DIR}/font.png
+        DEPENDS font.png embedfont)
+else()
+     add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/font.c
+        COMMAND embedfont ${CMAKE_CURRENT_BINARY_DIR}/font.c ${CMAKE_CURRENT_SOURCE_DIR}/font.png
+        DEPENDS font.png embedfont)
+endif()
 
-# Define the libvm project.
-dt_project(library)
-dt_needs(lua)
-dt_needs(libdcpu)
-dt_needs(bstring)
-dt_needs(simclist)
-dt_needs(libdcpu-pp-expr)
-
-find_package(GLU REQUIRED)
-#target_link_libraries(libdcpu-vm ${GLU_LIBRARY})
-
-#find_package(X11 REQUIRED)
-#target_link_libraries(libdcpu-vm ${X11_LIBRARIES})
-
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lGLU")
-
-dt_needs(glfw)
-target_link_libraries(libdcpu-vm ${GLFW_LIBRARIES} ${GLU_LIBRARY})
-
-# Copy the default font to the output directory
-file(COPY ./defaultfont.png DESTINATION "${OUTPUT_DIR}" USE_SOURCE_PERMISSIONS)
-
+find_package(OpenGL REQUIRED)
+add_library(libdcpu-vm STATIC
+    dcpu.c
+    dcpubase.h
+    dcpudis.h
+    dcpuhook.h
+    dcpuops.h
+    hw.h
+    hwioascii.h
+    hwkeyboard.h
+    hwlem1802.h
+    hwlem1802mem.h
+    hwlem1802util.h
+    hwlua.h
+    hwluacpu.h
+    hwm35fd.h
+    hwsped3.h
+    hwtimer.h
+    timing.h
+    dcpubase.c
+    dcpudis.c
+    dcpuhook.c
+    dcpuops.c
+    hw.c
+    hwioascii.c
+    hwkeyboard.c
+    hwlem1802.c
+    hwlem1802mem.c
+    hwlem1802util.c
+    hwlua.c
+    hwluacpu.c
+    hwm35fd.c
+    hwsped3.c
+    hwtimer.c
+    timing.c
+    ${CMAKE_CURRENT_BINARY_DIR}/font.c
+)
+include_directories(
+    ${png_SOURCE_DIR}
+    ${png_BINARY_DIR}
+    ${z_SOURCE_DIR}
+    ${bstring_SOURCE_DIR}
+    ${libdcpu_SOURCE_DIR}
+    ${lua_SOURCE_DIR}
+    ${simclist_SOURCE_DIR}
+    ${libdcpu-pp-expr_SOURCE_DIR}
+    ${GLFW_SOURCE_DIR}/include
+    ${OPENGL_INCLUDE_DIR}
+)
+target_link_libraries(libdcpu-vm
+    libdcpu
+)

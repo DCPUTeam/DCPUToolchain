@@ -72,7 +72,7 @@ static void cursor_position_callback(GLFWwindow window, int x, int y)
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-	set_swap_interval(window, 1 - swap_interval);
+        set_swap_interval(window, 1 - swap_interval);
 }
 
 int main(void)
@@ -82,8 +82,8 @@ int main(void)
 
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     glfwSetCursorPosCallback(cursor_position_callback);
@@ -93,10 +93,10 @@ int main(void)
     window = glfwCreateWindow(window_width, window_height, GLFW_WINDOWED, "", NULL);
     if (!window)
     {
-	glfwTerminate();
+        glfwTerminate();
 
-	fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     glfwMakeContextCurrent(window);
@@ -108,17 +108,17 @@ int main(void)
 
     while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
-	glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-	glBegin(GL_LINES);
-	glVertex2f(0.f, (GLfloat) window_height - cursor_y);
-	glVertex2f((GLfloat) window_width, (GLfloat) window_height - cursor_y);
-	glVertex2f((GLfloat) cursor_x, 0.f);
-	glVertex2f((GLfloat) cursor_x, (GLfloat) window_height);
-	glEnd();
+        glBegin(GL_LINES);
+        glVertex2f(0.f, (GLfloat) window_height - cursor_y);
+        glVertex2f((GLfloat) window_width, (GLfloat) window_height - cursor_y);
+        glVertex2f((GLfloat) cursor_x, 0.f);
+        glVertex2f((GLfloat) cursor_x, (GLfloat) window_height);
+        glEnd();
 
-	glfwSwapBuffers(window);
-	glfwPollEvents();
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
     glfwTerminate();

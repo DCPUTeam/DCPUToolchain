@@ -17,6 +17,7 @@
 #include <osutil.h>
 #include <GL/glfw3.h>
 #include <stdlib.h>
+#include <debug.h>
 #include "hwlem1802.h"
 #include "hwlem1802mem.h"
 #include "hwlem1802util.h"
@@ -63,8 +64,6 @@ uint16_t font_default[HW_LEM1802_FONT_MEMSIZE];
 ///
 void vm_hw_lem1802_mem_init(struct lem1802_hardware* hw)
 {
-	bstring font_path;
-
 	int has_alpha, font_img_width, font_img_height;
 
 	// init ram locations
@@ -77,26 +76,15 @@ void vm_hw_lem1802_mem_init(struct lem1802_hardware* hw)
 	// (first time monitor is opened)
 	if (font_image == NULL)
 	{
-	
-		// Determine the font path.
-		font_path = osutil_getarg0path();
-	#ifdef WIN32
-		bconcat(font_path, bfromcstr("\\defaultfont.png"));
-	#else
-		bconcat(font_path, bfromcstr("/defaultfont.png"));
-	#endif
-
 		// load image with default font
-		if (!vm_hw_lem1802_util_loadpng(font_path->data, &font_img_width, &font_img_height, &has_alpha, &font_image)) {
-			printf("Error loading default font.");
-			exit( EXIT_FAILURE );
+		if (!vm_hw_lem1802_util_loadpng(&font_img_width, &font_img_height, &has_alpha, &font_image))
+		{
+			printd(LEVEL_ERROR, "lem1802 error: Unable to load embedded font for LEM1802.\n");
+			return;
 		}
 		
 		// load default font from loaded image
 		vm_hw_lem1802_mem_load_default_font();
-
-		// Free memory.
-		bdestroy(font_path);
 	}
 }
 
@@ -393,15 +381,11 @@ uint32_t vm_hw_lem1802_mem_get_font_default_representation(uint16_t idx)
 ///
 void vm_hw_lem1802_mem_set_screen(struct lem1802_hardware* hw, uint16_t pos)
 {
-	uint16_t x, y, i;
-
 	// Set the new screen position.
 	hw->screen_location = pos;
 	
 	if (pos == 0)
-	{
 		hw->screen_location = HW_LEM1802_DISCONNECTED;
-	}
 }
 
 ///

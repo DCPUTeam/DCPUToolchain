@@ -19,7 +19,7 @@
 
 #include <AsmGenerator.h>
 #include <CompilerException.h>
-#include "../parser.hpp"
+#include "parser.hpp"
 #include "NBinaryOperator.h"
 #include "TGenericBasicType.h"
 #include "TPointer16.h"

@@ -48,44 +48,44 @@ int main(void)
 
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW: %s\n",
-		glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n",
+                glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
-    for (i = 0;	 i < 4;	 i++)
+    for (i = 0;  i < 4;  i++)
     {
-	windows[i] = glfwCreateWindow(200, 200, GLFW_WINDOWED, titles[i], NULL);
-	if (!windows[i])
-	{
-	    fprintf(stderr, "Failed to open GLFW window: %s\n",
-		    glfwErrorString(glfwGetError()));
-	    glfwTerminate();
-	    exit(EXIT_FAILURE);
-	}
+        windows[i] = glfwCreateWindow(200, 200, GLFW_WINDOWED, titles[i], NULL);
+        if (!windows[i])
+        {
+            fprintf(stderr, "Failed to open GLFW window: %s\n",
+                    glfwErrorString(glfwGetError()));
+            glfwTerminate();
+            exit(EXIT_FAILURE);
+        }
 
-	glfwMakeContextCurrent(windows[i]);
-	glClearColor((GLclampf) (i & 1),
-		     (GLclampf) (i >> 1),
-		     i ? 0.f : 1.f,
-		     0.f);
+        glfwMakeContextCurrent(windows[i]);
+        glClearColor((GLclampf) (i & 1),
+                     (GLclampf) (i >> 1),
+                     i ? 0.f : 1.f,
+                     0.f);
 
-	glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
+        glfwSetWindowPos(windows[i], 100 + (i & 1) * 300, 100 + (i >> 1) * 300);
     }
 
     while (running)
     {
-	for (i = 0;  i < 4;  i++)
-	{
-	    glfwMakeContextCurrent(windows[i]);
-	    glClear(GL_COLOR_BUFFER_BIT);
-	    glfwSwapBuffers(windows[i]);
+        for (i = 0;  i < 4;  i++)
+        {
+            glfwMakeContextCurrent(windows[i]);
+            glClear(GL_COLOR_BUFFER_BIT);
+            glfwSwapBuffers(windows[i]);
 
-	    if (glfwGetWindowParam(windows[i], GLFW_CLOSE_REQUESTED))
-		running = GL_FALSE;
-	}
+            if (glfwGetWindowParam(windows[i], GLFW_CLOSE_REQUESTED))
+                running = GL_FALSE;
+        }
 
-	glfwPollEvents();
+        glfwPollEvents();
     }
 
     glfwTerminate();

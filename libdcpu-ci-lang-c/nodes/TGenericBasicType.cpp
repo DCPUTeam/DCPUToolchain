@@ -15,8 +15,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "TGenericBasicType.h"
-#include "../parser.hpp"
-
+#include "parser.hpp"
 
 bool TGenericBasicType::isBasicType() const
 {

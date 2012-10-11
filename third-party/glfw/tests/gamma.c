@@ -61,31 +61,31 @@ static int window_close_callback(GLFWwindow window)
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (action != GLFW_PRESS)
-	return;
+        return;
 
     switch (key)
     {
-	case GLFW_KEY_ESCAPE:
-	{
-	    closed = GL_TRUE;
-	    break;
-	}
+        case GLFW_KEY_ESCAPE:
+        {
+            closed = GL_TRUE;
+            break;
+        }
 
-	case GLFW_KEY_KP_ADD:
-	case GLFW_KEY_Q:
-	{
-	    set_gamma(gamma_value + STEP_SIZE);
-	    break;
-	}
+        case GLFW_KEY_KP_ADD:
+        case GLFW_KEY_Q:
+        {
+            set_gamma(gamma_value + STEP_SIZE);
+            break;
+        }
 
-	case GLFW_KEY_KP_SUBTRACT:
-	case GLFW_KEY_W:
-	{
-	    if (gamma_value - STEP_SIZE > 0.f)
-		set_gamma(gamma_value - STEP_SIZE);
+        case GLFW_KEY_KP_SUBTRACT:
+        case GLFW_KEY_W:
+        {
+            if (gamma_value - STEP_SIZE > 0.f)
+                set_gamma(gamma_value - STEP_SIZE);
 
-	    break;
-	}
+            break;
+        }
     }
 }
 
@@ -102,48 +102,48 @@ int main(int argc, char** argv)
 
     while ((ch = getopt(argc, argv, "fh")) != -1)
     {
-	switch (ch)
-	{
-	    case 'h':
-		usage();
-		exit(EXIT_SUCCESS);
+        switch (ch)
+        {
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
 
-	    case 'f':
-		mode = GLFW_FULLSCREEN;
-		break;
+            case 'f':
+                mode = GLFW_FULLSCREEN;
+                break;
 
-	    default:
-		usage();
-		exit(EXIT_FAILURE);
-	}
+            default:
+                usage();
+                exit(EXIT_FAILURE);
+        }
     }
 
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     if (mode == GLFW_FULLSCREEN)
     {
-	GLFWvidmode desktop_mode;
-	glfwGetDesktopMode(&desktop_mode);
-	width = desktop_mode.width;
-	height = desktop_mode.height;
+        GLFWvidmode desktop_mode;
+        glfwGetDesktopMode(&desktop_mode);
+        width = desktop_mode.width;
+        height = desktop_mode.height;
     }
     else
     {
-	width = 0;
-	height = 0;
+        width = 0;
+        height = 0;
     }
 
     window = glfwCreateWindow(width, height, mode, "Gamma Test", NULL);
     if (!window)
     {
-	glfwTerminate();
+        glfwTerminate();
 
-	fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     set_gamma(1.f);
@@ -163,13 +163,13 @@ int main(int argc, char** argv)
 
     while (!closed)
     {
-	glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-	glColor3f(0.8f, 0.2f, 0.4f);
-	glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
+        glColor3f(0.8f, 0.2f, 0.4f);
+        glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 
-	glfwSwapBuffers(window);
-	glfwPollEvents();
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
     glfwTerminate();

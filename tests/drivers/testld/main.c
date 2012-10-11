@@ -35,10 +35,11 @@ int main(int argc, char* argv[])
 	struct arg_file* expect_file = arg_file0("e", "expect", "<file>", "The output file that contains expected output.");
 	struct arg_file* actual_file = arg_file1("a", "actual", "<file>", "The output file where actual output will be placed.");
 	struct arg_lit* fail_opt = arg_lit0("f", "fail", "The linker is expected to fail and the actual output file should not exist on completion.");
+    struct arg_file* path = arg_file1("p", NULL, "<path>", "The path to the linker.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, target_arg, input_files, expect_file, actual_file, fail_opt, verbose, quiet, end };
+	void* argtable[] = { show_help, target_arg, input_files, expect_file, actual_file, fail_opt, path, verbose, quiet, end };
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
@@ -66,8 +67,7 @@ int main(int argc, char* argv[])
 	osutil_setarg0(bautofree(bfromcstr(argv[0])));
 
 	// Generate the argument list for the linker.
-	ldargs = bfromcstr(argv[0]);
-	bfindreplace(ldargs, bfromcstr("testld"), bfromcstr("dtld"), 0);
+	ldargs = bfromcstr(path->filename[0]);
 	binsertch(ldargs, 0, 1, '"');
 	bconchar(ldargs, '"');
 	bconchar(ldargs, ' ');

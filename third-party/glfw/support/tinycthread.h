@@ -110,7 +110,7 @@ freely, subject to the following restrictions:
 #if defined(_TTHREAD_WIN32_)
 struct _ttherad_timespec {
   time_t tv_sec;
-  long	 tv_nsec;
+  long   tv_nsec;
 };
 #define timespec _ttherad_timespec
 #endif
@@ -173,15 +173,15 @@ int _tthread_clock_gettime(clockid_t clk_id, struct timespec *ts);
 /* Mutex types */
 #define mtx_plain     1
 #define mtx_timed     2
-#define mtx_try	      4
+#define mtx_try       4
 #define mtx_recursive 8
 
 /* Mutex */
 #if defined(_TTHREAD_WIN32_)
 typedef struct {
   CRITICAL_SECTION mHandle;   /* Critical section handle */
-  int mAlreadyLocked;	      /* TRUE if the mutex is already locked */
-  int mRecursive;	      /* TRUE if the mutex is recursive */
+  int mAlreadyLocked;         /* TRUE if the mutex is already locked */
+  int mRecursive;             /* TRUE if the mutex is recursive */
 } mtx_t;
 #else
 typedef pthread_mutex_t mtx_t;
@@ -240,8 +240,8 @@ int mtx_unlock(mtx_t *mtx);
 /* Condition variable */
 #if defined(_TTHREAD_WIN32_)
 typedef struct {
-  HANDLE mEvents[2];		      /* Signal and broadcast event HANDLEs. */
-  unsigned int mWaitersCount;	      /* Count of the number of waiters. */
+  HANDLE mEvents[2];                  /* Signal and broadcast event HANDLEs. */
+  unsigned int mWaitersCount;         /* Count of the number of waiters. */
   CRITICAL_SECTION mWaitersCountLock; /* Serialize access to mWaitersCount. */
 } cnd_t;
 #else
@@ -317,7 +317,7 @@ typedef pthread_t thrd_t;
 * Any thread that is started with the @ref thrd_create() function must be
 * started through a function of this type.
 * @param arg The thread argument (the @c arg argument of the corresponding
-*	 @ref thrd_create() call).
+*        @ref thrd_create() call).
 * @return The thread return value, which can be obtained by another thread
 * by using the @ref thrd_join() function.
 */
@@ -326,7 +326,7 @@ typedef int (*thrd_start_t)(void *arg);
 /** Create a new thread.
 * @param thr Identifier of the newly created thread.
 * @param func A function pointer to the function that will be executed in
-*	 the new thread.
+*        the new thread.
 * @param arg An argument to the thread function.
 * @return @ref thrd_success on success, or @ref thrd_nomem if no memory could
 * be allocated for the thread requested, or @ref thrd_error if the request
@@ -363,7 +363,7 @@ void thrd_exit(int res);
 * until the other thread has terminated.
 * @param thr The thread to join with.
 * @param res If this pointer is not NULL, the function will store the result
-*	 code of the given thread in the integer pointed to by @c res.
+*        code of the given thread in the integer pointed to by @c res.
 * @return @ref thrd_success on success, or @ref thrd_error if the request could
 * not be honored.
 */
@@ -373,10 +373,10 @@ int thrd_join(thrd_t thr, int *res);
 * Suspend execution of the calling thread.
 * @param time_point A point in time at which the thread will resume (absolute time).
 * @param remaining If non-NULL, this parameter will hold the remaining time until
-*		   time_point upon return. This will typically be zero, but if
-*		   the thread was woken up by a signal that is not ignored before
-*		   time_point was reached @c remaining will hold a positive
-*		   time.
+*                  time_point upon return. This will typically be zero, but if
+*                  the thread was woken up by a signal that is not ignored before
+*                  time_point was reached @c remaining will hold a positive
+*                  time.
 * @return 0 (zero) on successful sleep, or -1 if an interrupt occurred.
 */
 int thrd_sleep(const struct timespec *time_point, struct timespec *remaining);
@@ -401,7 +401,7 @@ typedef void (*tss_dtor_t)(void *val);
 
 /** Create a thread-specific storage.
 * @param key The unique key identifier that will be set if the function is
-*	 successful.
+*        successful.
 * @param dtor Destructor function. This can be NULL.
 * @return @ref thrd_success on success, or @ref thrd_error if the request could
 * not be honored.
@@ -428,7 +428,7 @@ void *tss_get(tss_t key);
 /** Set the value for a thread-specific storage.
 * @param key The thread-specific storage identifier.
 * @param val The value of the thread-specific storage to set for the current
-*	 thread.
+*        thread.
 * @return @ref thrd_success on success, or @ref thrd_error if the request could
 * not be honored.
 */

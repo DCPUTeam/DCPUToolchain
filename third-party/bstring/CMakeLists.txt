@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(bstring)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
-
-# Define the bstring project.
-dt_project(library)
-dt_folder("third-party")
+add_library(bstring STATIC
+    bstraux.h
+    bstrlib.h
+    bstrwrap.h
+    bstraux.c
+    bstrlib.c
+)
+set_property(TARGET bstring PROPERTY FOLDER "third-party")

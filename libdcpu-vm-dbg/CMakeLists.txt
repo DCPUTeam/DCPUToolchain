@@ -1,29 +1,39 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu-vm-dbg)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
-
-# Define the libvm project.
-dt_project(library)
-dt_needs(bstring)
-dt_needs(simclist)
-dt_needs(lua)
-dt_needs(libdcpu)
-dt_needs(libdcpu-vm)
-dt_needs(libdcpu-ci-dbgfmt)
-dt_needs(libdcpu-pp-expr)
-
-find_package(GLU REQUIRED)
-#target_link_libraries(libdcpu-vm ${GLU_LIBRARY})
-
-#find_package(X11 REQUIRED)
-#target_link_libraries(libdcpu-vm ${X11_LIBRARIES})
-
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lGLU")
-
-dt_needs(glfw)
-target_link_libraries(libdcpu-vm-dbg ${GLFW_LIBRARIES} ${GLU_LIBRARY})
+bison_target(libdcpu-vm-dbg-parser parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c COMPILE_FLAGS "-d -y")
+flex_target(libdcpu-vm-dbg-lexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c COMPILE_FLAGS "--header-file=lexer.h")
+add_flex_bison_dependency(libdcpu-vm-dbg-lexer libdcpu-vm-dbg-parser)
+add_library(libdcpu-vm-dbg STATIC
+    backtrace.c
+    breakpoint.c
+    dbgaux.c
+    dbglua.c
+    backtrace.h
+    breakpoint.h
+    dbgaux.h
+    dbglua.h
+    ${FLEX_libdcpu-vm-dbg-lexer_OUTPUTS}
+    ${BISON_libdcpu-vm-dbg-parser_OUTPUTS}
+    parser.y
+    lexer.l
+)
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR} 
+    ${bstring_SOURCE_DIR}
+    ${simclist_SOURCE_DIR}
+    ${lua_SOURCE_DIR}
+    ${libdcpu_SOURCE_DIR}
+    ${libdcpu-vm_SOURCE_DIR}
+    ${libdcpu-ci-dbgfmt_SOURCE_DIR}
+    ${libdcpu-pp-expr_SOURCE_DIR}
+    ${GLFW_SOURCE_DIR}/include
+    ${FLEX_UNISTD_INCLUDE}
+)
+target_link_libraries(libdcpu-vm-dbg
+    libdcpu-ci-dbgfmt
+    libdcpu-pp-expr
+    simclist
+    lua
+    ${X11_LIBRARIES}
+)

@@ -1,20 +1,37 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(dtld)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
-
-# Define the linker project.
-dt_project(executable)
-dt_needs(bstring)
-dt_needs(simclist)
-dt_needs(argtable2)
-dt_needs(lua)
-dt_needs(libdcpu)
-dt_needs(libdcpu-vm)
-dt_needs(libdcpu-pp-expr)
-dt_needs(libdcpu-ci-objfmt)
-dt_needs(libdcpu-ci-dbgfmt)
+add_executable(dtld
+    ldbin.c
+    ldbin.h
+    ldbins.c
+    ldbins.h
+    ldconv.c
+    ldconv.h
+    ldlua.c
+    ldlua.h
+    main.c
+)
+include_directories(
+    ${argtable2_SOURCE_DIR}
+    ${simclist_SOURCE_DIR}
+    ${bstring_SOURCE_DIR}
+    ${lua_SOURCE_DIR}
+    ${libdcpu_SOURCE_DIR}
+    ${libdcpu-vm_SOURCE_DIR}
+    ${libdcpu-pp-expr_SOURCE_DIR}
+    ${libdcpu-ci-objfmt_SOURCE_DIR}
+    ${libdcpu-ci-dbgfmt_SOURCE_DIR}
+    ${FLEX_UNISTD_INCLUDE}
+)
+target_link_libraries(dtld
+    argtable2
+    bstring
+    simclist
+    lua
+    libdcpu-vm
+    libdcpu
+    libdcpu-pp-expr
+    libdcpu-ci-objfmt
+    libdcpu-ci-dbgfmt
+)

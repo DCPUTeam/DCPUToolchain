@@ -21,7 +21,7 @@
 #include <string.h>
 #include <debug.h>
 #include <imap.h>
-#include <sys/time.h>
+#include <osutil.h>
 
 #include "dcpubase.h"
 #include "dcpuops.h"
@@ -245,7 +245,7 @@ void vm_dump_state(vm_t* vm)
 
 void vm_cycle(vm_t* vm)
 {
-	static struct timeval t;
+	static struct ostimeval t;
 	static long int usec = 0;
 
 	uint16_t instruction;
@@ -259,7 +259,7 @@ void vm_cycle(vm_t* vm)
 		return;
 	}
 
-	gettimeofday(&t, NULL);
+	osutil_gettimeofday(&t, NULL);
 
 	if ((t.tv_usec - usec < 0) ? usec - t.tv_usec  >
 			10000 : t.tv_usec - usec > 10000)

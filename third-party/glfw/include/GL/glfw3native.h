@@ -1,7 +1,7 @@
 /*************************************************************************
  * GLFW - An OpenGL library
  * API version: 3.0
- * WWW:		http://www.glfw.org/
+ * WWW:         http://www.glfw.org/
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
  * Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>

@@ -1,25 +1,28 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(testvm)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
+add_executable(testvm
+    main.c
+)
+include_directories(
+    ${argtable2_SOURCE_DIR}
+    ${simclist_SOURCE_DIR}
+    ${bstring_SOURCE_DIR}
+    ${libdcpu_SOURCE_DIR}
+)
+target_link_libraries(testvm
+    argtable2
+    simclist
+    bstring
+    libdcpu
+)
 
 # Define folder that holds test data.
 set(BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../data/vm")
 
-# Define the testvm project.
-dt_project(executable)
-dt_needs(argtable2)
-dt_needs(simclist)
-dt_needs(bstring)
-dt_needs(libdcpu)
-
 # Define a function to easily create unit tests.
 function(add_unit_test tname)
-	add_test(${tname} ${OUTPUT_DIR}/testvm "${BASE_DIR}/${tname}.i")
+    add_test(${tname} ${CMAKE_CURRENT_BINARY_DIR}/testvm -a "${dtasm_BINARY_DIR}/dtasm${CMAKE_EXECUTABLE_SUFFIX}" -d "${dtdb_BINARY_DIR}/dtdb${CMAKE_EXECUTABLE_SUFFIX}" -m "${toolchain_SOURCE_DIR}/modules" "${BASE_DIR}/${tname}.i")
 endfunction(add_unit_test tname)
 
 # Define the tests.

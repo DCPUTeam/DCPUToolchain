@@ -52,7 +52,6 @@ typedef struct
 
 static _GLFWvidsize* getResolutions(int* found)
 {
-    int i, j;
     _GLFWvidsize* result = NULL;
 
     *found = 0;
@@ -62,6 +61,7 @@ static _GLFWvidsize* getResolutions(int* found)
     if (_glfwLibrary.X11.RandR.available)
     {
 #if defined(_GLFW_HAS_XRANDR)
+	int i;
 	XRRScreenConfiguration* sc;
 	XRRScreenSize* sizes;
 
@@ -84,6 +84,7 @@ static _GLFWvidsize* getResolutions(int* found)
 #if defined(_GLFW_HAS_XF86VIDMODE)
 	XF86VidModeModeInfo** modes;
 	int modeCount;
+	int i,j;
 
 	XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,
 				   _glfwLibrary.X11.screen,
@@ -143,7 +144,6 @@ static _GLFWvidsize* getResolutions(int* found)
 
 int _glfwGetClosestVideoMode(int* width, int* height, int* rate)
 {
-    int i, match, bestmatch;
 
     if (_glfwLibrary.X11.RandR.available)
     {
@@ -153,6 +153,7 @@ int _glfwGetClosestVideoMode(int* width, int* height, int* rate)
 	short* ratelist;
 	XRRScreenConfiguration* sc;
 	XRRScreenSize* sizelist;
+	int bestmatch, match, i;
 
 	sc = XRRGetScreenInfo(_glfwLibrary.X11.display, _glfwLibrary.X11.root);
 
@@ -212,6 +213,7 @@ int _glfwGetClosestVideoMode(int* width, int* height, int* rate)
 #if defined(_GLFW_HAS_XF86VIDMODE)
 	XF86VidModeModeInfo** modelist;
 	int bestmode, modecount;
+	int bestmatch, match, i;
 
 	// Get a list of all available display modes
 	XF86VidModeGetAllModeLines(_glfwLibrary.X11.display,

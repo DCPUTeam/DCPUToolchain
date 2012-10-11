@@ -238,15 +238,6 @@ static GLboolean createWindow(_GLFWwindow* window,
 
 static void hideCursor(_GLFWwindow* window)
 {
-    // Un-grab cursor (in windowed mode only; in fullscreen mode we still
-    // want the cursor grabbed in order to confine the cursor to the window
-    // area)
-    if (window->X11.cursorGrabbed && window->mode == GLFW_WINDOWED)
-    {
-	XUngrabPointer(_glfwLibrary.X11.display, CurrentTime);
-	window->X11.cursorGrabbed = GL_FALSE;
-    }
-
     if (!window->X11.cursorHidden)
     {
 	XDefineCursor(_glfwLibrary.X11.display,
@@ -289,7 +280,7 @@ static void showCursor(_GLFWwindow* window)
     // Un-grab cursor (in windowed mode only; in fullscreen mode we still
     // want the cursor grabbed in order to confine the cursor to the window
     // area)
-    if (window->X11.cursorGrabbed && window->mode == GLFW_WINDOWED)
+    if (window->X11.cursorGrabbed)
     {
 	XUngrabPointer(_glfwLibrary.X11.display, CurrentTime);
 	window->X11.cursorGrabbed = GL_FALSE;
@@ -310,6 +301,8 @@ static void showCursor(_GLFWwindow* window)
 
 static void enterFullscreenMode(_GLFWwindow* window)
 {
+
+    XEvent event;
     if (!_glfwLibrary.X11.saver.changed)
     {
 	// Remember old screen saver settings
@@ -360,7 +353,6 @@ static void enterFullscreenMode(_GLFWwindow* window)
 	// Fullscreen windows are undecorated and, when focused, are kept
 	// on top of all other windows
 
-	XEvent event;
 	memset(&event, 0, sizeof(event));
 
 	event.type = ClientMessage;
@@ -1122,6 +1114,7 @@ void _glfwPlatformRefreshWindowParams(_GLFWwindow* window)
 void _glfwPlatformPollEvents(void)
 {
     XEvent event;
+    _GLFWwindow* window;
 
     while (XCheckMaskEvent(_glfwLibrary.X11.display, ~0, &event) ||
 	   XCheckTypedEvent(_glfwLibrary.X11.display, ClientMessage, &event))
@@ -1132,7 +1125,6 @@ void _glfwPlatformPollEvents(void)
     // Check whether the cursor has moved inside an active window that has
     // captured the cursor (because then it needs to be re-centered)
 
-    _GLFWwindow* window;
     window = _glfwLibrary.activeWindow;
     if (window)
     {

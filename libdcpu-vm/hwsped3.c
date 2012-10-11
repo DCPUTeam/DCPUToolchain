@@ -11,8 +11,13 @@
     Description: Implements the SPED-3 specification.
 **/
 
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
 #include <GL/glfw3.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -23,7 +28,6 @@
 #include "dcpubase.h"
 #include "dcpuhook.h"
 #include "dcpuops.h"
-
 
 void vm_hw_sped3_update_rot(struct sped3_hardware* hw)
 {
@@ -131,6 +135,7 @@ int vm_hw_sped3_close(GLFWwindow w)
 	void* ud = glfwGetWindowUserPointer(w);
 
 	vm_hw_sped3_free(ud);
+	return 0;
 }
 
 void vm_hw_sped3_init(vm_t* vm)

@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	X11
+// Platform:    X11
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -55,7 +55,7 @@
  * U+ABCD you can directly use keysym 0x0100abcd.
  *
  * Original author: Markus G. Kuhn <mkuhn@acm.org>, University of
- *		    Cambridge, April 2001
+ *                  Cambridge, April 2001
  *
  * Special thanks to Richard Verhoeven <river@win.tue.nl> for preparing
  * an initial draft of the mapping table.
@@ -64,7 +64,7 @@
 
 
 //************************************************************************
-//****		      KeySym to Unicode mapping table		      ****
+//****                KeySym to Unicode mapping table                 ****
 //************************************************************************
 
 static struct codepair {
@@ -852,7 +852,7 @@ static struct codepair {
 
 
 //************************************************************************
-//****			GLFW internal functions			      ****
+//****                  GLFW internal functions                       ****
 //************************************************************************
 
 //========================================================================
@@ -867,27 +867,27 @@ long _glfwKeySym2Unicode( KeySym keysym )
 
     /* First check for Latin-1 characters (1:1 mapping) */
     if( (keysym >= 0x0020 && keysym <= 0x007e) ||
-	(keysym >= 0x00a0 && keysym <= 0x00ff) )
+        (keysym >= 0x00a0 && keysym <= 0x00ff) )
     { return keysym;
     }
 
     /* Also check for directly encoded 24-bit UCS characters */
     if( (keysym & 0xff000000) == 0x01000000 )
-	return keysym & 0x00ffffff;
+        return keysym & 0x00ffffff;
 
     /* Binary search in table */
     while( max >= min )
     {
-	mid = (min + max) / 2;
-	if( keysymtab[mid].keysym < keysym )
-	    min = mid + 1;
-	else if( keysymtab[mid].keysym > keysym )
-	    max = mid - 1;
-	else
-	{
-	    /* Found it! */
-	    return keysymtab[mid].ucs;
-	}
+        mid = (min + max) / 2;
+        if( keysymtab[mid].keysym < keysym )
+            min = mid + 1;
+        else if( keysymtab[mid].keysym > keysym )
+            max = mid - 1;
+        else
+        {
+            /* Found it! */
+            return keysymtab[mid].ucs;
+        }
     }
 
     /* No matching Unicode value found */

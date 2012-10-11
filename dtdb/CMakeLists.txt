@@ -1,29 +1,47 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(dtdb)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
+find_package(OpenGL REQUIRED)
+add_executable(dtdb
+    main.c
+    packets.c
+    packets.h
+    sdp.c
+    sdp.h   
+)
+include_directories(
+    ${readline_SOURCE_DIR}
+    ${pthread_SOURCE_DIR}
+    ${argtable2_SOURCE_DIR}
+    ${simclist_SOURCE_DIR}
+    ${bstring_SOURCE_DIR}
+    ${lua_SOURCE_DIR}
+    ${libdcpu-pp-expr_SOURCE_DIR}
+    ${libdcpu-ci-dbgfmt_SOURCE_DIR}
+    ${libdcpu-vm-dbg_SOURCE_DIR}
+    ${libdcpu-vm-dbg_BINARY_DIR}
+    ${libdcpu-vm_SOURCE_DIR}
+    ${libdcpu_SOURCE_DIR}
+    ${FLEX_UNISTD_INCLUDE}
+    ${GLFW_SOURCE_DIR}/include
+    ${png_SOURCE_DIR}
+)
+target_link_libraries(dtdb
+    ${readline_LIBRARY}
+    ${pthread_LIBRARY}
+    argtable2
+    simclist
+    bstring
+    lua
+    libdcpu-pp-expr
+    libdcpu-ci-dbgfmt
+    libdcpu-vm-dbg
+    libdcpu-vm
+    libdcpu
+    glfw
+    png
+    z
+    ${OPENGL_LIBRARIES}
+    ${GLFW_LIBRARIES}
+)
 
-
-# Define the emulator project.
-dt_project(executable)
-dt_needs_prebuilt(readline)
-dt_needs_prebuilt(pthread)
-dt_needs(argtable2)
-dt_needs(simclist)
-dt_needs(bstring)
-dt_needs(lua)
-dt_needs(libdcpu-pp-expr)
-dt_needs(libdcpu-ci-dbgfmt)
-dt_needs(libdcpu-vm-dbg)
-dt_needs(libdcpu-vm)
-dt_needs(libdcpu)
-dt_needs(libpng)
-dt_needs(glfw)
-
-if(DEFINED EXPERIMENTAL)
-	add_definitions(-DFEATURE_SDP)
-endif(DEFINED EXPERIMENTAL)

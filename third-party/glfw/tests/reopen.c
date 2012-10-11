@@ -45,12 +45,12 @@ static const char* get_mode_name(int mode)
 {
     switch (mode)
     {
-	case GLFW_WINDOWED:
-	    return "windowed";
-	case GLFW_FULLSCREEN:
-	    return "fullscreen";
-	default:
-	    return "unknown";
+        case GLFW_WINDOWED:
+            return "windowed";
+        case GLFW_FULLSCREEN:
+            return "fullscreen";
+        default:
+            return "unknown";
     }
 }
 
@@ -69,14 +69,14 @@ static int window_close_callback(GLFWwindow window)
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (action != GLFW_PRESS)
-	return;
+        return;
 
     switch (key)
     {
-	case GLFW_KEY_Q:
-	case GLFW_KEY_ESCAPE:
-	    closed = GL_TRUE;
-	    break;
+        case GLFW_KEY_Q:
+        case GLFW_KEY_ESCAPE:
+            closed = GL_TRUE;
+            break;
     }
 }
 
@@ -86,8 +86,8 @@ static GLboolean open_window(int width, int height, int mode)
 
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-	return GL_FALSE;
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        return GL_FALSE;
     }
 
     base = glfwGetTime();
@@ -95,8 +95,8 @@ static GLboolean open_window(int width, int height, int mode)
     window_handle = glfwCreateWindow(width, height, mode, "Window Re-opener", NULL);
     if (!window_handle)
     {
-	fprintf(stderr, "Failed to open %s mode GLFW window: %s\n", get_mode_name(mode), glfwErrorString(glfwGetError()));
-	return GL_FALSE;
+        fprintf(stderr, "Failed to open %s mode GLFW window: %s\n", get_mode_name(mode), glfwErrorString(glfwGetError()));
+        return GL_FALSE;
     }
 
     glfwMakeContextCurrent(window_handle);
@@ -107,8 +107,8 @@ static GLboolean open_window(int width, int height, int mode)
     glfwSetKeyCallback(key_callback);
 
     printf("Opening %s mode window took %0.3f seconds\n",
-	   get_mode_name(mode),
-	   glfwGetTime() - base);
+           get_mode_name(mode),
+           glfwGetTime() - base);
 
     return GL_TRUE;
 }
@@ -131,39 +131,39 @@ int main(int argc, char** argv)
 
     for (;;)
     {
-	if (!open_window(640, 480, (count & 1) ? GLFW_FULLSCREEN : GLFW_WINDOWED))
-	    exit(EXIT_FAILURE);
+        if (!open_window(640, 480, (count & 1) ? GLFW_FULLSCREEN : GLFW_WINDOWED))
+            exit(EXIT_FAILURE);
 
-	glMatrixMode(GL_PROJECTION);
-	glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
-	glMatrixMode(GL_MODELVIEW);
+        glMatrixMode(GL_PROJECTION);
+        glOrtho(-1.f, 1.f, -1.f, 1.f, 1.f, -1.f);
+        glMatrixMode(GL_MODELVIEW);
 
-	glfwSetTime(0.0);
+        glfwSetTime(0.0);
 
-	while (glfwGetTime() < 5.0)
-	{
-	    glClear(GL_COLOR_BUFFER_BIT);
+        while (glfwGetTime() < 5.0)
+        {
+            glClear(GL_COLOR_BUFFER_BIT);
 
-	    glPushMatrix();
-	    glRotatef((GLfloat) glfwGetTime() * 100.f, 0.f, 0.f, 1.f);
-	    glRectf(-0.5f, -0.5f, 1.f, 1.f);
-	    glPopMatrix();
+            glPushMatrix();
+            glRotatef((GLfloat) glfwGetTime() * 100.f, 0.f, 0.f, 1.f);
+            glRectf(-0.5f, -0.5f, 1.f, 1.f);
+            glPopMatrix();
 
-	    glfwSwapBuffers(window_handle);
-	    glfwPollEvents();
+            glfwSwapBuffers(window_handle);
+            glfwPollEvents();
 
-	    if (closed)
-	    {
-		close_window();
-		printf("User closed window\n");
-		exit(EXIT_SUCCESS);
-	    }
-	}
+            if (closed)
+            {
+                close_window();
+                printf("User closed window\n");
+                exit(EXIT_SUCCESS);
+            }
+        }
 
-	printf("Closing window\n");
-	close_window();
+        printf("Closing window\n");
+        close_window();
 
-	count++;
+        count++;
     }
 }
 

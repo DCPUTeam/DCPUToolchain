@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Any
+// Platform:    Any
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -44,11 +44,11 @@
 // Internal type declarations
 //========================================================================
 
-typedef struct _GLFWhints	_GLFWhints;
-typedef struct _GLFWwndconfig	_GLFWwndconfig;
-typedef struct _GLFWfbconfig	_GLFWfbconfig;
-typedef struct _GLFWwindow	_GLFWwindow;
-typedef struct _GLFWlibrary	_GLFWlibrary;
+typedef struct _GLFWhints       _GLFWhints;
+typedef struct _GLFWwndconfig   _GLFWwndconfig;
+typedef struct _GLFWfbconfig    _GLFWfbconfig;
+typedef struct _GLFWwindow      _GLFWwindow;
+typedef struct _GLFWlibrary     _GLFWlibrary;
 
 
 //------------------------------------------------------------------------
@@ -84,29 +84,28 @@ typedef struct _GLFWlibrary	_GLFWlibrary;
 //------------------------------------------------------------------------
 struct _GLFWhints
 {
-    int		redBits;
-    int		greenBits;
-    int		blueBits;
-    int		alphaBits;
-    int		depthBits;
-    int		stencilBits;
-    int		refreshRate;
-    int		accumRedBits;
-    int		accumGreenBits;
-    int		accumBlueBits;
-    int		accumAlphaBits;
-    int		auxBuffers;
-    GLboolean	stereo;
-    GLboolean	resizable;
-    GLboolean	visible;
-    int		samples;
-    int		clientAPI;
-    int		glMajor;
-    int		glMinor;
-    GLboolean	glForward;
-    GLboolean	glDebug;
-    int		glProfile;
-    int		glRobustness;
+    int         redBits;
+    int         greenBits;
+    int         blueBits;
+    int         alphaBits;
+    int         depthBits;
+    int         stencilBits;
+    int         refreshRate;
+    int         accumRedBits;
+    int         accumGreenBits;
+    int         accumBlueBits;
+    int         accumAlphaBits;
+    int         auxBuffers;
+    GLboolean   stereo;
+    GLboolean   resizable;
+    GLboolean   visible;
+    int         samples;
+    int         glMajor;
+    int         glMinor;
+    GLboolean   glForward;
+    GLboolean   glDebug;
+    int         glProfile;
+    int         glRobustness;
 };
 
 
@@ -118,18 +117,17 @@ struct _GLFWhints
 //------------------------------------------------------------------------
 struct _GLFWwndconfig
 {
-    int		  mode;
-    const char*	  title;
-    int		  refreshRate;
-    GLboolean	  resizable;
-    GLboolean	  visible;
-    int		  clientAPI;
-    int		  glMajor;
-    int		  glMinor;
-    GLboolean	  glForward;
-    GLboolean	  glDebug;
-    int		  glProfile;
-    int		  glRobustness;
+    int           mode;
+    const char*   title;
+    int           refreshRate;
+    GLboolean     resizable;
+    GLboolean     visible;
+    int           glMajor;
+    int           glMinor;
+    GLboolean     glForward;
+    GLboolean     glDebug;
+    int           glProfile;
+    int           glRobustness;
     _GLFWwindow*  share;
 };
 
@@ -143,20 +141,20 @@ struct _GLFWwndconfig
 //------------------------------------------------------------------------
 struct _GLFWfbconfig
 {
-    int		redBits;
-    int		greenBits;
-    int		blueBits;
-    int		alphaBits;
-    int		depthBits;
-    int		stencilBits;
-    int		accumRedBits;
-    int		accumGreenBits;
-    int		accumBlueBits;
-    int		accumAlphaBits;
-    int		auxBuffers;
-    GLboolean	stereo;
-    int		samples;
-    GLFWintptr	platformID;
+    int         redBits;
+    int         greenBits;
+    int         blueBits;
+    int         alphaBits;
+    int         depthBits;
+    int         stencilBits;
+    int         accumRedBits;
+    int         accumGreenBits;
+    int         accumBlueBits;
+    int         accumAlphaBits;
+    int         auxBuffers;
+    GLboolean   stereo;
+    int         samples;
+    GLFWintptr  platformID;
 };
 
 
@@ -170,12 +168,12 @@ struct _GLFWwindow
     // Window settings and state
     GLboolean iconified;       // GL_TRUE if this window is iconified
     GLboolean closeRequested;  // GL_TRUE if this window should be closed
-    int	      width, height;
-    int	      positionX, positionY;
-    int	      mode;	       // GLFW_WINDOW or GLFW_FULLSCREEN
+    int       width, height;
+    int       positionX, positionY;
+    int       mode;            // GLFW_WINDOW or GLFW_FULLSCREEN
     GLboolean resizable;       // GL_TRUE if user may resize this window
-    GLboolean visible;	       // GL_TRUE if this window is visible
-    int	      refreshRate;     // monitor refresh rate
+    GLboolean visible;         // GL_TRUE if this window is visible
+    int       refreshRate;     // monitor refresh rate
     void*     userPointer;
 
     // Window input state
@@ -183,18 +181,17 @@ struct _GLFWwindow
     GLboolean stickyMouseButtons;
     GLboolean keyRepeat;
     GLboolean systemKeys;      // system keys enabled flag
-    int	      cursorPosX, cursorPosY;
-    int	      cursorMode;
+    int       cursorPosX, cursorPosY;
+    int       cursorMode;
     double    scrollX, scrollY;
     char      mouseButton[GLFW_MOUSE_BUTTON_LAST + 1];
     char      key[GLFW_KEY_LAST + 1];
 
     // OpenGL extensions and context attributes
-    int	      clientAPI;
-    int	      glMajor, glMinor, glRevision;
+    int       glMajor, glMinor, glRevision;
     GLboolean glForward, glDebug;
-    int	      glProfile;
-    int	      glRobustness;
+    int       glProfile;
+    int       glRobustness;
     PFNGLGETSTRINGIPROC GetStringi;
 
     // These are defined in the current port's platform.h
@@ -208,27 +205,27 @@ struct _GLFWwindow
 //------------------------------------------------------------------------
 struct _GLFWlibrary
 {
-    _GLFWhints	  hints;
+    _GLFWhints    hints;
 
     _GLFWwindow*  windowListHead;
     _GLFWwindow*  activeWindow;
 
-    GLFWwindowsizefun	 windowSizeCallback;
-    GLFWwindowclosefun	 windowCloseCallback;
+    GLFWwindowsizefun    windowSizeCallback;
+    GLFWwindowclosefun   windowCloseCallback;
     GLFWwindowrefreshfun windowRefreshCallback;
-    GLFWwindowfocusfun	 windowFocusCallback;
+    GLFWwindowfocusfun   windowFocusCallback;
     GLFWwindowiconifyfun windowIconifyCallback;
-    GLFWmousebuttonfun	 mouseButtonCallback;
-    GLFWcursorposfun	 cursorPosCallback;
-    GLFWcursorenterfun	 cursorEnterCallback;
-    GLFWscrollfun	 scrollCallback;
-    GLFWkeyfun		 keyCallback;
-    GLFWcharfun		 charCallback;
+    GLFWmousebuttonfun   mouseButtonCallback;
+    GLFWcursorposfun     cursorPosCallback;
+    GLFWcursorenterfun   cursorEnterCallback;
+    GLFWscrollfun        scrollCallback;
+    GLFWkeyfun           keyCallback;
+    GLFWcharfun          charCallback;
 
     GLFWgammaramp currentRamp;
     GLFWgammaramp originalRamp;
-    int		  originalRampSize;
-    GLboolean	  rampChanged;
+    int           originalRampSize;
+    GLboolean     rampChanged;
 
     GLFWvidmode*  modes;
 
@@ -356,8 +353,8 @@ void _glfwSetDefaultWindowHints(void);
 // OpenGL context helpers (opengl.c)
 int _glfwStringInExtensionString(const char* string, const GLubyte* extensions);
 const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
-					 const _GLFWfbconfig* alternatives,
-					 unsigned int count);
+                                         const _GLFWfbconfig* alternatives,
+                                         unsigned int count);
 GLboolean _glfwRefreshContextParams(void);
 GLboolean _glfwIsValidContextConfig(_GLFWwndconfig* wndconfig);
 GLboolean _glfwIsValidContext(_GLFWwndconfig* wndconfig);

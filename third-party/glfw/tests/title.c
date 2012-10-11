@@ -43,15 +43,15 @@ int main(void)
 
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "English 日本語 русский язык 官話", NULL);
     if (!window)
     {
-	fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     glfwMakeContextCurrent(window);
@@ -61,9 +61,9 @@ int main(void)
 
     while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
-	glClear(GL_COLOR_BUFFER_BIT);
-	glfwSwapBuffers(window);
-	glfwWaitEvents();
+        glClear(GL_COLOR_BUFFER_BIT);
+        glfwSwapBuffers(window);
+        glfwWaitEvents();
     }
 
     exit(EXIT_SUCCESS);

@@ -18,7 +18,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include <nodes/IType.h>
-#include "../parser.hpp"
+#include "parser.hpp"
 #include "NPostIncDec.h"
 
 AsmBlock* NPostIncDec::compile(AsmGenerator& context)
