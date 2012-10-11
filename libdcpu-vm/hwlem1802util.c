@@ -66,9 +66,9 @@ uint16_t vm_hw_lem1802_util_rgb2raw(unsigned char * rgb)
 
 void read_png_from_memory(png_structp pngPtr, png_bytep data, png_size_t length)
 {
-	size_t i;
-	for (i = 0; i < vm_hw_lem1802_font_len && i < length; i++)
-		((char*)data)[i] = vm_hw_lem1802_font[i];
+    static int idx = 0;
+    memcpy(data, vm_hw_lem1802_font + idx, length);
+    idx += length;
 }
 
 int vm_hw_lem1802_util_loadpng(int* out_width, int* out_height, int* out_has_alpha, unsigned char** outData)
