@@ -42,7 +42,7 @@ struct sped3_hardware
 
 	uint16_t mem;
 	uint16_t num;
-	uint16_t rot_target;
+	float rot_target;
 	float rot_current;
 
 	uint16_t state;

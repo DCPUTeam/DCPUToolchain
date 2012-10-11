@@ -29,11 +29,40 @@
 #include "dcpuhook.h"
 #include "dcpuops.h"
 
+#define SPED3_SPEED 0.8f
+
+// Credit for the rotation logic: https://github.com/SirCmpwn/Tomato/blob/master/Tomato/Hardware/SPED3.cs#L34
+
+float compare_degrees(float A, float B)
+{
+    if(A > 180 && B < 180)
+        return (360 - A) + B;
+    if(A < 180 && B > 180)
+        return -((360 - B) + A);
+
+    return B - A;
+}
+
 void vm_hw_sped3_update_rot(struct sped3_hardware* hw)
 {
 	if (hw->rot_current != hw->rot_target)
 	{
-		hw->rot_current += 0.8f;
+        if(abs(hw->rot_target - hw->rot_current) < SPED3_SPEED)
+        {
+            hw->rot_current = hw->rot_target;
+        }
+        else
+        {
+            if(compare_degrees(hw->rot_current, hw->rot_target) <= 0)
+                hw->rot_current -= SPED3_SPEED;
+            else
+                hw->rot_current += SPED3_SPEED;
+            
+            while(hw->rot_current < 0)
+                hw->rot_current += 360.f;
+          
+            hw->rot_current = fmod(hw->rot_current, 360);
+        }
 	}
 	else hw->state = SPED3_STATE_RUNNING;
 }
@@ -124,7 +153,7 @@ void vm_hw_sped3_interrupt(vm_t* vm, void* ud)
 			hw->state = SPED3_STATE_RUNNING;
 			break;
 		case SPED3_INTERRUPT_ROTATE:
-			hw->rot_target = vm->registers[REG_X] % 360;
+			hw->rot_target = vm->registers[REG_X];
 			hw->state = SPED3_STATE_TURNING;
 			break;
 	}
