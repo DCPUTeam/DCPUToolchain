@@ -17,7 +17,7 @@
 
 #include <AsmGenerator.h>
 #include <CompilerException.h>
-#include "../parser.hpp"
+#include "parser.hpp"
 #include "NUnaryOperator.h"
 
 AsmBlock* NUnaryOperator::compile(AsmGenerator& context)

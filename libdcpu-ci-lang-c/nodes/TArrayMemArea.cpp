@@ -15,8 +15,6 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "TArrayMemArea.h"
-#include "../parser.hpp"
-
 
 uint16_t TArrayMemArea::getWordSize(AsmGenerator& context)
 {

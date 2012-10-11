@@ -26,9 +26,10 @@ target_link_libraries(dtemu
 	libdcpu-vm
 	libdcpu-ci-objfmt
 	libdcpu-pp-expr
-	glfw
 	png
 	z
+	glfw
+	${GLFW_LIBRARIES}
 	${OPENGL_LIBRARIES}
 )
 

@@ -9,14 +9,14 @@ include_directories(
 	${simclist_SOURCE_DIR}
 	${argtable2_SOURCE_DIR}
 	${libdcpu_SOURCE_DIR}
-	${toolchain_SOURCE_DIR}/third-party/curl/include
+	${curl_SOURCE_DIR}
 )
 target_link_libraries(dtmm
 	argtable2
 	bstring
 	simclist
 	lua
-	${toolchain_SOURCE_DIR}/third-party/curl/lib/libcurl.lib
+	${curl_LIBRARY}
 	libdcpu
 )
 

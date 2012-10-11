@@ -16,9 +16,14 @@ add_library(libdcpu-pp-expr STATIC
 )
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_BINARY_DIR}
 	${bstring_SOURCE_DIR}
 	${libdcpu_SOURCE_DIR}
 	${simclist_SOURCE_DIR}
 	${lua_SOURCE_DIR}
 	${FLEX_UNISTD_INCLUDE}
+)
+target_link_libraries(libdcpu-pp-expr
+	lua
+	simclist
 )

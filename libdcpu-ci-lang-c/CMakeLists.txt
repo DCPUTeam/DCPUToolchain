@@ -105,8 +105,8 @@ add_library(libdcpu-ci-lang-c STATIC
 	parser.y
 	lexer.l
 )
-
 include_directories(
+	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${bstring_SOURCE_DIR}
 	${libdcpu_SOURCE_DIR}

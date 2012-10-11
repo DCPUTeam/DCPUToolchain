@@ -34,6 +34,7 @@ include_directories(
 	${libdcpu-ci-dbgfmt_SOURCE_DIR}
 	${FLEX_UNISTD_INCLUDE}
 	${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
 )
 target_link_libraries(dtasm
 	argtable2

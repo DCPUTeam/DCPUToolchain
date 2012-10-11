@@ -17,6 +17,7 @@ add_library(libdcpu-pp STATIC
 	lexer.l
 )
 include_directories(
+	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${lua_SOURCE_DIR}
 	${bstring_SOURCE_DIR}

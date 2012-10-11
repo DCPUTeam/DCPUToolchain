@@ -54,12 +54,12 @@ elseif(MINGW)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D SIMCLIST_NO_DUMPRESTORE")
 elseif(${CMAKE_C_COMPILER_BASENAME} STREQUAL "clang")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu89 -Werror -Wdeclaration-after-statement -Wno-unused-value -Wno-pointer-sign -Wno-int-to-pointer-cast -Wno-switch -Qunused-arguments")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-dangling-else")
 else(MSVC)
 	# Assume GNU since there doesn't appear to be
 	# a better way of detecting this.
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wdeclaration-after-statement -Wno-int-to-pointer-cast")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-dangling-else")
 endif()
 
 # Show configuration.

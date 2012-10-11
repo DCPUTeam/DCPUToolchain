@@ -58,7 +58,6 @@ include_directories(
 	${GLFW_SOURCE_DIR}/include
 	${OPENGL_INCLUDE_DIR}
 )
-
-# Copy the default font to the output directory
-# FIXME: file(COPY ./defaultfont.png DESTINATION "${CMAKE_CURRENT_OUTPUT_DIR}" USE_SOURCE_PERMISSIONS)
-
+target_link_libraries(libdcpu-vm
+	libdcpu
+)

@@ -30,4 +30,10 @@ include_directories(
 	${GLFW_SOURCE_DIR}/include
 	${FLEX_UNISTD_INCLUDE}
 )
-
+target_link_libraries(libdcpu-vm-dbg
+	libdcpu-ci-dbgfmt
+	libdcpu-pp-expr
+	simclist
+	lua
+	${X11_LIBRARIES}
+)

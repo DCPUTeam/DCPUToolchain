@@ -10,8 +10,8 @@ add_executable(dtdb
 	sdp.h	
 )
 include_directories(
-	${toolchain_SOURCE_DIR}/third-party/readline/include
-	${toolchain_SOURCE_DIR}/third-party/pthread/include
+	${readline_SOURCE_DIR}
+	${pthread_SOURCE_DIR}
 	${argtable2_SOURCE_DIR}
 	${simclist_SOURCE_DIR}
 	${bstring_SOURCE_DIR}
@@ -19,6 +19,7 @@ include_directories(
 	${libdcpu-pp-expr_SOURCE_DIR}
 	${libdcpu-ci-dbgfmt_SOURCE_DIR}
 	${libdcpu-vm-dbg_SOURCE_DIR}
+	${libdcpu-vm-dbg_BINARY_DIR}
 	${libdcpu-vm_SOURCE_DIR}
 	${libdcpu_SOURCE_DIR}
 	${FLEX_UNISTD_INCLUDE}
@@ -26,9 +27,8 @@ include_directories(
 	${png_SOURCE_DIR}
 )
 target_link_libraries(dtdb
-	${toolchain_SOURCE_DIR}/third-party/readline/lib/readline.lib
-	${toolchain_SOURCE_DIR}/third-party/readline/lib/history.lib
-	${toolchain_SOURCE_DIR}/third-party/pthread/lib/pthreadVC2.lib
+	${readline_LIBRARY}
+	${pthread_LIBRARY}
 	argtable2
 	simclist
 	bstring
@@ -42,5 +42,6 @@ target_link_libraries(dtdb
 	png
 	z
 	${OPENGL_LIBRARIES}
+	${GLFW_LIBRARIES}
 )
 
