@@ -17,7 +17,7 @@ if(SPHINX_EXECUTABLE)
     set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
     
     # HTML output directory
-    set(SPHINX_HTML_DIR "${OUTPUT_DIR}/html")
+    set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
     
     if(TOOLCHAIN_ON_CYGWIN)
         # Out-of-source build configuration does not work under Cygwin.
