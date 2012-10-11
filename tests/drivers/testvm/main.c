@@ -19,6 +19,10 @@
 #include <version.h>
 #include <debug.h>
 #include <osutil.h>
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 int main(int argc, char* argv[])
 {
@@ -27,10 +31,8 @@ int main(int argc, char* argv[])
 	unsigned int match = 0, unmatch = 0;
 	char* file_cpu;
 	char* file_sym;
-#ifndef _WIN32
 	char* mod_path;
 	char* temp;
-#endif
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
@@ -71,7 +73,11 @@ int main(int argc, char* argv[])
 	// environment variable so we can set it back later
 	// on.
 	mod_path = getenv("TOOLCHAIN_MODULES");
+#ifdef WIN32
+	SetEnvironmentVariable("TOOLCHAIN_MODULES", path_modules->filename[0]);
+#else
 	setenv("TOOLCHAIN_MODULES", path_modules->filename[0], 1);
+#endif
 
 	// Generate the argument list for the assembler.
 	bassigncstr(cmdargs, path_asm->filename[0]);
@@ -150,11 +156,21 @@ int main(int argc, char* argv[])
 
 		// Restore TOOLCHAIN_MODULES.
 		if (mod_path == NULL)
+		{
+#ifdef WIN32
+			SetEnvironmentVariable("TOOLCHAIN_MODULES", NULL);
+#else
 			unsetenv("TOOLCHAIN_MODULES");
+#endif
+		}
 		else
 		{
 			bassigncstr(cmdargs, mod_path);
+#ifdef WIN32
+			SetEnvironmentVariable("TOOLCHAIN_MODULES", temp = bstr2cstr(cmdargs, '0'));
+#else
 			setenv("TOOLCHAIN_MODULES", temp = bstr2cstr(cmdargs, '0'), 1);
+#endif
 			bcstrfree(temp);
 		}
 
@@ -174,11 +190,21 @@ int main(int argc, char* argv[])
 
 	// Restore TOOLCHAIN_MODULES.
 	if (mod_path == NULL)
+	{
+#ifdef WIN32
+		SetEnvironmentVariable("TOOLCHAIN_MODULES", NULL);
+#else
 		unsetenv("TOOLCHAIN_MODULES");
+#endif
+	}
 	else
 	{
 		bassigncstr(cmdargs, mod_path);
+#ifdef WIN32
+		SetEnvironmentVariable("TOOLCHAIN_MODULES", temp = bstr2cstr(cmdargs, '0'));
+#else
 		setenv("TOOLCHAIN_MODULES", temp = bstr2cstr(cmdargs, '0'), 1);
+#endif
 		bcstrfree(temp);
 	}
 
