@@ -32,7 +32,6 @@ ipch/*
 *.idb
 *.pdb
 *.lastbuildstate
-*.cmake
 *.check_cache
 *.bin
 *parser.output
