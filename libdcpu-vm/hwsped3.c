@@ -13,9 +13,9 @@
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <GL/GL.h>
-#include <GL/GLU.h>
+#include <windows.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #endif
 #include <GL/glfw3.h>
 #include <stdio.h>
