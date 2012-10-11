@@ -6,7 +6,7 @@ include_directories(${libdcpu_SOURCE_DIR})
 target_link_libraries(embedfont libdcpu)
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/font.c
-	COMMAND embedfont ${CMAKE_CURRENT_BINARY_DIR}/font.c ${CMAKE_CURRENT_SOURCE_DIR}/font.png
+	COMMAND  ${CMAKE_CURRENT_BINARY_DIR}/embedfont${CMAKE_EXECUTABLE_SUFFIX} ${CMAKE_CURRENT_BINARY_DIR}/font.c ${CMAKE_CURRENT_SOURCE_DIR}/font.png
 	DEPENDS font.png embedfont)
 
 find_package(OpenGL REQUIRED)
