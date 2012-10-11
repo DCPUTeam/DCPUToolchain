@@ -4,6 +4,14 @@ project(stdlib-c)
 # Define the working directory for tools.
 set(KERNEL_SRC ${toolchain_SOURCE_DIR}/stdlib-c/src)
 
+function(calculate_tool_path tool variable)
+    if(MINGW)
+        set(${variable} ${${tool}_BINARY_DIR}/${tool}${CMAKE_EXECUTABLE_SUFFIX} PARENT_SCOPE)
+    else()
+        set(${variable} ${tool} PARENT_SCOPE)
+    endif()
+endfunction()
+
 # Define a general function that allows us to
 # define tools and their handling of files.
 function(define_dcpu_tool tool toolargs verb files runasm outvar)
@@ -24,15 +32,17 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
         endforeach(e ${ARGN})
         if(${extension_matches} STREQUAL "true")
             if(${runasm} STREQUAL "true")
+                calculate_tool_path(${tool} main_path)
+                calculate_tool_path(dtasm asm_path)
                 add_custom_command(
                     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa
-                    COMMAND ${${tool}_BINARY_DIR}/${tool}${CMAKE_EXECUTABLE_SUFFIX}
+                    COMMAND ${main_path}
                         ARGS ${toolargs} -I "${CMAKE_CURRENT_SOURCE_DIR}/include" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
                 add_custom_command(
                     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
-                    COMMAND ${dtasm_BINARY_DIR}/dtasm${CMAKE_EXECUTABLE_SUFFIX}
+                    COMMAND ${asm_path}
                         ARGS -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
                     DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
                     COMMENT "Assembling ${fpth}/${fbse}.oa with DCPU-Toolchain...")
@@ -43,9 +53,10 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
                 endif("${tout}" STREQUAL "")
                 set(${outvar} "${${outvar}} ${tout}" PARENT_SCOPE)
             else(${runasm} STREQUAL "true")
+                calculate_tool_path(${tool} main_path)
                 add_custom_command(
                     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
-                    COMMAND ${${tool}_BINARY_DIR}/${tool}${CMAKE_EXECUTABLE_SUFFIX}
+                    COMMAND ${main_path}
                         ARGS ${toolargs} -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     DEPENDS ${tool} "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
@@ -71,9 +82,10 @@ function(add_dcpu_image target)
     # Define the linker.
     string(STRIP "${tasmoutputs}" tasmoutputs)
     string(STRIP "${tcoutputs}" tcoutputs)
+    calculate_tool_path(dtld main_path)
     add_custom_command(
         OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/stdlib.dlib16"
-        COMMAND ${dtld_BINARY_DIR}/dtld${CMAKE_EXECUTABLE_SUFFIX}
+        COMMAND ${main_path}
         ARGS -s "${CMAKE_CURRENT_BINARY_DIR}/stdlib.dsym16" -O3 --symbol-extension="os" --keep-outputs -l static -o "${CMAKE_CURRENT_BINARY_DIR}/stdlib.dlib16" ${tasmoutputs} ${tcoutputs}
         DEPENDS dtld ${tasmoutputs} ${tcoutputs}
         COMMENT "Linking stdlib.dlib16 as static library with DCPU-Toolchain...")
