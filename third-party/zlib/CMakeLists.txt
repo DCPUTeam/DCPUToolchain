@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(z)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error -Wno-implicit-function-declaration")
+if(NOT MSVC)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error -Wno-implicit-function-declaration")
+endif()
 add_library(z STATIC
     adler32.c
     compress.c
