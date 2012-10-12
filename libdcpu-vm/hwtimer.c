@@ -13,6 +13,8 @@
 
 **/
 
+#define PRIVATE_VM_ACCESS
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -53,7 +55,7 @@ void vm_hw_timer_interrupt(vm_t* vm, void* ud)
 			{
 				if (vm->registers[REG_B] > 60) break;
 				hw->clock_target = (DCPU_TICKS_KHZ * 1000 * vm->registers[REG_B]) / 60;
-				vm_hook_fire_hardware_change(hw->vm, hw->hw_id, hw);
+				vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
 			}
 
 			break;
@@ -65,7 +67,7 @@ void vm_hw_timer_interrupt(vm_t* vm, void* ud)
 
 		case TIMER_SET_INTERRUPT:
 			hw->message = vm->registers[REG_B];
-			vm_hook_fire_hardware_change(hw->vm, hw->hw_id, hw);
+			vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
 			break;
 	}
 }
@@ -89,7 +91,7 @@ void vm_hw_timer_init(vm_t* vm)
 	hw->hook_id = vm_hook_register(vm, &vm_hw_timer_cycle, HOOK_ON_PRE_CYCLE, hw);
 	hw->hw_id = vm_hw_register(vm, hw->device);
 
-	vm_hook_fire_hardware_change(hw->vm, hw->hw_id, hw);
+	vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
 }	
 
 void vm_hw_timer_free(void* ud)

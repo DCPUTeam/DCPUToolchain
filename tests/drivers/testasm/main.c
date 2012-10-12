@@ -19,6 +19,9 @@
 #include <version.h>
 #include <debug.h>
 #include <osutil.h>
+#ifndef WIN32
+#include <unistd.h>
+#endif
 
 int main(int argc, char* argv[])
 {

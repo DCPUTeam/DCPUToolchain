@@ -30,27 +30,18 @@ void* vm_hook_userdata[HOOK_MAX];
 
 bool vm_hook_initialized = false;
 
-void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode)
+void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode, void* ud)
 {
 	uint16_t i;
 
 	for (i = 0; i < HOOK_MAX; i += 1)
 		if (vm_hook_list[i] != NULL && vm_hook_mode[i] == mode)
-			vm_hook_list[i](vm, pos, vm_hook_userdata[i]);
+			vm_hook_list[i](vm, pos, ud == NULL ? vm_hook_userdata[i] : ud);
 }
-
-void vm_hook_fire_hardware_change(vm_t* vm, uint16_t id, void* hw) 
-{
-	uint16_t i;
-	for(i = 0; i < HOOK_MAX; i += 1)
-		if(vm_hook_list[i] != NULL && vm_hook_mode[i] == HOOK_ON_HARDWARE_CHANGE)
-			vm_hook_list[i](vm, id, hw);
-}
-
 
 void vm_hook_break(vm_t* vm)
 {
-	vm_hook_fire(vm, 0, HOOK_ON_BREAK);
+	vm_hook_fire(vm, 0, HOOK_ON_BREAK, NULL);
 }
 
 void vm_hook_initialize(void)

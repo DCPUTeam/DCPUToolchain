@@ -4,6 +4,9 @@ project(libdcpu-vm-dbg)
 bison_target(libdcpu-vm-dbg-parser parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c COMPILE_FLAGS "-d -y")
 flex_target(libdcpu-vm-dbg-lexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c COMPILE_FLAGS "--header-file=lexer.h")
 add_flex_bison_dependency(libdcpu-vm-dbg-lexer libdcpu-vm-dbg-parser)
+if(NOT MSVC)
+    set_source_files_properties(${FLEX_libdcpu-vm-dbg-lexer_OUTPUTS} ${BISON_libdcpu-vm-dbg-parser_OUTPUTS} PROPERTIES COMPILE_FLAGS -Wno-implicit-function-declaration)
+endif()
 add_library(libdcpu-vm-dbg STATIC
     backtrace.c
     breakpoint.c

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(lua)
 
-if(CMAKE_COMPILER_IS_GNUCC)
+if(UNIX)
     set(ADDITIONAL_LIBRARIES m)
 else()
     set(ADDITIONAL_LIBRARIES "")

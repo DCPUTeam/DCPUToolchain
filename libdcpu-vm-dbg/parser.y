@@ -420,8 +420,6 @@ help_command:
 		
 %%
 
-#include "lexer.h"
-
 void yyerror(void* scanner, const char *str)
 {
     fprintf(stderr,"Unable to parse command: %s\n", str);

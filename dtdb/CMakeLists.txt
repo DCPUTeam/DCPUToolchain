@@ -16,10 +16,11 @@ include_directories(
     ${simclist_SOURCE_DIR}
     ${bstring_SOURCE_DIR}
     ${lua_SOURCE_DIR}
+    ${libdcpu-vm-dbg_BINARY_DIR}
     ${libdcpu-pp-expr_SOURCE_DIR}
     ${libdcpu-ci-dbgfmt_SOURCE_DIR}
     ${libdcpu-vm-dbg_SOURCE_DIR}
-    ${libdcpu-vm-dbg_BINARY_DIR}
+    #${libdcpu-vm-dbg_BINARY_DIR}
     ${libdcpu-vm_SOURCE_DIR}
     ${libdcpu_SOURCE_DIR}
     ${FLEX_UNISTD_INCLUDE}

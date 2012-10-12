@@ -38,6 +38,7 @@
 #include <version.h>
 #include <debug.h>
 #include "sdp.h"
+#include "osutil.h"
 
 #define MAX_ARGUMENTS 10
 #define MAX_ARGUMENT_LENGTH 50

@@ -61,6 +61,7 @@ uint16_t vm_hw_lem1802_mem_get_font(struct lem1802_hardware* hw);
 void vm_hw_lem1802_mem_load_default_font();
 void vm_hw_lem1802_mem_put_char_to_screen(struct lem1802_hardware* hw, uint16_t val, unsigned int screenX, unsigned int screenY);
 uint32_t vm_hw_lem1802_mem_get_font_default_representation(uint16_t idx);
+void vm_hw_lem1802_mem_draw_border(struct lem1802_hardware* hw);
 
 void vm_hw_lem1802_mem_set_screen(struct lem1802_hardware* hw, uint16_t pos);
 uint16_t vm_hw_lem1802_mem_get_screen(struct lem1802_hardware* hw);
