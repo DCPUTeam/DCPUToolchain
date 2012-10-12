@@ -118,6 +118,7 @@ add_subdirectory(dtimg)
 add_subdirectory(dtlua)
 add_subdirectory(dtmm)
 add_subdirectory(dtdb)
+add_subdirectory(dtdb-gui)
 add_subdirectory(dtemu)
 
 # Add documentation.

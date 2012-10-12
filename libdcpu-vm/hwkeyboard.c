@@ -40,6 +40,7 @@ void vm_hw_keyboard_append_to_buffer(struct keyboard_hardware* hw, int index)
 
 void vm_hw_keyboard_handle_char(GLFWwindow w, int c)
 {
+    printf("keyboard handle\n");
 	if(c > 0x20 || c < 0x7f)
 		vm_hw_keyboard_append_to_buffer(g_hw, c);
 }
