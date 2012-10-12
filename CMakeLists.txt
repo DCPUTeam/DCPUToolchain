@@ -76,7 +76,13 @@ message("  >> bison is at: ${BISON_EXECUTABLE}")
 message("   (must be Cygwin versions on Windows)")
 
 # Speed up build with cotire.
-include(cotire)
+if(MSVC)
+    function(cotire proj)
+        message("Cotire disabled under MSVC for ${proj}.")
+    endfunction()
+else()
+    include(cotire)
+endif()
 
 # Set GLFW options.
 set(GLFW_BUILD_EXAMPLES OFF CACHE INTERNAL "" FORCE)
