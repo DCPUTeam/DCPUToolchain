@@ -32,4 +32,4 @@ target_link_libraries(dtemu
     ${GLFW_LIBRARIES}
     ${OPENGL_LIBRARIES}
 )
-
+cotire(dtemu)

@@ -9,3 +9,4 @@ add_library(bstring STATIC
     bstrlib.c
 )
 set_property(TARGET bstring PROPERTY FOLDER "third-party")
+cotire(bstring)

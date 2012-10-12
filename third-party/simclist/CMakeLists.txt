@@ -7,3 +7,4 @@ add_library(simclist STATIC
 )
 add_definitions("-DSIMCLIST_NO_DUMPRESTORE")
 set_property(TARGET simclist PROPERTY FOLDER "third-party")
+cotire(simclist)

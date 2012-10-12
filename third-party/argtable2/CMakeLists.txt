@@ -17,3 +17,4 @@ add_library(argtable2 STATIC
 )
 add_definitions("-DSTDC_HEADERS -DHAVE_STDLIB_H -DHAVE_STRING_H")
 set_property(TARGET argtable2 PROPERTY FOLDER "third-party")
+cotire(argtable2)

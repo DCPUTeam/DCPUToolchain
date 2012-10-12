@@ -35,11 +35,10 @@ if(NOT DEFINED M4_EXECUTABLE)
 endif()
 
 # Set compiler options.
-get_filename_component(CMAKE_C_COMPILER_BASENAME ${CMAKE_C_COMPILER} NAME_WE)
 set(OUTPUT_EXT "")
 if(MSVC)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX /W3 /wd4273 /wd4065 /wd4996 /wd4005 /D_CRT_SECURE_NO_WARNINGS /DSIMCLIST_NO_DUMPRESTORE")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /W3 /wd4273 /wd4065 /wd4996 /wd4005 /D_CRT_SECURE_NO_WARNINGS /DSIMCLIST_NO_DUMPRESTORE")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3 /wd4273 /wd4065 /wd4996 /wd4005 /D_CRT_SECURE_NO_WARNINGS /DSIMCLIST_NO_DUMPRESTORE")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4273 /wd4065 /wd4996 /wd4005 /D_CRT_SECURE_NO_WARNINGS /DSIMCLIST_NO_DUMPRESTORE")
     # This is to deal with a bug introduced in the MSVC linker when both VS2010 and VS2012 are
     # installed on the same machine.
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO")
@@ -52,13 +51,14 @@ elseif(MINGW)
     # A major reason for this is because the -Werror flag has been removed.
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wdeclaration-after-statement -Wno-int-to-pointer-cast -D SIMCLIST_NO_DUMPRESTORE")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D SIMCLIST_NO_DUMPRESTORE")
-elseif(${CMAKE_C_COMPILER_BASENAME} STREQUAL "clang")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu89 -Werror -Wdeclaration-after-statement -Wno-unused-value -Wno-pointer-sign -Wno-int-to-pointer-cast -Wno-switch -Qunused-arguments")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-dangling-else")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    # Configuration for Clang.
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-pointer-sign -Wno-builtin-requires-header")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 else(MSVC)
     # Assume GNU since there doesn't appear to be
     # a better way of detecting this.
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wdeclaration-after-statement -Wno-int-to-pointer-cast")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wdeclaration-after-statement -Wno-int-to-pointer-cast -Wno-unused-value")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-dangling-else")
 endif()
 
@@ -74,6 +74,15 @@ message("  >> flex is at: ${FLEX_EXECUTABLE}")
 message("  >> flex unistd is at: ${FLEX_UNISTD_INCLUDE}")
 message("  >> bison is at: ${BISON_EXECUTABLE}")
 message("   (must be Cygwin versions on Windows)")
+
+# Speed up build with cotire.
+if(MSVC)
+    function(cotire proj)
+        message("Cotire disabled under MSVC for ${proj}.")
+    endfunction()
+else()
+    include(cotire)
+endif()
 
 # Set GLFW options.
 set(GLFW_BUILD_EXAMPLES OFF CACHE INTERNAL "" FORCE)

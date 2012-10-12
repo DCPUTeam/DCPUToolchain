@@ -56,7 +56,6 @@ unsigned char * font_image = NULL;
 ///
 uint16_t font_default[HW_LEM1802_FONT_MEMSIZE];
 
-
 ///
 /// Initializes the internal LEM1802 memory.
 ///

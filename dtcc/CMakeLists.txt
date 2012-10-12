@@ -21,4 +21,4 @@ target_link_libraries(dtcc
     libdcpu-ci-lang-c
     libdcpu-ci-lang
 )
-
+cotire(dtcc)

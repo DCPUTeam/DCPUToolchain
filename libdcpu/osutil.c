@@ -21,7 +21,11 @@
 #include <windows.h>
 #else
 #include <libgen.h>
-#include <time.h>
+#include <unistd.h>
+// #include <sys/time.h> is correct for Linux.  If #include <time.h> is
+// required for Mac, please add the appropriate #ifdef APPLE instead of
+// changing this include.
+#include <sys/time.h>
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -185,7 +189,7 @@ bstring osutil_getmodulepath()
 		tmp = bfromcstr(env);
 
 	// Check if path exists.
-	result = stat(tmp->data, &buffer);
+	result = stat((const char*)tmp->data, &buffer);
 	if (result != 0 || (buffer.st_mode & S_IFDIR) == 0)
 	{
 		bdestroy(tmp);

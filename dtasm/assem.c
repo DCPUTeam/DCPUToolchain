@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 #include <bstring.h>
 #include <ppexpr.h>
 #include <simclist.h>
@@ -233,6 +234,10 @@ struct process_parameter_results process_parameter(struct ast_node_parameter* pa
 
 		case type_raw:
 			result.v_raw = param->raw;
+            break;
+
+        default:
+            assert(false);
 	}
 
 	return result;
@@ -530,6 +535,9 @@ void process_line(struct ast_node_line* line)
 			printd(LEVEL_VERBOSE, ":%s\n", line->label->name);
 			aout_emit(aout_create_label(line->label->name));
 			break;
+
+        default:
+            assert(false);
 	}
 
 	// If we can associate debugging symbols with this instruction...

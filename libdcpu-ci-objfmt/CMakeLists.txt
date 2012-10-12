@@ -13,3 +13,4 @@ include_directories(
     ${bstring_SOURCE_DIR}
     ${libdcpu_SOURCE_DIR}
 )
+cotire(libdcpu-ci-objfmt)

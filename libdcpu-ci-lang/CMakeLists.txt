@@ -19,4 +19,4 @@ add_library(libdcpu-ci-lang STATIC
     TypePosition.cpp
     TypePosition.h
 )
-
+cotire(libdcpu-ci-lang)

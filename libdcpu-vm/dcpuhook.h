@@ -27,8 +27,7 @@
 #define HOOK_ON_HARDWARE_CHANGE 7 
 
 #ifdef PRIVATE_VM_ACCESS
-void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode);
-void vm_hook_fire_hardware_change(vm_t* vm, uint16_t id, void* hw);
+void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode, void* ud);
 #endif
 
 typedef void (*vm_hook)(vm_t*, uint16_t pos, void* ud);

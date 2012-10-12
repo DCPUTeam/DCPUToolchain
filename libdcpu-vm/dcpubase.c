@@ -70,7 +70,7 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
 		printd(LEVEL_DEBUG, "turning on interrupt queue\n");
 		vm->queue_interrupts = true;
 		printd(LEVEL_DEBUG, "executing interrupt %u right now\n", msgid);
-		vm_hook_fire(vm, save, HOOK_ON_INTERRUPT);
+		vm_hook_fire(vm, save, HOOK_ON_INTERRUPT, NULL);
 	}
 }
 
@@ -265,7 +265,7 @@ void vm_cycle(vm_t* vm)
 			10000 : t.tv_usec - usec > 10000)
 	{
 		usec = t.tv_usec;
-		vm_hook_fire(vm, 0, HOOK_ON_60HZ);
+		vm_hook_fire(vm, 0, HOOK_ON_60HZ, NULL);
 	}
 
 	if (!vm->queue_interrupts && vm->irq_count > 0)
@@ -278,7 +278,7 @@ void vm_cycle(vm_t* vm)
 		vm_interrupt(vm, a);
 	}
 
-	vm_hook_fire(vm, 0, HOOK_ON_PRE_CYCLE);
+	vm_hook_fire(vm, 0, HOOK_ON_PRE_CYCLE, NULL);
 	if (vm->halted) return; // skip if the precycle hook halted the virtual machine
 
 	instruction = vm_consume_word(vm);
@@ -489,5 +489,5 @@ void vm_cycle(vm_t* vm)
 	if (vm->dump != NULL)
 		vm_dump_state(vm);
 
-	vm_hook_fire(vm, 0, HOOK_ON_POST_CYCLE);
+	vm_hook_fire(vm, 0, HOOK_ON_POST_CYCLE, NULL);
 }

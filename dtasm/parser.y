@@ -39,7 +39,6 @@ extern bstring	yyfilename;
 void yyerror(const char *str)
 {
 	assert(yyfilename != NULL);
-	//printd(LEVEL_ERROR, "error: %s\n", str);
 	printd(LEVEL_ERROR, "error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
 }
 
@@ -82,7 +81,7 @@ extern bstring	yyufilename;
 %token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT
 %token <token> ADD SUBTRACT MULTIPLY DIVIDE MODULUS EQUALS NOT_EQUALS LESS_THAN LESS_EQUALS GREATER_THAN GREATER_EQUALS
 %token <token> PAREN_OPEN PAREN_CLOSE BITWISE_AND BITWISE_BOR BITWISE_XOR BITWISE_NOT BOOLEAN_OR BOOLEAN_AND BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
-%token <token> KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL SECTION OUTPUT SYMBOL
+%token <token> LEX_PICK KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL SECTION OUTPUT SYMBOL
 %token <word> WORD REGISTER
 %token <string> STRING CHARACTER
 %token <number> ADDRESS
@@ -488,7 +487,7 @@ bracketed_register:
 		};
 
 address:
-		address expr /* PICK expr */
+		LEX_PICK expr /* PICK expr */
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
 			$$->value = $2;

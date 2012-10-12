@@ -43,7 +43,7 @@
 
 #define VM_HOOK_FIRE(var) \
 	if (var >= (uint16_t*)&vm->ram && var < (uint16_t*)&vm->ram + 0x10000) \
-		vm_hook_fire(vm, (uint16_t)(var - (uint16_t*)&vm->ram), HOOK_ON_WRITE);
+		vm_hook_fire(vm, (uint16_t)(var - (uint16_t*)&vm->ram), HOOK_ON_WRITE, NULL);
 
 #define OP_NUM_CYCLES(count) vm->sleep_cycles += (count - 1);
 

@@ -68,3 +68,4 @@ include_directories(
 target_link_libraries(libdcpu-vm
     libdcpu
 )
+cotire(libdcpu-vm)

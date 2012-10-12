@@ -14,6 +14,8 @@
 
 **/
 
+#define PRIVATE_VM_ACCESS
+
 #include <stdio.h>
 #include <string.h>
 #include <bstring.h>
@@ -103,8 +105,8 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 		case LEM1802_MEM_MAP_SCREEN:
 			printd(LEVEL_DEBUG, "LEM1802 SCREEN MAPPED.\n");
 			vm_hw_lem1802_mem_set_screen(hw, val_b);
-			vm_hook_fire_hardware_change(hw->vm, hw->hw_id, hw);
-			hw->screen_was_updated = 1;
+			vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
+            hw->screen_was_updated = 1;
 			break;
 
 		case LEM1802_MEM_MAP_FONT:
@@ -332,8 +334,7 @@ void vm_hw_lem1802_init(vm_t* vm)
 	glfwSetKeyCallback(&vm_hw_keyboard_handle_key);
 	glfwSetCharCallback(&vm_hw_keyboard_handle_char);
 
-
-	vm_hook_fire_hardware_change(hw->vm, hw->hw_id, hw);
+	vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
 }
 
 void vm_hw_lem1802_free(void *ud)

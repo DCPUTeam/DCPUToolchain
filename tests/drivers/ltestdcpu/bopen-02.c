@@ -13,6 +13,9 @@
 
 **/
 
+#ifndef WIN32
+#include <unistd.h>
+#endif
 #include <bfile.h>
 #include "tests.h"
 

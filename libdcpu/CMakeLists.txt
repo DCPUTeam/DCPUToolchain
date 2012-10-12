@@ -25,3 +25,4 @@ add_library(libdcpu STATIC
     rparse.c
     version.c
 )
+cotire(libdcpu)
