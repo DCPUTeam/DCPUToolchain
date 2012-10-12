@@ -116,3 +116,4 @@ include_directories(
     ${libdcpu-ci-lang_SOURCE_DIR}
     ${FLEX_UNISTD_INCLUDE}
 )
+cotire(libdcpu-ci-lang-c)

@@ -34,3 +34,4 @@ add_library(z STATIC
     zutil.h
 )
 set_property(TARGET z PROPERTY FOLDER "third-party")
+cotire(z)

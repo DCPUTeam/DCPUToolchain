@@ -19,4 +19,4 @@ target_link_libraries(dtmm
     ${curl_LIBRARY}
     libdcpu
 )
-
+cotire(dtmm)

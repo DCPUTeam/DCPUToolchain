@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.8.5)
 project(dtdb)
 
 find_package(OpenGL REQUIRED)
+if(NOT MSVC)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-implicit-function-declaration")
+endif()
 add_executable(dtdb
     main.c
     packets.c
@@ -20,7 +23,6 @@ include_directories(
     ${libdcpu-pp-expr_SOURCE_DIR}
     ${libdcpu-ci-dbgfmt_SOURCE_DIR}
     ${libdcpu-vm-dbg_SOURCE_DIR}
-    #${libdcpu-vm-dbg_BINARY_DIR}
     ${libdcpu-vm_SOURCE_DIR}
     ${libdcpu_SOURCE_DIR}
     ${FLEX_UNISTD_INCLUDE}
@@ -45,4 +47,4 @@ target_link_libraries(dtdb
     ${OPENGL_LIBRARIES}
     ${GLFW_LIBRARIES}
 )
-
+cotire(dtdb)

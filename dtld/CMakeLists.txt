@@ -35,3 +35,4 @@ target_link_libraries(dtld
     libdcpu-ci-objfmt
     libdcpu-ci-dbgfmt
 )
+cotire(dtld)

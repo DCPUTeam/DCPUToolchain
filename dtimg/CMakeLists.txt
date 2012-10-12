@@ -19,4 +19,4 @@ target_link_libraries(dtimg
     simclist
     libdcpu
 )
-
+cotire(dtimg)

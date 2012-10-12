@@ -36,3 +36,4 @@ target_link_libraries(libdcpu-pp
     libdcpu
     libdcpu-pp-expr
 )
+cotire(libdcpu-pp)

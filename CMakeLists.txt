@@ -53,7 +53,7 @@ elseif(MINGW)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D SIMCLIST_NO_DUMPRESTORE")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     # Configuration for Clang.
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-pointer-sign")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-pointer-sign -Wno-builtin-requires-header")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 else(MSVC)
     # Assume GNU since there doesn't appear to be
@@ -74,6 +74,9 @@ message("  >> flex is at: ${FLEX_EXECUTABLE}")
 message("  >> flex unistd is at: ${FLEX_UNISTD_INCLUDE}")
 message("  >> bison is at: ${BISON_EXECUTABLE}")
 message("   (must be Cygwin versions on Windows)")
+
+# Speed up build with cotire.
+include(cotire)
 
 # Set GLFW options.
 set(GLFW_BUILD_EXAMPLES OFF CACHE INTERNAL "" FORCE)

@@ -28,3 +28,4 @@ add_library(png STATIC
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${z_SOURCE_DIR})
 add_dependencies(png z)
 set_property(TARGET png PROPERTY FOLDER "third-party")
+cotire(png)

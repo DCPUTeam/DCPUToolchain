@@ -40,3 +40,4 @@ target_link_libraries(libdcpu-vm-dbg
     lua
     ${X11_LIBRARIES}
 )
+cotire(libdcpu-vm-dbg)

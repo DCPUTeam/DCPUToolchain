@@ -65,3 +65,4 @@ add_library(lua STATIC
 
 target_link_libraries(lua ${ADDITIONAL_LIBRARIES})
 set_property(TARGET lua PROPERTY FOLDER "third-party")
+cotire(lua)

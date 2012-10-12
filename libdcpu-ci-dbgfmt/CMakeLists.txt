@@ -10,3 +10,4 @@ include_directories(
     ${libdcpu_SOURCE_DIR}
     ${simclist_SOURCE_DIR}
 )
+cotire(libdcpu-ci-dbgfmt)

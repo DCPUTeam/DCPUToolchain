@@ -16,4 +16,4 @@ target_link_libraries(dtlua
     lua
     libdcpu
 )
-
+cotire(dtlua)
