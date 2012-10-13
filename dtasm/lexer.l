@@ -54,6 +54,7 @@ bstring yyfilename = NULL;
 
 \.[Bb][Oo][Uu][Nn][Dd][Aa][Rr][Yy]		yylval.number = BOUNDARY; return KEYWORD;
 \.[Ee][Xx][Tt][Ee][Nn][Ss][Ii][Oo][Nn]		yylval.number = EXTENSION; return KEYWORD;
+\.[Ss][Ee][Ee][Kk]				yylval.number = SEEK; return KEYWORD;
 \.[Or][Rr][Ii][Gg][Ii][Nn]			yylval.number = ORIGIN; return KEYWORD;
 \.[Oo][Rr][Gg]					yylval.number = ORIGIN; return KEYWORD;
 \.[Ii][Nn][Cc][Bb][Ii][Nn]			yylval.number = INCBIN; return KEYWORD;

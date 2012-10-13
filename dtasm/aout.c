@@ -228,6 +228,23 @@ struct aout_byte* aout_create_metadata_output(char* name)
 	return byte;
 }
 
+struct aout_byte* aout_create_metadata_seek(uint16_t address)
+{
+	struct aout_byte* byte = malloc(sizeof(struct aout_byte));
+	byte->type = AOUT_TYPE_METADATA_SEEK;
+	byte->opcode = address;
+	byte->a = 0;
+	byte->b = 0;
+	byte->next = NULL;
+	byte->prev = NULL;
+	byte->expr = expr_new_number(address);
+	byte->label = NULL;
+	byte->raw_used = false;
+	byte->raw = 0x0;
+	list_init(&byte->symbols);
+	return byte;
+}
+
 struct aout_byte* aout_emit(struct aout_byte* byte)
 {
 	if (start == NULL && end == NULL)
@@ -260,7 +277,7 @@ uint16_t aout_get_label_address(bstring name)
 
 	while (current != NULL)
 	{
-		if (current->type == AOUT_TYPE_METADATA_ORIGIN)
+		if (current->type == AOUT_TYPE_METADATA_ORIGIN || current->type == AOUT_TYPE_METADATA_SEEK)
 		{
 			// Adjust memory address.
 			mem_index = current->opcode;
@@ -332,10 +349,12 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 	out_index = code_offset;
 	while (current_outer != NULL)
 	{
-		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
+		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN || current_outer->type == AOUT_TYPE_METADATA_SEEK)
 		{
 			// Adjust memory address.
 			out_index = current_outer->opcode;
+			if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
+				awarn(WARN_USE_RELOCATION_NOT_ORIGIN, NULL);
 		}
 		else if (current_outer->type == AOUT_TYPE_METADATA_SECTION)
 		{
@@ -400,8 +419,7 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 				// evaluate it using the preprocessor expression engine.
 				if ((relocatable || intermediate) && !shown_expr_warning)
 				{
-					printd(LEVEL_WARNING, "warning: expressions will not be adjusted at link or relocation time.\n");
-					printd(LEVEL_WARNING, "		ensure labels are not used as part of expressions.\n");
+					awarn(WARN_EXPRESSION_NOT_ADJUSTED, NULL);
 					shown_expr_warning = true;
 				}
 				current_outer->raw_used = true;
@@ -508,13 +526,12 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 
 	while (current_outer != NULL)
 	{
-		/*
-		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
+		if (current_outer->type == AOUT_TYPE_METADATA_SEEK)
 		{
-			// Adjust origin.
+			// Adjust seek.
 			fseek(out, true_origin + current_outer->opcode * 2, SEEK_SET);
 		}
-		else*/if (current_outer->type == AOUT_TYPE_METADATA_INCBIN)
+		else if (current_outer->type == AOUT_TYPE_METADATA_INCBIN)
 		{
 			// Include binary file.
 			bname = ppfind_locate(bautofree(bfromcstr(current_outer->label)));
