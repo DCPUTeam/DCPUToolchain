@@ -53,12 +53,15 @@ void vm_hw_unregister(vm_t* vm, uint16_t id)
 
 void vm_hw_interrupt(vm_t* vm, uint16_t index)
 {
-    hw_t device = vm_hw_list[index];
+    if (index < HW_MAX)
+    {
+        hw_t device = vm_hw_list[index];
 
-    if (vm->debug) printd(LEVEL_DEBUG, "\nInterrupting device 0x%04X (0x%08X): %p\n", index, device.id, device.handler);
+        if (vm->debug) printd(LEVEL_DEBUG, "\nInterrupting device 0x%04X (0x%08X): %p\n", index, device.id, device.handler);
 
-    if (device.handler != NULL)
-	device.handler(vm, device.userdata);
+        if (device.handler != NULL)
+        device.handler(vm, device.userdata);
+    }
 }
 
 uint16_t vm_hw_count(vm_t* vm)
