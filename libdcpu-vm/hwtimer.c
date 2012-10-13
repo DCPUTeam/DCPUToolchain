@@ -92,13 +92,8 @@ void vm_hw_timer_init(vm_t* vm)
     hw->hook_id = vm_hook_register(vm, &vm_hw_timer_cycle, HOOK_ON_PRE_CYCLE, hw);
     hw->hw_id = vm_hw_register(vm, hw->device);
 
-<<<<<<< HEAD
-	vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
-}	
-=======
-    vm_hook_fire_hardware_change(hw->vm, hw->hw_id, hw);
+    vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
 }    
->>>>>>> Proper freeing on close of LEM and SPED windows.
 
 void vm_hw_timer_free(void* ud)
 {

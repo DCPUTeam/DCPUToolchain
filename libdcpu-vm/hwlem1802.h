@@ -77,5 +77,6 @@ void vm_hw_lem1802_glfw_resize_handler(GLFWwindow window, int w, int h);
 void vm_hw_lem1802_init_glfw(struct lem1802_hardware* hw);
 void vm_hw_lem1802_glfw_draw(struct lem1802_hardware* hw);
 void vm_hw_lem1802_update_texture(struct lem1802_hardware* hw);
+int vm_hw_lem1802_close(GLFWwindow w);
 
 #endif

@@ -36,7 +36,7 @@
 #include "dcpubase.h"
 #include "dcpuhook.h"
 #include "dcpuops.h"
-#include "GLFWutils.h"
+#include "glfwutils.h"
 
 #define SPED3_SPEED 0.8f
 

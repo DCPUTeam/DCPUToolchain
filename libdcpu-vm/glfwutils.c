@@ -16,7 +16,6 @@
 #include <GL/glfw3.h>
 #include "dcpu.h"
 
-
 int vm_hw_glfw_close_window_callback(GLFWwindow w)
 {
     void* ud;
@@ -33,6 +32,7 @@ int vm_hw_glfw_close_window_callback(GLFWwindow w)
     {
         vm_hw_sped3_close(w);
     }
+    return 0;
 }
 
 void vm_hw_glfw_resize_window_callback(GLFWwindow window, int w, int h)

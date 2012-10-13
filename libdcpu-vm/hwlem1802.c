@@ -30,7 +30,7 @@
 #include "hwioascii.h"
 #include "dcpuhook.h"
 #include "dcpubase.h"
-#include "GLFWutils.h"
+#include "glfwutils.h"
 
 GLint next_texture_id = 13;
 

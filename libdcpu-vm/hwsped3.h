@@ -15,6 +15,7 @@
 #ifndef __DCPUHWSPED3_H
 #define __DCPUHWSPED3_H
 
+#include <GL/glfw3.h>
 #include "dcpu.h"
 
 #define SPED3_ID	    0x42babf3c
@@ -62,5 +63,6 @@ struct sped3_hardware
 void vm_hw_sped3_init(vm_t* vm);
 void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud);
 void vm_hw_sped3_free(void* ud);
+int vm_hw_sped3_close(GLFWwindow w);
 
 #endif
