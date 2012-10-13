@@ -30,6 +30,7 @@
 #include "hwioascii.h"
 #include "dcpuhook.h"
 #include "dcpubase.h"
+#include "GLFWutils.h"
 
 GLint next_texture_id = 13;
 
@@ -50,7 +51,7 @@ void vm_hw_lem1802_write(vm_t* vm, uint16_t pos, void* ud)
     // Are we updating a font character?
     else if (location_font != HW_LEM1802_DEFAULT_FONT_LOC && pos >= location_font && pos < location_font + 0x100)
     {
-	//printf("updatefont at pos %x\n", location_font);
+    //printf("updatefont at pos %x\n", location_font);
 	hw->screen_was_updated = 1;
     }
     else if (location_palette != HW_LEM1802_DEFAULT_PALETTE_LOC && pos >= location_palette && pos < location_palette + 0x10)
@@ -71,7 +72,13 @@ void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos, void* ud)
 {
     struct lem1802_hardware* hw = (struct lem1802_hardware*)ud;
 
-
+    if (hw->window_closed)
+    {
+	//vm_hw_lem1802_free(ud);
+	vm->exit = 1;
+	return;
+    }
+    
     // blink every 60 frames (i.e. at 1 Hz)
     if (hw->blink_tick < 60)
     {
@@ -142,10 +149,10 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 	    break;
 
 	case LEM1802_MEM_DUMP_PALETTE:
-	    printd(LEVEL_DEBUG, "LEM1802 DUMP PALETTE.\n");
-	    vm->sleep_cycles += 16;
-	    vm_hw_lem1802_mem_dump_default_palette(vm, val_b);
-	    break;
+		printd(LEVEL_DEBUG, "LEM1802 DUMP PALETTE.\n");
+		vm->sleep_cycles += 16;
+		vm_hw_lem1802_mem_dump_default_palette(vm, val_b);
+		break;
     }
 }
 
@@ -183,9 +190,10 @@ void vm_hw_lem1802_glfw_resize_handler(GLFWwindow window, int w, int h)
 
 int vm_hw_lem1802_close(GLFWwindow w)
 {
+    struct lem1802_hardware* hw;
     void* ud = glfwGetWindowUserPointer(w);
-    printf("lem1802 close\n");
-    vm_hw_lem1802_free(ud);
+    hw = (struct lem1802_hardware*)ud;
+    hw->window_closed = 1;
     return 0;
 }
 
@@ -204,8 +212,8 @@ void vm_hw_lem1802_init_glfw(struct lem1802_hardware* hw)
     
     glfwSetWindowUserPointer(hw->window, hw);
     glfwMakeContextCurrent(hw->window);
-    glfwSetWindowSizeCallback(&vm_hw_lem1802_glfw_resize_handler);
-    glfwSetWindowCloseCallback(&vm_hw_lem1802_close);
+    glfwSetWindowSizeCallback(&vm_hw_glfw_resize_window_callback);
+    glfwSetWindowCloseCallback(&vm_hw_glfw_close_window_callback);
     glfwSwapInterval(0);
     
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
@@ -241,17 +249,17 @@ void vm_hw_lem1802_glfw_draw(struct lem1802_hardware* hw)
     glBindTexture (GL_TEXTURE_2D, hw->texture_id); /* bind to our texture, has id of 13 */
 
     glBegin(GL_QUADS);
-	glTexCoord2f(0.0f,0.0f); /* lower left corner of image */
-	glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner
+    glTexCoord2f(0.0f,0.0f); /* lower left corner of image */
+    glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner
     
-	glTexCoord2f(0.0f, 1.0f); /* upper left corner of image */
-	glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
+    glTexCoord2f(0.0f, 1.0f); /* upper left corner of image */
+    glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
     
-	glTexCoord2f(1.0f, 1.0f); /* upper right corner of image */
-	glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner
+    glTexCoord2f(1.0f, 1.0f); /* upper right corner of image */
+    glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner
     
-	glTexCoord2f(1.0f, 0.0f); /* lower right corner of image */
-	glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner
+    glTexCoord2f(1.0f, 0.0f); /* lower right corner of image */
+    glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner
 
     glEnd();
 
@@ -284,7 +292,7 @@ void vm_hw_lem1802_update_texture(struct lem1802_hardware* hw)
 	    hw->screen_was_updated = 0;
 	    hw->texture_has_changed = 1;
 	}
-	
+    
 	// update border
 	if (hw->border_was_updated)
 	{
@@ -317,12 +325,14 @@ void vm_hw_lem1802_init(vm_t* vm)
     hw->border_was_updated = 1;
     hw->screen_was_updated = 1;
     hw->texture_has_changed = 1;
+    hw->window_closed = 0;
 
     // Set up the LEM1802 hardware information.
-    hw->device.id = 0x7349F615;
-    hw->device.version = 0x1802;
-    hw->device.manufacturer = 0x1C6C8B36;
+    hw->device.id = LEM1802_ID;
+    hw->device.version = LEM1802_VERSION;
+    hw->device.manufacturer = LEM1802_MANUFACTURER;
     hw->device.handler = &vm_hw_lem1802_interrupt;
+    hw->device.free_handler = &vm_hw_lem1802_free;
     
     // set userdata to lem1820 struct
     hw->device.userdata = hw;
@@ -359,8 +369,6 @@ void vm_hw_lem1802_free(void *ud)
     vm_hw_unregister(hw->vm, hw->hw_id);
     
     glfwDestroyWindow(hw->window);
-    
     free(hw->glfw_texture);
-    
     free(hw);
 }
