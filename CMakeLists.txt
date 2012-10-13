@@ -59,7 +59,7 @@ else(MSVC)
     # Assume GNU since there doesn't appear to be
     # a better way of detecting this.
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wdeclaration-after-statement -Wno-int-to-pointer-cast -Wno-unused-value")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-dangling-else")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 endif()
 
 # Show configuration.
