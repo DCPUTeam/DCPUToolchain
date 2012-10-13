@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu-pp-expr)
 
 bison_target(libdcpu-pp-expr-parser parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c COMPILE_FLAGS "-d -y")
-flex_target(libdcpu-pp-expr-lexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c COMPILE_FLAGS "--header-file=lexer.h")
+flex_target(libdcpu-pp-expr-lexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c COMPILE_FLAGS \"--header-file=${CMAKE_CURRENT_BINARY_DIR}/lexer.h\")
 add_flex_bison_dependency(libdcpu-pp-expr-lexer libdcpu-pp-expr-parser)
 if(NOT MSVC)
     set_source_files_properties(${FLEX_libdcpu-pp-expr-lexer_OUTPUTS} ${BISON_libdcpu-pp-expr-parser_OUTPUTS} PROPERTIES COMPILE_FLAGS -Wno-implicit-function-declaration)
