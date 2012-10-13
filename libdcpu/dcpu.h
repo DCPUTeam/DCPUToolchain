@@ -166,6 +166,9 @@ typedef struct
     uint8_t exit;	    ///< Whether the virtual machine is quitting.
     uint8_t skip;	     ///< Whether the virtual machine will skip the next instruction.
     uint8_t debug;	      ///< Whether the virtual machine will output each instruction to standard output.
+    bool on_fire;       // Is the DCPU on fire?
+    int fire_cycles;
+    int fire_cycles_target;
     FILE* dump;		   ///< An open file descriptor where instruction execution information should be sent, or NULL.
 } vm_t;
 

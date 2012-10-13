@@ -22,6 +22,7 @@
 uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos);
 #endif
 
+void vm_op_fire(vm_t* vm);
 void vm_op_set(vm_t* vm, uint16_t b, uint16_t a);
 void vm_op_add(vm_t* vm, uint16_t b, uint16_t a);
 void vm_op_sub(vm_t* vm, uint16_t b, uint16_t a);

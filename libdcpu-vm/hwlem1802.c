@@ -38,7 +38,7 @@ void vm_hw_lem1802_write(vm_t* vm, uint16_t pos, void* ud)
 {
     uint16_t location_screen, location_font, location_palette;
     struct lem1802_hardware* hw = (struct lem1802_hardware*)ud;
-    
+
     location_screen = vm_hw_lem1802_mem_get_screen(hw);
     location_font = vm_hw_lem1802_mem_get_font(hw);
     location_palette = hw->palette_location;
@@ -112,7 +112,7 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
     switch (requested_action)
     {
 	case LEM1802_MEM_MAP_SCREEN:
-	    printd(LEVEL_DEBUG, "LEM1802 SCREEN MAPPED.\n");
+	    printd(LEVEL_DEBUG, "LEM1802 SCREEN MAPPED: %u.\n", val_b);
 	    vm_hw_lem1802_mem_set_screen(hw, val_b);
 	    vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
 	    hw->screen_was_updated = 1;
