@@ -394,10 +394,10 @@ instruction:
 		} ;
 
 parameters:
-		/*{
+		{
 			$$ = malloc(sizeof(struct ast_node_parameters));
 			$$->last = NULL;
-		} |*/
+		} |
 		parameter
 		{
 			$$ = malloc(sizeof(struct ast_node_parameters));
