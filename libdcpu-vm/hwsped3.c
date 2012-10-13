@@ -2,11 +2,11 @@
 
     File:   hwsped3.c
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-vm
+    Project:	DCPU-16 Tools
+    Component:	LibDCPU-vm
 
-    Authors:    Jose Manuel Diez
-        David Herberth
+    Authors:	Jose Manuel Diez
+	David Herberth
 
     Description: Implements the SPED-3 specification.
 **/
@@ -43,9 +43,9 @@
 float compare_degrees(float A, float B)
 {
     if(A > 180 && B < 180)
-        return (360 - A) + B;
+	return (360 - A) + B;
     if(A < 180 && B > 180)
-        return -((360 - B) + A);
+	return -((360 - B) + A);
 
     return B - A;
 }
@@ -54,22 +54,22 @@ void vm_hw_sped3_update_rot(struct sped3_hardware* hw)
 {
     if (hw->rot_current != hw->rot_target)
     {
-        if(abs(hw->rot_target - hw->rot_current) < SPED3_SPEED)
-        {
-            hw->rot_current = hw->rot_target;
-        }
-        else
-        {
-            if(compare_degrees(hw->rot_current, hw->rot_target) <= 0)
-                hw->rot_current -= SPED3_SPEED;
-            else
-                hw->rot_current += SPED3_SPEED;
-            
-            while(hw->rot_current < 0)
-                hw->rot_current += 360.f;
-          
-            hw->rot_current = fmod(hw->rot_current, 360);
-        }
+	if(abs(hw->rot_target - hw->rot_current) < SPED3_SPEED)
+	{
+	    hw->rot_current = hw->rot_target;
+	}
+	else
+	{
+	    if(compare_degrees(hw->rot_current, hw->rot_target) <= 0)
+		hw->rot_current -= SPED3_SPEED;
+	    else
+		hw->rot_current += SPED3_SPEED;
+	    
+	    while(hw->rot_current < 0)
+		hw->rot_current += 360.f;
+	  
+	    hw->rot_current = fmod(hw->rot_current, 360);
+	}
     }
     else hw->state = SPED3_STATE_RUNNING;
 }
@@ -79,22 +79,22 @@ void vm_hw_sped3_set_color(struct sped3_hardware* hw, uint8_t cc, uint8_t intens
     float k = 1.f;
 
     if (intensity == 1)
-        k = 0.5f;
+	k = 0.5f;
 
     switch (cc)
     {
-        case 0:
-            glColor3f(0.05f * k, 0.05f * k, 0.05f * k);
-            break;
-        case 1:
-            glColor3f(1.f * k, 0.f, 0.f);
-            break;
-        case 2:
-            glColor3f(0.f, 1.f * k, 0.f);
-            break;
-        case 3:
-            glColor3f(0.f, 0.f, 1.f * k);
-            break;
+	case 0:
+	    glColor3f(0.05f * k, 0.05f * k, 0.05f * k);
+	    break;
+	case 1:
+	    glColor3f(1.f * k, 0.f, 0.f);
+	    break;
+	case 2:
+	    glColor3f(0.f, 1.f * k, 0.f);
+	    break;
+	case 3:
+	    glColor3f(0.f, 0.f, 1.f * k);
+	    break;
     }
 }
 
@@ -111,8 +111,8 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0.f, -4.f, 0.f,
-          0.f, 0.f, 0.f,
-          0.f, 0.f, 1.f);
+	  0.f, 0.f, 0.f,
+	  0.f, 0.f, 1.f);
 
     vm_hw_sped3_update_rot(hw);
 
@@ -124,19 +124,19 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud)
     glBegin(GL_LINE_STRIP);
     for (i = 0; i < MIN(hw->num, 128); i++)
     {
-        firstword  = vm->ram[hw->mem + i * 2];
-        secondword = vm->ram[hw->mem + (i * 2) + 1];
+	firstword  = vm->ram[hw->mem + i * 2];
+	secondword = vm->ram[hw->mem + (i * 2) + 1];
 
-        x = (float)(firstword & 0xff) / 256 * 2 - 1;
-        y = (float)(firstword >> 8) / 256 * 2 - 1;
-        z = (float)(secondword & 0xff) / 256 * 2 - 1;
+	x = (float)(firstword & 0xff) / 256 * 2 - 1;
+	y = (float)(firstword >> 8) / 256 * 2 - 1;
+	z = (float)(secondword & 0xff) / 256 * 2 - 1;
 
-        cc = (secondword >> 8) & 0x3;
-        intensity = secondword >> 11;
+	cc = (secondword >> 8) & 0x3;
+	intensity = secondword >> 11;
 
-        glColor3f(1.f, 1.f, 1.f);
-        vm_hw_sped3_set_color(hw, cc, intensity);
-        glVertex3f(x, y, z);
+	glColor3f(1.f, 1.f, 1.f);
+	vm_hw_sped3_set_color(hw, cc, intensity);
+	glVertex3f(x, y, z);
     }
     glEnd();
 
@@ -151,25 +151,25 @@ void vm_hw_sped3_interrupt(vm_t* vm, void* ud)
 
     switch (vm->registers[REG_A])
     {
-        case SPED3_INTERRUPT_POLL:
-            vm->registers[REG_B] = hw->state;
-            break;
-        case SPED3_INTERRUPT_MAP:
-            hw->mem = vm->registers[REG_X];
-            hw->num = vm->registers[REG_Y];
-            hw->state = SPED3_STATE_RUNNING;
-            break;
-        case SPED3_INTERRUPT_ROTATE:
-            hw->rot_target = vm->registers[REG_X];
-            hw->state = SPED3_STATE_TURNING;
-            break;
+	case SPED3_INTERRUPT_POLL:
+	    vm->registers[REG_B] = hw->state;
+	    break;
+	case SPED3_INTERRUPT_MAP:
+	    hw->mem = vm->registers[REG_X];
+	    hw->num = vm->registers[REG_Y];
+	    hw->state = SPED3_STATE_RUNNING;
+	    break;
+	case SPED3_INTERRUPT_ROTATE:
+	    hw->rot_target = vm->registers[REG_X];
+	    hw->state = SPED3_STATE_TURNING;
+	    break;
     }
 }
 
 int vm_hw_sped3_close(GLFWwindow w)
 {
     void* ud = glfwGetWindowUserPointer(w);
-
+    printf("sped close\n");
     vm_hw_sped3_free(ud);
     return 0;
 }
@@ -206,11 +206,11 @@ void vm_hw_sped3_init(vm_t* vm)
 
     glfwSetWindowUserPointer(hw->window, hw);
     glfwMakeContextCurrent(hw->window);
+    glfwSetWindowCloseCallback(&vm_hw_sped3_close);
     glfwSwapInterval(0);
     
     glfwSetTime(0.0);
-    glfwSetWindowCloseCallback(&vm_hw_sped3_close);
-
+    
     glViewport(0, 0, hw->width, hw->height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -220,9 +220,8 @@ void vm_hw_sped3_init(vm_t* vm)
 void vm_hw_sped3_free(void* ud)
 {
     struct sped3_hardware* hw = (struct sped3_hardware*)ud;
-
-    glfwDestroyWindow(hw->window);
     vm_hook_unregister(hw->vm, hw->cycle_hook);
     vm_hw_unregister(hw->vm, hw->hw_id);
+    glfwDestroyWindow(hw->window);
     free(hw);
 }
