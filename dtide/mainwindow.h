@@ -8,8 +8,10 @@
 #include <QAction>
 #include <QKeySequence>
 #include <QDebug>
+#include <QFileDialog>
 
 #include "codeeditor.h"
+#include "dtidetabwidget.h"
 
 class DTIDE: public QMainWindow
 {
@@ -21,19 +23,22 @@ public:
 protected:
     void addCodeTab(const QString& title);
 
-public slots:
-   void goToNextTab();
+signals:
+    void fileSave(QString);
 
 private slots:
    void newFile();
    void openFile(); 
+   void saveFile();
 
 private:
-    QTabWidget* tabs;
+    DTIDETabWidget* tabs;
     QMenuBar* menu;
     QAction* nextTab;
 
     void setupMenuBar();
+    void setupActions();
+    void setupSignals();
 };
 
 #endif

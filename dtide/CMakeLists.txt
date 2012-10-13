@@ -7,10 +7,12 @@ if(${QT4_FOUND})
         main.cpp 
         mainwindow.cpp
         dcpuhighlighter.cpp
+        dtidetabwidget.cpp
         codeeditor.cpp)
     set(dtide_HEADERS 
         mainwindow.h
         dcpuhighlighter.h
+        dtidetabwidget.h
         codeeditor.h)
         
     set(dtide_FORMS "")

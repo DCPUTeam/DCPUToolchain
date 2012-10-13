@@ -4,18 +4,15 @@ DTIDE::DTIDE(QWidget* parent): QMainWindow(parent)
 {
     menu = menuBar();
 
-    tabs = new QTabWidget(this);
+    tabs = new DTIDETabWidget(this);
     tabs->setMovable(true);
     setCentralWidget(tabs);
    
     setupMenuBar();
-    
-    addCodeTab("untitled.dasm");
+    setupActions();
+    setupSignals();
 
-    nextTab = new QAction(tr("Next tab"), this);
-    nextTab->setShortcut(tr("Ctrl+Tab"));
-    connect(nextTab, SIGNAL(triggered()), this, SLOT(goToNextTab()));
-    addAction(nextTab);
+    addCodeTab("untitled.dasm");
 }
 
 void DTIDE::addCodeTab(const QString& title)
@@ -25,10 +22,24 @@ void DTIDE::addCodeTab(const QString& title)
     font.setFixedPitch(true);
     font.setPointSize(10);
 
-    CodeEditor* editor = new CodeEditor(this);
+    CodeEditor* editor = new CodeEditor("untitled.dasm", this);
+    connect(editor, SIGNAL(fileNameChanged(QString)), tabs, SLOT(updateTitle(QString)));
     editor->setFont(font);
 
     tabs->addTab(editor, title);
+}
+
+void DTIDE::setupActions()
+{
+    nextTab = new QAction(tr("Next tab"), this);
+    nextTab->setShortcut(QKeySequence::NextChild);
+    connect(nextTab, SIGNAL(triggered()), tabs, SLOT(goToNextTab()));
+    addAction(nextTab);
+}
+
+void DTIDE::setupSignals()
+{
+    connect(this, SIGNAL(fileSave(QString)), tabs, SLOT(fileSave(QString)));
 }
 
 void DTIDE::setupMenuBar()
@@ -38,7 +49,7 @@ void DTIDE::setupMenuBar()
 
     file->addAction("&New file", this, SLOT(newFile()), tr("Ctrl+N"));
     file->addAction("&Open file", this, SLOT(openFile()), tr("Ctrl+O"));
-
+    file->addAction("&Save file", this, SLOT(saveFile()), tr("Ctrl+S"));
 }
 
 void DTIDE::newFile()
@@ -51,12 +62,8 @@ void DTIDE::openFile()
     addCodeTab("opened_file.dasm");
 }
 
-void DTIDE::goToNextTab()
+void DTIDE::saveFile()
 {
-    int cur = tabs->currentIndex() + 1;
-
-    if(cur <= tabs->count() - 1)
-        tabs->setCurrentIndex(cur);
-    else
-        tabs->setCurrentIndex(0);
+    QString fileName = QFileDialog::getSaveFileName(this);
+    emit fileSave(fileName);
 }

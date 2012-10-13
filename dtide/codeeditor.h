@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QTextBlock>
 #include <QPainter>
+#include <QTextStream>
 
 class QResizeEvent;
 class QSize;
@@ -18,10 +19,17 @@ class CodeEditor: public QPlainTextEdit
     Q_OBJECT
 
 public:
-    CodeEditor(QWidget* parent = 0);
+    CodeEditor(QString filename, QWidget* parent = 0);
 
     void lineNumberAreaPaintEvent(QPaintEvent* event);
     int lineNumberAreaWidth();
+
+    void saveFile(QString path, QString name);
+
+    QString fileName;
+
+signals:
+    void fileNameChanged(QString);
 
 protected:
     void resizeEvent(QResizeEvent* event);
@@ -35,6 +43,7 @@ private slots:
 private:
     QWidget *lineNumberArea;
     DCPUHighlighter* highlighter;
+    bool dirty;
 };
 
 class LineNumberArea: public QWidget

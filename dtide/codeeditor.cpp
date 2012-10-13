@@ -1,8 +1,6 @@
 #include "codeeditor.h"
 
-
-
-CodeEditor::CodeEditor(QWidget* parent): QPlainTextEdit(parent)
+CodeEditor::CodeEditor(QString filename, QWidget* parent): QPlainTextEdit(parent)
 {
     lineNumberArea = new LineNumberArea(this);
     
@@ -14,6 +12,8 @@ CodeEditor::CodeEditor(QWidget* parent): QPlainTextEdit(parent)
     highlightCurrentLine();
 
     highlighter = new DCPUHighlighter(document());
+    fileName = filename;
+    dirty = false;
 }
 
 void CodeEditor::updateLineNumberAreaWidth(int newBlockCount)
@@ -102,13 +102,27 @@ void CodeEditor::keyPressEvent(QKeyEvent* event)
             QPlainTextEdit::keyPressEvent(space);
     }
     else
-        QPlainTextEdit::keyPressEvent(event);
+    {
+       QPlainTextEdit::keyPressEvent(event);
+    }
+
+    if(!dirty)
+    {
+        dirty = true;
+        fileName += "*";
+        emit fileNameChanged(fileName);
+    }
 }
 
+void CodeEditor::saveFile(QString path, QString name)
+{
+    fileName = name;
+    dirty = false;
 
-
-
-    
-
-
-
+    QFile file(path);
+    if(file.open(QIODevice::WriteOnly))
+    {
+        QTextStream stream(&file);
+        stream << toPlainText();
+    }
+}
