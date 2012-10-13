@@ -19,10 +19,10 @@ int bread_01()
 {
 	BFILE* f;
 
-	f = bopen("test.txt", "rb");
+	f = bfopen("test.txt", "rb");
 	TEST_EXPECT(f != NULL);
-	TEST_EXPECT(bgetc(f) == FIRST_CHAR_OF_TEST_FILE);
-	bclose(f);
+	TEST_EXPECT(bfgetc(f) == FIRST_CHAR_OF_TEST_FILE);
+	bfclose(f);
 
 	TEST_SUCCESS;
 }

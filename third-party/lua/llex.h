@@ -24,13 +24,16 @@
 enum RESERVED
 {
 	/* terminal symbols denoted by reserved words */
-	TK_AND = FIRST_RESERVED, TK_BREAK,
+	TK_AND = FIRST_RESERVED, TK_BREAK, TK_CONTINUE,
 	TK_DO, TK_ELSE, TK_ELSEIF, TK_END, TK_FALSE, TK_FOR, TK_FUNCTION,
 	TK_IF, TK_IN, TK_LOCAL, TK_NIL, TK_NOT, TK_OR, TK_REPEAT,
 	TK_RETURN, TK_THEN, TK_TRUE, TK_UNTIL, TK_WHILE,
 	/* other terminal symbols */
-	TK_CONCAT, TK_DOTS, TK_EQ, TK_GE, TK_LE, TK_NE, TK_NUMBER,
-	TK_NAME, TK_STRING, TK_EOS
+	TK_CONCAT, TK_DOTS, TK_EQ, TK_GE, TK_LE, TK_NE,
+#ifdef LUA_BITWISE_OPERATORS
+	TK_LSHFT, TK_RSHFT, TK_INTDIV, TK_XOR, TK_CNE,
+#endif
+	TK_NUMBER, TK_NAME, TK_STRING, TK_EOS
 };
 
 /* number of reserved words */
@@ -58,16 +61,16 @@ typedef struct Token
 typedef struct LexState
 {
 	int current;	/* current character (charint) */
-	int linenumber;  /* input line counter */
+	int linenumber;	 /* input line counter */
 	int lastline;	 /* line of last token `consumed' */
 	Token t;  /* current token */
 	Token lookahead;  /* look ahead token */
 	struct FuncState* fs;	 /* `FuncState' is private to the parser */
 	struct lua_State* L;
-	ZIO* z;  /* input stream */
-	Mbuffer* buff;  /* buffer for tokens */
+	ZIO* z;	 /* input stream */
+	Mbuffer* buff;	/* buffer for tokens */
 	TString* source;  /* current source name */
-	char decpoint;  /* locale decimal point */
+	char decpoint;	/* locale decimal point */
 } LexState;
 
 

@@ -22,19 +22,19 @@ int bcopy_01()
 	BFILE* out;
 	int i = 0;
 
-	in = bopen("test.txt", "rb");
+	in = bfopen("test.txt", "rb");
 	TEST_EXPECT(in != NULL);
-	out = bopen("copy.txt", "wb");
+	out = bfopen("copy.txt", "wb");
 	TEST_EXPECT(out != NULL);
 
-	while (!beof(in))
+	while (!bfeof(in))
 	{
-		bputc(bgetc(in), out);
+		bfputc(bfgetc(in), out);
 		i++;
 	}
 
-	bclose(in);
-	bclose(out);
+	bfclose(in);
+	bfclose(out);
 
 	if (i == LENGTH_OF_TEST_FILE)
 	{

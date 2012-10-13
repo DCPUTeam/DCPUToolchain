@@ -16,10 +16,11 @@
 #include <stdlib.h>
 #include <setjmp.h>
 #include <ppexpr.h>
+#include <debug.h>
 #include "aerr.h"
 
 // Error strings
-const char* err_strings[20] =
+const char* err_strings[23] =
 {
 	"assembler: generic assembling error.\n",
 	"assembler: label '%s' not found.\n",
@@ -40,7 +41,10 @@ const char* err_strings[20] =
 	"assembler: unable to resolve '%s' as label resolution is not permitted at this time.\n",
 	"assembler: the imported label '%s' may not be used as a component of an expression.\n",
 	"assembler: expression '%s' evaluates to zero while being used as a divisor.\n",
-	"assembler: .OUTPUT is not permitted prior to .SECTION.\n"
+	"assembler: .OUTPUT is not permitted prior to .SECTION.\n",
+	"assembler: invalid parameter count for instruction.\n",
+	"warning: expressions will not be adjusted at link or relocation time. ensure labels are not used as part of expressions.\n",
+	"warning: .ORIGIN should not be used for relocation as it is not portable between kernels.\n"
 };
 
 // Error definition
@@ -53,6 +57,12 @@ void ahalt(int errid, const char* errdata)
 	err->errid = errid;
 	err->errdata = errdata;
 	longjmp(errjmp, (long)err);
+}
+
+void awarn(int errid, const char* errdata)
+{
+	// FIXME: Should we really be hard coding output here?
+	printd(LEVEL_WARNING, err_strings[errid], errdata);
 }
 
 uint16_t ahalt_label_resolution_not_permitted(bstring name)

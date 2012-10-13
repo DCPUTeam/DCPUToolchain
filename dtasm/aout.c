@@ -18,6 +18,7 @@
 #include <setjmp.h>
 #include <bstring.h>
 #include <bfile.h>
+#include <iio.h>
 #include <pp.h>
 #include <ppfind.h>
 #include <assert.h>
@@ -227,6 +228,23 @@ struct aout_byte* aout_create_metadata_output(char* name)
 	return byte;
 }
 
+struct aout_byte* aout_create_metadata_seek(uint16_t address)
+{
+	struct aout_byte* byte = malloc(sizeof(struct aout_byte));
+	byte->type = AOUT_TYPE_METADATA_SEEK;
+	byte->opcode = address;
+	byte->a = 0;
+	byte->b = 0;
+	byte->next = NULL;
+	byte->prev = NULL;
+	byte->expr = expr_new_number(address);
+	byte->label = NULL;
+	byte->raw_used = false;
+	byte->raw = 0x0;
+	list_init(&byte->symbols);
+	return byte;
+}
+
 struct aout_byte* aout_emit(struct aout_byte* byte)
 {
 	if (start == NULL && end == NULL)
@@ -259,7 +277,7 @@ uint16_t aout_get_label_address(bstring name)
 
 	while (current != NULL)
 	{
-		if (current->type == AOUT_TYPE_METADATA_ORIGIN)
+		if (current->type == AOUT_TYPE_METADATA_ORIGIN || current->type == AOUT_TYPE_METADATA_SEEK)
 		{
 			// Adjust memory address.
 			mem_index = current->opcode;
@@ -331,10 +349,12 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 	out_index = code_offset;
 	while (current_outer != NULL)
 	{
-		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
+		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN || current_outer->type == AOUT_TYPE_METADATA_SEEK)
 		{
 			// Adjust memory address.
 			out_index = current_outer->opcode;
+			if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
+				awarn(WARN_USE_RELOCATION_NOT_ORIGIN, NULL);
 		}
 		else if (current_outer->type == AOUT_TYPE_METADATA_SECTION)
 		{
@@ -399,8 +419,7 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 				// evaluate it using the preprocessor expression engine.
 				if ((relocatable || intermediate) && !shown_expr_warning)
 				{
-					printd(LEVEL_WARNING, "warning: expressions will not be adjusted at link or relocation time.\n");
-					printd(LEVEL_WARNING, "		ensure labels are not used as part of expressions.\n");
+					awarn(WARN_EXPRESSION_NOT_ADJUSTED, NULL);
 					shown_expr_warning = true;
 				}
 				current_outer->raw_used = true;
@@ -507,10 +526,10 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 
 	while (current_outer != NULL)
 	{
-		if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
+		if (current_outer->type == AOUT_TYPE_METADATA_SEEK)
 		{
-			// Adjust origin.
-			fseek(out, true_origin + current_outer->opcode * 2 /* double because the number is in words, not bytes */, SEEK_SET);
+			// Adjust seek.
+			fseek(out, true_origin + current_outer->opcode * 2, SEEK_SET);
 		}
 		else if (current_outer->type == AOUT_TYPE_METADATA_INCBIN)
 		{
@@ -520,21 +539,21 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 			if (bname == NULL)
 				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
 
-			temp = bopen((const char*)(bname->data), "rb");
+			temp = bfopen((const char*)(bname->data), "rb");
 
 			if (temp == NULL)
 				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
 
 			// Copy binary data.
-			while (!beof(temp))
+			while (!bfeof(temp))
 			{
 				// TODO: This could be faster if we didn't do it character
 				// by character.
-				fputc(bgetc(temp), out);
+				fputc(bfgetc(temp), out);
 			}
 
 			// Finalize.
-			bclose(temp);
+			bfclose(temp);
 			bdestroy(bname);
 		}
 		else if (current_outer->type == AOUT_TYPE_NORMAL)
@@ -546,12 +565,12 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 			if (current_outer->raw_used == true)
 			{
 				inst = current_outer->raw;
-				fwrite(&inst, sizeof(uint16_t), 1, out);
+				iwrite(&inst, out);
 			}
 			else if (current_outer->label == NULL)
 			{
 				inst = INSTRUCTION_CREATE(current_outer->opcode, current_outer->a, current_outer->b);
-				fwrite(&inst, sizeof(uint16_t), 1, out);
+				iwrite(&inst, out);
 			}
 		}
 

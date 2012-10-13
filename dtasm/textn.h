@@ -25,10 +25,10 @@
 #define EXTENSION_MAXIMUM_ENTRIES 50
 #define EXTENSION_WRITE_OP(opcode, a, b); \
 	inst = INSTRUCTION_CREATE(opcode, a, b); \
-	fwrite(&inst, sizeof(uint16_t), 1, out);
+	iwrite(&inst, out);
 #define EXTENSION_WRITE_RAW(raw); \
 	inst = raw; \
-	fwrite(&inst, sizeof(uint16_t), 1, out);
+	iwrite(&inst, out);
 
 char* textn_verify_name(char* name);
 uint16_t textn_init(struct aout_byte* start);

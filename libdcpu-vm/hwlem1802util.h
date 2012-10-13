@@ -8,6 +8,7 @@
 	Authors:	James Rhodes
 			José Manuel Díez
 			Tyrel Haveman
+			Patrick Flick
 
 	Description:	Declares utility functions for LEM1802.
 
@@ -17,10 +18,10 @@
 #define __DCPU_HW_LEM1802_UTIL_H
 
 #include <stdint.h>
-#include <libtcod.h>
 
-TCOD_color_t vm_hw_lem1802_util_get_color(uint16_t raw);
-uint16_t vm_hw_lem1802_util_get_raw(TCOD_color_t color);
+void vm_hw_lem1802_util_raw2rgb(uint16_t raw, unsigned char * rgb);
+uint16_t vm_hw_lem1802_util_rgb2raw(unsigned char * rgb);
+int vm_hw_lem1802_util_loadpng(int* out_width, int* out_height, int* out_has_alpha, unsigned char** outData);
 
 #endif
 

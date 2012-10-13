@@ -23,6 +23,7 @@
 #include <ppexprlua.h>
 #include <debug.h>
 #include <stdlib.h>
+#include <luaglob.h>
 #include "pplua.h"
 #include "dcpu.h"
 
@@ -79,6 +80,9 @@ struct lua_preproc* pp_lua_load(bstring name)
 	assert(pp->state != NULL);
 	luaL_openlibs(pp->state);
 	luaX_loadexpressionlib(pp->state);
+
+	// Load globals.
+	dcpu_lua_set_constants(pp->state);
 
 	// Execute the code in the new Lua context.
 	if (luaL_dofile(pp->state, path->data) != 0)
@@ -199,7 +203,15 @@ void pp_lua_init()
 		}
 
 		// Check to see if it is a normal file.
+#if defined(DT_REG)
 		if (entry->d_type != DT_REG)
+#elif defined(DT_DIR)
+		if (entry->d_type == DT_DIR)
+#elif defined(DT_UNKNOWN)
+		if (entry->d_type == DT_UNKNOWN)
+#else
+#error Build system must support DT_REG, DT_DIR or DT_UNKNOWN in dirent.h.
+#endif
 		{
 			// Not a file, skip over and then
 			// continue.
@@ -346,7 +358,7 @@ void pp_lua_handle(struct pp_state* state, void* scanner, bstring name, list_t* 
 	bstring dot;
 	unsigned int i;
 	int paramtbl;
-	
+
 	// Convert the name to lowercase.
 	btolower(name);
 	cstr = bstr2cstr(name, '0');
@@ -412,7 +424,7 @@ void pp_lua_handle(struct pp_state* state, void* scanner, bstring name, list_t* 
 			list_destroy(parameters);
 			return;
 		}
-		
+
 		bdestroy(name);
 		bcstrfree(cstr);
 		lua_pop(pp->state, 2);

@@ -4,3 +4,4 @@ contribute to the DCPU-16 Tools project:
   - James Rhodes (jrhodes@redpointsoftware.com.au)
   - Aaron Miller (apage43@ninjawhale.com)
   - Tyrel Haveman (tyrel@binarypeople.net)
+  - Jose Manuel Diez (me@jdiez.me)

@@ -18,6 +18,7 @@
 #include <version.h>
 #include <debug.h>
 #include <osutil.h>
+#include <iio.h>
 #include "objfile.h"
 #include "lprov.h"
 #include "ldata.h"
@@ -28,6 +29,7 @@ int main(int argc, char* argv[])
 	// Define our variables.
 	int nerrors, i;
 	bstring target;
+	int32_t saved = 0; // The number of words saved during compression and optimization.
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
@@ -37,10 +39,14 @@ int main(int argc, char* argv[])
 	struct arg_file* input_files = arg_filen(NULL, NULL, "<file>", 1, 100, "The input object files.");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	struct arg_lit* keep_output_arg = arg_lit0(NULL, "keep-outputs", "Keep the .OUTPUT entries in the final static library (used for stdlib).");
+	struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
+	struct arg_lit* no_short_literals_arg = arg_lit0(NULL, "no-short-literals", "Do not compress literals to short literals.");
+	struct arg_int* opt_level = arg_int0("O", NULL, "<level>", "The optimization level.");
+	struct arg_lit* opt_mode = arg_lit0("S", NULL, "Favour runtime speed over size when optimizing.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, target_arg, keep_output_arg, symbol_ext, symbol_file, output_file, input_files, verbose, quiet, end };
+	void* argtable[] = { show_help, target_arg, keep_output_arg, little_endian_mode, opt_level, opt_mode, no_short_literals_arg, symbol_ext, symbol_file, output_file, input_files, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -64,6 +70,9 @@ int main(int argc, char* argv[])
 
 	// Set global path variable.
 	osutil_setarg0(bautofree(bfromcstr(argv[0])));
+
+	// Set endianness.
+	isetmode(little_endian_mode->count == 0 ? IMODE_BIG : IMODE_LITTLE);
 
 	// Check to make sure target is correct.
 	if (target_arg->count == 0)
@@ -96,12 +105,23 @@ int main(int argc, char* argv[])
 	bins_associate();
 	bins_sectionize();
 	bins_flatten(bautofree(bfromcstr("output")));
-	// TODO: This is where we would perform short literal optimizations
-	//	 with bins_compress(); when it's implemented.
+	saved = bins_optimize(
+			opt_mode->count == 0 ? OPTIMIZE_SIZE : OPTIMIZE_SPEED,
+			opt_level->count == 0 ? OPTIMIZE_NONE : opt_level->ival[0]);
+	if (no_short_literals_arg->count == 0 && biseqcstr(target, "static") != true)
+		saved += bins_compress();
+	else if (no_short_literals_arg->count == 0)
+		printd(LEVEL_WARNING, "linker: skipping short literal compression due to target type.\n");
+	else
+		printd(LEVEL_WARNING, "linker: skipping short literal compression on request.\n");
 	bins_resolve(biseqcstr(target, "static") == true);
 	bins_save(bautofree(bfromcstr("output")), bautofree(bfromcstr(output_file->filename[0])), bautofree(target), keep_output_arg->count > 0, symbol_file->count > 0 ? symbol_file->filename[0] : NULL);
 	bins_free();
-	
+	if (saved > 0)
+		printd(LEVEL_DEFAULT, "linker: saved %i words during optimization.\n", saved);
+	else if (saved < 0)
+		printd(LEVEL_DEFAULT, "linker: increased by %i words during optimization.\n", -saved);
+
 	arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 	return 0;
 }

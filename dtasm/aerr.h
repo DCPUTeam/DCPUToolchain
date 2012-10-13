@@ -41,6 +41,9 @@
 #define ERR_EXPRESSION_NOT_PERMITTED 17
 #define ERR_EXPRESSION_DIVIDE_BY_ZERO 18
 #define ERR_OUTPUT_BEFORE_SECTION 19
+#define ERR_INVALID_PARAMETER_COUNT 20
+#define WARN_EXPRESSION_NOT_ADJUSTED 21
+#define WARN_USE_RELOCATION_NOT_ORIGIN 22
 
 // Variables
 extern const char* err_strings[];
@@ -55,6 +58,7 @@ struct errinfo
 
 // Utility method for throwing errors.
 void ahalt(int errid, const char* errdata);
+void awarn(int errid, const char* errdata);
 uint16_t ahalt_label_resolution_not_permitted(bstring name);
 void ahalt_expression_exit_handler(int code, void* data);
 

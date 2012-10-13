@@ -20,6 +20,8 @@
 #include <string.h>
 #include <bstring.h>
 #include <ppexpr.h>
+#include <debug.h>
+#include <assert.h>
 #include "node.h"
 #include "imap.h"
 
@@ -32,6 +34,13 @@ void yyerror(const char *str);
 // Filename tracking for local assembly.
 extern int	yylineno;
 extern bstring	yyfilename;
+
+// Error handling.
+void yyerror(const char *str)
+{
+	assert(yyfilename != NULL);
+	printd(LEVEL_ERROR, "error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
+}
 
 // Filename tracking for language producing assembly.
 extern int	yyulineno;
@@ -72,8 +81,8 @@ extern bstring	yyufilename;
 %token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT
 %token <token> ADD SUBTRACT MULTIPLY DIVIDE MODULUS EQUALS NOT_EQUALS LESS_THAN LESS_EQUALS GREATER_THAN GREATER_EQUALS
 %token <token> PAREN_OPEN PAREN_CLOSE BITWISE_AND BITWISE_BOR BITWISE_XOR BITWISE_NOT BOOLEAN_OR BOOLEAN_AND BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
-%token <token> KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL SECTION OUTPUT SYMBOL
-%token <word> WORD
+%token <token> LEX_PICK KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL SECTION OUTPUT SYMBOL SEEK
+%token <word> WORD REGISTER
 %token <string> STRING CHARACTER
 %token <number> ADDRESS
 
@@ -386,7 +395,8 @@ instruction:
 
 parameters:
 		{
-			$$ = NULL;
+			$$ = malloc(sizeof(struct ast_node_parameters));
+			$$->last = NULL;
 		} |
 		parameter
 		{
@@ -401,6 +411,7 @@ parameters:
 					$3->prev = $1->last;
 				$1->last = $3;
 			}
+			$$ = $1;
 		} ;
 
 parameter:
@@ -460,7 +471,7 @@ parameter:
 		} ;
 
 register:
-		WORD
+		REGISTER
 		{
 			$$ = malloc(sizeof(struct ast_node_register));
 			$$->value = $1;
@@ -468,7 +479,7 @@ register:
 		};
 
 bracketed_register:
-		BRACKET_OPEN WORD BRACKET_CLOSE
+		BRACKET_OPEN REGISTER BRACKET_CLOSE
 		{
 			$$ = malloc(sizeof(struct ast_node_register));
 			$$->value = $2;
@@ -476,7 +487,7 @@ bracketed_register:
 		};
 
 address:
-		address expr /* PICK expr */
+		LEX_PICK expr /* PICK expr */
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
 			$$->value = $2;
@@ -504,7 +515,7 @@ bracketed_address:
 		};
 
 bracketed_added_address:
-		BRACKET_OPEN expr ADD WORD BRACKET_CLOSE
+		BRACKET_OPEN expr ADD REGISTER BRACKET_CLOSE
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
 			$$->value = $2;
@@ -512,10 +523,26 @@ bracketed_added_address:
 			$$->added = 1;
 			$$->addcmpt = $4;
 		} |
-		BRACKET_OPEN WORD ADD expr BRACKET_CLOSE
+		BRACKET_OPEN REGISTER ADD expr BRACKET_CLOSE
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
 			$$->value = $4;
+			$$->bracketed = 1;
+			$$->added = 1;
+			$$->addcmpt = $2;
+		} |
+		BRACKET_OPEN expr SUBTRACT REGISTER BRACKET_CLOSE
+		{
+			$$ = malloc(sizeof(struct ast_node_address));
+			$$->value = expr_new(expr_new_number(0x0), EXPR_OP_SUBTRACT, $2);
+			$$->bracketed = 1;
+			$$->added = 1;
+			$$->addcmpt = $4;
+		} |
+		BRACKET_OPEN REGISTER SUBTRACT expr BRACKET_CLOSE
+		{
+			$$ = malloc(sizeof(struct ast_node_address));
+			$$->value = expr_new(expr_new_number(0x0), EXPR_OP_SUBTRACT, $4);
 			$$->bracketed = 1;
 			$$->added = 1;
 			$$->addcmpt = $2;
@@ -606,13 +633,3 @@ expr:
 		} ;
 
 %%
-
-#include "lexer.h"
-#include <debug.h>
-#include <assert.h>
-
-void yyerror(const char *str)
-{
-	assert(yyfilename != NULL);
-	printd(LEVEL_ERROR, "error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
-}

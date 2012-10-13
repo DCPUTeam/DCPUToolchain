@@ -80,7 +80,14 @@ struct inst vm_disassemble(vm_t* vm, uint16_t pos, bool pretty)
 		result.extra[0] = vm->ram[pos + 1];
 	if (result.size - 1 >= 2)
 		result.extra[1] = vm->ram[pos + 2];
-	if (result.size - 1 >= 1 && (result.original.a == NXT || result.original.a == NXT_LIT || result.original.a == PICK || (result.original.a >= NXT_VAL_A && result.original.a <= NXT_VAL_J)))
+	if (result.size - 1 >= 2)
+	{
+		result.used[0] = true;
+		result.used[1] = true;
+		result.next[0] = vm->ram[pos + 1];
+		result.next[1] = vm->ram[pos + 2];
+	}
+	else if (result.size - 1 >= 1 && (result.original.a == NXT || result.original.a == NXT_LIT || result.original.a == PICK || (result.original.a >= NXT_VAL_A && result.original.a <= NXT_VAL_J)))
 	{
 		result.used[0] = true;
 		result.next[0] = vm->ram[pos + 1];
@@ -89,13 +96,6 @@ struct inst vm_disassemble(vm_t* vm, uint16_t pos, bool pretty)
 	{
 		result.used[1] = true;
 		result.next[1] = vm->ram[pos + 1];
-	}
-	else if (result.size - 1 >= 2)
-	{
-		result.used[0] = true;
-		result.used[1] = true;
-		result.next[0] = vm->ram[pos + 1];
-		result.next[1] = vm->ram[pos + 2];
 	}
 
 	// Work out pretty values if required.

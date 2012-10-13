@@ -1,5 +1,9 @@
 # DCPU-16 Toolchain
 
+ *  Windows build status; ![Windows build status](http://dms.dcputoolcha.in/status/windows.png)
+ *  Linux build status; ![Linux build status](http://dms.dcputoolcha.in/status/linux.png)
+ *  Mac build status; ![Mac build status](http://dms.dcputoolcha.in/status/mac.png)
+
 ## Binaries
 You can download binaries for Windows from the main http://dcputoolcha.in/ website.
 
@@ -37,7 +41,7 @@ Otherwise, this should work correctly and produce a Visual Studio 2010 solution 
 When using Cygwin, then there are some important notes:
 
 * You must use the Windows version of CMake.  You can't have this installed as part of Cygwin.
-* **and most importantly** you must initially run `cmake -G "Visual Studio 10"` from the command prompt.  Cygwin's case sensitivity causes the initial configuration and detection of the C compiler to screw up _badly_ and the only way to fix it is to _restart your computer_. You will get errors like "unable to set key 'TMP', key 'Tmp' already exists" which will also affect Visual Studio until you restart if you don't adhere to this!
+* **and most importantly** you must initially run `cmake -G "Visual Studio 10"` from the command prompt.  Cygwin's case sensitivity causes the initial configuration and detection of the C compiler to fail.  You will need to terminate all instances of MSBuild.exe and run the configuration again from the command prompt if this occurs.
 * Once you have done the initial configuration, you may then run cmake from Cygwin to update project files; it's just the initial configuration that can't be done in Cygwin.
 
 ### Instructions for Linux
@@ -47,14 +51,7 @@ When using Cygwin, then there are some important notes:
 First install a few required packages with
 
 ```
-$ sudo apt-get install bison flex cmake build-essential libreadline-dev libsdl1.2-dev libcurl4-openssl-dev
-```
-
-Download [libtcod](http://doryen.eptalys.net/libtcod/download/) and copy
-
-```
-$ sudo cp libtcod*.so /usr/lib
-$ sudo cp -r include /usr/include/libtcod
+$ sudo apt-get install bison flex cmake build-essential libreadline-dev libsdl1.2-dev libcurl4-openssl-dev 
 ```
 
 Next clone the repository into a new folder
@@ -67,9 +64,7 @@ $ cd dcputoolchain
 Now generate the makefiles and and compile with
 
 ```
-dcputoolchain$ cd build
-dcputoolchain/build$ cmake ..
-dcputoolchain/build$ make
+[dcputoolchain]$ cmake . && make
 ```
 
 If everything went well the binaries are in ```dcputoolchain/Debug```
@@ -77,18 +72,11 @@ If everything went well the binaries are in ```dcputoolchain/Debug```
 #### Fedora 16
 First install a few required packages with
 
-**IMPORTANT NOTICE: Build Instructions outdated** libcurl dev headers need to be
-installed aswell
+**IMPORTANT NOTICE: Build Instructions outdated** libcurl dev headers need to be installed aswell
+
 ```
 $ sudo yum install bison flex cmake mesa-lib* zlib-devel libpng-devel
 $ sudo yum groupinstall "Development Tools"
-```
-
-Download [libtcod](http://doryen.eptalys.net/libtcod/download/) and copy
-
-```
-$ sudo cp libtcod*.so /usr/lib
-$ sudo cp -r include /usr/include/libtcod
 ```
 
 Next clone the repository into a new folder
@@ -101,9 +89,7 @@ $ cd dcputoolchain
 Now generate the makefiles and and compile with
 
 ```
-dcputoolchain$ cd build
-dcputoolchain/build$ cmake ..
-dcputoolchain/build$ make
+[dcputoolchain]$ cmake . && make
 ```
 
 If everything went well the binaries are in ```dcputoolchain/Debug```
@@ -114,53 +100,33 @@ First install Xcode which should install everything you need to compile.
 
 Next, you'll need to install a few other things, I'll be using homebrew for this, which you can download [here](https://github.com/mxcl/homebrew/wiki/installation), but you could use port, fink or any other way you want to install it.
 
-You will need to install cmake, git, hg and sdl.
+You will need to install cmake, git and sdl.
 
-**IMPORTANT NOTICE: Build Instructions outdated** libcurl dev headers need to be
-installed aswell
+**IMPORTANT NOTICE: Build Instructions outdated** libcurl dev headers need to be installed aswell
+
 ```
 $ brew install cmake
 $ brew install git
-$ brew install hg
 $ brew install sdl
 ```
 
-Once all of these are installed, you're first going to want to clone the libtcod source from [here](https://bitbucket.org/jice/libtcod).  The reason we are building it from scratch, is because the downloads only has a i386 built dylib, and most likely your going to be building with x64_86, so we'll just build manually.
-
-Clone the repo to a folder on your computer, and then enter the directory.
+Now that you've installed git, you should be able to clone DCPUToolchain if you haven't already.
 
 ```
-$ hg clone https://bitbucket.org/jice/libtcod
-$ cd libtcod
-```
-
-Now we can build libtcod with cmake and make.
-
-```
-$ cmake .
-$ make
-```
-
-You may see a few warnings, as long as it says 100% at the end, you should be just fine.  In order to create the dylib you need, you'll need to use make install, and then copy it to your lib folder, I use /usr/local/lib, but you can use /usr/lib if that's what you use/prefer.
-
-```
-$ make install
-$ sudo cp libtcod.dylib /usr/local/lib
-$ sudo cp -r include /usr/include/libtcod
-```
-
-Now that you've copied the dylib for libtcod, you should be able to clone DCPUToolchain if you haven't already.
-
-```
-$ git clone https://github.com/DCPUTeam/DCPUToolchain.git
-$ cd DCPUToolchain/build
+$ git clone https://github.com/DCPUTeam/DCPUToolchain.git dcputoolchain
+$ cd dcputoolchain
 ```
 
 Now we can build it.
 
 ```
-$ cmake ..
-$ make
+[dcputoolchain]$ cmake . && make
 ```
 
 If everything looks like it didn't crash and burn, then you should find everything you need in ```dcputoolchain/Debug```
+
+### Instructions for Emscripten
+
+We have dropped support for Emscripten builds.  As the toolchain increases in functionality, having full Emscripten support was
+no longer practical.
+

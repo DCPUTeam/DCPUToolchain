@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <hwluacpu.h>
 #include <ddata.h>
+#include <luaglob.h>
 #include "dbglua.h"
 #include "dcpu.h"
 
@@ -110,6 +111,9 @@ struct lua_debugst* dbg_lua_load(bstring name)
 	assert(ds->state != NULL);
 	luaL_openlibs(ds->state);
 	luaX_loadexpressionlib(ds->state);
+
+	// Load globals.
+	dcpu_lua_set_constants(ds->state);
 
 	// Execute the code in the new Lua context.
 	if (luaL_dofile(ds->state, path->data) != 0)
@@ -243,7 +247,15 @@ void dbg_lua_init()
 		}
 
 		// Check to see if it is a normal file.
+#if defined(DT_REG)
 		if (entry->d_type != DT_REG)
+#elif defined(DT_DIR)
+		if (entry->d_type == DT_DIR)
+#elif defined(DT_UNKNOWN)
+		if (entry->d_type == DT_UNKNOWN)
+#else
+#error Build system must support DT_REG, DT_DIR or DT_UNKNOWN in dirent.h.
+#endif
 		{
 			// Not a file, skip over and then
 			// continue.

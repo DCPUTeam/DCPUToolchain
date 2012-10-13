@@ -17,7 +17,7 @@
 
 #include <AsmGenerator.h>
 #include <CompilerException.h>
-#include "../parser.hpp"
+#include "parser.hpp"
 #include "NAssignment.h"
 
 AsmBlock* NAssignment::compile(AsmGenerator& context)

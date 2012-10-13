@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <debug.h>
+#include <iio.h>
 #include "posix.h"
 #include "textn.h"
 #include "aout.h"

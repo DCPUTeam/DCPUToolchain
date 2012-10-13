@@ -33,6 +33,15 @@ const char* const luaP_opnames[NUM_OPCODES + 1] =
 	"DIV",
 	"MOD",
 	"POW",
+#ifdef LUA_BITWISE_OPERATORS
+	"BOR",
+	"BAND",
+	"OP_BXOR",
+	"BLSHFT",
+	"BRSHFT",
+	"BNOT",
+	"INTDIV",
+#endif
 	"UNM",
 	"NOT",
 	"LEN",
@@ -80,6 +89,15 @@ const lu_byte luaP_opmodes[NUM_OPCODES] =
 	, opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_DIV */
 	, opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_MOD */
 	, opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_POW */
+#ifdef LUA_BITWISE_OPERATORS
+	, opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_BOR */
+	, opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_BAND */
+	, opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_BXOR */
+	, opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_BLSHFT */
+	, opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_BRSHFT */
+	, opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_BNOT */
+	, opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_INTDIV */
+#endif
 	, opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_UNM */
 	, opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_NOT */
 	, opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_LEN */

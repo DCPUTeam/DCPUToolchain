@@ -1,0 +1,2 @@
+:halt
+        SET PC, halt

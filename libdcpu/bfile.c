@@ -2,7 +2,7 @@
 
 	File:		bfile.c
 
-	Project:	DCPU-16 Tools
+	Project:	DCPU-16 Toolchain
 	Component:	LibDCPU
 
 	Authors:	James Rhodes
@@ -16,8 +16,9 @@
 #include <string.h>
 #include <assert.h>
 #include "bfile.h"
+#include "iio.h"
 
-BFILE* bopen(const char* path, const char* mode)
+BFILE* bfopen(const char* path, const char* mode)
 {
 	BFILE* file = (BFILE*)malloc(sizeof(BFILE));
 	file->file = fopen(path, mode);
@@ -38,7 +39,7 @@ BFILE* bopen(const char* path, const char* mode)
 	return file;
 }
 
-BFILE* bwrap(FILE* _file, const char* mode)
+BFILE* bfwrap(FILE* _file, const char* mode)
 {
 	BFILE* file = (BFILE*)malloc(sizeof(BFILE));
 	file->file = _file;
@@ -59,7 +60,7 @@ BFILE* bwrap(FILE* _file, const char* mode)
 	return file;
 }
 
-int bgetc(BFILE* file)
+int bfgetc(BFILE* file)
 {
 	int c;
 	assert(file != NULL && file->readable);
@@ -69,13 +70,13 @@ int bgetc(BFILE* file)
 	return c;
 }
 
-int bputc(int chr, BFILE* file)
+int bfputc(int chr, BFILE* file)
 {
 	assert(file != NULL);
 	return fputc(chr, file->file);
 }
 
-long btell(BFILE* file)
+long bftell(BFILE* file)
 {
 	assert(file != NULL);
 	// TODO: Is this correct?
@@ -85,19 +86,19 @@ long btell(BFILE* file)
 		return ftell(file->file) - 1;
 }
 
-int bseek(BFILE* file, long offset, int origin)
+int bfseek(BFILE* file, long offset, int origin)
 {
 	assert(file != NULL);
 	return fseek(file->file, offset, origin);
 }
 
-int beof(BFILE* file)
+int bfeof(BFILE* file)
 {
 	assert(file != NULL);
 	return file->eof;
 }
 
-void bclose(BFILE* file)
+void bfclose(BFILE* file)
 {
 	assert(file != NULL);
 	if (!file->wrapped)
@@ -107,4 +108,36 @@ void bclose(BFILE* file)
 	file->last = -1;
 	file->readable = false;
 	free(file);
+}
+
+size_t bfread(void* dest, size_t elem, size_t count, BFILE* file)
+{
+	size_t result;
+	assert(file != NULL && file->readable);
+	fseek(file->file, -1, SEEK_CUR);
+	result = fread(dest, elem, count, file->file);
+	file->last = fgetc(file->file);
+	file->eof = feof(file->file);
+	return result;
+}
+
+size_t bfwrite(const void* src, size_t elem, size_t count, BFILE* file)
+{
+	return fwrite(src, elem, count, file->file);
+}
+
+size_t bfiread(uint16_t* dest, BFILE* file)
+{
+	size_t result;
+	assert(file != NULL && file->readable);
+	fseek(file->file, -1, SEEK_CUR);
+	result = iread(dest, file->file);
+	file->last = fgetc(file->file);
+	file->eof = feof(file->file);
+	return result;
+}
+
+size_t bfiwrite(const uint16_t* src, BFILE* file)
+{
+	return iwrite(src, file->file);
 }

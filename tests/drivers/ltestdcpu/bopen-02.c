@@ -13,6 +13,9 @@
 
 **/
 
+#ifndef WIN32
+#include <unistd.h>
+#endif
 #include <bfile.h>
 #include "tests.h"
 
@@ -20,9 +23,9 @@ int bopen_02()
 {
 	BFILE* f;
 
-	f = bopen("nonexistant.blah", "wb");
+	f = bfopen("nonexistant.blah", "wb");
 	TEST_EXPECT(f != NULL);
-	bclose(f);
+	bfclose(f);
 	unlink("nonexistant.blah");
 
 	TEST_SUCCESS;

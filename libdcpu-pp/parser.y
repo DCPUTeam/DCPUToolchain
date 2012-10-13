@@ -331,9 +331,9 @@ preprocessor:
 								argname = (bstring)list_get_at(&m->args, a);
 								arg = (struct macroarg_entry*)list_get_at(&$4, a);
 								if (arg->string != NULL)
-									fprintf(tfile, ".UNDEF %s\n", argname->data, arg->string->data);
+									fprintf(tfile, ".UNDEF %s\n", argname->data);
 								else
-									fprintf(tfile, ".UNDEF %s\n", argname->data, arg->number);
+									fprintf(tfile, ".UNDEF %s\n", argname->data);
 							}
 
 							// Write out another newline and then close the file.

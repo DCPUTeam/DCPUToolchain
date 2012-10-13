@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 #include <bstring.h>
 #include <ppexpr.h>
 #include <simclist.h>
@@ -55,10 +56,16 @@ void reverse_lines(struct ast_node_lines* lines)
 void reverse_parameters(struct ast_node_parameters* params)
 {
 	struct ast_node_parameters* nlines = (struct ast_node_parameters*)malloc(sizeof(struct ast_node_parameters));
-	struct ast_node_parameter* current = params->last;
+	struct ast_node_parameter* current = NULL;
 	struct ast_node_parameter* nprev = NULL;
 	struct ast_node_parameter* cnext = NULL;
 	nlines->last = NULL;
+	if (params == NULL)
+	{
+		free(nlines);
+		return;
+	}
+	current = params->last;
 
 	while (current != NULL)
 	{
@@ -227,6 +234,10 @@ struct process_parameter_results process_parameter(struct ast_node_parameter* pa
 
 		case type_raw:
 			result.v_raw = param->raw;
+            break;
+
+        default:
+            assert(false);
 	}
 
 	return result;
@@ -401,6 +412,23 @@ void process_line(struct ast_node_line* line)
 
 					break;
 
+                case SEEK:
+					if (line->keyword_data_expr_1 == NULL)
+					{
+						if (line->keyword_data_string != NULL)
+							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, line->keyword_data_string->data);
+						else
+							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
+					}
+
+					opos = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
+					printd(LEVEL_VERBOSE, ".SEEK 0x%04X", opos);
+
+					// Emit seek metadata.
+					aout_emit(aout_create_metadata_seek(opos));
+
+					break;
+
 				case EXPORT:
 					printd(LEVEL_VERBOSE, ".EXPORT %s", bstr2cstr(line->keyword_data_string, '0'));
 
@@ -473,6 +501,20 @@ void process_line(struct ast_node_line* line)
 
 				printd(LEVEL_VERBOSE, "EMIT %s", insttype->name);
 
+				// Check parameter count.
+				if (line->instruction->parameters == NULL && strcmp(line->instruction->instruction, "RFI") == 0)
+				{
+					// Handle RFI (which can accept no parameters).
+					result = aout_emit(aout_create_opcode(insttype->opcode, insttype->nbopcode, 0x21 /* 0 literal */));
+					printd(LEVEL_VERBOSE, "\n");
+					break;
+				}
+				else if (line->instruction->parameters == NULL)
+				{
+					// Halt and error.
+					ahalt(ERR_INVALID_PARAMETER_COUNT, NULL);
+				}
+
 				// Process parameters normally.
 				ppresults = process_parameters(line->instruction->parameters);
 
@@ -510,6 +552,9 @@ void process_line(struct ast_node_line* line)
 			printd(LEVEL_VERBOSE, ":%s\n", line->label->name);
 			aout_emit(aout_create_label(line->label->name));
 			break;
+
+        default:
+            assert(false);
 	}
 
 	// If we can associate debugging symbols with this instruction...

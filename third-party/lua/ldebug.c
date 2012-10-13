@@ -57,7 +57,7 @@ static int currentline(lua_State* L, CallInfo* ci)
 */
 LUA_API int lua_sethook(lua_State* L, lua_Hook func, int mask, int count)
 {
-	if (func == NULL || mask == 0)    /* turn off hooks? */
+	if (func == NULL || mask == 0)	  /* turn off hooks? */
 	{
 		mask = 0;
 		func = NULL;
@@ -97,14 +97,14 @@ LUA_API int lua_getstack(lua_State* L, int level, lua_Debug* ar)
 	{
 		level--;
 		if (f_isLua(ci))  /* Lua function? */
-			level -= ci->tailcalls;  /* skip lost tail calls */
+			level -= ci->tailcalls;	 /* skip lost tail calls */
 	}
-	if (level == 0 && ci > L->base_ci)  	/* level found? */
+	if (level == 0 && ci > L->base_ci)	/* level found? */
 	{
 		status = 1;
 		ar->i_ci = cast_int(ci - L->base_ci);
 	}
-	else if (level < 0)  	 /* level is of a lost tail call? */
+	else if (level < 0)	 /* level is of a lost tail call? */
 	{
 		status = 1;
 		ar->i_ci = 0;
@@ -272,11 +272,11 @@ LUA_API int lua_getinfo(lua_State* L, const char* what, lua_Debug* ar)
 	{
 		StkId func = L->top - 1;
 		luai_apicheck(L, ttisfunction(func));
-		what++;  /* skip the '>' */
+		what++;	 /* skip the '>' */
 		f = clvalue(func);
 		L->top--;  /* pop function */
 	}
-	else if (ar->i_ci != 0)    /* no tail call? */
+	else if (ar->i_ci != 0)	   /* no tail call? */
 	{
 		ci = L->base_ci + ar->i_ci;
 		lua_assert(ttisfunction(ci->func));
@@ -579,7 +579,7 @@ static const char* kname(Proto* p, int c)
 static const char* getobjname(lua_State* L, CallInfo* ci, int stackpos,
 			      const char** name)
 {
-	if (isLua(ci))    /* a Lua function? */
+	if (isLua(ci))	  /* a Lua function? */
 	{
 		Proto* p = ci_func(ci)->l.p;
 		int pc = currentpc(L, ci);
@@ -587,7 +587,7 @@ static const char* getobjname(lua_State* L, CallInfo* ci, int stackpos,
 		*name = luaF_getlocalname(p, stackpos + 1, pc);
 		if (*name)	/* is a local? */
 			return "local";
-		i = symbexec(p, pc, stackpos);  /* try symbolic execution */
+		i = symbexec(p, pc, stackpos);	/* try symbolic execution */
 		lua_assert(pc != -1);
 		switch (GET_OPCODE(i))
 		{
@@ -688,6 +688,15 @@ void luaG_aritherror(lua_State* L, const TValue* p1, const TValue* p2)
 	luaG_typeerror(L, p2, "perform arithmetic on");
 }
 
+#ifdef LUA_BITWISE_OPERATORS
+void luaG_logicerror(lua_State* L, const TValue* p1, const TValue* p2)
+{
+	TValue temp;
+	if (luaV_tonumber(p1, &temp) == NULL)
+		p2 = p1;  /* first operand is wrong */
+	luaG_typeerror(L, p2, "perform bitwise operation on");
+}
+#endif
 
 int luaG_ordererror(lua_State* L, const TValue* p1, const TValue* p2)
 {
@@ -704,9 +713,9 @@ int luaG_ordererror(lua_State* L, const TValue* p1, const TValue* p2)
 static void addinfo(lua_State* L, const char* msg)
 {
 	CallInfo* ci = L->ci;
-	if (isLua(ci))    /* is Lua code? */
+	if (isLua(ci))	  /* is Lua code? */
 	{
-		char buff[LUA_IDSIZE];  /* add file:line information */
+		char buff[LUA_IDSIZE];	/* add file:line information */
 		int line = currentline(L, ci);
 		luaO_chunkid(buff, getstr(getluaproto(ci)->source), LUA_IDSIZE);
 		luaO_pushfstring(L, "%s:%d: %s", buff, line, msg);
@@ -716,7 +725,7 @@ static void addinfo(lua_State* L, const char* msg)
 
 void luaG_errormsg(lua_State* L)
 {
-	if (L->errfunc != 0)    /* is there an error handling function? */
+	if (L->errfunc != 0)	/* is there an error handling function? */
 	{
 		StkId errfunc = restorestack(L, L->errfunc);
 		if (!ttisfunction(errfunc)) luaD_throw(L, LUA_ERRERR);
