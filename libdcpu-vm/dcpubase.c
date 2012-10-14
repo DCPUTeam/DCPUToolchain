@@ -287,6 +287,11 @@ void vm_cycle(vm_t* vm)
         return;
     }
 
+    if(vm->radiation)
+    {
+        vm_op_radiation(vm);
+    }
+
     instruction = vm_consume_word(vm);
     op = INSTRUCTION_GET_OP(instruction);
     b = INSTRUCTION_GET_B(instruction);

@@ -50,9 +50,16 @@ void vm_init(vm_t* vm, bool init_memory)
     vm->halted = false;
     vm->exit = false;
     vm->skip = false;
+
     vm->on_fire = false;
     vm->fire_cycles = 0;
     vm->fire_cycles_target = 0;
+
+    vm->radiation = false;
+    vm->radiation_cycles = 0;
+    vm->radiation_cycles_target = 0;
+    vm->radiation_factor = 1;
+
     printd(LEVEL_DEBUG, "turning off interrupt queue\n");
     vm->queue_interrupts = false;
     vm->irq_count = 0;

@@ -121,7 +121,6 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 	case LEM1802_MEM_MAP_FONT:
 	    printd(LEVEL_DEBUG, "LEM1802 FONT MAPPED.\n");
 	    vm_hw_lem1802_mem_set_font(hw, val_b);
-	    printf("map font to pos %x\n", val_b);
 	    hw->screen_was_updated = 1;
 	    break;
 

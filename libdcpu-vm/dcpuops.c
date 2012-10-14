@@ -197,6 +197,26 @@ void vm_op_fire(vm_t* vm)
 }
 
 
+void vm_op_radiation(vm_t* vm)
+{
+    if(vm->radiation_cycles < vm->radiation_cycles_target)
+    {
+        vm->radiation_cycles++;
+        return;
+    }
+    else
+    {
+        uint16_t pos = rand() % 0x10000, bit = rand() % 15;
+        vm->radiation_cycles = 0;
+        vm->radiation_cycles_target = DCPU_TICKS_KHZ * vm->radiation_factor * (rand() % 10);
+
+        vm->ram[pos] = vm->ram[pos] ^ (1 << bit);
+        vm_hook_fire(vm, pos, HOOK_ON_WRITE, NULL);
+   }
+}
+        
+            
+
 void vm_op_set(vm_t* vm, uint16_t b, uint16_t a)
 {
     uint16_t val_a;

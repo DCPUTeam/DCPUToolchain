@@ -1,5 +1,4 @@
 #include "dcputoolchain.h"
-#include <iostream> 
 
 DCPUToolchainASM::DCPUToolchainASM() 
 {
@@ -19,6 +18,8 @@ std::list<std::string> DCPUToolchainASM::GetExtensions()
 {
     std::list<std::string> list;
     list.push_back("dasm");
+    list.push_back("dasm16");
+    list.push_back("asm");
 
     return list;
 }

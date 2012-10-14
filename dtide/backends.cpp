@@ -1,8 +1,6 @@
 #include "backends.h"
 #include "toolchains/toolchains.h"
 
-#include <iostream>
-
 Language* Toolchain::GetLanguageByExtension(std::string ext)
 {
     std::list<Language*>::iterator it;

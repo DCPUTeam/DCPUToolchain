@@ -32,7 +32,7 @@ void CodeEditor::setHighlighter()
         delete highlighter;
 
     std::string ext = getExtension().toStdString();
-    Language* lang = toolchain->GetLanguageByExtension(ext);
+    lang = toolchain->GetLanguageByExtension(ext);
     
     if(lang != NULL)
         highlighter = DTIDEHighlighting::getHighlighter(lang->GetCodeSyntax(), document());

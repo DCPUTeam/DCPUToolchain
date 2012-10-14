@@ -46,6 +46,7 @@ private:
     QWidget *lineNumberArea;
     QSyntaxHighlighter* highlighter;
     Toolchain* toolchain;
+    Language* lang;
     QString fileName;
 
     bool dirty;

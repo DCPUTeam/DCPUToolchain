@@ -40,7 +40,6 @@ void vm_hw_keyboard_append_to_buffer(struct keyboard_hardware* hw, int index)
 
 void vm_hw_keyboard_handle_char(GLFWwindow w, int c)
 {
-    printf("keyboard handle\n");
 	if(c > 0x20 || c < 0x7f)
 		vm_hw_keyboard_append_to_buffer(g_hw, c);
 }
@@ -98,6 +97,14 @@ void vm_hw_keyboard_handle_key(GLFWwindow w, int key, int state)
 			g_hw->lowercase = !state;
 			index = 0x90;
 			break;
+
+        case GLFW_KEY_F8:
+            if(state)
+            {
+                g_hw->vm->radiation = !g_hw->vm->radiation;
+                printf("DCPU radiation: %s\n", g_hw->vm->radiation ? "ACTIVE" : "INACTIVE");
+            }
+            break;
 		
 		default:
 			if(g_hw->lowercase)
