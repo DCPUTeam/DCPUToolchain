@@ -12,6 +12,8 @@ DTIDE::DTIDE(ProjectProperties p, QWidget* parent): QMainWindow(parent)
     setupActions();
     setupSignals();
 
+    resize(QSize(640, 480));
+
     addCodeTab(p);
 }
 
