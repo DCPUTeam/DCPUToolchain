@@ -22,6 +22,8 @@ void DTIDETabWidget::updateTitle(QString title)
 
 void DTIDETabWidget::fileSave(QString path)
 {
+    if(path.isEmpty()) return;
+
     QFileInfo f(path);
     setTabText(currentIndex(), f.fileName());
 

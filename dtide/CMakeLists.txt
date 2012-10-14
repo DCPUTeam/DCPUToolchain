@@ -8,14 +8,18 @@ if(${QT4_FOUND})
         mainwindow.cpp
         dcpuhighlighter.cpp
         dtidetabwidget.cpp
+        dtidesplash.cpp
+        backends.cpp
         codeeditor.cpp)
     set(dtide_HEADERS 
         mainwindow.h
         dcpuhighlighter.h
         dtidetabwidget.h
+        dtidesplash.h
+        backends.h
         codeeditor.h)
         
-    set(dtide_FORMS "")
+    set(dtide_FORMS "splash.ui")
 
     QT4_WRAP_CPP(dtide_HEADERS_MOC ${dtide_HEADERS})
     QT4_WRAP_UI(dtide_FORMS_HEADERS ${dtide_FORMS})

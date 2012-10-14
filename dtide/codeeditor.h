@@ -12,6 +12,7 @@ class QResizeEvent;
 class QSize;
 class QWidget;
 
+#include "backends.h"
 #include "dcpuhighlighter.h"
 
 class CodeEditor: public QPlainTextEdit
@@ -19,14 +20,14 @@ class CodeEditor: public QPlainTextEdit
     Q_OBJECT
 
 public:
-    CodeEditor(QString filename, QWidget* parent = 0);
+    CodeEditor(ProjectProperties p, QWidget* parent = 0);
 
     void lineNumberAreaPaintEvent(QPaintEvent* event);
     int lineNumberAreaWidth();
 
     void saveFile(QString path, QString name);
 
-    QString fileName;
+    ProjectProperties properties;
 
 signals:
     void fileNameChanged(QString);
@@ -42,7 +43,7 @@ private slots:
 
 private:
     QWidget *lineNumberArea;
-    DCPUHighlighter* highlighter;
+    QSyntaxHighlighter* highlighter;
     bool dirty;
 };
 

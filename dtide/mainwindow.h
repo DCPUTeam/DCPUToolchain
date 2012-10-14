@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QFileDialog>
 
+#include "backends.h"
 #include "codeeditor.h"
 #include "dtidetabwidget.h"
 
@@ -18,10 +19,10 @@ class DTIDE: public QMainWindow
     Q_OBJECT
 
 public:
-    DTIDE(QWidget* parent = 0);
+    DTIDE(ProjectProperties p, QWidget* parent = 0);
 
 protected:
-    void addCodeTab(const QString& title);
+    void addCodeTab(ProjectProperties p);
 
 signals:
     void fileSave(QString);
@@ -35,6 +36,7 @@ private:
     DTIDETabWidget* tabs;
     QMenuBar* menu;
     QAction* nextTab;
+    int type;
 
     void setupMenuBar();
     void setupActions();

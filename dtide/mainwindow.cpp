@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 
-DTIDE::DTIDE(QWidget* parent): QMainWindow(parent)
+DTIDE::DTIDE(ProjectProperties p, QWidget* parent): QMainWindow(parent)
 {
     menu = menuBar();
 
@@ -12,21 +12,21 @@ DTIDE::DTIDE(QWidget* parent): QMainWindow(parent)
     setupActions();
     setupSignals();
 
-    addCodeTab("untitled.dasm");
+    addCodeTab(p);
 }
 
-void DTIDE::addCodeTab(const QString& title)
+void DTIDE::addCodeTab(ProjectProperties p)
 {
     QFont font;
     font.setFamily("Monospace");
     font.setFixedPitch(true);
     font.setPointSize(10);
 
-    CodeEditor* editor = new CodeEditor("untitled.dasm", this);
+    CodeEditor* editor = new CodeEditor(p, this);
     connect(editor, SIGNAL(fileNameChanged(QString)), tabs, SLOT(updateTitle(QString)));
     editor->setFont(font);
 
-    tabs->addTab(editor, title);
+    tabs->addTab(editor, p.fileName);
 }
 
 void DTIDE::setupActions()
@@ -54,12 +54,11 @@ void DTIDE::setupMenuBar()
 
 void DTIDE::newFile()
 {
-    addCodeTab("untitled.dasm");
+    addCodeTab(DTIDEBackends::getUntitledProperties(type));
 }
 
 void DTIDE::openFile()
 {
-    addCodeTab("opened_file.dasm");
 }
 
 void DTIDE::saveFile()
