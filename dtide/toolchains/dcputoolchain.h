@@ -9,15 +9,14 @@
 class DCPUToolchainASM: public Language
 {
 public:
-    std::string Name;
-    std::string Description;
-
-    std::list<std::string> Extensions;
+    std::string GetName();
+    std::string GetDescription();
+    std::list<std::string> GetExtensions();
 
     DCPUToolchainASM();
     
     void Build(std::string filename, std::string outputDir, BuildAPI& api);
-    std::string GetDefaultName();
+    std::string GetDefaultFileName();
 
     CodeSyntax GetCodeSyntax();
 };
@@ -29,9 +28,10 @@ public:
 
     std::string GetDescription();
 
-    std::list<Language*> GetLanguages();
+    std::list<std::string> GetAuthors();
+    std::string GetLicense();
 
-    Language* GetLanguageByExtension(std::string ext);
+    std::list<Language*> GetLanguages();
 };
 
 #endif

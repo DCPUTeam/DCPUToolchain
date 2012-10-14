@@ -60,23 +60,7 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <widget class="QComboBox" name="combo_project">
-      <item>
-       <property name="text">
-        <string>DCPU Assembly</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>DCPU Toolchain C</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>DCPU Brainfuck</string>
-       </property>
-      </item>
-     </widget>
+     <widget class="QComboBox" name="combo_project"/>
     </item>
     <item>
      <widget class="QLineEdit" name="lineEdit"/>

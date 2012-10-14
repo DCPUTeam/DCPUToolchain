@@ -19,12 +19,12 @@ class DTIDE: public QMainWindow
     Q_OBJECT
 
 public:
-    DTIDE(QWidget* parent = 0);
+    DTIDE(Toolchain* t, QString filename, QWidget* parent = 0);
 
     QSize sizeHint();
 
 protected:
-    void addCodeTab();
+    void addCodeTab(const QString& fileName);
 
 signals:
     void fileSave(QString);
@@ -38,7 +38,7 @@ private:
     DTIDETabWidget* tabs;
     QMenuBar* menu;
     QAction* nextTab;
-    int type;
+    Toolchain* toolchain;
 
     void setupMenuBar();
     void setupActions();

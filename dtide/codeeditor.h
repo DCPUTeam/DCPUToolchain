@@ -14,6 +14,7 @@ class QResizeEvent;
 class QSize;
 class QWidget;
 
+#include "dtidehighlighting.h"
 #include "backends.h"
 
 class CodeEditor: public QPlainTextEdit
@@ -34,6 +35,7 @@ protected:
     void resizeEvent(QResizeEvent* event);
     void keyPressEvent(QKeyEvent* event);
     QString getExtension(); 
+    void setHighlighter();
 
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount);

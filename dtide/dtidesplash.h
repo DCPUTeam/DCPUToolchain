@@ -12,14 +12,16 @@ class DTIDESplash: public QDialog, private Ui::splash
 
 public:
     DTIDESplash(std::list<Toolchain*> toolchains, QWidget* parent = 0);
+    Toolchain* toolchain;
+    QString fileName;
 
 private slots:
     void setAndAccept();
     void openAndAccept();
 
 private:
-    QString fileName;
-    int type;
+    void setupComboBox();
+    std::list<Toolchain*> toolchains;
 };
 
 #endif

@@ -13,12 +13,9 @@ CodeEditor::CodeEditor(Toolchain* t, QString filename, QWidget* parent): QPlainT
 
     fileName = filename;
     toolchain = t;
-    
-    std::string ext = getExtension().toStdString();
-    std::list<Language*> langs = toolchain->GetLanguages();
-
-//    highlighter = DTIDEHighlighting::getHighlighter(p.type, document());
     dirty = false;
+
+    setHighlighter();
 }
 
 QString CodeEditor::getExtension()
@@ -28,6 +25,22 @@ QString CodeEditor::getExtension()
 
     return last;
 }
+
+void CodeEditor::setHighlighter()
+{
+    if(highlighter != NULL)
+        delete highlighter;
+
+    std::string ext = getExtension().toStdString();
+    Language* lang = toolchain->GetLanguageByExtension(ext);
+    
+    if(lang != NULL)
+        highlighter = DTIDEHighlighting::getHighlighter(lang->GetCodeSyntax(), document());
+    else
+        highlighter = NULL;
+
+}
+
 
 void CodeEditor::updateLineNumberAreaWidth(int newBlockCount)
 {
@@ -134,17 +147,17 @@ void CodeEditor::keyPressEvent(QKeyEvent* event)
        QPlainTextEdit::keyPressEvent(event);
     }
 
-    if(!dirty)
+    if(!dirty && !event->text().isEmpty())
     {
         dirty = true;
-//        properties.fileName += "*";
-//        emit fileNameChanged(properties.fileName);
+        fileName += "*";
+        emit fileNameChanged(fileName);
     }
 }
 
 void CodeEditor::saveFile(QString path, QString name)
 {
-  //  properties.fileName = name;
+    fileName = name;
     dirty = false;
 
     QFile file(path);
@@ -154,4 +167,6 @@ void CodeEditor::saveFile(QString path, QString name)
         stream << toPlainText();
         stream << "\n";
     }
+
+    setHighlighter();
 }

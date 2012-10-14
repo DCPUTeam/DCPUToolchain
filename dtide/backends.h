@@ -72,15 +72,15 @@ public:
 class Language
 {
 public:
-  std::string Name;
-  std::string Description;
+  virtual std::string GetName() = 0;
+  virtual std::string GetDescription() = 0;
   // File extensions (can be empty for languages only produced by build outputs
   // such as object files).
-  std::list<std::string> Extensions;
+  virtual std::list<std::string> GetExtensions() = 0;
   void Build(std::string filename, std::string outputDir, BuildAPI& api);
 
-  std::string GetDefaultFileName();
-  CodeSyntax GetCodeSyntax();
+  virtual std::string GetDefaultFileName() = 0;
+  virtual CodeSyntax GetCodeSyntax() = 0;
 };
 
 class Device
@@ -178,10 +178,10 @@ class Toolchain
 {
 public:
   // Basic informational stuff.
-  std::string GetName();
-  std::string GetDescription();
-  std::list<std::string> GetAuthors();
-  std::string GetLicense();
+  virtual std::string GetName() = 0;
+  virtual std::string GetDescription() = 0;
+  virtual std::list<std::string> GetAuthors() = 0;
+  virtual std::string GetLicense() = 0;
 
   // Configuration interface.
   std::list<ConfigurationOption> GetOptions();

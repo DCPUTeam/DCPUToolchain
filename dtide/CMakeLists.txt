@@ -10,15 +10,14 @@ if(${QT4_FOUND})
         toolchains/dcputoolchain.cpp
         dtidetabwidget.cpp
         dtidesplash.cpp
+        dtidehighlighting.cpp
         backends.cpp
         codeeditor.cpp)
     set(dtide_HEADERS 
         mainwindow.h
         highlighters/dcpuhighlighter.h
-        toolchains/dcputoolchain.cpp
         dtidetabwidget.h
         dtidesplash.h
-        backends.h
         codeeditor.h)
         
     set(dtide_FORMS "ui/splash.ui")
@@ -32,6 +31,9 @@ if(${QT4_FOUND})
     include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
     )
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+
     add_executable(dtide ${dtide_SOURCES}
         ${dtide_HEADERS_MOC}
         ${dtide_FORMS_HEADERS}
