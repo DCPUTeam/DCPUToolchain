@@ -7,6 +7,7 @@ if(${QT4_FOUND})
         main.cpp 
         mainwindow.cpp
         highlighters/dcpuhighlighter.cpp
+        toolchains/dcputoolchain.cpp
         dtidetabwidget.cpp
         dtidesplash.cpp
         backends.cpp
@@ -14,6 +15,7 @@ if(${QT4_FOUND})
     set(dtide_HEADERS 
         mainwindow.h
         highlighters/dcpuhighlighter.h
+        toolchains/dcputoolchain.cpp
         dtidetabwidget.h
         dtidesplash.h
         backends.h

@@ -189,7 +189,7 @@ public:
   void SetOption(std::string Name, ConfigurationType Type, ConfigurationValue Value);
   
   // Language interface.
-  std::list<Language*> GetLanguages();
+  virtual std::list<Language*> GetLanguages() = 0;
   Language* GetLanguageByExtension(std::string ext);
   
   // Debugging / execution interface.
