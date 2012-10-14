@@ -14,7 +14,6 @@ class QSize;
 class QWidget;
 
 #include "backends.h"
-#include "dcpuhighlighter.h"
 
 class CodeEditor: public QPlainTextEdit
 {

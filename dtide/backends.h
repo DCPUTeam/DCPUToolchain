@@ -1,7 +1,7 @@
 #ifndef BACKENDS_H
 #define BACKENDS_H
 
-#include "dcpuhighlighter.h"
+#include "highlighters/highlighters.h"
 
 struct ProjectProperties
 {
