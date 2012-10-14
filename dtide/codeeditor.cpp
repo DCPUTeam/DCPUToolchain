@@ -91,15 +91,30 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent* event)
 
 void CodeEditor::keyPressEvent(QKeyEvent* event)
 {
-    if(event->key() == Qt::Key_Tab)
-    {
-        QKeyEvent* space = new QKeyEvent(
+    QKeyEvent* space = new QKeyEvent(
             event->type(),
             Qt::Key_Space,
             event->modifiers(),
             QString(" "));
 
+    if(event->key() == Qt::Key_Tab)
+    {
         for(int i = 0; i < 4; i++)
+            QPlainTextEdit::keyPressEvent(space);
+    }
+    else if(event->key() == Qt::Key_Return)
+    {
+        QTextCursor c = textCursor();
+        c.movePosition(QTextCursor::StartOfBlock);
+        c.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        
+        QString previousLine = c.selectedText();
+        int count = 0;
+        int idx = 0;
+        while(previousLine[idx++] == ' ') count++;
+        
+        QPlainTextEdit::keyPressEvent(event);
+        for(int i = 0; i < count; i++) 
             QPlainTextEdit::keyPressEvent(space);
     }
     else

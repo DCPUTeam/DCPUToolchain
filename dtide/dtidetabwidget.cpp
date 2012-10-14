@@ -31,3 +31,7 @@ void DTIDETabWidget::fileSave(QString path)
     ce->saveFile(path, f.fileName());
 }
 
+QSize DTIDETabWidget::sizeHint()
+{
+    return QSize(640, 480);
+}

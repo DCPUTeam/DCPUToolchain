@@ -66,3 +66,9 @@ void DTIDE::saveFile()
     QString fileName = QFileDialog::getSaveFileName(this);
     emit fileSave(fileName);
 }
+
+QSize DTIDE::sizeHint()
+{
+    return QSize(640, 480);
+}
+

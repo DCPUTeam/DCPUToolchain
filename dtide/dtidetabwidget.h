@@ -13,6 +13,8 @@ class DTIDETabWidget: public QTabWidget
 public:
     DTIDETabWidget(QWidget* parent = 0);
 
+    QSize sizeHint();
+
 public slots:
     void goToNextTab();
     void updateTitle(QString);

@@ -21,6 +21,8 @@ class DTIDE: public QMainWindow
 public:
     DTIDE(ProjectProperties p, QWidget* parent = 0);
 
+    QSize sizeHint();
+
 protected:
     void addCodeTab(ProjectProperties p);
 

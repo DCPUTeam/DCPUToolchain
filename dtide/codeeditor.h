@@ -7,6 +7,7 @@
 #include <QTextBlock>
 #include <QPainter>
 #include <QTextStream>
+#include <QDebug>
 
 class QResizeEvent;
 class QSize;
@@ -24,7 +25,6 @@ public:
 
     void lineNumberAreaPaintEvent(QPaintEvent* event);
     int lineNumberAreaWidth();
-
     void saveFile(QString path, QString name);
 
     ProjectProperties properties;
