@@ -478,8 +478,9 @@ void vm_cycle(vm_t* vm)
                     break;
 
                 default:
-                    //vm_halt(vm, "Invalid non-basic opcode %u. (0x%04X at 0x%04X)\n", b, instruction, vm->pc);
+                    //vm_halt(vm, ;
                     vm->on_fire = true;
+                    printd(LEVEL_DEFAULT, "Invalid non-basic opcode %u. (0x%04X at 0x%04X)\n", b, instruction, vm->pc);
                     printd(LEVEL_DEFAULT, "The DCPU is ON FIRE!\n");
                     break;
             }
@@ -487,8 +488,9 @@ void vm_cycle(vm_t* vm)
             break;
 
         default:
+            printd(LEVEL_DEBUG, "Invalid opcode %u. (0x%04X at 0x%04X)\n", op, instruction, vm->pc);
+            printd(LEVEL_DEBUG, "The DCPU is ON FIRE!\n");
             vm->on_fire = true;
-//          vm_halt(vm, "Invalid opcode %u. (0x%04X at 0x%04X)\n", op, instruction, vm->pc);
             break;
     }
 

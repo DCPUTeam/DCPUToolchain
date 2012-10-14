@@ -156,6 +156,10 @@ void vm_op_fire(vm_t* vm)
                 vm->registers[REG_B] = 0x1000;
                 vm_hw_interrupt(vm, i);
 
+                vm->registers[REG_A] = 1;
+                vm->registers[REG_B] = 0x1000 + 0x17F;
+                vm_hw_interrupt(vm, i);
+
                 screen_id = i;
                 break;
             }
@@ -174,7 +178,7 @@ void vm_op_fire(vm_t* vm)
         vm->fire_cycles = 0;
         vm->fire_cycles_target = DCPU_TICKS_KHZ * 1000;
         
-        while(pos < 0x1000 + 0x17F)
+        while(pos < 0x1000 + 0x300)
         {
             length = rand() % 100;
             fill = rand() % 0x10000;
