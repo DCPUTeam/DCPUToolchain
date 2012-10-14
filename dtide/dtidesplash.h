@@ -11,8 +11,7 @@ class DTIDESplash: public QDialog, private Ui::splash
     Q_OBJECT
 
 public:
-    DTIDESplash(QWidget* parent = 0);
-    ProjectProperties getProperties();
+    DTIDESplash(std::list<Toolchain*> toolchains, QWidget* parent = 0);
 
 private slots:
     void setAndAccept();

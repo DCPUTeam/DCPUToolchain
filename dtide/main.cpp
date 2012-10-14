@@ -1,5 +1,8 @@
 #include <QtGui>
 
+#include <list>
+
+#include "backends.h"
 #include "dtidesplash.h"
 #include "mainwindow.h"
 
@@ -7,14 +10,19 @@ int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
 
-    DTIDESplash splash;
-    if(!splash.exec())
-        return 0;
-
-    ProjectProperties p = splash.getProperties();
+    std::list<Toolchain*> toolchains;
+    toolchains.insert(toolchains.end(), new DCPUToolchain());
     
+    DTIDESplash* splash = new DTIDESplash(toolchains);
+    if(!splash->exec())
+        return 0;
+   
+   /* 
     DTIDE mainWindow(p);
     mainWindow.show();
 
-    return app.exec();
+    return app.exec();*/
+
+    return 0;
 }
+

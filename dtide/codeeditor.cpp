@@ -1,6 +1,6 @@
 #include "codeeditor.h"
 
-CodeEditor::CodeEditor(ProjectProperties p, QWidget* parent): QPlainTextEdit(parent)
+CodeEditor::CodeEditor(Toolchain* t, QString filename, QWidget* parent): QPlainTextEdit(parent)
 {
     lineNumberArea = new LineNumberArea(this);
     
@@ -11,10 +11,22 @@ CodeEditor::CodeEditor(ProjectProperties p, QWidget* parent): QPlainTextEdit(par
     emit blockCountChanged(0);
     highlightCurrentLine();
 
-    highlighter = DTIDEBackends::getHighlighter(p.type, document());
+    fileName = filename;
+    toolchain = t;
+    
+    std::string ext = getExtension().toStdString();
+    std::list<Language*> langs = toolchain->GetLanguages();
 
-    properties = p;
+//    highlighter = DTIDEHighlighting::getHighlighter(p.type, document());
     dirty = false;
+}
+
+QString CodeEditor::getExtension()
+{
+    QStringList parts = fileName.split(".");
+    QString last = parts[parts.count() - 1];
+
+    return last;
 }
 
 void CodeEditor::updateLineNumberAreaWidth(int newBlockCount)
@@ -125,14 +137,14 @@ void CodeEditor::keyPressEvent(QKeyEvent* event)
     if(!dirty)
     {
         dirty = true;
-        properties.fileName += "*";
-        emit fileNameChanged(properties.fileName);
+//        properties.fileName += "*";
+//        emit fileNameChanged(properties.fileName);
     }
 }
 
 void CodeEditor::saveFile(QString path, QString name)
 {
-    properties.fileName = name;
+  //  properties.fileName = name;
     dirty = false;
 
     QFile file(path);

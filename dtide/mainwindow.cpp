@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 
-DTIDE::DTIDE(ProjectProperties p, QWidget* parent): QMainWindow(parent)
+DTIDE::DTIDE(QWidget* parent): QMainWindow(parent)
 {
     menu = menuBar();
 
@@ -14,21 +14,21 @@ DTIDE::DTIDE(ProjectProperties p, QWidget* parent): QMainWindow(parent)
 
     resize(QSize(640, 480));
 
-    addCodeTab(p);
+//    addCodeTab(p);
 }
 
-void DTIDE::addCodeTab(ProjectProperties p)
+void DTIDE::addCodeTab()
 {
     QFont font;
     font.setFamily("Monospace");
     font.setFixedPitch(true);
     font.setPointSize(10);
-
+/*
     CodeEditor* editor = new CodeEditor(p, this);
     connect(editor, SIGNAL(fileNameChanged(QString)), tabs, SLOT(updateTitle(QString)));
     editor->setFont(font);
 
-    tabs->addTab(editor, p.fileName);
+    tabs->addTab(editor, p.fileName);*/
 }
 
 void DTIDE::setupActions()
@@ -56,7 +56,7 @@ void DTIDE::setupMenuBar()
 
 void DTIDE::newFile()
 {
-    addCodeTab(DTIDEBackends::getUntitledProperties(type));
+//    addCodeTab(DTIDEBackends::getUntitledProperties(type));
 }
 
 void DTIDE::openFile()

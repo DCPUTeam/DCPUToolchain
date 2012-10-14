@@ -19,12 +19,12 @@ class DTIDE: public QMainWindow
     Q_OBJECT
 
 public:
-    DTIDE(ProjectProperties p, QWidget* parent = 0);
+    DTIDE(QWidget* parent = 0);
 
     QSize sizeHint();
 
 protected:
-    void addCodeTab(ProjectProperties p);
+    void addCodeTab();
 
 signals:
     void fileSave(QString);

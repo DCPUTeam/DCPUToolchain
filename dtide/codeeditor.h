@@ -8,6 +8,7 @@
 #include <QPainter>
 #include <QTextStream>
 #include <QDebug>
+#include <QSyntaxHighlighter>
 
 class QResizeEvent;
 class QSize;
@@ -20,13 +21,11 @@ class CodeEditor: public QPlainTextEdit
     Q_OBJECT
 
 public:
-    CodeEditor(ProjectProperties p, QWidget* parent = 0);
+    CodeEditor(Toolchain* t, QString file, QWidget* parent = 0);
 
     void lineNumberAreaPaintEvent(QPaintEvent* event);
     int lineNumberAreaWidth();
     void saveFile(QString path, QString name);
-
-    ProjectProperties properties;
 
 signals:
     void fileNameChanged(QString);
@@ -34,6 +33,7 @@ signals:
 protected:
     void resizeEvent(QResizeEvent* event);
     void keyPressEvent(QKeyEvent* event);
+    QString getExtension(); 
 
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount);
@@ -43,6 +43,9 @@ private slots:
 private:
     QWidget *lineNumberArea;
     QSyntaxHighlighter* highlighter;
+    Toolchain* toolchain;
+    QString fileName;
+
     bool dirty;
 };
 
