@@ -287,7 +287,7 @@ void vm_op_mli(vm_t* vm, uint16_t b, uint16_t a)
     OP_NUM_CYCLES(2);
 
     VM_SKIP_RESET;
-    *store_b = (uint16_t)(val_b * val_a);
+    *store_b = val_b * val_a;
     vm->ex = ((val_b * val_a) >> 16) & 0xffff;
     VM_HOOK_FIRE(store_b);
 }
@@ -347,7 +347,6 @@ void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
 {
     int16_t val_a;
     int16_t val_b;
-    int16_t val_b_signed;
     uint16_t* store_b;
     val_a = vm_resolve_value(vm, a, POS_A);
     store_b = vm_internal_get_store(vm, b, POS_B);
@@ -356,16 +355,10 @@ void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
 
     VM_SKIP_RESET;
 
-    // compute 2s complement
-    if (val_b > (2 ^ 8))
-        val_b_signed = 0 - (0x10000 - val_b);
-    else
-        val_b_signed = val_b;
-
-    if (val_a != 0)
-        *store_b = val_b_signed % val_a;
-    else
+    if(val_a == 0) 
         *store_b = 0;
+    else
+        *store_b = val_b % val_a;
 
     VM_HOOK_FIRE(store_b);
 }
