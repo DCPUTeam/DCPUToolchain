@@ -1,4 +1,5 @@
 #include "dcputoolchain.h"
+#include <iostream>
 
 DCPUToolchainASM::DCPUToolchainASM() 
 {
@@ -27,6 +28,26 @@ std::list<std::string> DCPUToolchainASM::GetExtensions()
 std::string DCPUToolchainASM::GetDefaultFileName()
 {
     return "untitled.dasm";
+}
+
+void DCPUToolchainASM::Build(std::string filename, std::string outputDir, BuildAPI &api)
+{
+    QString outputFile = "test.bin";
+    
+    // run assembler
+    QProcess *dtasm = new QProcess();
+    QStringList arguments;
+
+    arguments   <<  QString::fromStdString(filename)
+                <<  "-o"
+                <<  outputFile;
+
+    dtasm->start("./dtasm", arguments);
+
+    dtasm->waitForFinished();
+
+    api.AddOutputFile(outputFile.toStdString());
+    api.End();
 }
 
 CodeSyntax DCPUToolchainASM::GetCodeSyntax()
@@ -66,4 +87,12 @@ std::list<Language*> DCPUToolchain::GetLanguages()
     return list;
 }
 
+void DCPUToolchain::Start(std::string path, DebuggingSession& session)
+{
+    QProcess* dtemu = new QProcess();
+    QStringList arguments;
 
+    arguments   << QString::fromStdString(path);
+
+    dtemu->startDetached("./dtemu", arguments);
+}

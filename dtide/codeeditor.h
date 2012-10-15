@@ -9,12 +9,11 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QSyntaxHighlighter>
-
-class QResizeEvent;
-class QSize;
-class QWidget;
+#include <QFileDialog>
+#include <QFileInfo>
 
 #include "dtidehighlighting.h"
+#include "dtidebuildapi.h"
 #include "backends.h"
 
 class CodeEditor: public QPlainTextEdit
@@ -26,7 +25,11 @@ public:
 
     void lineNumberAreaPaintEvent(QPaintEvent* event);
     int lineNumberAreaWidth();
-    void saveFile(QString path, QString name);
+    void saveFile();
+
+    QString getPath();
+    bool build();
+    void run();
 
 signals:
     void fileNameChanged(QString);
@@ -48,6 +51,9 @@ private:
     Toolchain* toolchain;
     Language* lang;
     QString fileName;
+    QString path;
+
+    DTIDEBuildAPI buildAPI;
 
     bool dirty;
 };

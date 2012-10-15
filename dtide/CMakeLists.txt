@@ -11,6 +11,7 @@ if(${QT4_FOUND})
         dtidetabwidget.cpp
         dtidesplash.cpp
         dtidehighlighting.cpp
+        dtidebuildapi.cpp
         backends.cpp
         codeeditor.cpp)
     set(dtide_HEADERS 
