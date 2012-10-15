@@ -1,4 +1,4 @@
-.UNIT registerSigned Divide
+.UNIT registerSignedDivide
 SET A, 256
 DVI A, 512
 .ASSERT "A == 1"
