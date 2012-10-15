@@ -196,7 +196,6 @@ void vm_op_fire(vm_t* vm)
     }
 }
 
-
 void vm_op_radiation(vm_t* vm)
 {
     if(vm->radiation_cycles < vm->radiation_cycles_target)
@@ -214,8 +213,6 @@ void vm_op_radiation(vm_t* vm)
         vm_hook_fire(vm, pos, HOOK_ON_WRITE, NULL);
    }
 }
-        
-            
 
 void vm_op_set(vm_t* vm, uint16_t b, uint16_t a)
 {
