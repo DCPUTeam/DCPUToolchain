@@ -20,6 +20,10 @@ target_link_libraries(testld
 # Define folder that holds test data.
 set(BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../data/ld")
 
+# Determine linker path.
+get_property(dtld_loc TARGET dtld PROPERTY LOCATION)
+string(REPLACE "$(Configuration)" "${CMAKE_BUILD_TYPE}" dtld_loc "${dtld_loc}")
+
 # Define a function to easily create linker
 # tests.
 function(add_link_test tname)
@@ -27,14 +31,14 @@ function(add_link_test tname)
     foreach(i IN LISTS ARGN)
         list(APPEND files "${BASE_DIR}/${i}.i")
     endforeach(i IN LISTS ARGN)
-    add_test(${tname} ${CMAKE_CURRENT_BINARY_DIR}/testld -p "${dtld_BINARY_DIR}/dtld${CMAKE_EXECUTABLE_SUFFIX}" -vvv -e "${BASE_DIR}/${tname}.oe" -a "${BASE_DIR}/${tname}.oa" ${files})
+    add_test(${tname} ${CMAKE_CURRENT_BINARY_DIR}/testld -p "${dtld_loc}" -vvv -e "${BASE_DIR}/${tname}.oe" -a "${BASE_DIR}/${tname}.oa" ${files})
 endfunction(add_link_test tname)
 function(add_link_fail tname)
     set(files "")
     foreach(i IN LISTS ARGN)
         list(APPEND files "${BASE_DIR}/${i}.i")
     endforeach(i IN LISTS ARGN)
-    add_test(${tname} ${CMAKE_CURRENT_BINARY_DIR}/testld -p "${dtld_BINARY_DIR}/dtld${CMAKE_EXECUTABLE_SUFFIX}" -vvv -f -a "${BASE_DIR}/${tname}.oa" ${files})
+    add_test(${tname} ${CMAKE_CURRENT_BINARY_DIR}/testld -p "${dtld_loc}" -vvv -f -a "${BASE_DIR}/${tname}.oa" ${files})
 endfunction(add_link_fail tname)
 
 # Define the tests.

@@ -22,7 +22,11 @@ set(BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../data/vm")
 
 # Define a function to easily create unit tests.
 function(add_unit_test tname)
-    add_test(${tname} ${CMAKE_CURRENT_BINARY_DIR}/testvm -a "${dtasm_BINARY_DIR}/dtasm${CMAKE_EXECUTABLE_SUFFIX}" -d "${dtdb_BINARY_DIR}/dtdb${CMAKE_EXECUTABLE_SUFFIX}" -m "${toolchain_SOURCE_DIR}/modules" "${BASE_DIR}/${tname}.i")
+    get_property(dtasm_loc TARGET dtasm PROPERTY LOCATION)
+    get_property(dtdb_loc TARGET dtdb PROPERTY LOCATION)
+    string(REPLACE "$(Configuration)" "${CMAKE_BUILD_TYPE}" dtasm_loc "${dtasm_loc}")
+    string(REPLACE "$(Configuration)" "${CMAKE_BUILD_TYPE}" dtdb_loc "${dtdb_loc}")
+    add_test(${tname} ${CMAKE_CURRENT_BINARY_DIR}/testvm -a "${dtasm_loc}" -d "${dtdb_loc}" -m "${toolchain_SOURCE_DIR}/modules" "${BASE_DIR}/${tname}.i")
 endfunction(add_unit_test tname)
 
 # Define the tests.
@@ -32,4 +36,8 @@ add_unit_test(math-sub)
 add_unit_test(math-mul)
 add_unit_test(math-div)
 add_unit_test(math-shr)
+add_unit_test(math-mli)
+add_unit_test(math-dvi)
+add_unit_test(math-mod)
+add_unit_test(math-mdi)
 add_unit_test(general-pick)

@@ -42,12 +42,30 @@
 #define ERR_EXPRESSION_DIVIDE_BY_ZERO 18
 #define ERR_OUTPUT_BEFORE_SECTION 19
 #define ERR_INVALID_PARAMETER_COUNT 20
+// Warning codes (note that warnings MUST follow
+// all error codes)
 #define WARN_EXPRESSION_NOT_ADJUSTED 21
 #define WARN_USE_RELOCATION_NOT_ORIGIN 22
+#define WARN_RELATIVE_PC_ADDRESSING 23
+
+// Error value information
+#define _WARN_OFFSET 21
+#define _ERR_COUNT 24
+#define _WARN_COUNT (_ERR_COUNT - _WARN_OFFSET)
+
+// Structure for holding warning policy information
+struct warnpolicy
+{
+	int errid;
+	const char* name;
+	bool treat_as_error; //< Whether the warning should be treated as an error.
+	bool silence; //< Whether the warning should be silenced.
+};
 
 // Variables
 extern const char* err_strings[];
 extern jmp_buf errjmp;
+extern struct warnpolicy warnpolicies[];
 
 // Structure for holding error information
 struct errinfo

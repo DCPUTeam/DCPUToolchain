@@ -20,31 +20,46 @@
 #include "aerr.h"
 
 // Error strings
-const char* err_strings[23] =
+const char* err_strings[_ERR_COUNT] =
 {
-	"assembler: generic assembling error.\n",
-	"assembler: label '%s' not found.\n",
-	"assembler: attempted to output NULL operation.\n",
-	"assembler: can not use register '%s' in brackets.\n",
-	"assembler: can not use register '%s' as next value.\n",
-	"assembler: relocation table too large.\n",
-	"assembler: unsupported parameter passed to DAT instruction.\n",
-	"assembler: unsupported parameter passed to non-DAT instruction.\n",
-	"assembler: unsupported keyword encountered.\n",
-	"assembler: extension table too large.\n",
-	"assembler: extension %s is not known to the assembler.\n",
-	"assembler: can not use label '%s' as next value.\n",
-	"assembler: unrecognized opcode '%s' encountered.\n",
-	"assembler: unable to include binary file '%s' inline.\n",
-	"assembler: the .EXPORT and .IMPORT directives can not be used unless generating intermediate code.\n",
-	"assembler: operation not defined for label resolution.\n",
-	"assembler: unable to resolve '%s' as label resolution is not permitted at this time.\n",
-	"assembler: the imported label '%s' may not be used as a component of an expression.\n",
-	"assembler: expression '%s' evaluates to zero while being used as a divisor.\n",
-	"assembler: .OUTPUT is not permitted prior to .SECTION.\n",
-	"assembler: invalid parameter count for instruction.\n",
-	"warning: expressions will not be adjusted at link or relocation time. ensure labels are not used as part of expressions.\n",
-	"warning: .ORIGIN should not be used for relocation as it is not portable between kernels.\n"
+	"generic assembling error.\n",
+	"label '%s' not found.\n",
+	"attempted to output NULL operation.\n",
+	"can not use register '%s' in brackets.\n",
+	"can not use register '%s' as next value.\n",
+
+	"relocation table too large.\n",
+	"unsupported parameter passed to DAT instruction.\n",
+	"unsupported parameter passed to non-DAT instruction.\n",
+	"unsupported keyword encountered.\n",
+	"extension table too large.\n",
+
+	"extension %s is not known to the assembler.\n",
+	"can not use label '%s' as next value.\n",
+	"unrecognized opcode '%s' encountered.\n",
+	"unable to include binary file '%s' inline.\n",
+	"the .EXPORT and .IMPORT directives can not be used unless generating intermediate code.\n",
+
+	"operation not defined for label resolution.\n",
+	"unable to resolve '%s' as label resolution is not permitted at this time.\n",
+	"the imported label '%s' may not be used as a component of an expression.\n",
+	"expression '%s' evaluates to zero while being used as a divisor.\n",
+	".OUTPUT is not permitted prior to .SECTION.\n",
+
+	"invalid parameter count for instruction.\n",
+
+    // Warnings
+	"expressions will not be adjusted at link or relocation time. ensure labels are not used as part of expressions.\n",
+	".ORIGIN should not be used for relocation as it is not portable between kernels.\n",
+	"relative adjustments to PC (such as SUB PC, <n>) are not safe due to literal shortening.\n"
+};
+
+// Warning policies
+struct warnpolicy warnpolicies[_WARN_COUNT] =
+{
+	{ WARN_EXPRESSION_NOT_ADJUSTED, "expression-not-adjusted", false, false },
+	{ WARN_USE_RELOCATION_NOT_ORIGIN, "origin-usage", false, false },
+	{ WARN_RELATIVE_PC_ADDRESSING, "relative-jump", false, false },
 };
 
 // Error definition
@@ -61,8 +76,24 @@ void ahalt(int errid, const char* errdata)
 
 void awarn(int errid, const char* errdata)
 {
-	// FIXME: Should we really be hard coding output here?
-	printd(LEVEL_WARNING, err_strings[errid], errdata);
+	const char* prepend = "warning: ";
+	int msglen;
+	char* msg;
+
+	if (warnpolicies[errid - _WARN_OFFSET].errid == errid &&
+		warnpolicies[errid - _WARN_OFFSET].treat_as_error)
+		ahalt(errid, errdata);
+	if (warnpolicies[errid - _WARN_OFFSET].errid == errid &&
+		!warnpolicies[errid - _WARN_OFFSET].silence)
+	{
+		// FIXME: Use bstrings here.
+		msglen = strlen(err_strings[errid]) + strlen(prepend) + 1;
+		msg = malloc(msglen);
+		memset(msg, '\0', msglen);
+		strcat(msg, prepend);
+		strcat(msg, err_strings[errid]);
+		printd(LEVEL_WARNING, msg, errdata);
+	}
 }
 
 uint16_t ahalt_label_resolution_not_permitted(bstring name)

@@ -52,10 +52,14 @@ int main(int argc, char* argv[])
 	list_t symbols;
 	bstring temp = NULL;
 	uint16_t final;
-	int i;
+	int i, w;	
+	const char* prepend = "error: ";
+	const char* warnprefix = "no-";
+	int msglen;
+	char* msg;
 
 	// Define arguments.
-	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
+	struct arg_lit* show_help = arg_litn("h", "help", 0, 2, "Show this help.");
 	struct arg_lit* gen_relocatable = arg_lit0("r", "relocatable", "Generate relocatable code.");
 	struct arg_lit* gen_intermediate = arg_lit0("i", "intermediate", "Generate intermediate code for use with the linker.");
 	// 20 is maxcount for include directories, this has to be set to some constant number.
@@ -63,11 +67,12 @@ int main(int argc, char* argv[])
 	struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
 	struct arg_file* symbols_file = arg_file0("s", "debug-symbols", "<file>", "The debugging symbol output file.");
+	struct arg_str* warning_policies = arg_strn("W", NULL, "policy", 0, _WARN_COUNT * 2 + 10, "Modify warning policies.");
 	struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, output_file, symbols_file, gen_relocatable, gen_intermediate, little_endian_mode, include_dirs, input_file, verbose, quiet, end };
+	void* argtable[] = { show_help, output_file, symbols_file, warning_policies, gen_relocatable, gen_intermediate, little_endian_mode, include_dirs, input_file, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -82,6 +87,12 @@ int main(int argc, char* argv[])
 		arg_print_syntax(stderr, argtable, "\n");
 		printd(LEVEL_DEFAULT, "options:\n");
 		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
+        if (show_help->count == 2)
+        {
+            printd(LEVEL_DEFAULT, "defined warnings:\n");
+            for (w = 0; w < _WARN_COUNT; w++)
+                printd(LEVEL_DEFAULT, "          %s\n", warnpolicies[w].name);
+        }
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
@@ -95,14 +106,79 @@ int main(int argc, char* argv[])
 	// Set endianness.
 	isetmode(little_endian_mode->count == 0 ? IMODE_BIG : IMODE_LITTLE);
 
+	// Set up warning policies.
+	for (i = 0; i < warning_policies->count; i++)
+	{
+		if (strcmp(warning_policies->sval[i], "all") == 0)
+			for (w = 0; w < _WARN_COUNT; w++)
+				warnpolicies[w].silence = false;
+		else if (strcmp(warning_policies->sval[i], "error") == 0)
+			for (w = 0; w < _WARN_COUNT; w++)
+                warnpolicies[w].treat_as_error = true;
+		else
+		{
+			// Loop through enabling any that match.
+			for (w = 0; w < _WARN_COUNT; w++)
+			{
+				if (strcmp(warnpolicies[w].name, warning_policies->sval[i]) == 0)
+					warnpolicies[w].silence = false;
+			}
+
+			// Loop through disabling any that match.
+			if (strlen(warning_policies->sval[i]) > 3 && warning_policies->sval[i][0] == 'n' &&
+				warning_policies->sval[i][1] == 'o' && warning_policies->sval[i][2] == '-')
+			{
+				for (w = 0; w < _WARN_COUNT; w++)
+				{
+					if (strcmp(warnpolicies[w].name, warning_policies->sval[i] + 3) == 0)
+						warnpolicies[w].silence = true;
+				}
+			}
+
+            // Loop through any prefixed with error.
+			if (strlen(warning_policies->sval[i]) > 6 && warning_policies->sval[i][0] == 'e' &&
+				warning_policies->sval[i][1] == 'r' && warning_policies->sval[i][2] == 'r' &&
+                warning_policies->sval[i][3] == 'o' && warning_policies->sval[i][4] == 'r' &&
+                warning_policies->sval[i][5] == '=')
+			{
+				for (w = 0; w < _WARN_COUNT; w++)
+				{
+					if (strcmp(warnpolicies[w].name, warning_policies->sval[i] + 6) == 0)
+                        warnpolicies[w].treat_as_error = true;
+				}
+			}
+            
+            // Loop through any prefixed with no-error.
+			if (strlen(warning_policies->sval[i]) > 9 && warning_policies->sval[i][0] == 'n' &&
+				warning_policies->sval[i][1] == 'o' && warning_policies->sval[i][2] == '-' &&
+                warning_policies->sval[i][3] == 'e' && warning_policies->sval[i][4] == 'r' &&
+                warning_policies->sval[i][5] == 'r' && warning_policies->sval[i][6] == 'o' &&
+				warning_policies->sval[i][7] == 'r' && warning_policies->sval[i][8] == '=')
+			{
+				for (w = 0; w < _WARN_COUNT; w++)
+				{
+					if (strcmp(warnpolicies[w].name, warning_policies->sval[i] + 9) == 0)
+                        warnpolicies[w].treat_as_error = true;
+				}
+			}
+		}
+	}
+
 	// Set up error handling.
 	errval = (struct errinfo*)setjmp(errjmp);
 
 	if (errval != NULL)
 	{
+		// FIXME: Use bstrings here.
+		msglen = strlen(err_strings[errval->errid]) + strlen(prepend) + 1;
+		msg = malloc(msglen);
+		memset(msg, '\0', msglen);
+		strcat(msg, prepend);
+		strcat(msg, err_strings[errval->errid]);
+		printd(LEVEL_ERROR, msg, errval->errdata);
+
 		// Handle the error.
 		printd(LEVEL_ERROR, "assembler: error occurred.\n");
-		printd(LEVEL_ERROR, err_strings[errval->errid], errval->errdata);
 
 		if (img != NULL)
 			fclose(img);

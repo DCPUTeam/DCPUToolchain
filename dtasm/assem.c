@@ -507,6 +507,14 @@ void process_line(struct ast_node_line* line)
 				if (ppresults.a_label != NULL && ppresults.a_label_bracketed) ppresults.a = NXT;
 				if (ppresults.b_label != NULL && ppresults.b_label_bracketed) ppresults.b = NXT;
 
+                // Check for relative addressing.
+                if ((insttype->opcode == OP_ADD || insttype->opcode == OP_SUB ||
+                    insttype->opcode == OP_MUL || insttype->opcode == OP_DIV) && ppresults.a == PC)
+                {
+                    // Warn about relative addressing portability.
+                    awarn(WARN_RELATIVE_PC_ADDRESSING, NULL);
+                }
+
 				// Output the initial opcode.
 				if (insttype->opcode != OP_NONBASIC)
 					result = aout_emit(aout_create_opcode(insttype->opcode, ppresults.a, ppresults.b));
