@@ -167,7 +167,8 @@ typedef struct
     uint8_t skip;	     ///< Whether the virtual machine will skip the next instruction.
     uint8_t debug;	      ///< Whether the virtual machine will output each instruction to standard output.
 
-    bool on_fire;       // Is the DCPU on fire?
+    bool can_fire;      ///< Will the DCPU catch fire on an invalid operation?
+    bool on_fire;       ///< Is the DCPU on fire?
     int fire_cycles;
     int fire_cycles_target;
     int radiation_factor;
