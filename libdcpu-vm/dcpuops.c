@@ -278,7 +278,7 @@ void vm_op_mul(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_mli(vm_t* vm, uint16_t b, uint16_t a)
 {
-    uint16_t val_a;
+    int16_t val_a;
     int16_t val_b;
     uint16_t* store_b;
     val_a = vm_resolve_value(vm, a, POS_A);
@@ -319,7 +319,7 @@ void vm_op_div(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a)
 {
-    uint16_t val_a;
+    int16_t val_a;
     int16_t val_b;
     uint16_t* store_b;
     val_a = vm_resolve_value(vm, a, POS_A);
@@ -345,8 +345,8 @@ void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
 {
-    uint16_t val_a;
-    uint16_t val_b;
+    int16_t val_a;
+    int16_t val_b;
     int16_t val_b_signed;
     uint16_t* store_b;
     val_a = vm_resolve_value(vm, a, POS_A);
@@ -453,9 +453,10 @@ void vm_op_asr(vm_t* vm, uint16_t b, uint16_t a)
     // arithmetic shifts if the left-hand value is
     // signed, however, we still need to make sure that the
     // excess register is completely compliant.
-    int16_t val_b, val_a;
+    int16_t val_b;
+    int16_t val_a;
     uint16_t* store_b;
-    val_a = (int16_t)vm_resolve_value(vm, a, POS_A);
+    val_a = vm_resolve_value(vm, a, POS_A);
     store_b = vm_internal_get_store(vm, b, POS_B);
     val_b = *store_b;
     OP_NUM_CYCLES(1);
