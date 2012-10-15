@@ -412,6 +412,23 @@ void process_line(struct ast_node_line* line)
 
 					break;
 
+                case SEEK:
+					if (line->keyword_data_expr_1 == NULL)
+					{
+						if (line->keyword_data_string != NULL)
+							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, line->keyword_data_string->data);
+						else
+							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
+					}
+
+					opos = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
+					printd(LEVEL_VERBOSE, ".SEEK 0x%04X", opos);
+
+					// Emit seek metadata.
+					aout_emit(aout_create_metadata_seek(opos));
+
+					break;
+
 				case EXPORT:
 					printd(LEVEL_VERBOSE, ".EXPORT %s", bstr2cstr(line->keyword_data_string, '0'));
 

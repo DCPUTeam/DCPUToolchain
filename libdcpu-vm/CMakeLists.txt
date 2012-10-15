@@ -23,6 +23,7 @@ add_library(libdcpu-vm STATIC
     dcpudis.h
     dcpuhook.h
     dcpuops.h
+    glfwutils.h
     hw.h
     hwioascii.h
     hwkeyboard.h
@@ -39,6 +40,7 @@ add_library(libdcpu-vm STATIC
     dcpudis.c
     dcpuhook.c
     dcpuops.c
+    glfwutils.c
     hw.c
     hwioascii.c
     hwkeyboard.c

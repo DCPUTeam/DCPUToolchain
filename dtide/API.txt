@@ -1,0 +1,204 @@
+// pseudo code
+
+enum ConfigurationType
+{
+  Integer,
+  Double,
+  String,
+  Directory,
+  File,
+  OptionList
+};
+
+union ConfigurationValue
+{
+  int Integer;
+  double Double;
+  std::string String;
+  std::string Directory; // Like string except verified by IDE.
+  std::string File; // Like string except verified by IDE.
+  std::list<std::string> OptionList; // First option is selected one?
+};
+
+class ConfigurationOption
+{
+public:
+  std::string Grouping;
+  std::string Name;
+  ConfigurationType Type;
+  ConfigurationValue Value;
+};
+
+class BuildAPI
+{
+private:
+  // Maintain state here to determine what file is currently
+  // building.  You could use multiple BuildAPIs to do parallel
+  // builds.
+public:
+  // Implemented by IDE.
+  void AddError(std::string message, std::string file, int line);
+  void AddWarning(std::string message, std::string file, int line);
+
+  // langtarget is the language to handle the output file, regardless
+  // of extension.  This way, dtcc can produce an assembly file, which
+  // produces an object file, which can be finally linked (the object file
+  // might simply be known as the "Object" language or w/e).  When the
+  // result of a build is an output file and there are no more intermediate
+  // files to process, then the build is done (success is determined by
+  // whether there were errors).
+  void AddIntermediateFile(std::string path, std::string langtarget);
+  void AddOutputFile(std::string path);
+
+  // Called when build is complete; this essentially means that the tool
+  // is done.  Note that toolchains should only call AddIntermediateFile
+  // when the file is fully generated as this can be used again to speed up
+  // parallel builds.
+  void End();
+}
+
+abstract class Language
+{
+public:
+  std::string Name;
+  std::string Description;
+  // File extensions (can be empty for languages only produced by build outputs
+  // such as object files).
+  std::list<std::string> Extensions;
+  void Build(std::string filename, std::string outputDir, BuildAPI& api);
+};
+
+abstract class Device
+{
+public:
+  // Used for custom devices since you get a reference to a single
+  // instance of the device from GetCustomDevices.  This lets you clone
+  // a device to get another one without the IDE knowing the type of device.
+  Device& Clone();
+  std::string GetName();
+  std::string GetDescription();
+  std::string GetDocumentationURL();
+  std::string GetAuthors();
+  
+  // Configuration interface (e.g. setting filename for disk device...)
+  std::list<ConfigurationOption> GetOptions();
+  ConfigurationOption GetOption();
+  void SetOption(std::string Name, ConfigurationType Type, ConfigurationValue Value);
+
+  // Debugging interface.
+  bool Has(int devid, std::string name); // Whether there is any data for this name.
+  template<class T>
+  T Get<T>(int devid, std::string name, ...); // Each device has a known set of properties (like the screen
+                                              // might expose the colour and and character in each frame with
+                                              // different names).  Varargs are used to pass in information.
+  void Hide(int devid); // Indicates the emulator / debugger should not show any visible reference of this device
+                        // as the IDE wants to draw it itself (for LEM1802 / SPED3 screens).
+  void Show(int devid); // Indicates the emulator should show this device again.
+};
+
+class DebuggingSession
+{
+public:
+  // Implemented by IDE.
+  void Stop(); // Execution has finished.
+  void Break(int id, std::string filename, int line); // Break at a certain point (id used for more functions).
+  void AddError(int id, std::string message); // Show error at breakpoint.
+  void AddWarning(int id, std::string message); // Show warning at breakpoint.
+
+  // Views.
+  void SetMemory(uint16_t[65536] memory); // Sets memory for display in IDE.
+  void PushCall(std::string call, std::string language, std::string file, int line); // Pushes a call onto the call stack for the call stack pane.
+  void PopCall(std::string language); // Pop a call from the call stack.
+
+  // Devices.
+  void SetActiveDevice(int devid, Device& device); // Provides the IDE with a reference to an active device, such as
+                                                   // any LEM1802 screens, etc. which the IDE can then draw inline.
+                                                   // Device IDs are used to differentiate between two devices of the 
+                                                   // same type (e.g. two LEM1802 screens).
+};
+
+enum ModuleType
+{
+  Preprocessor,
+  Debugger,
+  Optimizer,
+};
+
+// Device modules are excluded from Module; they use Device instead.
+abstract class Module
+{
+public:
+  std::string GetName();
+  std::string GetDescription();
+  std::string GetDocumentationURL();
+  std::list<std::string> GetAuthors();
+  ModuleType GetType();
+};
+
+enum ParameterType
+{
+  Number,
+  String,
+  Label,
+  Expression
+};
+
+abstract class PreprocessorModule : Module
+{
+public:
+  std::list<std::string> GetDirectives();
+  std::list<ParameterType> GetDirectiveParameters();
+  std::string GetDirectiveDescription();
+  std::list<std::string> GetFutureRequiredDirective(); (used to specify "ENDUNIT" to "UNIT" for syntax checking)
+};
+
+abstract class DebuggerModule : Module
+{
+public:
+  std::list<std::string> GetCommands();
+  std::string GetCommandDescription();
+  // Commands are actually run using the SendCommand API in the Toolchain class.
+};
+
+abstract class OptimizerModule : Module
+{
+public:
+  // Not sure what is available here.  Maybe some functions on
+  // how much data was saved or what was changed, but that might require
+  // interacting with the build API or something.
+};
+
+abstract class Toolchain
+{
+public:
+  // Basic informational stuff.
+  std::string GetName();
+  std::string GetDescription();
+  std::list<std::string> GetAuthors();
+  std::string GetLicense();
+
+  // Configuration interface.
+  std::list<ConfigurationOption> GetOptions();
+  ConfigurationOption GetOption();
+  void SetOption(std::string Name, ConfigurationType Type, ConfigurationValue Value);
+  
+  // Language interface.
+  std::list<Language&> GetLanguages();
+  
+  // Debugging / execution interface.
+  void Start(std::string path, DebuggingSession& session);
+  void Pause(DebuggingSession& session);
+  void Continue(DebuggingSession& session);
+  void Stop(DebuggingSession& session);
+  void AddBreakpoint(DebuggingSession& session, std::string path, int line);
+  void AddBreakpoint(DebuggingSession& session, uint16_t memory);
+  void AttachDevice(DebuggingSession& session, Device& device);
+  void DetachDevice(DebuggingSession& session, Device& device);
+  void SendCommand(DebuggingSession& session, std::string cmd); // send custom command (only to be used on user input).
+  // TODO: Some kind of API for live memory update.
+
+  // Modules and extensions.
+  std::list<Module&> GetModules();
+  std::list<Device&> GetCustomDevices();
+
+};
