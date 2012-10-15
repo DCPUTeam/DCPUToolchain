@@ -18,8 +18,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
-#include <argtable2.h>
 #include <bstring.h>
+#include <argtable2.h>
 #include <bfile.h>
 #include <iio.h>
 #include <osutil.h>
@@ -29,10 +29,10 @@
 #include <simclist.h>
 #include <ddata.h>
 #include <debug.h>
-#include "assem.h"
-#include "node.h"
-#include "aerr.h"
-#include "aout.h"
+#include <assem.h>
+#include <node.h>
+#include <aerr.h>
+#include <aout.h>
 
 extern int yyparse();
 extern FILE* yyin, *yyout;
