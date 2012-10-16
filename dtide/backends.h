@@ -49,8 +49,8 @@ private:
   // builds.
 public:
   // Implemented by IDE.
-  void AddError(std::string message, std::string file, int line);
-  void AddWarning(std::string message, std::string file, int line);
+  virtual void AddError(std::string message, std::string file, int line) = 0;
+  virtual void AddWarning(std::string message, std::string file, int line) = 0;
 
   // langtarget is the language to handle the output file, regardless
   // of extension.  This way, dtcc can produce an assembly file, which
@@ -59,14 +59,14 @@ public:
   // result of a build is an output file and there are no more intermediate
   // files to process, then the build is done (success is determined by
   // whether there were errors).
-  void AddIntermediateFile(std::string path, std::string langtarget);
-  void AddOutputFile(std::string path);
+  virtual void AddIntermediateFile(std::string path, std::string langtarget) = 0;
+  virtual void AddOutputFile(std::string path) = 0;
 
   // Called when build is complete; this essentially means that the tool
   // is done.  Note that toolchains should only call AddIntermediateFile
   // when the file is fully generated as this can be used again to speed up
   // parallel builds.
-  void End();
+  virtual void End() = 0;
 };
 
 class Language
@@ -77,7 +77,7 @@ public:
   // File extensions (can be empty for languages only produced by build outputs
   // such as object files).
   virtual std::list<std::string> GetExtensions() = 0;
-  void Build(std::string filename, std::string outputDir, BuildAPI& api);
+  virtual void Build(std::string filename, std::string outputDir, BuildAPI& api) = 0;
 
   virtual std::string GetDefaultFileName() = 0;
   virtual CodeSyntax GetCodeSyntax() = 0;
@@ -193,7 +193,7 @@ public:
   Language* GetLanguageByExtension(std::string ext);
   
   // Debugging / execution interface.
-  void Start(std::string path, DebuggingSession& session);
+  virtual void Start(std::string path, DebuggingSession& session) = 0;
   void Pause(DebuggingSession& session);
   void Continue(DebuggingSession& session);
   void Stop(DebuggingSession& session);

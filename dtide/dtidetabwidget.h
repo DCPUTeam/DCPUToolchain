@@ -18,7 +18,7 @@ public:
 public slots:
     void goToNextTab();
     void updateTitle(QString);
-    void fileSave(QString);
+    void fileSave();
 };
 
 #endif

@@ -156,12 +156,20 @@ void CodeEditor::keyPressEvent(QKeyEvent* event)
     }
 }
 
-void CodeEditor::saveFile(QString path, QString name)
+void CodeEditor::saveFile()
 {
-    fileName = name;
-    dirty = false;
+    if(path.isEmpty())
+    {
+        path = QFileDialog::getSaveFileName(this);
+    }
 
+    QFileInfo f(path);
+    fileName = f.fileName();
+    emit fileNameChanged(fileName);
+
+    dirty = false;
     QFile file(path);
+
     if(file.open(QIODevice::WriteOnly))
     {
         QTextStream stream(&file);
@@ -169,5 +177,33 @@ void CodeEditor::saveFile(QString path, QString name)
         stream << "\n";
     }
 
+
     setHighlighter();
 }
+
+QString CodeEditor::getPath()
+{
+    if(path.isEmpty())
+    {
+        saveFile();
+    }
+
+    return path;
+}
+
+bool CodeEditor::build()
+{
+    QFileInfo f(getPath());
+    std::string absolutePath = f.absolutePath().toStdString();
+
+    lang->Build(path.toStdString(), absolutePath, buildAPI);
+
+    return true;
+}
+
+void CodeEditor::run()
+{
+    DebuggingSession s;
+    toolchain->Start(buildAPI.output, s);
+}
+

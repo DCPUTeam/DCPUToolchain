@@ -42,7 +42,7 @@ void DTIDE::setupActions()
 
 void DTIDE::setupSignals()
 {
-    connect(this, SIGNAL(fileSave(QString)), tabs, SLOT(fileSave(QString)));
+    connect(this, SIGNAL(fileSave()), tabs, SLOT(fileSave()));
 }
 
 void DTIDE::setupMenuBar()
@@ -53,6 +53,12 @@ void DTIDE::setupMenuBar()
     file->addAction("&New file", this, SLOT(newFile()), tr("Ctrl+N"));
     file->addAction("&Open file", this, SLOT(openFile()), tr("Ctrl+O"));
     file->addAction("&Save file", this, SLOT(saveFile()), tr("Ctrl+S"));
+
+    QMenu* project = new QMenu("&Project", this);
+    menu->addMenu(project);
+
+    project->addAction("Compil&e", this, SLOT(compileProject()), tr("Ctrl+E"));
+    project->addAction("Compile and &run", this, SLOT(compileAndRunProject()), tr("Ctrl+R"));
 }
 
 void DTIDE::newFile()
@@ -66,12 +72,32 @@ void DTIDE::openFile()
 
 void DTIDE::saveFile()
 {
-    QString fileName = QFileDialog::getSaveFileName(this);
-    emit fileSave(fileName);
+    emit fileSave();
 }
 
 QSize DTIDE::sizeHint()
 {
     return QSize(640, 480);
 }
+
+void DTIDE::compileAndRunProject()
+{
+    compileProject();
+    for(int i = 0; i < tabs->count(); i++)
+    {
+        CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        w->run();
+    }
+}
+
+void DTIDE::compileProject()
+{
+    for(int i = 0; i < tabs->count(); i++)
+    {
+        CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        w->build();
+    }
+}
+
+
 

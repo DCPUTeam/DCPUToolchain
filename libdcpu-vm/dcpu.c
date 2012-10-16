@@ -51,6 +51,7 @@ void vm_init(vm_t* vm, bool init_memory)
     vm->exit = false;
     vm->skip = false;
 
+    vm->can_fire = false;
     vm->on_fire = false;
     vm->fire_cycles = 0;
     vm->fire_cycles_target = 0;

@@ -5,6 +5,9 @@
 #include <list>
 #include "../backends.h"
 
+#include <QDebug>
+#include <QProcess>
+#include <QStringList>
 
 class DCPUToolchainASM: public Language
 {
@@ -32,6 +35,8 @@ public:
     std::string GetLicense();
 
     std::list<Language*> GetLanguages();
+
+    void Start(std::string path, DebuggingSession& session);
 };
 
 #endif

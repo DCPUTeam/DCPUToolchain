@@ -66,8 +66,9 @@ int main(int argc, char* argv[])
     struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
     struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
     struct arg_int* radiation = arg_intn("r", NULL, "<n>", 0, 1, "Radiation factor (higher is less radiation)");
+    struct arg_lit* catch_fire = arg_lit0("c", "catch-fire", "The virtual machine should catch fire instead of halting.");
     struct arg_end* end = arg_end(20);
-    void* argtable[] = { input_file, debug_mode, execution_dump_file, terminate_mode, legacy_mode, little_endian_mode, verbose, quiet, radiation, end };
+    void* argtable[] = { input_file, debug_mode, execution_dump_file, terminate_mode, legacy_mode, little_endian_mode, radiation, catch_fire, verbose, quiet, end };
 
     // Parse arguments.
     nerrors = arg_parse(argc, argv, argtable);
@@ -153,10 +154,11 @@ int main(int argc, char* argv[])
     vm->debug = (debug_mode->count > 0);
     vm_flash(vm, flash);
 
-    if(radiation->count == 1)
-    {
+    // Set radiation and catch fire settings.
+    if (radiation->count == 1)
         vm->radiation_factor = radiation->ival[0];
-    }
+    if (catch_fire->count == 1)
+        vm->can_fire = true;
 
     // Init hardware.
     vm_hw_timer_init(vm);

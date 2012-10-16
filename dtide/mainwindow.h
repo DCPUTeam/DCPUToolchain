@@ -27,12 +27,15 @@ protected:
     void addCodeTab(const QString& fileName);
 
 signals:
-    void fileSave(QString);
+    void fileSave();
 
 private slots:
    void newFile();
    void openFile(); 
    void saveFile();
+
+   void compileProject();
+   void compileAndRunProject();
 
 private:
     DTIDETabWidget* tabs;
