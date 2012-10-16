@@ -2,6 +2,7 @@
 
 CodeEditor::CodeEditor(Toolchain* t, QString filename, QWidget* parent): QPlainTextEdit(parent)
 {
+    highlighter = NULL;
     lineNumberArea = new LineNumberArea(this);
     
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));

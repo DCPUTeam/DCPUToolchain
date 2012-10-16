@@ -42,6 +42,6 @@ if(${QT4_FOUND})
         ${QT_LIBRARIES}
     )
 else()
-    message("Not building GUI debugger due to lack of Qt 4 libraries.")
+    message("Not building IDE due to lack of Qt 4 libraries.")
 endif()
 
