@@ -1,6 +1,6 @@
 This is the folder under which support for kernels is defined.  Each kernel can be
-specified to support a certain functionality set, of which only 'malloc', 'free' and
-'errno' are absolutely required.
+specified to support a certain functionality set, of which only 'malloc', 'free',
+'errno' and 'exit' are absolutely required.
 
 Each kernel defines the available functions according to it's config.lua file, which
 is read in during compilation of DCPU-16 programs.  Where functionality is not provided
@@ -18,8 +18,8 @@ actual C definition you would name it `_stubapi_malloc` The full list of handles
 Memory Management
 ======================
 
-void\* malloc(int size)
---------------------------
+void\* malloc(uint16\_t size)
+------------------------------
 **Desciption:** Allocates a block of memory and returns the address.<br/>
 **Semantics:** If there is no available memory, this function should return a pointer
 to 0x0.  Thus 0x0 can never be allocated as memory to a C program.
@@ -41,8 +41,8 @@ silently ignore the request or initiate a segmentation fault in the program (rec
 Error Handling
 ================
 
-int errno()
--------------
+uint16\_t errno()
+------------------
 **Description:** Returns the error number from the last kernel call.<br/>
 **Semantics:** After each successful kernel call (except for this one), the error number
 maintained by the kernel should be 0.  Error numbers should be maintained unique to each
@@ -52,6 +52,16 @@ the ability for processes to change the error number of another process.
 See the error code reference at the bottom of this document for a full list of error
 codes that the kernel may return from this call.
 
+General Functions
+==================
+
+void exit(uint16\_t code)
+---------------------------
+**Description:** Informs the kernel the process is complete and should be terminated.</br>
+**Semantics:** When a process calls this, it has no remaining code left to execute.  Thus
+kernels must ensure control never returns to the process again and should perform
+clean up as soon as it is viable.
+
 File Management
 ==================
 **Notice:** If the kernel does not provide these functions, the C system library will
@@ -59,7 +69,7 @@ directly provide them by talking to the appropriate hardware and constructing an
 appropriate filesystem (not specified).  If the kernel is handling disk devices,
 it must expose these APIs or risk corrupting data on the disk.
 
-void\* open(const char\* path, int path\_size)
+void\* open(const char\* path, uint16\_t path\_size)
 ------------------------------------------------
 **Description:** Opens a handle to a path and returns a pointer to kernel-specific data.<br/>
 **Semantics:** The `path_size` parameter provides the length of the path string.  This allows
@@ -70,8 +80,8 @@ process that were not already explicitly closed.
 
 If there is an error opening the handle, the kernel must return NULL.
 
-uint16_t read(void* handle, void* out, uint16_t offset, uint16_t size)
------------------------------------------------------------------------
+uint16\_t read(void\* handle, void\* out, uint16\_t offset, uint16\_t size)
+---------------------------------------------------------------------------
 **Description:** Reads data from the file handle and stores the data in the memory pointed to
 by out.  The offset specifies the position in the file.  The size is the maximum number of
 bytes to read and the call returns the actual number of bytes read.<br/>
@@ -82,8 +92,8 @@ access to all data on the disk.  The kernel should return the actual number of b
 may be less that the specified size but MUST NOT be more than the specified size.  If a read is
 requested past the end of the file the kernel must return 0 and perform no reading.
 
-uint16_t write(void* handle, void* in, uint16_t offset, uint16_t size)
------------------------------------------------------------------------
+uint16\_t write(void\* handle, void\* in, uint16\_t offset, uint16\_t size)
+-------------------------------------------------------------------------
 **Description:** Writes data from memory pointed to by in to the file handle.  Writing begins
 in the file at the specified offset.  The size is the maximum number of bytes the kernel
 is permitted to write to the file from memory and the call returns the number of actual
@@ -97,7 +107,7 @@ but MUST NOT be more than the specified size.  If a write is requested past the 
 the kernel must expand the file if disk space permits, otherwise the kernel should write up
 until the disk is full.
 
-void close(void* handle)
+void close(void\* handle)
 -------------------------
 **Description:** Closes an existing file handle.<br/>
 **Semantics:** If the address that is passed is not to a valid handle, the kernel may silently
@@ -110,13 +120,13 @@ directly provide them by talking to the appropriate hardware and constructing an
 appropriate filesystem (not specified).  If the kernel is handling disk devices,
 it must expose these APIs or risk corrupting data on the disk.
 
-void mkdir(const char\* path, int path\_size)
+void mkdir(const char\* path, uint16\_t path\_size)
 -----------------------------------------------
 **Description:** Creates a new directory at the specified path.<br/>
 **Semantics:** The `path_size` parameter provides the length of the path string.  This allows
 either C strings or Pascal strings to be used inside the kernel.
 
-void rmdir(const char\* path, int path\_size)
+void rmdir(const char\* path, uint16\_t path\_size)
 -----------------------------------------------
 **Description:** Removes an empty directory at the specified path.<br/>
 **Semantics:** The `path_size` parameter provides the length of the path string.  This allows

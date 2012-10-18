@@ -1,14 +1,8 @@
-.ULINE 2 "memory.dasm16"
-
 .EXPORT malloc
 .EXPORT free
 .EXPORT kernel_boot
 .IMPORT kernel_boot
 
-.SECTION INIT
-JSR kernel_boot
-
-.SECTION CODE
 :mempointer DAT 0x6000
 :userspacemem DAT 0x6000
 :userspaceend DAT 0x7FFF
