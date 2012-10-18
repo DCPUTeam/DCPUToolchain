@@ -57,7 +57,7 @@ General Functions
 
 void exit(uint16\_t code)
 ---------------------------
-**Description:** Informs the kernel the process is complete and should be terminated.</br>
+**Description:** Informs the kernel the process is complete and should be terminated.<br/>
 **Semantics:** When a process calls this, it has no remaining code left to execute.  Thus
 kernels must ensure control never returns to the process again and should perform
 clean up as soon as it is viable.
