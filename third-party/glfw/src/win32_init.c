@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Win32/WGL
+// Platform:    Win32/WGL
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -62,23 +62,23 @@ static GLboolean initLibraries(void)
 
     _glfwLibrary.Win32.winmm.instance = LoadLibrary(L"winmm.dll");
     if (!_glfwLibrary.Win32.winmm.instance)
-	return GL_FALSE;
+        return GL_FALSE;
 
     _glfwLibrary.Win32.winmm.joyGetDevCaps = (JOYGETDEVCAPS_T)
-	GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetDevCapsW");
+        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetDevCapsW");
     _glfwLibrary.Win32.winmm.joyGetPos = (JOYGETPOS_T)
-	GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetPos");
+        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetPos");
     _glfwLibrary.Win32.winmm.joyGetPosEx = (JOYGETPOSEX_T)
-	GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetPosEx");
+        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "joyGetPosEx");
     _glfwLibrary.Win32.winmm.timeGetTime = (TIMEGETTIME_T)
-	GetProcAddress(_glfwLibrary.Win32.winmm.instance, "timeGetTime");
+        GetProcAddress(_glfwLibrary.Win32.winmm.instance, "timeGetTime");
 
     if (!_glfwLibrary.Win32.winmm.joyGetDevCaps ||
-	!_glfwLibrary.Win32.winmm.joyGetPos ||
-	!_glfwLibrary.Win32.winmm.joyGetPosEx ||
-	!_glfwLibrary.Win32.winmm.timeGetTime)
+        !_glfwLibrary.Win32.winmm.joyGetPos ||
+        !_glfwLibrary.Win32.winmm.joyGetPosEx ||
+        !_glfwLibrary.Win32.winmm.timeGetTime)
     {
-	return GL_FALSE;
+        return GL_FALSE;
     }
 #endif // _GLFW_NO_DLOAD_WINMM
 
@@ -95,15 +95,15 @@ static void freeLibraries(void)
 #ifndef _GLFW_NO_DLOAD_WINMM
     if (_glfwLibrary.Win32.winmm.instance != NULL)
     {
-	FreeLibrary(_glfwLibrary.Win32.winmm.instance);
-	_glfwLibrary.Win32.winmm.instance = NULL;
+        FreeLibrary(_glfwLibrary.Win32.winmm.instance);
+        _glfwLibrary.Win32.winmm.instance = NULL;
     }
 #endif // _GLFW_NO_DLOAD_WINMM
 }
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			     GLFW internal API			    //////
+//////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -117,14 +117,14 @@ WCHAR* _glfwCreateWideStringFromUTF8(const char* source)
 
     length = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
     if (!length)
-	return NULL;
+        return NULL;
 
     target = (WCHAR*) malloc(sizeof(WCHAR) * (length + 1));
 
     if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, length + 1))
     {
-	free(target);
-	return NULL;
+        free(target);
+        return NULL;
     }
 
     return target;
@@ -142,14 +142,14 @@ char* _glfwCreateUTF8FromWideString(const WCHAR* source)
 
     length = WideCharToMultiByte(CP_UTF8, 0, source, -1, NULL, 0, NULL, NULL);
     if (!length)
-	return NULL;
+        return NULL;
 
     target = (char*) malloc(length + 1);
 
     if (!WideCharToMultiByte(CP_UTF8, 0, source, -1, target, length + 1, NULL, NULL))
     {
-	free(target);
-	return NULL;
+        free(target);
+        return NULL;
     }
 
     return target;
@@ -157,7 +157,7 @@ char* _glfwCreateUTF8FromWideString(const WCHAR* source)
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			     GLFW platform API			    //////
+//////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -170,12 +170,12 @@ int _glfwPlatformInit(void)
     // with the FOREGROUNDLOCKTIMEOUT system setting (we do this as early
     // as possible in the hope of still being the foreground process)
     SystemParametersInfo(SPI_GETFOREGROUNDLOCKTIMEOUT, 0,
-			 &_glfwLibrary.Win32.foregroundLockTimeout, 0);
+                         &_glfwLibrary.Win32.foregroundLockTimeout, 0);
     SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, UIntToPtr(0),
-			 SPIF_SENDCHANGE);
+                         SPIF_SENDCHANGE);
 
     if (!initLibraries())
-	return GL_FALSE;
+        return GL_FALSE;
 
 #ifdef __BORLANDC__
     // With the Borland C++ compiler, we want to disable FPU exceptions
@@ -204,12 +204,12 @@ int _glfwPlatformTerminate(void)
 {
     // Restore the original gamma ramp
     if (_glfwLibrary.rampChanged)
-	_glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
+        _glfwPlatformSetGammaRamp(&_glfwLibrary.originalRamp);
 
     if (_glfwLibrary.Win32.classAtom)
     {
-	UnregisterClass(_GLFW_WNDCLASSNAME, _glfwLibrary.Win32.instance);
-	_glfwLibrary.Win32.classAtom = 0;
+        UnregisterClass(_GLFW_WNDCLASSNAME, _glfwLibrary.Win32.instance);
+        _glfwLibrary.Win32.classAtom = 0;
     }
 
     // TODO: Remove keyboard hook
@@ -218,8 +218,8 @@ int _glfwPlatformTerminate(void)
 
     // Restore previous FOREGROUNDLOCKTIMEOUT system setting
     SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
-			 UIntToPtr(_glfwLibrary.Win32.foregroundLockTimeout),
-			 SPIF_SENDCHANGE);
+                         UIntToPtr(_glfwLibrary.Win32.foregroundLockTimeout),
+                         SPIF_SENDCHANGE);
 
     return GL_TRUE;
 }
@@ -233,21 +233,21 @@ const char* _glfwPlatformGetVersionString(void)
 {
     const char* version = _GLFW_VERSION_FULL
 #if defined(__MINGW32__)
-	" MinGW"
+        " MinGW"
 #elif defined(_MSC_VER)
-	" Visual C++ "
+        " Visual C++ "
 #elif defined(__BORLANDC__)
-	" Borland C"
+        " Borland C"
 #else
-	" (unknown compiler)"
+        " (unknown compiler)"
 #endif
 #if defined(_GLFW_BUILD_DLL)
-	" DLL"
+        " DLL"
 #endif
 #if !defined(_GLFW_NO_DLOAD_WINMM)
-	" load(winmm)"
+        " load(winmm)"
 #endif
-	;
+        ;
 
     return version;
 }

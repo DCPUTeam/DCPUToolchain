@@ -8,6 +8,7 @@
 	Authors:	James Rhodes
 			José Manuel Díez
 			Tyrel Haveman
+			Patrick Flick
 
 	Description:	Handles internal LEM1802 memory.
 
@@ -16,15 +17,10 @@
 #include <osutil.h>
 #include <GL/glfw3.h>
 #include <stdlib.h>
+#include <debug.h>
 #include "hwlem1802.h"
 #include "hwlem1802mem.h"
 #include "hwlem1802util.h"
-
-///
-/// The assigned palette location, defaulting to the
-/// internal palette.
-///
-uint16_t palette_location = 0;
 
 ///
 /// The internal palette used by LEM1802 when no
@@ -51,89 +47,44 @@ const uint16_t palette_internal[16] =
 };
 
 ///
-/// The assigned font location, defaulting to the
-/// internal font.
-///
-uint16_t font_location = 0;
-
-///
-/// The cloned LibTCOD image, used to easily adjust
-/// the font in memory and then reset it back into
-/// LibTCOD.
+/// The default font is loaded as PNG image into this RGB image:
 ///
 unsigned char * font_image = NULL;
 
 ///
-/// Another cloned LibTCOD image, used to dump the
-/// default into RAM when required.
+/// Default font in LEM font representation.
 ///
 uint16_t font_default[HW_LEM1802_FONT_MEMSIZE];
 
 ///
-/// The width of a single character in the font image.
-///
-int font_char_width = 0;
-
-///
-/// The height of a single character in the font image.
-///
-int font_char_height = 0;
-
-///
-/// The assigned screen location.
-///
-uint16_t screen_location = 0;
-
-///
 /// Initializes the internal LEM1802 memory.
 ///
-/// @param vm The virtual machine.
+/// @param hw The LEM1802 HW structure.
 ///
-void vm_hw_lem1802_mem_init(vm_t* vm)
+void vm_hw_lem1802_mem_init(struct lem1802_hardware* hw)
 {
-	bstring font_path;
 	int has_alpha, font_img_width, font_img_height;
 
-	// Determine the font path.
-	font_path = osutil_getarg0path();
-#ifdef WIN32
-	bconcat(font_path, bfromcstr("\\defaultfont.png"));
-#else
-	bconcat(font_path, bfromcstr("/defaultfont.png"));
-#endif
+	// init ram locations
+	hw->palette_location = HW_LEM1802_DEFAULT_PALETTE_LOC;
+	hw->font_location = HW_LEM1802_DEFAULT_FONT_LOC;
+	hw->screen_location = HW_LEM1802_DISCONNECTED;
 
-
-	// load image with default font
-	if (!vm_hw_lem1802_util_loadpng(font_path->data, &font_img_width, &font_img_height, &has_alpha, &font_image)) {
-		printf("Error loading default font.");
-		exit( EXIT_FAILURE );
+	
+	// only load default font, if it hasn't been loaded before
+	// (first time monitor is opened)
+	if (font_image == NULL)
+	{
+		// load image with default font
+		if (!vm_hw_lem1802_util_loadpng(&font_img_width, &font_img_height, &has_alpha, &font_image))
+		{
+			printd(LEVEL_ERROR, "lem1802 error: Unable to load embedded font for LEM1802.\n");
+			return;
+		}
+		
+		// load default font from loaded image
+		vm_hw_lem1802_mem_load_default_font();
 	}
-	
-	// load default font from loaded image
-	vm_hw_lem1802_mem_load_default_font();
-	font_char_width = HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH;
-	font_char_height = HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT;
-	
-	// Set the custom font based on the path.
-	/*
-	TCOD_console_set_custom_font(font_path->data, TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);
-	
-
-	// Start LibTCOD.
-#if TCOD_HEXVERSION > 0x010500
-	TCOD_console_init_root(HW_LEM1802_SCREEN_WIDTH + 2, HW_LEM1802_SCREEN_HEIGHT + 2, "Toolchain Emulator", false, TCOD_RENDERER_SDL);
-#else
-	TCOD_console_init_root(HW_LEM1802_SCREEN_WIDTH + 2, HW_LEM1802_SCREEN_HEIGHT + 2, "Toolchain Emulator", false);
-#endif
-	TCOD_sys_set_fps(10000);
-	font_image = TCOD_image_load(font_path->data);
-	font_default = TCOD_image_load(font_path->data);
-	TCOD_sys_get_char_size(&font_char_width, &font_char_height);
-
-	*/
-
-	// Free memory.
-	bdestroy(font_path);
 }
 
 ///
@@ -153,11 +104,11 @@ void vm_hw_lem1802_mem_free(vm_t* vm)
 /// for the screen.
 ///
 /// @param pos The position that the palette is mapped at.
-/// @param vm The virtual machine.
+/// @param hw The LEM1802 HW structure.
 ///
-void vm_hw_lem1802_mem_set_palette(vm_t* vm, uint16_t pos)
+void vm_hw_lem1802_mem_set_palette(struct lem1802_hardware* hw, uint16_t pos)
 {
-	palette_location = pos;
+	hw->palette_location = pos;
 }
 
 void vm_hw_lem1802_mem_dump_default_palette(vm_t* vm, uint16_t pos)
@@ -174,12 +125,12 @@ void vm_hw_lem1802_mem_dump_default_palette(vm_t* vm, uint16_t pos)
 /// automatically determining whether or not the value should
 /// be retrieved from the internal palette or the VM's RAM.
 ///
-/// @param vm The virtual machine.
+/// @param hw The LEM1802 HW structure.
 /// @param rgb The RGB color to use in rendering.
 ///
-void vm_hw_lem1802_mem_get_palette_color(vm_t* vm, uint16_t idx, unsigned char * rgb)
+void vm_hw_lem1802_mem_get_palette_color(struct lem1802_hardware* hw, uint16_t idx, unsigned char * rgb)
 {
-	if (palette_location == HW_LEM1802_INTERNAL)
+	if (hw->palette_location == HW_LEM1802_DEFAULT_PALETTE_LOC)
 	{
 		// Use the internal palette.
 		vm_hw_lem1802_util_raw2rgb(palette_internal[idx], rgb);
@@ -187,7 +138,7 @@ void vm_hw_lem1802_mem_get_palette_color(vm_t* vm, uint16_t idx, unsigned char *
 	else
 	{
 		// Use the custom palette.
-		vm_hw_lem1802_util_raw2rgb(vm->ram[palette_location + idx], rgb);
+		vm_hw_lem1802_util_raw2rgb(hw->vm->ram[hw->palette_location + idx], rgb);
 	}
 }
 
@@ -210,22 +161,23 @@ void vm_hw_lem1802_mem_get_default_palette_color(uint16_t idx, unsigned char * r
 /// for the screen.
 ///
 /// @param pos The position that the font is mapped at.
-/// @param vm The virtual machine.
+/// @param hw The LEM1802 HW structure.
 ///
-void vm_hw_lem1802_mem_set_font(vm_t* vm, uint16_t pos)
+void vm_hw_lem1802_mem_set_font(struct lem1802_hardware* hw, uint16_t pos)
 {
 	uint16_t i;
 
 	// Set the memory-mapped font location.
-	font_location = pos;
+	hw->font_location = pos;
 
 	// If the new font location is not 0, we must
 	// resynchronise the font.
-	if (font_location != HW_LEM1802_INTERNAL)
+	// TODO maybe i dont need this anymore :)
+	if (hw->font_location != HW_LEM1802_DEFAULT_FONT_LOC)
 	{
 		// Synchronise the font.
 		for (i = 0; i < 0x100; i++)
-			vm_hw_lem1802_write(vm, font_location + i, NULL);
+			vm_hw_lem1802_write(hw->vm, hw->font_location + i, hw);
 	}
 }
 
@@ -235,77 +187,56 @@ void vm_hw_lem1802_mem_set_font(vm_t* vm, uint16_t pos)
 /// Returns the position that the font is memory-mapped at,
 /// or 0 if there is no memory-mapped font.
 ///
+/// @param hw The LEM1802 HW structure.
 /// @return The position that the font is mapped at.
 ///
-uint16_t vm_hw_lem1802_mem_get_font()
+uint16_t vm_hw_lem1802_mem_get_font(struct lem1802_hardware* hw)
 {
-	return font_location;
-}
-
-///
-/// Returns the width of the characters in the font image.
-///
-/// @return The width of the characters in the font image.
-///
-uint16_t vm_hw_lem1802_mem_get_font_char_width()
-{
-	return font_char_width;
-}
-
-///
-/// Returns the height of the characters in the font image.
-///
-/// @return The height of the characters in the font image.
-///
-uint16_t vm_hw_lem1802_mem_get_font_char_height()
-{
-	return font_char_height;
+	return hw->font_location;
 }
 
 
 void vm_hw_lem1802_mem_load_default_font() {
-	unsigned int character, fontRow, fontCol, outputIndex;
-	int imgTopLeftX, imgTopLeftY, x, y;
+	unsigned int character, font_row, font_col, output_index;
+	int img_top_left_x, img_top_left_y, x, y;
 	uint16_t word1, word2, shift;
 	
 	
-	for (character = 0; character < HW_LEM1802_FONT_NUM_CHARS; character++) {
+	for (character = 0; character < HW_LEM1802_FONT_NUM_CHARS; character++)
+	{
+		font_row = character / HW_LEM1802_FONT_IMG_COLS;
+		font_col = character % HW_LEM1802_FONT_IMG_COLS;
+		output_index = 2*character;
 		
-		fontRow = character / HW_LEM1802_FONT_IMG_COLS;
-		fontCol = character % HW_LEM1802_FONT_IMG_COLS;
-		outputIndex = 2*character;
-		
-		imgTopLeftX = fontCol * HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH;
-		imgTopLeftY = fontRow * HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT;
+		img_top_left_x = font_col * HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH;
+		img_top_left_y = font_row * HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT;
 		
 		// TODO do this in one pass, by starting with MSB first
 		
 		// get first word
 		word1 = 0x0;
 		shift = 0;
-		for (x = imgTopLeftX+1; x >= imgTopLeftX; x--) {
-			for (y = imgTopLeftY; y < imgTopLeftY+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT; y++) {
-				if (font_image[HW_LEM1802_FONT_RGB_COOR(x,y)] > 128) {
+		for (x = img_top_left_x+1; x >= img_top_left_x; x--)
+			for (y = img_top_left_y; y < img_top_left_y+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT; y++)
+			{
+				if (font_image[HW_LEM1802_FONT_RGB_COOR(x,y)] > 128)
 					// foreground
 					word1 |= (0x1 << shift);
-				}
 				
 				shift++;
 			}
-		}
 		
 		// get second word
 		word2 = 0x0;
 		shift = 0;
-		for (x = imgTopLeftX+3; x >= imgTopLeftX+2; x--) {
-			for (y = imgTopLeftY; y < imgTopLeftY+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT; y++) {
-				if (font_image[HW_LEM1802_FONT_RGB_COOR(x,y)] > 128) {
+		for (x = img_top_left_x+3; x >= img_top_left_x+2; x--)
+			for (y = img_top_left_y; y < img_top_left_y+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT; y++)
+			{
+				if (font_image[HW_LEM1802_FONT_RGB_COOR(x,y)] > 128)
 					// foreground
 					word2 |= (0x1 << shift);
-				}
 				shift++;
 			}
-		}
 		
 		// save to default font
 		font_default[2*character] = word1;
@@ -314,7 +245,7 @@ void vm_hw_lem1802_mem_load_default_font() {
 }
 
 
-void vm_hw_lem1802_mem_put_char_to_screen(vm_t* vm, uint16_t val, unsigned int screenX, unsigned int screenY, unsigned char * texture, int blink_on) {
+void vm_hw_lem1802_mem_put_char_to_screen(struct lem1802_hardware* hw, uint16_t val, unsigned int screenX, unsigned int screenY) {
 	uint16_t fore, back, chr, fontval_word1, fontval_word2;
 	uint32_t fontval32bit;
 	uint16_t fontloc;
@@ -323,52 +254,97 @@ void vm_hw_lem1802_mem_put_char_to_screen(vm_t* vm, uint16_t val, unsigned int s
 	unsigned char foreclr[3];
 	unsigned char backclr[3];
 	unsigned int shift;
-	int textureTopLeftX, textureTopLeftY, x, y;
+	int texture_top_left_x, texture_top_left_y, x, y;
 	
 	fore = (val & 0xF000) >> 12;
 	back = (val & 0x0F00) >> 8;
 	chr = (val & 0x007F);
 	blink_bit = (val & 0x0080) >> 7;
-	show_foreground = (blink_bit & blink_on) | (1-blink_bit);
+	show_foreground = (blink_bit & hw->blink_status) | (1-blink_bit);
 	
 	// get color palette color
-	vm_hw_lem1802_mem_get_palette_color(vm, fore, foreclr);
-	vm_hw_lem1802_mem_get_palette_color(vm, back, backclr);
-
+	vm_hw_lem1802_mem_get_palette_color(hw, fore, foreclr);
+	vm_hw_lem1802_mem_get_palette_color(hw, back, backclr);
 	
 	// TODO get correct font position
-	fontloc = vm_hw_lem1802_mem_get_font();
-	if (fontloc == 0)
+	fontloc = vm_hw_lem1802_mem_get_font(hw);
+	if (fontloc == HW_LEM1802_DEFAULT_FONT_LOC)
 	{
 		fontval_word1 = font_default[2*chr];
 		fontval_word2 = font_default[2*chr+1];
-	} else {
-		fontval_word1 = vm->ram[fontloc+2*chr];
-		fontval_word2 = vm->ram[fontloc+2*chr+1];
+	}
+	else
+	{
+		fontval_word1 = hw->vm->ram[fontloc+2*chr];
+		fontval_word2 = hw->vm->ram[fontloc+2*chr+1];
 	}
 	fontval32bit = (fontval_word1 << 16) | fontval_word2;
 	
 	// get coordinates of character in texture
-	textureTopLeftX = screenX * HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH;
-	textureTopLeftY = screenY * HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT;
+	texture_top_left_x = screenX * HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH;
+	texture_top_left_y = screenY * HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT;
 	
 	shift = 31;
-	for (x = textureTopLeftX; x < textureTopLeftX+HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH; x++) {
-		for (y = textureTopLeftY+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT-1; y >= textureTopLeftY; y--) {
-			if ((fontval32bit >> shift) & 1 & show_foreground) {
+	for (x = texture_top_left_x; x < texture_top_left_x+HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH; x++)
+		for (y = texture_top_left_y+HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT-1; y >= texture_top_left_y; y--)
+		{
+			if ((fontval32bit >> shift) & 1 & show_foreground)
+			{
 				// foreground
-				texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)] = foreclr[0];
-				texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)+1] = foreclr[1];
-				texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)+2] = foreclr[2];
-			} else {
+				hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)] = foreclr[0];
+				hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)+1] = foreclr[1];
+				hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)+2] = foreclr[2];
+			}
+			else
+			{
 				// foreground
-				texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)] = backclr[0];
-				texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)+1] = backclr[1];
-				texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)+2] = backclr[2];
+				hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)] = backclr[0];
+				hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)+1] = backclr[1];
+				hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x,y)+2] = backclr[2];
 			}
 			shift--;
 		}
+}
+
+void vm_hw_lem1802_mem_draw_border(struct lem1802_hardware* hw)
+{
+	int x, y;
+	unsigned char borderclr[3];
+	vm_hw_lem1802_mem_get_palette_color(hw, hw->border_color, borderclr);
+	
+	// top border:
+	for (y = 0; y < HW_LEM1802_SCREEN_BORDER_HEIGHT; y++)
+		for (x = 0; x < HW_LEM1802_SCREEN_TEXTURE_WIDTH; x++)
+		{
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)] = borderclr[0];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+1] = borderclr[1];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+2] = borderclr[2];
+		}
+	
+	// left and right border
+	for (y = HW_LEM1802_SCREEN_BORDER_HEIGHT; y < (HW_LEM1802_SCREEN_TEXTURE_HEIGHT-HW_LEM1802_SCREEN_BORDER_HEIGHT); y++)
+	{
+		for (x = 0; x < HW_LEM1802_SCREEN_BORDER_WIDTH; x++)
+		{
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)] = borderclr[0];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+1] = borderclr[1];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+2] = borderclr[2];
+		}
+		for (x = HW_LEM1802_SCREEN_TEXTURE_WIDTH-HW_LEM1802_SCREEN_BORDER_WIDTH; x < HW_LEM1802_SCREEN_TEXTURE_WIDTH; x++)
+		{
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)] = borderclr[0];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+1] = borderclr[1];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+2] = borderclr[2];
+		}
 	}
+	// bottom border:
+	for (y = HW_LEM1802_SCREEN_TEXTURE_HEIGHT-HW_LEM1802_SCREEN_BORDER_HEIGHT; y < HW_LEM1802_SCREEN_TEXTURE_HEIGHT; y++)
+		for (x = 0; x < HW_LEM1802_SCREEN_TEXTURE_WIDTH; x++)
+		{
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)] = borderclr[0];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+1] = borderclr[1];
+			hw->glfw_texture[HW_LEM1802_TEXTURE_RGB_COOR(x,y)+2] = borderclr[2];
+		}
 }
 
 ///
@@ -381,101 +357,16 @@ void vm_hw_lem1802_mem_put_char_to_screen(vm_t* vm, uint16_t val, unsigned int s
 uint32_t vm_hw_lem1802_mem_get_font_default_representation(uint16_t idx)
 {
 	uint16_t first, second;
+	
+	// get font words
 	first = font_default[2*idx];
 	second = font_default[2*idx+1];
-	
-	/*
-	unsigned int i = 0, x = 0, y = 0, fx = 0, fy = 0;
-	TCOD_color_t color_white = { 255, 255, 255 };
-	TCOD_image_t char_image = NULL;
-	uint16_t char_width, char_height;
-	uint16_t ax = 0, ay = 0;
-	uint16_t first = 0;
-	uint16_t second = 0;
-	uint16_t result = 0;
-	TCOD_color_t color;
-
-	// Get the font character width / height.
-	char_width = vm_hw_lem1802_mem_get_font_char_width();
-	char_height = vm_hw_lem1802_mem_get_font_char_height();
-	char_image = vm_hw_lem1802_mem_get_default_font_image();
-
-	// Work out the position of the character in the font.
-	fx = idx / 16 * char_width;
-	fy = idx % 16 * char_height;
-
-	// For each pixel in the image, grab it's on / off value
-	// from the memory location.
-	for (x = 0; x < 4; x++)
-	{
-		// Loop through each row.
-		for (y = 0; y < 8; y++)
-		{
-			// TEMPORARY: Some loaded fonts may have characters wider
-			//	      or higher than the addressable font size and thus
-			//	      we must skip over intermediate pixels.
-			for (ax = 0; ax < char_width; ax += char_width / HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH)
-			{
-				for (ay = 0; ay < char_height; ay += char_height / HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT)
-				{
-					// Determine whether the pixel is on or off.
-					color = TCOD_image_get_pixel(char_image, (fx + x) * char_width / HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH + ax, ay - (fy + y + 1) * char_height / HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT);
-					if (color.r == color_white.r && color.g == color_white.g && color.b == color_white.b)
-						result = 1;
-					else
-						result = 0;
-
-					// Shift across 8-bits if needed.
-					if (x == 0 || x == 2)
-						result = result << 8;
-
-					// Shift back based on the row.
-					result = result >> y;
-
-					// Set in the correct upper or lower field.
-					if (x == 0 || x == 1)
-						first += result;
-					else
-						second += result;
-				}
-			}
-		}
-	}
-	* */
 
 	// Combine first and second values into
 	// a single uint32_t and return.
 	return ((uint32_t)first << 16) + (uint32_t)second;
 }
 
-/*
-///
-/// Returns the LibTCOD image.
-///
-/// Returns the LibTCOD image.	This should probably be factored
-/// out to setting pixel functions in the font directly and hiding
-/// the exact implementation from other files.
-///
-/// @return The font image.
-///
-TCOD_image_t vm_hw_lem1802_mem_get_font_image()
-{
-	return font_image;
-}
-
-///
-/// Returns the default LibTCOD image.
-///
-/// Returns the defaultLibTCOD image.
-///
-/// @return The font image.
-///
-TCOD_image_t vm_hw_lem1802_mem_get_default_font_image()
-{
-	return font_default;
-}
-* 
-* */
 
 ///
 /// Sets the screen location used for memory mapping values.
@@ -485,36 +376,15 @@ TCOD_image_t vm_hw_lem1802_mem_get_default_font_image()
 /// disconnected state.
 ///
 /// @param pos The position that the screen is mapped at.
-/// @param vm The virtual machine.
+/// @param hw The LEM1802 HW structure.
 ///
-void vm_hw_lem1802_mem_set_screen(vm_t* vm, uint16_t pos)
+void vm_hw_lem1802_mem_set_screen(struct lem1802_hardware* hw, uint16_t pos)
 {
-	uint16_t x, y, i;
-	TCOD_color_t empty = { 0, 0, 0 };
-
 	// Set the new screen position.
-	screen_location = pos;
-
-	// TODO : clear screen in case of disconnect!
-
-	/*
-
-	// If the new screen location is 0, we must clear
-	// the screen.
-	if (screen_location == HW_LEM1802_DISCONNECTED)
-	{
-		// Clear the screen.
-		for (x = 0; x < HW_LEM1802_SCREEN_WIDTH; x++)
-			for (y = 0; y < HW_LEM1802_SCREEN_HEIGHT; y++)
-				TCOD_console_put_char_ex(NULL, x + 1, y + 1, ' ', empty, empty);
-	}
-	else
-	{
-		// Resynchronise with the VM's RAM.
-		for (i = 0; i < screen_location + HW_LEM1802_SCREEN_MEMSIZE; i++)
-			vm_hw_lem1802_write(vm, screen_location + i, NULL);
-	}
-	* */
+	hw->screen_location = pos;
+	
+	if (pos == 0)
+		hw->screen_location = HW_LEM1802_DISCONNECTED;
 }
 
 ///
@@ -523,10 +393,11 @@ void vm_hw_lem1802_mem_set_screen(vm_t* vm, uint16_t pos)
 /// Returns the position that the screen is memory-mapped at,
 /// or 0 if the screen is disconnected.
 ///
+/// @param hw The LEM1802 HW structure.
 /// @return The position that the screen is mapped at.
 ///
-uint16_t vm_hw_lem1802_mem_get_screen()
+uint16_t vm_hw_lem1802_mem_get_screen(struct lem1802_hardware* hw)
 {
-	return screen_location;
+	return hw->screen_location;
 }
 

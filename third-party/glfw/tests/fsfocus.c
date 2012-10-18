@@ -38,30 +38,30 @@ static GLboolean running = GL_TRUE;
 static void window_focus_callback(GLFWwindow window, int activated)
 {
     printf("%0.3f: Window %s\n",
-	   glfwGetTime(),
-	   activated ? "activated" : "deactivated");
+           glfwGetTime(),
+           activated ? "activated" : "deactivated");
 }
 
 static void window_key_callback(GLFWwindow window, int key, int action)
 {
     if (action != GLFW_PRESS)
-	return;
+        return;
 
     switch (key)
     {
-	case GLFW_KEY_ESCAPE:
-	{
-	    printf("%0.3f: User pressed Escape\n", glfwGetTime());
-	    running = GL_FALSE;
-	    break;
-	}
+        case GLFW_KEY_ESCAPE:
+        {
+            printf("%0.3f: User pressed Escape\n", glfwGetTime());
+            running = GL_FALSE;
+            break;
+        }
 
-	case GLFW_KEY_SPACE:
-	{
-	    printf("%0.3f: User pressed Space\n", glfwGetTime());
-	    glfwIconifyWindow(window);
-	    break;
-	}
+        case GLFW_KEY_SPACE:
+        {
+            printf("%0.3f: User pressed Space\n", glfwGetTime());
+            glfwIconifyWindow(window);
+            break;
+        }
     }
 }
 
@@ -78,17 +78,17 @@ int main(void)
 
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     window = glfwCreateWindow(640, 480, GLFW_FULLSCREEN, "Fullscreen focus", NULL);
     if (!window)
     {
-	glfwTerminate();
+        glfwTerminate();
 
-	fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     glfwMakeContextCurrent(window);
@@ -102,9 +102,9 @@ int main(void)
 
     while (running)
     {
-	glClear(GL_COLOR_BUFFER_BIT);
-	glfwSwapBuffers(window);
-	glfwWaitEvents();
+        glClear(GL_COLOR_BUFFER_BIT);
+        glfwSwapBuffers(window);
+        glfwWaitEvents();
     }
 
     glfwTerminate();

@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	X11/GLX
+// Platform:    X11/GLX
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -88,15 +88,15 @@
 #define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryGLX GLX
 
 // Clipboard format atom indices
-#define _GLFW_CLIPBOARD_FORMAT_UTF8	0
+#define _GLFW_CLIPBOARD_FORMAT_UTF8     0
 #define _GLFW_CLIPBOARD_FORMAT_COMPOUND 1
-#define _GLFW_CLIPBOARD_FORMAT_STRING	2
-#define _GLFW_CLIPBOARD_FORMAT_COUNT	3
+#define _GLFW_CLIPBOARD_FORMAT_STRING   2
+#define _GLFW_CLIPBOARD_FORMAT_COUNT    3
 
 // Clipboard conversion status tokens
-#define _GLFW_CONVERSION_INACTIVE	0
-#define _GLFW_CONVERSION_SUCCEEDED	1
-#define _GLFW_CONVERSION_FAILED		2
+#define _GLFW_CONVERSION_INACTIVE       0
+#define _GLFW_CONVERSION_SUCCEEDED      1
+#define _GLFW_CONVERSION_FAILED         2
 
 #ifndef GLX_MESA_swap_control
 typedef int (*PFNGLXSWAPINTERVALMESAPROC)(int);
@@ -118,8 +118,8 @@ typedef intptr_t GLFWintptr;
 //------------------------------------------------------------------------
 typedef struct _GLFWcontextGLX
 {
-    GLXContext	  context;	     // OpenGL rendering context
-    XVisualInfo*  visual;	     // Visual for selected GLXFBConfig
+    GLXContext    context;           // OpenGL rendering context
+    XVisualInfo*  visual;            // Visual for selected GLXFBConfig
 
 } _GLFWcontextGLX;
 
@@ -130,16 +130,16 @@ typedef struct _GLFWcontextGLX
 typedef struct _GLFWwindowX11
 {
     // Platform specific window resources
-    Colormap	  colormap;	     // Window colormap
-    Window	  handle;	     // Window handle
+    Colormap      colormap;          // Window colormap
+    Window        handle;            // Window handle
 
     // Various platform specific internal variables
-    GLboolean	  overrideRedirect; // True if window is OverrideRedirect
-    GLboolean	  keyboardGrabbed;  // True if keyboard is currently grabbed
-    GLboolean	  cursorGrabbed;    // True if cursor is currently grabbed
-    GLboolean	  cursorHidden;	    // True if cursor is currently hidden
-    GLboolean	  cursorCentered;   // True if cursor was moved since last poll
-    int		  cursorPosX, cursorPosY;
+    GLboolean     overrideRedirect; // True if window is OverrideRedirect
+    GLboolean     keyboardGrabbed;  // True if keyboard is currently grabbed
+    GLboolean     cursorGrabbed;    // True if cursor is currently grabbed
+    GLboolean     cursorHidden;     // True if cursor is currently hidden
+    GLboolean     cursorCentered;   // True if cursor was moved since last poll
+    int           cursorPosX, cursorPosY;
 
 } _GLFWwindowX11;
 
@@ -149,97 +149,97 @@ typedef struct _GLFWwindowX11
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryX11
 {
-    Display*	    display;
-    int		    screen;
-    Window	    root;
-    Cursor	    cursor;   // Invisible cursor for hidden cursor
+    Display*        display;
+    int             screen;
+    Window          root;
+    Cursor          cursor;   // Invisible cursor for hidden cursor
 
-    Atom	    wmDeleteWindow;    // WM_DELETE_WINDOW atom
-    Atom	    wmName;	       // _NET_WM_NAME atom
-    Atom	    wmIconName;	       // _NET_WM_ICON_NAME atom
-    Atom	    wmPing;	       // _NET_WM_PING atom
-    Atom	    wmState;	       // _NET_WM_STATE atom
-    Atom	    wmStateFullscreen; // _NET_WM_STATE_FULLSCREEN atom
-    Atom	    wmActiveWindow;    // _NET_ACTIVE_WINDOW atom
+    Atom            wmDeleteWindow;    // WM_DELETE_WINDOW atom
+    Atom            wmName;            // _NET_WM_NAME atom
+    Atom            wmIconName;        // _NET_WM_ICON_NAME atom
+    Atom            wmPing;            // _NET_WM_PING atom
+    Atom            wmState;           // _NET_WM_STATE atom
+    Atom            wmStateFullscreen; // _NET_WM_STATE_FULLSCREEN atom
+    Atom            wmActiveWindow;    // _NET_ACTIVE_WINDOW atom
 
     // True if window manager supports EWMH
-    GLboolean	    hasEWMH;
+    GLboolean       hasEWMH;
 
     struct {
-	GLboolean   available;
-	int	    eventBase;
-	int	    errorBase;
+        GLboolean   available;
+        int         eventBase;
+        int         errorBase;
     } VidMode;
 
     struct {
-	GLboolean   available;
-	int	    eventBase;
-	int	    errorBase;
-	int	    majorVersion;
-	int	    minorVersion;
-	GLboolean   gammaBroken;
+        GLboolean   available;
+        int         eventBase;
+        int         errorBase;
+        int         majorVersion;
+        int         minorVersion;
+        GLboolean   gammaBroken;
     } RandR;
 
     struct {
-	GLboolean   available;
-	int	    majorOpcode;
-	int	    eventBase;
-	int	    errorBase;
-	int	    majorVersion;
-	int	    minorVersion;
+        GLboolean   available;
+        int         majorOpcode;
+        int         eventBase;
+        int         errorBase;
+        int         majorVersion;
+        int         minorVersion;
     } Xkb;
 
     // Key code LUT (mapping X11 key codes to GLFW key codes)
-    int		    keyCodeLUT[256];
+    int             keyCodeLUT[256];
 
     // Screensaver data
     struct {
-	GLboolean   changed;
-	int	    timeout;
-	int	    interval;
-	int	    blanking;
-	int	    exposure;
+        GLboolean   changed;
+        int         timeout;
+        int         interval;
+        int         blanking;
+        int         exposure;
     } saver;
 
     // Fullscreen data
     struct {
-	GLboolean   modeChanged;
+        GLboolean   modeChanged;
 #if defined(_GLFW_HAS_XRANDR)
-	SizeID	    oldSizeID;
-	int	    oldWidth;
-	int	    oldHeight;
-	Rotation    oldRotation;
+        SizeID      oldSizeID;
+        int         oldWidth;
+        int         oldHeight;
+        Rotation    oldRotation;
 #endif /*_GLFW_HAS_XRANDR*/
 #if defined(_GLFW_HAS_XF86VIDMODE)
-	XF86VidModeModeInfo oldMode;
+        XF86VidModeModeInfo oldMode;
 #endif /*_GLFW_HAS_XF86VIDMODE*/
     } FS;
 
     // Timer data
     struct {
-	GLboolean   monotonic;
-	double	    resolution;
-	uint64_t    base;
+        GLboolean   monotonic;
+        double      resolution;
+        uint64_t    base;
     } timer;
 
     // Selection data
     struct {
-	Atom atom;
-	Atom formats[_GLFW_CLIPBOARD_FORMAT_COUNT];
-	char* string;
-	Atom target;
-	Atom targets;
-	Atom property;
-	int status;
+        Atom atom;
+        Atom formats[_GLFW_CLIPBOARD_FORMAT_COUNT];
+        char* string;
+        Atom target;
+        Atom targets;
+        Atom property;
+        int status;
     } selection;
 
     struct {
-	int		present;
-	int		fd;
-	int		numAxes;
-	int		numButtons;
-	float*		axis;
-	unsigned char*	button;
+        int             present;
+        int             fd;
+        int             numAxes;
+        int             numButtons;
+        float*          axis;
+        unsigned char*  button;
     } joystick[GLFW_JOYSTICK_LAST + 1];
 
 } _GLFWlibraryX11;
@@ -251,29 +251,29 @@ typedef struct _GLFWlibraryX11
 typedef struct _GLFWlibraryGLX
 {
     // Server-side GLX version
-    int		    majorVersion, minorVersion;
+    int             majorVersion, minorVersion;
 
     // GLX extensions
-    PFNGLXSWAPINTERVALSGIPROC		  SwapIntervalSGI;
-    PFNGLXSWAPINTERVALEXTPROC		  SwapIntervalEXT;
-    PFNGLXSWAPINTERVALMESAPROC		  SwapIntervalMESA;
-    PFNGLXGETFBCONFIGATTRIBSGIXPROC	  GetFBConfigAttribSGIX;
-    PFNGLXCHOOSEFBCONFIGSGIXPROC	  ChooseFBConfigSGIX;
+    PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
+    PFNGLXSWAPINTERVALEXTPROC             SwapIntervalEXT;
+    PFNGLXSWAPINTERVALMESAPROC            SwapIntervalMESA;
+    PFNGLXGETFBCONFIGATTRIBSGIXPROC       GetFBConfigAttribSGIX;
+    PFNGLXCHOOSEFBCONFIGSGIXPROC          ChooseFBConfigSGIX;
     PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC CreateContextWithConfigSGIX;
-    PFNGLXGETVISUALFROMFBCONFIGSGIXPROC	  GetVisualFromFBConfigSGIX;
-    PFNGLXCREATECONTEXTATTRIBSARBPROC	  CreateContextAttribsARB;
-    GLboolean	SGIX_fbconfig;
-    GLboolean	SGI_swap_control;
-    GLboolean	EXT_swap_control;
-    GLboolean	MESA_swap_control;
-    GLboolean	ARB_multisample;
-    GLboolean	ARB_create_context;
-    GLboolean	ARB_create_context_profile;
-    GLboolean	ARB_create_context_robustness;
-    GLboolean	EXT_create_context_es2_profile;
+    PFNGLXGETVISUALFROMFBCONFIGSGIXPROC   GetVisualFromFBConfigSGIX;
+    PFNGLXCREATECONTEXTATTRIBSARBPROC     CreateContextAttribsARB;
+    GLboolean   SGIX_fbconfig;
+    GLboolean   SGI_swap_control;
+    GLboolean   EXT_swap_control;
+    GLboolean   MESA_swap_control;
+    GLboolean   ARB_multisample;
+    GLboolean   ARB_create_context;
+    GLboolean   ARB_create_context_profile;
+    GLboolean   ARB_create_context_robustness;
+    GLboolean   EXT_create_context_es2_profile;
 
 #if defined(_GLFW_DLOPEN_LIBGL)
-    void*	    libGL;  // dlopen handle for libGL.so
+    void*           libGL;  // dlopen handle for libGL.so
 #endif
 } _GLFWlibraryGLX;
 
@@ -293,8 +293,8 @@ void _glfwTerminateGammaRamp(void);
 int _glfwInitOpenGL(void);
 void _glfwTerminateOpenGL(void);
 int _glfwCreateContext(_GLFWwindow* window,
-		       const _GLFWwndconfig* wndconfig,
-		       const _GLFWfbconfig* fbconfig);
+                       const _GLFWwndconfig* wndconfig,
+                       const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContext(_GLFWwindow* window);
 XVisualInfo* _glfwGetContextVisual(_GLFWwindow* window);
 

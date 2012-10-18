@@ -1,16 +1,20 @@
 /**
 
-	File:		main.c
+	File:    main.c
 
-	Project:	DCPU-16 Tools
-	Component:	Module Manager
+	Project:  DCPU-16 Tools
+	Component:  Module Manager
 
-	Authors:	James Rhodes
+	Authors:  James Rhodes
+			  Dominic May
 
-	Description:	Main entry point.
+	Description:  Main entry point.
 
 **/
 
+#ifndef WIN32
+#include <unistd.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <bstring.h>
@@ -103,7 +107,7 @@ bool do_search(CURL* curl, bstring name)
 			continue;
 		}
 		sstr = bmidstr(fname, 0, blength(fname) - 4);
-		printd(LEVEL_DEFAULT, "	 %s (installed)\n", sstr->data);
+		printd(LEVEL_DEFAULT, "   %s (installed)\n", sstr->data);
 		list_append(&installed, sstr->data);
 		bdestroy(sstr);
 		bdestroy(fname);
@@ -119,12 +123,12 @@ bool do_search(CURL* curl, bstring name)
 		btrimws(buffer);
 		sstr = bmidstr(buffer, 0, blength(buffer) - 4);
 		if (!list_contains(&installed, sstr->data))
-			printd(LEVEL_DEFAULT, "	 %s\n", sstr->data);
+			printd(LEVEL_DEFAULT, "  %s\n", sstr->data);
 		printed = true;
 		bdestroy(sstr);
 	}
 	if (!printed)
-		printd(LEVEL_DEFAULT, "	 <no online results>\n");
+		printd(LEVEL_DEFAULT, "   <no online results>\n");
 	bsclose(stream);
 	fclose(fp);
 
@@ -183,6 +187,124 @@ bool do_install(CURL* curl, bstring name)
 	return 0;
 }
 
+
+bool do_install_all(CURL* curl){
+	// define used variables
+	DIR* dir;
+	FILE* fp;
+	CURLcode res;
+	bool printed;
+	bool install_status;
+	bool something_errored;
+	bool if_something_was_installed;
+	list_t installed;
+	long httpcode = 0;
+	struct dirent* entry;
+	struct bStream* stream;
+	bstring buffer, fname, sstr;
+	bstring modpath = osutil_getmodulepath();
+	bstring ext = bfromcstr(".lua");
+	bstring url = bfromcstr("http://dms.dcputoolcha.in/modules/list");
+	list_init(&installed);
+	list_attributes_copy(&installed, list_meter_string, 1);
+	list_attributes_comparator(&installed, list_comparator_string);
+
+	// Attempt to open the modules directory.
+	dir = opendir(modpath->data);
+	if (dir == NULL)
+	{
+		printd(LEVEL_ERROR, "unable to query local repository.\n");
+		return 1;
+	}
+
+	// add the filename we wish to query to the modules folder path
+	bcatcstr(modpath, "/.all_avail");
+
+	// Open the file and do the cURL transfer.
+	printd(LEVEL_DEFAULT, "loading a list of all the modules...\n");
+	fp = fopen(modpath->data, "wb");
+	curl_easy_setopt(curl, CURLOPT_URL, url->data);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+	res = curl_easy_perform(curl);
+	curl_easy_getinfo(curl, CURLINFO_HTTP_CODE, &httpcode);
+	if (res != 0 || httpcode != 200)
+	{
+		bdestroy(url);
+		bdestroy(modpath);
+		printd(LEVEL_ERROR, "curl failed with error code %i, HTTP error code %i.\n", res, httpcode);
+		return 1;
+	}
+	fclose(fp);
+
+
+	// create a list of already installed modules
+	while ((entry = readdir(dir)) != NULL)
+	{
+		fname = bfromcstr(&entry->d_name[0]);
+		if (binstr(fname, blength(fname) - 4, ext) == BSTR_ERR)
+		{
+			bdestroy(fname);
+			continue;
+		}
+		if (entry->d_type != DT_REG)
+		{
+			bdestroy(fname);
+			continue;
+		}
+		sstr = bmidstr(fname, 0, blength(fname) - 4);
+		list_append(&installed, sstr->data);
+		bdestroy(sstr);
+		bdestroy(fname);
+	}
+
+	printd(LEVEL_DEFAULT, "\n");
+
+	// Print the names of the modules, and install them through the do_install function
+	fp = fopen(modpath->data, "r");
+	stream = bsopen(&read_data, fp);
+	buffer = bfromcstr("");
+	printed = false;
+	if_something_was_installed = false;
+	something_errored = false;
+	while (bsreadln(buffer, stream, '\n') != BSTR_ERR)
+	{
+		btrimws(buffer);
+		sstr = bmidstr(buffer, 0, blength(buffer) - 4);
+
+		// if the module is not already installed
+		if (!list_contains(&installed, sstr->data))
+		{
+			install_status = do_install(curl, bfromcstr(sstr->data));
+			if_something_was_installed = true;
+			// check whether the installation was successful
+			if (install_status != 0)
+			{
+				printd(LEVEL_DEFAULT, "  %s failed to install.\n", sstr->data);
+				something_errored = true;
+			}
+			printd(LEVEL_DEFAULT, "\n");
+		}
+
+		printed = true;
+		bdestroy(sstr);
+	}
+	if (!printed)
+		printd(LEVEL_DEFAULT, "  <no modules available>\n");
+	if (something_errored)
+		printd(LEVEL_DEFAULT, "errors occured\n");
+	if (!if_something_was_installed)
+		printd(LEVEL_DEFAULT, "no changes were made\n");
+	bsclose(stream);
+	fclose(fp);
+
+	// Clean up.
+	curl_easy_cleanup(curl);
+
+	return 0;
+}
+
+
 bool do_uninstall(CURL* curl, bstring name)
 {
 	bstring modpath = osutil_getmodulepath();
@@ -210,7 +332,58 @@ bool do_uninstall(CURL* curl, bstring name)
 	return 0;
 }
 
+bool do_uninstall_all(CURL* curl){
+	// define used variables
+	DIR* dir;
+	bool something_was_removed;
+	struct dirent* entry;
+	bstring fname, sstr;
+	bstring ext = bfromcstr(".lua");
+	bstring modpath = osutil_getmodulepath();
+
+	// Attempt to open the modules directory.
+	dir = opendir(modpath->data);
+	if (dir == NULL)
+	{
+		printd(LEVEL_ERROR, "unable to query local repository.\n");
+		return 1;
+	}
+	bdestroy(modpath);
+
+	// iterate through the installed modules
+	something_was_removed = false;
+	while ((entry = readdir(dir)) != NULL)
+	{
+		fname = bfromcstr(&entry->d_name[0]);
+		if (binstr(fname, blength(fname) - 4, ext) == BSTR_ERR)
+		{
+			bdestroy(fname);
+			continue;
+		}
+		if (entry->d_type != DT_REG)
+		{
+			bdestroy(fname);
+			continue;
+		}
+		sstr = bmidstr(fname, 0, blength(fname) - 4);
+		do_uninstall(curl, bfromcstr(sstr->data));
+		something_was_removed = true;
+		bdestroy(sstr);
+		bdestroy(fname);
+	}
+	if (!something_was_removed)
+		printd(LEVEL_DEFAULT, "No changes were made.\n");
+
+	return 0;
+}
+
 bool do_enable(CURL* curl, bstring name)
+{
+	printd(LEVEL_ERROR, "not implemented.\n");
+	return 1;
+}
+
+bool do_enable_all(CURL* curl)
 {
 	printd(LEVEL_ERROR, "not implemented.\n");
 	return 1;
@@ -221,6 +394,13 @@ bool do_disable(CURL* curl, bstring name)
 	printd(LEVEL_ERROR, "not implemented.\n");
 	return 1;
 }
+
+bool do_disable_all(CURL* curl)
+{
+	printd(LEVEL_ERROR, "not implemented.\n");
+	return 1;
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -253,7 +433,7 @@ int main(int argc, char* argv[])
 		fprintf(stderr, "syntax:\n    dtmm");
 		arg_print_syntax(stderr, argtable, "\n");
 		fprintf(stderr, "options:\n");
-		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
+		arg_print_glossary(stderr, argtable, "    %-25s %s\n");
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
@@ -286,13 +466,17 @@ int main(int argc, char* argv[])
 	if (biseqcstrcaseless(command, "search") || biseqcstrcaseless(command, "se"))
 		return do_search(curl, name);
 	else if (biseqcstrcaseless(command, "install") || biseqcstrcaseless(command, "in"))
-		return do_install(curl, name);
+		if (all) return do_install_all(curl);
+		else return do_install(curl, name);
 	else if (biseqcstrcaseless(command, "uninstall") || biseqcstrcaseless(command, "rm"))
-		return do_uninstall(curl, name);
+		if (all) return do_uninstall_all(curl);
+		else return do_uninstall(curl, name);
 	else if (biseqcstrcaseless(command, "enable") || biseqcstrcaseless(command, "en"))
-		return do_enable(curl, name);
+		if (all) return do_enable_all(curl);
+		else return do_enable(curl, name);
 	else if (biseqcstrcaseless(command, "disable") || biseqcstrcaseless(command, "di") || biseqcstrcaseless(command, "dis"))
-		return do_disable(curl, name);
+		if (all) return do_disable_all(curl);
+		else return do_disable(curl, name);
 	else
 	{
 		printd(LEVEL_ERROR, "unknown command (must be search, install, uninstall, enable or disable).");

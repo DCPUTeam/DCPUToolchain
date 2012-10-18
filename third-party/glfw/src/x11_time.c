@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	X11
+// Platform:    X11
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -43,18 +43,18 @@ static uint64_t getRawTime(void)
 #if defined(CLOCK_MONOTONIC)
     if (_glfwLibrary.X11.timer.monotonic)
     {
-	struct timespec ts;
+        struct timespec ts;
 
-	clock_gettime(CLOCK_MONOTONIC, &ts);
-	return (uint64_t) ts.tv_sec * (uint64_t) 1000000000 + (uint64_t) ts.tv_nsec;
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        return (uint64_t) ts.tv_sec * (uint64_t) 1000000000 + (uint64_t) ts.tv_nsec;
     }
     else
 #endif
     {
-	struct timeval tv;
+        struct timeval tv;
 
-	gettimeofday(&tv, NULL);
-	return (uint64_t) tv.tv_sec * (uint64_t) 1000000 + (uint64_t) tv.tv_usec;
+        gettimeofday(&tv, NULL);
+        return (uint64_t) tv.tv_sec * (uint64_t) 1000000 + (uint64_t) tv.tv_usec;
     }
 }
 
@@ -70,13 +70,13 @@ void _glfwInitTimer(void)
 
     if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
     {
-	_glfwLibrary.X11.timer.monotonic = GL_TRUE;
-	_glfwLibrary.X11.timer.resolution = 1e-9;
+        _glfwLibrary.X11.timer.monotonic = GL_TRUE;
+        _glfwLibrary.X11.timer.resolution = 1e-9;
     }
     else
 #endif
     {
-	_glfwLibrary.X11.timer.resolution = 1e-6;
+        _glfwLibrary.X11.timer.resolution = 1e-6;
     }
 
     _glfwLibrary.X11.timer.base = getRawTime();
@@ -84,7 +84,7 @@ void _glfwInitTimer(void)
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			     GLFW platform API			    //////
+//////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -94,7 +94,7 @@ void _glfwInitTimer(void)
 double _glfwPlatformGetTime(void)
 {
     return (double) (getRawTime() - _glfwLibrary.X11.timer.base) *
-	_glfwLibrary.X11.timer.resolution;
+        _glfwLibrary.X11.timer.resolution;
 }
 
 
@@ -105,6 +105,6 @@ double _glfwPlatformGetTime(void)
 void _glfwPlatformSetTime(double time)
 {
     _glfwLibrary.X11.timer.base = getRawTime() -
-	(uint64_t) (time / _glfwLibrary.X11.timer.resolution);
+        (uint64_t) (time / _glfwLibrary.X11.timer.resolution);
 }
 

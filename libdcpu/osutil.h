@@ -17,7 +17,13 @@
 #define __DCPU_OSUTIL_H
 
 #include <stdio.h>
+#include <stdint.h>
 #include "bstring.h"
+
+struct ostimeval {
+	int32_t tv_sec;
+	int32_t tv_usec;
+};
 
 bstring osutil_dirname(bstring path);
 void osutil_makebinary(FILE* fd);
@@ -25,5 +31,7 @@ void osutil_setarg0(freed_bstring arg0);
 bstring osutil_getarg0();
 bstring osutil_getarg0path();
 bstring osutil_getmodulepath();
+int osutil_gettimeofday(struct ostimeval* tv, void* unused);
+void osutil_usleep(int milliseconds);
 
 #endif

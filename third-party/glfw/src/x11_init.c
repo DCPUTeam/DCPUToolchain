@@ -402,6 +402,11 @@ static void initEWMH(void)
 {
     Window* windowFromRoot = NULL;
     Window* windowFromChild = NULL;
+    // We are now fairly sure that an EWMH-compliant window manager is running
+
+    Atom* supportedAtoms;
+    unsigned long atomCount;
+
 
     // First we need a couple of atoms, which should already be there
     Atom supportingWmCheck =
@@ -443,11 +448,6 @@ static void initEWMH(void)
 
     XFree(windowFromRoot);
     XFree(windowFromChild);
-
-    // We are now fairly sure that an EWMH-compliant window manager is running
-
-    Atom* supportedAtoms;
-    unsigned long atomCount;
 
     // Now we need to check the _NET_SUPPORTED property of the root window
     // It should be a list of supported WM protocol and state atoms

@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	X11
+// Platform:    X11
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -32,7 +32,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			     GLFW platform API			    //////
+//////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -43,8 +43,8 @@ void _glfwPlatformEnableSystemKeys(_GLFWwindow* window)
 {
     if (window->X11.keyboardGrabbed)
     {
-	XUngrabKeyboard(_glfwLibrary.X11.display, CurrentTime);
-	window->X11.keyboardGrabbed = GL_FALSE;
+        XUngrabKeyboard(_glfwLibrary.X11.display, CurrentTime);
+        window->X11.keyboardGrabbed = GL_FALSE;
     }
 }
 
@@ -56,10 +56,10 @@ void _glfwPlatformEnableSystemKeys(_GLFWwindow* window)
 void _glfwPlatformDisableSystemKeys(_GLFWwindow* window)
 {
     if (XGrabKeyboard(_glfwLibrary.X11.display, window->X11.handle,
-		      True, GrabModeAsync, GrabModeAsync, CurrentTime)
-	== GrabSuccess)
+                      True, GrabModeAsync, GrabModeAsync, CurrentTime)
+        == GrabSuccess)
     {
-	window->X11.keyboardGrabbed = GL_TRUE;
+        window->X11.keyboardGrabbed = GL_TRUE;
     }
 }
 

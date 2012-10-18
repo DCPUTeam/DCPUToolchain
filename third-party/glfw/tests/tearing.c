@@ -56,7 +56,7 @@ static void window_size_callback(GLFWwindow window, int width, int height)
 static void key_callback(GLFWwindow window, int key, int action)
 {
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-	set_swap_interval(window, 1 - swap_interval);
+        set_swap_interval(window, 1 - swap_interval);
 }
 
 int main(void)
@@ -66,17 +66,17 @@ int main(void)
 
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     window = glfwCreateWindow(0, 0, GLFW_WINDOWED, "", NULL);
     if (!window)
     {
-	glfwTerminate();
+        glfwTerminate();
 
-	fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     glfwMakeContextCurrent(window);
@@ -91,13 +91,13 @@ int main(void)
 
     while (!glfwGetWindowParam(window, GLFW_CLOSE_REQUESTED))
     {
-	glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-	position = cosf(glfwGetTime() * 4.f) * 0.75f;
-	glRectf(position - 0.25f, -1.f, position + 0.25f, 1.f);
+        position = cosf(glfwGetTime() * 4.f) * 0.75f;
+        glRectf(position - 0.25f, -1.f, position + 0.25f, 1.f);
 
-	glfwSwapBuffers(window);
-	glfwPollEvents();
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
     glfwTerminate();

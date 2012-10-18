@@ -1,19 +1,24 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(dtasm)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
-
-# Define the assembler project.
-dt_project(executable)
-dt_needs(argtable2)
-dt_needs(simclist)
-dt_needs(bstring)
-dt_needs(libdcpu)
-dt_needs(libdcpu-pp)
-dt_needs(libdcpu-pp-expr)
-dt_needs(libdcpu-ci-objfmt)
-dt_needs(libdcpu-ci-dbgfmt)
+add_executable(dtasm
+    main.c
+)
+include_directories(
+    ${simclist_SOURCE_DIR}
+    ${argtable2_SOURCE_DIR}
+    ${bstring_SOURCE_DIR}
+    ${libdcpu_SOURCE_DIR}
+    ${libdcpu-ci-asm_SOURCE_DIR}
+    ${libdcpu-ci-objfmt_SOURCE_DIR}
+    ${libdcpu-pp_SOURCE_DIR}
+    ${libdcpu-pp-expr_SOURCE_DIR}
+    ${libdcpu-ci-objfmt_SOURCE_DIR}
+    ${libdcpu-ci-dbgfmt_SOURCE_DIR}
+)
+target_link_libraries(dtasm
+    bstring
+    argtable2
+    libdcpu-ci-asm
+)
+cotire(dtasm)

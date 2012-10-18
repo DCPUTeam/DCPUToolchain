@@ -16,7 +16,18 @@
 
 #include "hwlem1802util.h"
 #include <stdlib.h>
+#include <debug.h>
 #include <png.h>
+
+///
+/// The raw bitmap data of the embedded font.
+///
+extern const char vm_hw_lem1802_font[];
+
+///
+/// The length of the raw bitmap data of the embedded font.
+///
+extern const size_t vm_hw_lem1802_font_len;
 
 ///
 /// Converts a raw 16-bit color into RGB representation.
@@ -53,18 +64,21 @@ uint16_t vm_hw_lem1802_util_rgb2raw(unsigned char * rgb)
 	return lem_color;
 }
 
-int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, int * out_has_alpha, unsigned char ** outData) {
+void read_png_from_memory(png_structp pngPtr, png_bytep data, png_size_t length)
+{
+    static int idx = 0;
+    memcpy(data, vm_hw_lem1802_font + idx, length);
+    idx += length;
+}
+
+int vm_hw_lem1802_util_loadpng(int* out_width, int* out_height, int* out_has_alpha, unsigned char** outData)
+{
 	png_structp png_ptr;
 	png_infop info_ptr;
 	png_bytepp row_pointers;
 	unsigned int sig_read = 0;
 	unsigned int row_bytes;
 	int i;
-	int color_type, interlace_type;
-	FILE *fp;
-
-	if ((fp = fopen(name, "rb")) == NULL)
-	return 0;
 
 	/* Create and initialize the png_struct
 	* with the desired error handler
@@ -77,20 +91,19 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 	* was compiled with a compatible version
 	* of the library.  REQUIRED
 	*/
-	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
-	NULL, NULL, NULL);
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
-	if (png_ptr == NULL) {
-		fclose(fp);
+	if (png_ptr == NULL)
+	{
 		return 0;
-	}
+    }
 
 	/* Allocate/initialize the memory
 	* for image information.  REQUIRED. */
 	info_ptr = png_create_info_struct(png_ptr);
-	if (info_ptr == NULL) {
-		fclose(fp);
-		png_destroy_read_struct(&png_ptr, png_infopp_NULL, png_infopp_NULL);
+	if (info_ptr == NULL)
+	{
+		png_destroy_read_struct(&png_ptr, NULL, NULL);
 		return 0;
 	}
 
@@ -103,19 +116,18 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 	* the png_create_read_struct()
 	* earlier.
 	*/
-	if (setjmp(png_jmpbuf(png_ptr))) {
+	if (setjmp(png_jmpbuf(png_ptr)))
+	{
 		/* Free all of the memory associated
 		* with the png_ptr and info_ptr */
-		png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
-		fclose(fp);
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		/* If we get here, we had a
 		* problem reading the file */
 		return 0;
 	}
 
-	/* Set up the output control if
-	* you are using standard C streams */
-	png_init_io(png_ptr, fp);
+	// Read in from memory.
+	png_set_read_fn(png_ptr, NULL, read_png_from_memory);
 
 	/* If we have already
 	* read some of the signature */
@@ -140,21 +152,20 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 	* PNG_TRANSFORM_EXPAND forces to
 	*  expand a palette into RGB
 	*/
-	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, png_voidp_NULL);
-
-	* out_width = info_ptr->width;
-	* out_height = info_ptr->height;
-	switch (info_ptr->color_type) {
+	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, NULL);
+	
+	*out_width = png_get_image_width(png_ptr, info_ptr);
+	*out_height = png_get_image_height(png_ptr, info_ptr);
+	switch (png_get_color_type(png_ptr, info_ptr)) {
 		case PNG_COLOR_TYPE_RGBA:
-		* out_has_alpha = 1;
+		*out_has_alpha = 1;
 		break;
 		case PNG_COLOR_TYPE_RGB:
-		* out_has_alpha  = 0;
+		*out_has_alpha  = 0;
 		break;
 		default:
-		printf("Error loading default font: Color type not supported");
+		printd(LEVEL_ERROR, "lem1802: error loading default font: color type not supported\n");
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-		fclose(fp);
 		return 0;
 	}
 	row_bytes = png_get_rowbytes(png_ptr, info_ptr);
@@ -162,16 +173,14 @@ int vm_hw_lem1802_util_loadpng(char *name, int * out_width, int * out_height, in
 
 	row_pointers = png_get_rows(png_ptr, info_ptr);
 
-	for (i = 0; i < (*out_height); i++) {
+	for (i = 0; i < (*out_height); i++)
+	{
 		memcpy(*outData+(row_bytes * i), row_pointers[i], row_bytes);
 	}
 
 	/* Clean up after the read,
 	* and free any memory allocated */
-	png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
-
-	/* Close the file */
-	fclose(fp);
+	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
 	/* That's it */
 	return 1;

@@ -16,7 +16,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "TPointer16.h"
-#include "../parser.hpp"
+#include "parser.hpp"
 
 bool TPointer16::isBasicType() const
 {

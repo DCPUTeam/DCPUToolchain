@@ -38,6 +38,7 @@
 #include <version.h>
 #include <debug.h>
 #include "sdp.h"
+#include "osutil.h"
 
 #define MAX_ARGUMENTS 10
 #define MAX_ARGUMENT_LENGTH 50
@@ -111,7 +112,7 @@ int main(int argc, char** argv)
 	isetmode(little_endian_mode->count == 0 ? IMODE_BIG : IMODE_LITTLE);
 
 	// Register signal handler.
-	signal(SIGINT, ddbg_sigint);
+	signal(SIGTERM, ddbg_sigint);
 
 	// Initialize debugger.
 	ddbg_init();
@@ -120,8 +121,6 @@ int main(int argc, char** argv)
 	if (no_attach_mode->count == 0)
 	{
 		ddbg_attach(bfromcstr("clock"));
-		ddbg_attach(bfromcstr("keyboard"));
-		ddbg_attach(bfromcstr("lem1802"));
 	}
 
 	// Load file if filename is specified.

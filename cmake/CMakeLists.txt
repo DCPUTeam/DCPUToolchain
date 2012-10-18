@@ -9,6 +9,6 @@ include(DCPUToolchain.cmake)
 
 # Define AtlasOS.
 add_dcpu_image(AtlasOS
-	kernel/core.dasm16
+    kernel/core.dasm16
 )
 

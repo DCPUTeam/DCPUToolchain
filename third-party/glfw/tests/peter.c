@@ -46,13 +46,13 @@ static void toggle_cursor(GLFWwindow window)
 {
     if (glfwGetInputMode(window, GLFW_CURSOR_MODE) == GLFW_CURSOR_CAPTURED)
     {
-	printf("Released cursor\n");
-	glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
+        printf("Released cursor\n");
+        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_NORMAL);
     }
     else
     {
-	printf("Captured cursor\n");
-	glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
+        printf("Captured cursor\n");
+        glfwSetInputMode(window, GLFW_CURSOR_MODE, GLFW_CURSOR_CAPTURED);
     }
 }
 
@@ -67,21 +67,21 @@ static void key_callback(GLFWwindow window, int key, int action)
 {
     switch (key)
     {
-	case GLFW_KEY_SPACE:
-	{
-	    if (action == GLFW_PRESS)
-		toggle_cursor(window);
+        case GLFW_KEY_SPACE:
+        {
+            if (action == GLFW_PRESS)
+                toggle_cursor(window);
 
-	    break;
-	}
+            break;
+        }
 
-	case GLFW_KEY_R:
-	{
-	    if (action == GLFW_PRESS)
-		reopen = GL_TRUE;
+        case GLFW_KEY_R:
+        {
+            if (action == GLFW_PRESS)
+                reopen = GL_TRUE;
 
-	    break;
-	}
+            break;
+        }
     }
 }
 
@@ -94,7 +94,7 @@ static GLboolean open_window(void)
 {
     window_handle = glfwCreateWindow(0, 0, GLFW_WINDOWED, "Peter Detector", NULL);
     if (!window_handle)
-	return GL_FALSE;
+        return GL_FALSE;
 
     glfwMakeContextCurrent(window_handle);
     glfwSwapInterval(1);
@@ -113,36 +113,36 @@ int main(void)
 {
     if (!glfwInit())
     {
-	fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to initialize GLFW: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     if (!open_window())
     {
-	fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+        exit(EXIT_FAILURE);
     }
 
     glClearColor(0.f, 0.f, 0.f, 0.f);
 
     while (!glfwGetWindowParam(window_handle, GLFW_CLOSE_REQUESTED))
     {
-	glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-	glfwSwapBuffers(window_handle);
-	glfwWaitEvents();
+        glfwSwapBuffers(window_handle);
+        glfwWaitEvents();
 
-	if (reopen)
-	{
-	    glfwDestroyWindow(window_handle);
-	    if (!open_window())
-	    {
-		fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
-		exit(EXIT_FAILURE);
-	    }
+        if (reopen)
+        {
+            glfwDestroyWindow(window_handle);
+            if (!open_window())
+            {
+                fprintf(stderr, "Failed to open GLFW window: %s\n", glfwErrorString(glfwGetError()));
+                exit(EXIT_FAILURE);
+            }
 
-	    reopen = GL_FALSE;
-	}
+            reopen = GL_FALSE;
+        }
     }
 
     glfwTerminate();

@@ -1,16 +1,37 @@
 cmake_minimum_required(VERSION 2.8.5)
-project(zlib)
+project(z)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
-
-# Define linking information for each platform.
-set(${PROJECT_NAME}_Unix z PARENT_SCOPE) 
-set(${PROJECT_NAME}_UnixNoInclude true PARENT_SCOPE)
-
-# Define the zlib project.
-message("  >> ${PROJECT_NAME}: prebuilt")
-find_package(ZLIB REQUIRED)
+if(NOT MSVC)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error -Wno-implicit-function-declaration")
+endif()
+add_library(z STATIC
+    adler32.c
+    compress.c
+    crc32.c
+    deflate.c
+    gzclose.c
+    gzlib.c
+    gzread.c
+    gzwrite.c
+    infback.c
+    inffast.c
+    inftrees.c
+    inflate.c
+    trees.c
+    uncompr.c
+    zutil.c
+    crc32.h
+    deflate.h
+    gzguts.h
+    inffast.h
+    inffixed.h
+    inflate.h
+    inftrees.h
+    inflate.h
+    trees.h
+    zconf.h
+    zlib.h
+    zutil.h
+)
+set_property(TARGET z PROPERTY FOLDER "third-party")
+cotire(z)

@@ -16,9 +16,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake)
 include(UseCython)
 
 add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
-	${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
-	${CMAKE_CURRENT_BINARY_DIR}
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
 cython_add_module(dcpu dcpu.pyx)
 target_link_libraries(dcpu libdcpu)

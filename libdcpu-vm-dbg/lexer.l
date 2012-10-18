@@ -72,6 +72,7 @@ char* dbg_trim_and_unescape(char* data, int mode);
 "next"						COMMAND; return ID_NEXT;
 "set"						COMMAND; return ID_SET;
 "debug"						COMMAND; return ID_DEBUG;
+"realtime"					COMMAND; return ID_REALTIME;
 \?						COMMAND; return ID_HELP;
 ^[ \t]*[a-z-]+					COMMAND; return CUSTOM;
 

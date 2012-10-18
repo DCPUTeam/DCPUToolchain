@@ -12,18 +12,18 @@ single-statements omitting brackets.  That is:
 
 void my_function()
 {
-	if (some_clause)
-	{
-		do_a();
-		do_b();
-	}
-	else
-		do_c();
+    if (some_clause)
+    {
+        do_a();
+        do_b();
+    }
+    else
+        do_c();
 }
 
-Note that tabs are 8 spaces.  Visual Studio users in
-particular will need to change the default settings to
-accommodate this.
+Tabs should be converted to 4 spaces.  Visual Studio
+users in particular will need to change the default 
+settings to accommodate this.
 
 Now onto the naming conventions.  For C projects,
 lowercase with underscores is the naming convention
@@ -60,6 +60,10 @@ conventions apply (yes these are quite different):
 | class fields  | m_FooBar (note: m_ is a prefix)  |
 | class funcs   | fooBar                           |
 #==================================================#
+
+The naming conventions apply only to C and C++.  For
+other languages, the naming conventions and indenting
+for those language's standards apply.
 
 Thanks for following these standards.  It makes it
 easier for everyone.

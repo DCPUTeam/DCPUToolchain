@@ -14,13 +14,19 @@
 **/
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <io.h>
 #include <fcntl.h>
+#include <time.h>
+#include <windows.h>
 #else
 #include <libgen.h>
+#include <unistd.h>
+// #include <sys/time.h> is correct for Linux.  If #include <time.h> is
+// required for Mac, please add the appropriate #ifdef APPLE instead of
+// changing this include.
+#include <sys/time.h>
 #endif
-// FIXME: How portable are these headers?  Do they work on
-//	  both Windows and Linux?
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
@@ -183,7 +189,7 @@ bstring osutil_getmodulepath()
 		tmp = bfromcstr(env);
 
 	// Check if path exists.
-	result = stat(tmp->data, &buffer);
+	result = stat((const char*)tmp->data, &buffer);
 	if (result != 0 || (buffer.st_mode & S_IFDIR) == 0)
 	{
 		bdestroy(tmp);
@@ -191,4 +197,53 @@ bstring osutil_getmodulepath()
 	}
 	else
 		return tmp;
+}
+
+///
+/// Performs gettimeofday() functionality in a cross-platform manner.
+///
+/// @param timeval The ostimeval structure to place the result in.
+/// @param unused Unused parameter.
+///
+/// @return Whether the call succeeded.
+///
+int osutil_gettimeofday(struct ostimeval* tv, void* unused)
+{
+#ifdef WIN32
+	// Sourced from http://stackoverflow.com/questions/2494356/how-to-use-gettimeofday-or-something-equivalent-with-visual-studio-c-2008.
+	FILETIME ft;
+	int64_t tmpres = 0;
+	GetSystemTimeAsFileTime(&ft);
+
+	tmpres = ft.dwHighDateTime;
+	tmpres <<= 32;
+	tmpres |= ft.dwLowDateTime;
+
+	/*converting file time to unix epoch*/
+	tmpres /= 10;  /*convert into microseconds*/
+	tmpres -= 11644473600000000; 
+	tv->tv_sec = (__int32)(tmpres*0.000001);
+	tv->tv_usec =(tmpres%1000000);
+	return 0;
+#else
+	struct timeval t;
+	int res = gettimeofday(&t, NULL);
+	tv->tv_sec = t.tv_sec;
+	tv->tv_usec = t.tv_usec;
+	return res;
+#endif
+}
+
+///
+/// Performs usleep() functionality in a cross-platform manner.
+///
+/// @param milliseconds The number of milliseconds to sleep.
+///
+void osutil_usleep(int milliseconds)
+{
+#ifdef WIN32
+	Sleep(milliseconds);
+#else
+	usleep(milliseconds);
+#endif
 }

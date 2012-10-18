@@ -257,7 +257,7 @@ static int _cnd_timedwait_win32(cnd_t *cond, mtx_t *mtx, DWORD timeout)
   EnterCriticalSection(&cond->mWaitersCountLock);
   -- cond->mWaitersCount;
   lastWaiter = (result == (WAIT_OBJECT_0 + _CONDITION_EVENT_ALL)) &&
-	       (cond->mWaitersCount == 0);
+               (cond->mWaitersCount == 0);
   LeaveCriticalSection(&cond->mWaitersCountLock);
 
   /* If we are the last waiter to be notified to stop waiting, reset the event */
@@ -292,7 +292,7 @@ int cnd_timedwait(cnd_t *cond, mtx_t *mtx, const struct timespec *ts)
   if (clock_gettime(TIME_UTC, &now) == 0)
   {
     DWORD delta = (ts->tv_sec - now.tv_sec) * 1000 +
-		  (ts->tv_nsec - now.tv_nsec + 500000) / 1000000;
+                  (ts->tv_nsec - now.tv_nsec + 500000) / 1000000;
     return _cnd_timedwait_win32(cond, mtx, delta);
   }
   else
@@ -312,7 +312,7 @@ int cnd_timedwait(cnd_t *cond, mtx_t *mtx, const struct timespec *ts)
 /** Information to pass to the new thread (what to run). */
 typedef struct {
   thrd_start_t mFunction; /**< Pointer to the function to be executed. */
-  void * mArg;		  /**< Function argument for the thread function. */
+  void * mArg;            /**< Function argument for the thread function. */
 } _thread_start_info;
 
 /* Thread wrapper function. */
@@ -467,12 +467,12 @@ int thrd_sleep(const struct timespec *time_point, struct timespec *remaining)
 
   /* Get the current time */
   if (clock_gettime(TIME_UTC, &now) != 0)
-    return -2;	// FIXME: Some specific error code?
+    return -2;  // FIXME: Some specific error code?
 
 #if defined(_TTHREAD_WIN32_)
   /* Delta in milliseconds */
   delta = (time_point->tv_sec - now.tv_sec) * 1000 +
-	  (time_point->tv_nsec - now.tv_nsec + 500000) / 1000000;
+          (time_point->tv_nsec - now.tv_nsec + 500000) / 1000000;
   if (delta > 0)
   {
     Sleep(delta);
@@ -480,7 +480,7 @@ int thrd_sleep(const struct timespec *time_point, struct timespec *remaining)
 #else
   /* Delta in microseconds */
   delta = (time_point->tv_sec - now.tv_sec) * 1000000L +
-	  (time_point->tv_nsec - now.tv_nsec + 500L) / 1000L;
+          (time_point->tv_nsec - now.tv_nsec + 500L) / 1000L;
 
   /* On some systems, the usleep argument must be < 1000000 */
   while (delta > 999999L)

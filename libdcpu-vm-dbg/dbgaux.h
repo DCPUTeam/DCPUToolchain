@@ -16,6 +16,14 @@
 #include <dcpuhook.h>
 #include <bstrlib.h>
 
+// import hardware
+#include <hw.h>
+#include <hwlem1802.h>
+#include <hwtimer.h>
+#include <hwsped3.h>
+#include <hwm35fd.h>
+
+
 ///
 /// The last return code from a debugging command (to indicate
 /// success or failure).

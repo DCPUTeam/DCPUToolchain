@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Any
+// Platform:    Any
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -34,7 +34,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			      GLFW public API			    //////
+//////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -48,35 +48,35 @@ GLFWAPI void glfwSetGamma(float gamma)
 
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
     }
 
     if (gamma <= 0.f)
     {
-	_glfwSetError(GLFW_INVALID_VALUE,
-		      "glfwSetGamma: Gamma value must be greater than zero");
-	return;
+        _glfwSetError(GLFW_INVALID_VALUE,
+                      "glfwSetGamma: Gamma value must be greater than zero");
+        return;
     }
 
-    for (i = 0;	 i < size;  i++)
+    for (i = 0;  i < size;  i++)
     {
-	float value;
+        float value;
 
-	// Calculate intensity
-	value = (float) i / (float) (size - 1);
-	// Apply gamma curve
-	value = (float) pow(value, 1.f / gamma) * 65535.f + 0.5f;
+        // Calculate intensity
+        value = (float) i / (float) (size - 1);
+        // Apply gamma curve
+        value = (float) pow(value, 1.f / gamma) * 65535.f + 0.5f;
 
-	// Clamp to value range
-	if (value < 0.f)
-	    value = 0.f;
-	else if (value > 65535.f)
-	    value = 65535.f;
+        // Clamp to value range
+        if (value < 0.f)
+            value = 0.f;
+        else if (value > 65535.f)
+            value = 65535.f;
 
-	ramp.red[i]   = (unsigned short) value;
-	ramp.green[i] = (unsigned short) value;
-	ramp.blue[i]  = (unsigned short) value;
+        ramp.red[i]   = (unsigned short) value;
+        ramp.green[i] = (unsigned short) value;
+        ramp.blue[i]  = (unsigned short) value;
     }
 
     glfwSetGammaRamp(&ramp);
@@ -91,8 +91,8 @@ GLFWAPI void glfwGetGammaRamp(GLFWgammaramp* ramp)
 {
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
     }
 
     *ramp = _glfwLibrary.currentRamp;
@@ -107,8 +107,8 @@ GLFWAPI void glfwSetGammaRamp(const GLFWgammaramp* ramp)
 {
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
     }
 
     _glfwPlatformSetGammaRamp(ramp);

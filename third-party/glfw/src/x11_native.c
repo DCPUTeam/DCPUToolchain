@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Win32/WGL
+// Platform:    Win32/WGL
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -34,7 +34,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			      GLFW native API			    //////
+//////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -57,8 +57,8 @@ GLFWAPI Window glfwGetX11Window(GLFWwindow handle)
 
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return 0;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return 0;
     }
 
     return window->X11.handle;
@@ -75,8 +75,8 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow handle)
 
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return NULL;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return NULL;
     }
 
     return window->GLX.context;

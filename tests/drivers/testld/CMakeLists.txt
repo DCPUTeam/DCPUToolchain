@@ -1,37 +1,44 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(testld)
 
-# Check to ensure that we are running as part of the
-# root CMakeLists.txt file.
-if(NOT DEFINED IS_ROOT)
-  message(FATAL_ERROR "You must generate the CMake files as part of the root directory.")
-endif(NOT DEFINED IS_ROOT)
+add_executable(testld
+    main.c
+)
+include_directories(
+    ${argtable2_SOURCE_DIR}
+    ${simclist_SOURCE_DIR}
+    ${bstring_SOURCE_DIR}
+    ${libdcpu_SOURCE_DIR}
+)
+target_link_libraries(testld
+    argtable2
+    simclist
+    bstring
+    libdcpu
+)
 
 # Define folder that holds test data.
 set(BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../data/ld")
 
-# Define the assembler project.
-dt_project(executable)
-dt_needs(argtable2)
-dt_needs(simclist)
-dt_needs(bstring)
-dt_needs(libdcpu)
+# Determine linker path.
+get_property(dtld_loc TARGET dtld PROPERTY LOCATION)
+string(REPLACE "$(Configuration)" "${CMAKE_BUILD_TYPE}" dtld_loc "${dtld_loc}")
 
 # Define a function to easily create linker
 # tests.
 function(add_link_test tname)
-	set(files "")
-	foreach(i IN LISTS ARGN)
-		list(APPEND files "${BASE_DIR}/${i}.i")
-	endforeach(i IN LISTS ARGN)
-	add_test(${tname} ${OUTPUT_DIR}/testld -vvv -e "${BASE_DIR}/${tname}.oe" -a "${BASE_DIR}/${tname}.oa" ${files})
+    set(files "")
+    foreach(i IN LISTS ARGN)
+        list(APPEND files "${BASE_DIR}/${i}.i")
+    endforeach(i IN LISTS ARGN)
+    add_test(${tname} ${CMAKE_CURRENT_BINARY_DIR}/testld -p "${dtld_loc}" -vvv -e "${BASE_DIR}/${tname}.oe" -a "${BASE_DIR}/${tname}.oa" ${files})
 endfunction(add_link_test tname)
 function(add_link_fail tname)
-	set(files "")
-	foreach(i IN LISTS ARGN)
-		list(APPEND files "${BASE_DIR}/${i}.i")
-	endforeach(i IN LISTS ARGN)
-	add_test(${tname} ${OUTPUT_DIR}/testld -vvv -f -a "${BASE_DIR}/${tname}.oa" ${files})
+    set(files "")
+    foreach(i IN LISTS ARGN)
+        list(APPEND files "${BASE_DIR}/${i}.i")
+    endforeach(i IN LISTS ARGN)
+    add_test(${tname} ${CMAKE_CURRENT_BINARY_DIR}/testld -p "${dtld_loc}" -vvv -f -a "${BASE_DIR}/${tname}.oa" ${files})
 endfunction(add_link_fail tname)
 
 # Define the tests.

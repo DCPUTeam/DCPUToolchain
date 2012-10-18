@@ -22,11 +22,10 @@
 #include <dcpubase.h>
 #include <dcpuhook.h>
 #include <debug.h>
-#include <hwio.h>
-#include <hwlem1802.h>
-#include <hwtimer.h>
 #include <imap.h>
 #include <ddata.h>
+#include <time.h>
+#include <string.h>
 #include "breakpoint.h"
 #include "backtrace.h"
 #include "dbgaux.h"
@@ -42,6 +41,8 @@ extern vm_t* vm;
 int ddbg_return_code;
 bool ignore_next_breakpoint = false;
 
+FILE *w;
+
 int32_t min_int32(int32_t a, int32_t b)
 {
 	if (a < b)
@@ -56,6 +57,13 @@ int32_t max_int32(int32_t a, int32_t b)
 		return a;
 	else
 		return b;
+}
+
+void ddbg_set_write_pipe(uint16_t w_fd)
+{
+	w = fdopen((int)w_fd, "w");
+    if(w == NULL)
+	printf("error: %s\n", strerror(errno));
 }
 
 void ddbg_help(bstring section)
@@ -273,6 +281,65 @@ void ddbg_interrupt_hook(vm_t* vm, uint16_t pos, void* ud)
 	dbg_lua_handle_hook(&lstate, NULL, bautofree(bfromcstr("interrupt")), pos);
 }
 
+void ddbg_send_vm_state(vm_t* vm, uint16_t pos, void* ud)
+{
+    FILE *output = (w == NULL) ? stderr : w;
+
+    fprintf(output, "vm:%u:%u:%u:%u:%u:%u:%u:%u:%u:%u:%u:%u", 
+	vm->registers[REG_A],
+	vm->registers[REG_B],
+	vm->registers[REG_C],
+	vm->registers[REG_X],
+	vm->registers[REG_Y],
+	vm->registers[REG_Z],
+	vm->registers[REG_I],
+	vm->registers[REG_J],
+	vm->pc,
+	vm->sp,
+	vm->ia,
+	vm->ex);
+
+    fflush(output);
+}
+	
+
+void ddbg_hardware_change_hook(vm_t* vm, uint16_t id, void* ud)
+{
+	FILE* output = (w == NULL) ? stderr : w;
+	hw_t device = vm_hw_get_device(vm, id);
+
+	// This switch uses curly braces because I need to be able to declare variables
+	// there, since I don't know the type of the struct without checking the ID.
+
+    fprintf(output, "hw:");
+	switch(device.id)
+	{
+		case LEM1802_ID:
+		{
+			struct lem1802_hardware* hw = (struct lem1802_hardware*) ud;
+			fprintf(output, "%d:%04x:%u:%u:%u:%u\n", 
+				id, LEM1802_ID,
+				hw->palette_location,
+				hw->font_location, 
+				hw->screen_location,
+				hw->border_color);
+			break;
+		}
+		case TIMER_ID:
+		{
+			struct timer_hardware* hw = (struct timer_hardware*) ud;
+			fprintf(output, "%d:%04x:%f:%u\n",
+				id, TIMER_ID,
+				hw->clock_target,
+				hw->message);
+			break;
+		}
+	}
+			
+
+	fflush(output);
+}
+
 void ddbg_set(bstring object, bstring value)
 {
 	if (biseq(object, bfromcstr("vm_debug")))
@@ -336,6 +403,9 @@ void ddbg_init()
 	lstate.dbg_lua_break = _dbg_lua_break;
 	lstate.dbg_lua_run = _dbg_lua_run;
 	lstate.dbg_lua_get_symbols = _dbg_lua_get_symbols;
+
+	w = NULL;
+
 	dbg_lua_init();
 
 	// Create VM.
@@ -354,6 +424,9 @@ void ddbg_create_vm()
 	vm_hook_register(vm, &ddbg_write_hook, HOOK_ON_WRITE, NULL);
 	vm_hook_register(vm, &ddbg_break_hook, HOOK_ON_BREAK, NULL);
 	vm_hook_register(vm, &ddbg_interrupt_hook, HOOK_ON_INTERRUPT, NULL);
+
+	vm_hook_register(vm, &ddbg_hardware_change_hook, HOOK_ON_HARDWARE_CHANGE, NULL);
+    vm_hook_register(vm, &ddbg_send_vm_state, HOOK_ON_60HZ, NULL);
 	printd(LEVEL_DEFAULT, "Created VM.\n");
 }
 
@@ -387,9 +460,12 @@ void ddbg_attach(bstring hw)
 	if (biseq(hw, bfromcstr("lem1802")))
 		vm_hw_lem1802_init(vm);
 	else if (biseq(hw, bfromcstr("keyboard")))
-		vm_hw_io_init(vm);
+		// TODO: keyboard
+		vm_hw_lem1802_init(vm);
 	else if (biseq(hw, bfromcstr("clock")))
 		vm_hw_timer_init(vm);
+	else if (biseq(hw, bfromcstr("m35fd")))
+		vm_hw_m35fd_init(vm);
 	else
 		printd(LEVEL_DEFAULT, "Unrecognized hardware.\n");
 }

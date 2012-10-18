@@ -1,8 +1,8 @@
 //========================================================================
 // GLFW - An OpenGL library
-// Platform:	Any
+// Platform:    Any
 // API version: 3.0
-// WWW:		http://www.glfw.org/
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -32,7 +32,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-//////			      GLFW public API			    //////
+//////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
 //========================================================================
@@ -43,8 +43,8 @@ GLFWAPI double glfwGetTime(void)
 {
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return 0.0;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return 0.0;
     }
 
     return _glfwPlatformGetTime();
@@ -59,8 +59,8 @@ GLFWAPI void glfwSetTime(double time)
 {
     if (!_glfwInitialized)
     {
-	_glfwSetError(GLFW_NOT_INITIALIZED, NULL);
-	return;
+        _glfwSetError(GLFW_NOT_INITIALIZED, NULL);
+        return;
     }
 
     _glfwPlatformSetTime(time);
