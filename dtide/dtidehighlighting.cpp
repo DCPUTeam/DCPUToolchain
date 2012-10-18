@@ -6,6 +6,11 @@ QSyntaxHighlighter* DTIDEHighlighting::getHighlighter(CodeSyntax syntax, QTextDo
     {
         case DCPUAssembly:
             return new DCPUHighlighter(p);
-            break;
+        case Brainfuck:
+            return NULL;
+        case C:
+            return NULL;
+        default:
+            return NULL;
     }
 }
