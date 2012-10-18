@@ -10,7 +10,8 @@ include_directories(
     ${bstring_SOURCE_DIR}
     ${argtable2_SOURCE_DIR}
     ${libdcpu_SOURCE_DIR}
-    ${libdcpu-pp-expr_SOURCE_DIR}
+    # Need to manual path this since we have a cyclic dependency.
+    ${toolchain_SOURCE_DIR}/libdcpu-pp-expr
 )
 add_library(libdcpu STATIC
     derr.defs.c
