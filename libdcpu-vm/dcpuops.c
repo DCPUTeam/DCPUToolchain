@@ -16,6 +16,7 @@
 #define PRIVATE_VM_ACCESS
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <debug.h>
 #include "dcpubase.h"
 #include "dcpuops.h"
