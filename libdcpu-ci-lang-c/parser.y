@@ -38,7 +38,6 @@ class NInteger;
 #include "nodes/NSwitchStatement.h"
 #include "nodes/NCaseStatement.h"
 #include "nodes/NDefaultStatement.h"
-#include "nodes/NDebugStatement.h"
 #include "nodes/NWhileStatement.h"
 #include "nodes/NForStatement.h"
 #include "nodes/NAssemblyStatement.h"
@@ -141,7 +140,7 @@ void yyerror(const char *str);
 %type <variable> var_decl var_decl_no_init
 %type <array> array_decl array_decl_no_init
 %type <block> block stmts block_or_stmt
-%type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_debug stmt_asm stmt_break stmt_continue stmt_case stmt_switch stmt_default
+%type <stmt> stmt stmt_if stmt_return stmt_while stmt_for stmt_asm stmt_break stmt_continue stmt_case stmt_switch stmt_default
 %type <token> assignop
 
 /* OPERATOR PRECEDENCE (LOWEST -> HIGHEST) */
@@ -465,7 +464,6 @@ stmt:
 		stmt_case |
 		stmt_default |
 		stmt_switch |
-		stmt_debug |
 		stmt_asm |
 		expr SEMICOLON
 		{
@@ -531,12 +529,6 @@ stmt_switch:
 		SWITCH CURVED_OPEN expr CURVED_CLOSE block
 		{
 			$$ = new NSwitchStatement(*$3, *$5);
-		} ;
-
-stmt_debug:
-		DEBUG expr SEMICOLON
-		{
-			$$ = new NDebugStatement(*$2);
 		} ;
 
 stmt_while:

@@ -656,8 +656,10 @@ int32_t bins_optimize(int target, int level)
 ///
 /// @param keepProvided Whether the provided label entries should be kept in the flattened
 ///			bin for re-exporting (for example in static libraries).
+/// @param allowMissing Whether the required table should be permitted to exist after
+///                     resolution (for example in kernels).
 ///
-void bins_resolve(bool keepProvided)
+void bins_resolve(bool keepProvided, bool allowMissing)
 {
 	struct lconv_entry* entry;
 	struct lconv_entry* required;
@@ -683,14 +685,18 @@ void bins_resolve(bool keepProvided)
 		assert(required != NULL);
 		if (provided == NULL)
 		{
-			printd(LEVEL_ERROR, "could not find label %s.\n", required->label->data);
-			exit(1);
+            if (allowMissing)
+                continue;
+            else
+            {
+			    printd(LEVEL_ERROR, "could not find label %s.\n", required->label->data);
+			    exit(1);
+            }
 		}
 
 		// Insert the required code.
 		word = list_get_at(&bin->words, required->address);
 		*word = provided->address;
-
 
 		// Add the deleted requirement as adjustment
 		adjustment = malloc(sizeof(struct lconv_entry));
@@ -716,11 +722,24 @@ void bins_resolve(bool keepProvided)
 	list_iterator_stop(bin->required);
 
 	// Delete all of the required entries.
-	while (list_size(bin->required) > 0)
+	for (i = 0; i < list_size(bin->required); i++)
 	{
-		required = list_extract_at(bin->required, 0);
-		bdestroy(required->label);
-		free(required);
+		required = list_extract_at(bin->required, i);
+		provided = list_seek(bin->provided, required->label);
+        if (provided)
+        {
+	        bdestroy(required->label);
+		    free(required);
+            i--;
+        }
+        else if (!provided && allowMissing)
+        { 
+            // Needs to be kept.
+        }
+        else
+        {
+            assert(!provided && !allowMissing);
+        }
 	}
 
 	if (!keepProvided)

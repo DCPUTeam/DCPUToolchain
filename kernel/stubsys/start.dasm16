@@ -35,6 +35,7 @@ SET PC, _kern_start
 :_kern_start
 
     ; Initialize memory management.
+    .IMPORT kernel_boot
     JSR kernel_boot
 
 	; Initialize the screen.

@@ -25,10 +25,9 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 	*block << ".IMPORT _stack_caller_init" << std::endl;
 	*block << ".IMPORT _stack_caller_init_overlap" << std::endl;
 	*block << ".IMPORT _stack_callee_return" << std::endl;
-	*block << ".IMPORT _halt" << std::endl;
-	*block << ".IMPORT _halt_debug" << std::endl;
+    *block << ".IMPORT _stdlib_enter" << std::endl;
 
-	// Add file and line information.
+    // Add file and line information.
 	*block << this->getFileAndLineState();
 
 	// Tell the generator that we are the root.
@@ -159,10 +158,11 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 		StackFrame* frame = context.generateStackFrame(main, false);
 
 		// Output assembly for calling main.
+        // FIXME: _stdlib_enter() should never return or bad things will happen!
 		*block <<  "	SET X, " << frame->getParametersSize() << std::endl;
-		*block <<  "	SET Z, _halt" << std::endl;
+		*block <<  "	SET Z, 0" << std::endl;
 		*block <<  "	JSR _stack_caller_init" << std::endl;
-		*block <<  "	SET PC, cfunc_main" << std::endl;
+		*block <<  "	SET PC, cfunc_stdlib_enter" << std::endl;
 
 		// Clean up frame.
 		context.finishStackFrame(frame);

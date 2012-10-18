@@ -12,6 +12,7 @@
  **/
 
 #include "stdlib.h"
+int _stubapi_exit(int code);
 
 // String conversion:
 int atoi(const char* str)
@@ -79,10 +80,9 @@ void* realloc(void* ptr, size_t size)
 // Environment:
 void abort()
 {
-	__asm
-	{
-		JSR _halt
-	}
+    _stubapi_exit(-1);
+    // Process is terminated by kernel after this
+    // point.  No further code is executed.
 }
 
 // Searching and sorting:

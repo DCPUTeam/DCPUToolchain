@@ -10,7 +10,7 @@ void _stubapi_free(void* ptr)
 	}
 }
 
-void* _stubapi_malloc(size_t size)
+void* _stubapi_malloc(unsigned int size)
 {
 	void* result;
 	void** store = &result;
@@ -24,13 +24,13 @@ void* _stubapi_malloc(size_t size)
 	return result;
 }
 
-int _stubapi_errno()
+unsigned int _stubapi_errno()
 {
     // We are not in control of anything that can fail.
     return 0;
 }
 
-void _stubapi_exit(int code)
+void _stubapi_exit(unsigned int code)
 {
     __asm
     {
@@ -38,3 +38,4 @@ void _stubapi_exit(int code)
         SET PC, _kern_exit
     }
 }
+

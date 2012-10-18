@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
-	struct arg_str* target_arg = arg_str0("l", "link-as", "target", "Link as the specified object, can be 'image' or 'static'.");
+	struct arg_str* target_arg = arg_str0("l", "link-as", "target", "Link as the specified object, can be 'image', 'static' or 'kernel'.");
 	struct arg_file* symbol_file = arg_file0("s", "symbols", "<file>", "Produce a combined symbol file (~triples memory usage!).");
 	struct arg_str* symbol_ext = arg_str0(NULL, "symbol-extension", "ext", "When -s is used, specifies the extension for symbol files.  Defaults to \"dsym16\".");
 	struct arg_file* input_files = arg_filen(NULL, NULL, "<file>", 1, 100, "The input object files.");
@@ -83,10 +83,12 @@ int main(int argc, char* argv[])
 			target = bfromcstr("image");
 		else if (strcmp(target_arg->sval[0], "static") == 0)
 			target = bfromcstr("static");
-		else
+		else if (strcmp(target_arg->sval[0], "kernel") == 0)
+			target = bfromcstr("kernel");
+        else
 		{
 			// Invalid option.
-			printd(LEVEL_ERROR, "linker: invalid target type, must be 'image' or 'static'.\n");
+			printd(LEVEL_ERROR, "linker: invalid target type, must be 'image', 'static' or 'kernel'.\n");
 			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 			return 1;
 		}
@@ -114,7 +116,10 @@ int main(int argc, char* argv[])
 		printd(LEVEL_WARNING, "linker: skipping short literal compression due to target type.\n");
 	else
 		printd(LEVEL_WARNING, "linker: skipping short literal compression on request.\n");
-	bins_resolve(biseqcstr(target, "static") == true);
+	bins_resolve(
+        biseqcstr(target, "static") || biseqcstr(target, "kernel"),
+        biseqcstr(target, "static") || biseqcstr(target, "kernel")
+        );
 	bins_save(bautofree(bfromcstr("output")), bautofree(bfromcstr(output_file->filename[0])), bautofree(target), keep_output_arg->count > 0, symbol_file->count > 0 ? symbol_file->filename[0] : NULL);
 	bins_free();
 	if (saved > 0)

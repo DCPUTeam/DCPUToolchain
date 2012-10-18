@@ -79,11 +79,11 @@ function(add_dcpu_image target)
     string(STRIP "${tcoutputs}" tcoutputs)
     calculate_tool_path(dtld main_path)
     add_custom_command(
-        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${target}.dlib16"
+        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${target}.dkrn16"
         COMMAND ${main_path}
-        ARGS -s "${CMAKE_CURRENT_BINARY_DIR}/${target}.dsym16" -O3 --symbol-extension="os" --keep-outputs -l static -o "${CMAKE_CURRENT_BINARY_DIR}/${target}.dlib16" ${tasmoutputs} ${tcoutputs}
+        ARGS -s "${CMAKE_CURRENT_BINARY_DIR}/${target}.dsym16" -O3 --symbol-extension="os" --keep-outputs -l kernel -o "${CMAKE_CURRENT_BINARY_DIR}/${target}.dkrn16" ${tasmoutputs} ${tcoutputs}
         DEPENDS dtld ${tasmoutputs} ${tcoutputs}
-        COMMENT "Linking ${target}.dlib16 as static library with DCPU-Toolchain...")
+        COMMENT "Linking ${target}.dkrn16 as kernel with DCPU-Toolchain...")
 
     # Define our target.
     foreach(i ${tasmoutputs})
@@ -103,19 +103,7 @@ function(add_dcpu_image target)
         endif(DEFINED params)
     endforeach(i ${tcoutputs})
     list(APPEND params DEPENDS)
-    list(APPEND params "${CMAKE_CURRENT_BINARY_DIR}/${target}.dlib16")
+    list(APPEND params "${CMAKE_CURRENT_BINARY_DIR}/${target}.dkrn16")
     add_custom_target(${target} ALL ${params})
 endfunction(add_dcpu_image target)
 
-# Define the standard library.
-add_dcpu_image(stdlib-c
-    src/bootstrap.dasm16
-    src/memory.dasm16
-    src/stdlib.c
-    src/string.c
-    src/math.c
-    src/ext/screen.c
-)
-
-# Copy standard library include files.
-file(COPY include DESTINATION ${CMAKE_CURRENT_BINARY_DIR} USE_SOURCE_PERMISSIONS)

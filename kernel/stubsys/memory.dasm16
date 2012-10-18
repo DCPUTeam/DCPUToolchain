@@ -1,7 +1,6 @@
 .EXPORT malloc
 .EXPORT free
 .EXPORT kernel_boot
-.IMPORT kernel_boot
 
 :mempointer DAT 0x6000
 :userspacemem DAT 0x6000

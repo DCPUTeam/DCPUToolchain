@@ -1,6 +1,6 @@
-cmake_minimum_required(CMAKE 2.8.6)
+cmake_minimum_required(VERSION 2.8.5)
 
-include(dcpu)
+include(dcpu.cmake)
 
 # Define a list of kernel folders that we know about.
 set(KERNELS
@@ -10,7 +10,11 @@ set(KERNELS
 # Loop over each kernel and include it, configuring it
 # for a CMake build.
 foreach(k ${KERNELS})
-    include(${k}/config)
-    add_dcpu_image(${k} ${files})
+    include(${k}/config.cmake)
+    set(files_append)
+    foreach(f ${files})
+        list(APPEND files_append ${k}/${f})
+    endforeach()
+    add_dcpu_image(${k} ${files_append})
     # TODO: Something with name / description / supported.
 endforeach()

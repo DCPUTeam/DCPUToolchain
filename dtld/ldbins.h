@@ -45,7 +45,7 @@ void bins_associate();
 void bins_sectionize();
 void bins_flatten(freed_bstring name);
 int32_t bins_optimize(int target, int level);
-void bins_resolve(bool keepProvided);
+void bins_resolve(bool keepProvided, bool allowMissing);
 uint16_t bins_compress();
 void bins_free();
 
