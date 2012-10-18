@@ -24,8 +24,8 @@
 #include <assert.h>
 #include <ddata.h>
 #include <debug.h>
+#include <derr.h>
 #include "aout.h"
-#include "aerr.h"
 #include "dcpu.h"
 #include "treloc.h"
 #include "textn.h"
@@ -70,7 +70,7 @@ struct aout_byte* aout_create_opcode(uint16_t opcode, uint16_t a, uint16_t b)
 	list_init(&byte->symbols);
 
 	if (opcode == 0 && a == 0)
-		ahalt(ERR_OUTPUT_NULL, NULL);
+		dhalt(ERR_OUTPUT_NULL, NULL);
 
 	return byte;
 }
@@ -312,9 +312,9 @@ uint16_t aout_get_label_address(bstring name)
 
 	// Error if we get to here.
 	if (found_import)
-		ahalt(ERR_EXPRESSION_NOT_PERMITTED, name->data);
+		dhalt(ERR_EXPRESSION_NOT_PERMITTED, name->data);
 	else
-		ahalt(ERR_LABEL_NOT_FOUND, name->data);
+		dhalt(ERR_LABEL_NOT_FOUND, name->data);
 	return 0;
 }
 
@@ -354,7 +354,7 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 			// Adjust memory address.
 			out_index = current_outer->opcode;
 			if (current_outer->type == AOUT_TYPE_METADATA_ORIGIN)
-				awarn(WARN_USE_RELOCATION_NOT_ORIGIN, NULL);
+				dwarn(WARN_USE_RELOCATION_NOT_ORIGIN, NULL);
 		}
 		else if (current_outer->type == AOUT_TYPE_METADATA_SECTION)
 		{
@@ -363,11 +363,11 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 			// We're exporting the current address as the beginning
 			// of a section.
 			if (!intermediate)
-				ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
+				dhalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
 
 			// Check to make sure outputs haven't previously been emitted.
 			if (has_output)
-				ahalt(ERR_OUTPUT_BEFORE_SECTION, NULL);
+				dhalt(ERR_OUTPUT_BEFORE_SECTION, NULL);
 
 			// Create linker entry.
 			linker_temp = lprov_create(current_outer->label, out_index);
@@ -382,7 +382,7 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 			// We're exporting the current address as the beginning
 			// of a section.
 			if (!intermediate)
-				ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
+				dhalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
 
 			// Create linker entry.
 			has_output = true;
@@ -398,7 +398,7 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 			// We're exporting the address of this label in the
 			// object table.
 			if (!intermediate)
-				ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
+				dhalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
 
 			// Resolve label position.
 			ename = bfromcstr(current_outer->label);
@@ -419,11 +419,11 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 				// evaluate it using the preprocessor expression engine.
 				if ((relocatable || intermediate) && !shown_expr_warning)
 				{
-					awarn(WARN_EXPRESSION_NOT_ADJUSTED, NULL);
+					dwarn(WARN_EXPRESSION_NOT_ADJUSTED, NULL);
 					shown_expr_warning = true;
 				}
 				current_outer->raw_used = true;
-				current_outer->raw = expr_evaluate(current_outer->expr, &aout_get_label_address, &ahalt_expression_exit_handler);
+				current_outer->raw = expr_evaluate(current_outer->expr, &aout_get_label_address, &dhalt_expression_exit_handler);
 				expr_delete(current_outer->expr);
 				current_outer->expr = NULL;
 			}
@@ -449,7 +449,7 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 						// memory index because the existance of this type
 						// of entry doesn't affect executable size).
 						if (!intermediate)
-							ahalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
+							dhalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
 
 						assert(current_outer->expr->data != NULL);
 						if (strcmp(current_inner->label, ((bstring)current_outer->expr->data)->data) == 0)
@@ -478,7 +478,7 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 				{
 					// Replace the label position.
 					current_outer->raw_used = true;
-					current_outer->raw = expr_evaluate(current_outer->expr, &aout_get_label_address, &ahalt_expression_exit_handler);
+					current_outer->raw = expr_evaluate(current_outer->expr, &aout_get_label_address, &dhalt_expression_exit_handler);
 					expr_delete(current_outer->expr);
 					current_outer->expr = NULL;
 					did_find = true;
@@ -537,12 +537,12 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 			bname = ppfind_locate(bautofree(bfromcstr(current_outer->label)));
 
 			if (bname == NULL)
-				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
+				dhalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
 
 			temp = bfopen((const char*)(bname->data), "rb");
 
 			if (temp == NULL)
-				ahalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
+				dhalt(ERR_UNABLE_TO_INCBIN, current_outer->label);
 
 			// Copy binary data.
 			while (!bfeof(temp))

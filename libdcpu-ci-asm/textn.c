@@ -16,11 +16,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <debug.h>
+#include <derr.h>
 #include <iio.h>
 #include "posix.h"
 #include "textn.h"
 #include "aout.h"
-#include "aerr.h"
 
 char* extension_data[EXTENSION_MAXIMUM_ENTRIES];
 uint16_t extension_count = 0;
@@ -45,7 +45,7 @@ uint16_t textn_init(struct aout_byte* start)
 			ext_name = textn_verify_name(current->label);
 
 			if (ext_name == NULL)
-				ahalt(ERR_EXTENSION_UNKNOWN, current->label);
+				dhalt(ERR_EXTENSION_UNKNOWN, current->label);
 
 			extension_data[extension_count] = ext_name;
 			printd(LEVEL_VERBOSE, "EXTENSION [0x%04X] %s\n", extension_offset, ext_name);
@@ -53,7 +53,7 @@ uint16_t textn_init(struct aout_byte* start)
 			extension_offset += strlen(ext_name) + 1;
 
 			if (extension_count == EXTENSION_MAXIMUM_ENTRIES)
-				ahalt(ERR_EXTENSION_TABLE_TOO_LARGE, NULL);
+				dhalt(ERR_EXTENSION_TABLE_TOO_LARGE, NULL);
 		}
 
 		current = current->next;

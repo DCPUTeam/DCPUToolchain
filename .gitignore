@@ -95,7 +95,10 @@ docs/html/*
 *.os
 *.dcpu16
 *.dobj16
+libdcpu/derr.defs.c
+libdcpu/derr.defs.h
 
 # Cython build artifacts #
+##########################
 *.so
 cython_debug

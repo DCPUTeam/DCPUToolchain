@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
+#include <derr.h>
 #include "ppexpr.h"
 
 struct expr* expr_new(struct expr* a, int op, struct expr* b)
@@ -228,3 +229,6 @@ void expr_delete(struct expr* e)
 	// Free the expression itself.
 	free(e);
 }
+
+// Functions for helping with halting things.
+

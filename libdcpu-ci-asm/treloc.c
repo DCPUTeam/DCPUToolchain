@@ -16,10 +16,10 @@
 #include <stdlib.h>
 #include <ppexpr.h>
 #include <debug.h>
+#include <derr.h>
 #include <iio.h>
 #include "treloc.h"
 #include "aout.h"
-#include "aerr.h"
 
 uint16_t reloc_data[RELOC_MAXIMUM_ENTRIES];
 uint16_t reloc_count = 0;
@@ -52,7 +52,7 @@ uint16_t treloc_init(struct aout_byte* start)
 			reloc_count += 1;
 
 			if (reloc_count == RELOC_MAXIMUM_ENTRIES)
-				ahalt(ERR_RELOCATION_TABLE_TOO_LARGE, NULL);
+				dhalt(ERR_RELOCATION_TABLE_TOO_LARGE, NULL);
 		}
 
 		current = current->next;
