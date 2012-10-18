@@ -37,7 +37,8 @@ void ppexpr_yyerror(struct expr** expr, void* scanner, const char* str);
 
 // Define our lexical token names.
 %token <token> ADD SUBTRACT MULTIPLY DIVIDE MODULUS EQUALS NOT_EQUALS LESS_THAN LESS_EQUALS GREATER_THAN GREATER_EQUALS
-%token <token> PAREN_OPEN PAREN_CLOSE BITWISE_AND BITWISE_BOR BITWISE_XOR BITWISE_NOT BOOLEAN_OR BOOLEAN_AND BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
+%token <token> PAREN_OPEN PAREN_CLOSE BITWISE_AND BITWISE_BOR BITWISE_XOR BITWISE_NOT BOOLEAN_OR BOOLEAN_AND BOOLEAN_XOR
+%token <token> BOOLEAN_NOT LEFT_SHIFT RIGHT_SHIFT
 %token <word> WORD
 %token <number> ADDRESS
 
@@ -52,7 +53,7 @@ void ppexpr_yyerror(struct expr** expr, void* scanner, const char* str);
 %left BINARY_AND
 %left COMPARE_EQUAL COMPARE_NOT_EQUAL
 %left COMPARE_LESS_THAN COMPARE_LESS_THAN_EQUAL COMPARE_GREATER_THAN COMPARE_GREATER_THAN_EQUAL
-%left BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
+%left LEFT_SHIFT RIGHT_SHIFT
 %left ADD SUBTRACT
 %left MULTIPLY DIVIDE MODULUS
 
@@ -91,6 +92,10 @@ expr:
 		{
 			$$ = expr_new(expr_new_number(0), EXPR_OP_SUBTRACT, $2);
 		} |
+        BOOLEAN_NOT expr
+        {
+            $$ = expr_new(NULL, EXPR_OP_BOOLEAN_NOT, $2);
+        } |
 		BITWISE_NOT expr
 		{
 			$$ = expr_new(expr_new_number(0xFFFF), EXPR_OP_XOR, $2);
@@ -150,7 +155,27 @@ expr:
 		expr GREATER_EQUALS expr
 		{
 			$$ = expr_new($1, EXPR_OP_GREATER_EQUALS, $3);
-		} ;
+		} |
+        expr BOOLEAN_AND expr
+        {
+            $$ = expr_new($1, EXPR_OP_BOOLEAN_AND, $3);
+        } |
+        expr BOOLEAN_OR expr
+        {
+            $$ = expr_new($1, EXPR_OP_BOOLEAN_OR, $3);
+        } |
+        expr BOOLEAN_XOR expr
+        {
+            $$ = expr_new($1, EXPR_OP_BOOLEAN_XOR, $3);
+        } |
+        expr LEFT_SHIFT expr
+        {
+            $$ = expr_new($1, EXPR_OP_LEFT_SHIFT, $3);
+        } |
+        expr RIGHT_SHIFT expr
+        {
+            $$ = expr_new($1, EXPR_OP_RIGHT_SHIFT, $3);
+        } ;
 
 %%
 
