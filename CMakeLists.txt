@@ -136,9 +136,7 @@ add_subdirectory(dtemu)
 add_subdirectory(docs)
 
 # Add kernel and standard libraries.
-if(EXISTS "${toolchain_SOURCE_DIR}/kernel/CMakeLists.txt")
-    #add_subdirectory(kernel)
-endif(EXISTS "${toolchain_SOURCE_DIR}/kernel/CMakeLists.txt")
+add_subdirectory(kernel)
 add_subdirectory(stdlib-c)
 
 # Add test suite.
