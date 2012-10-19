@@ -1,8 +1,23 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu)
 
-include_directories(${bstring_SOURCE_DIR})
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/derr.defs.h ${CMAKE_CURRENT_SOURCE_DIR}/derr.defs.c
+    COMMAND tool-errgen ${CMAKE_CURRENT_SOURCE_DIR}/err.d ${CMAKE_CURRENT_SOURCE_DIR}/derr.defs.h ${CMAKE_CURRENT_SOURCE_DIR}/derr.defs.c
+    COMMENT "Generating error definition files..."
+    )
+include_directories(
+    ${bstring_SOURCE_DIR}
+    ${argtable2_SOURCE_DIR}
+    ${libdcpu_SOURCE_DIR}
+    # Need to manual path this since we have a cyclic dependency.
+    ${toolchain_SOURCE_DIR}/libdcpu-pp-expr
+)
 add_library(libdcpu STATIC
+    derr.defs.c
+    derr.defs.h
+    derr.c
+    derr.h
     bfile.h
     dcpu.h
     dirent.portable.h

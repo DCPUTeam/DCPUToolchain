@@ -48,6 +48,12 @@ struct expr
 #define EXPR_OP_AND		12
 #define EXPR_OP_BOR		13
 #define EXPR_OP_XOR		14
+#define EXPR_OP_BOOLEAN_NOT 15
+#define EXPR_OP_BOOLEAN_AND 16
+#define EXPR_OP_BOOLEAN_OR 17
+#define EXPR_OP_BOOLEAN_XOR 18
+#define EXPR_OP_LEFT_SHIFT 19
+#define EXPR_OP_RIGHT_SHIFT 20
 
 // Expression exit codes
 #define EXPR_EXIT_LABEL_NOT_FOUND	0
