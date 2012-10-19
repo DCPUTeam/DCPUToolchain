@@ -458,6 +458,7 @@ void pp_lua_handle(struct pp_state* state, void* scanner, bstring name, list_t* 
 		}
 		else
 			bformata(dot, "%i", carg->number);
+        bconchar(dot, ' ');
 	}
 	list_iterator_stop(parameters);
 	handle_pp_lua_print_line(dot->data, scanner);

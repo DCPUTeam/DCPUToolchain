@@ -1,0 +1,44 @@
+.JUMP _stubapi_free
+.JUMP _stubapi_malloc
+.JUMP _stubapi_errno
+.JUMP _stubapi_exit
+
+; -- Inputs --
+;       A: void* ptr
+; -- Outputs --
+;       (none)
+
+:_stubapi_free
+    .IMPORT free
+    JSR free
+    SET PC, POP
+
+; -- Inputs --
+;       A: unsigned int size
+; -- Outputs --
+;       A: void*
+
+:_stubapi_malloc
+    .IMPORT malloc
+    JSR malloc
+    SET PC, POP
+
+; -- Inputs --
+;       (none)
+; -- Outputs --
+;       A: unsigned int
+
+:_stubapi_errno
+    ; We never have any errors to return.
+    SET A, 0
+    SET PC, POP
+
+; -- Inputs --
+;       A: unsigned int code
+; -- Outputs --
+;       (terminates process)
+
+:_stubapi_exit
+    .IMPORT _kern_exit
+    SET PC, _kern_exit
+

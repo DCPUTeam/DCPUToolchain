@@ -5,6 +5,7 @@ add_custom_command(
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/derr.defs.h ${CMAKE_CURRENT_SOURCE_DIR}/derr.defs.c
     COMMAND tool-errgen ${CMAKE_CURRENT_SOURCE_DIR}/err.d ${CMAKE_CURRENT_SOURCE_DIR}/derr.defs.h ${CMAKE_CURRENT_SOURCE_DIR}/derr.defs.c
     COMMENT "Generating error definition files..."
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/err.d 
     )
 include_directories(
     ${bstring_SOURCE_DIR}

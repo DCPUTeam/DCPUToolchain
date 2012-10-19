@@ -4,5 +4,6 @@ set(supported "malloc" "free" "errno" "exit")
 set(files
     start.dasm16
     memory.dasm16
-    api.c
+    disk.dasm16
+    api.dasm16
 )

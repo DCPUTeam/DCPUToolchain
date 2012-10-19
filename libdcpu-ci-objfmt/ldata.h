@@ -25,6 +25,7 @@
 #define LABEL_SECTION 4
 #define LABEL_OUTPUT 5
 #define LABEL_JUMP 6
+#define LABEL_OPTIONAL 7
 
 struct ldata_entry
 {

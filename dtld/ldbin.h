@@ -30,6 +30,7 @@ struct ldbin
 	list_t* section;
 	list_t* output;
     list_t* jump;
+    list_t* optional;
 	list_t* symbols;
 	list_t words;
 };

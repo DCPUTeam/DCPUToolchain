@@ -33,6 +33,7 @@ struct warnpolicy
 #include "derr.defs.h"
 
 // Variables
+extern jmp_buf __derrjmp;
 extern const char* err_strings[];
 extern struct warnpolicy warnpolicies[];
 
@@ -44,7 +45,7 @@ struct errinfo
 };
 
 // Utility method for throwing errors.
-int dsethalt();
+#define dsethalt() (setjmp(__derrjmp))
 void dhalt(int errid, const char* errdata);
 void dwarn(int errid, const char* errdata);
 #ifdef ARGTABLE2

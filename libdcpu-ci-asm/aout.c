@@ -177,10 +177,44 @@ struct aout_byte* aout_create_metadata_export(char* name)
 	return byte;
 }
 
+struct aout_byte* aout_create_metadata_jump(char* name)
+{
+	struct aout_byte* byte = malloc(sizeof(struct aout_byte));
+	byte->type = AOUT_TYPE_METADATA_JUMP;
+	byte->opcode = 0;
+	byte->a = 0;
+	byte->b = 0;
+	byte->next = NULL;
+	byte->prev = NULL;
+	byte->expr = NULL;
+	byte->label = name;
+	byte->raw_used = false;
+	byte->raw = 0x0;
+	list_init(&byte->symbols);
+	return byte;
+}
+
 struct aout_byte* aout_create_metadata_import(char* name)
 {
 	struct aout_byte* byte = malloc(sizeof(struct aout_byte));
 	byte->type = AOUT_TYPE_METADATA_IMPORT;
+	byte->opcode = 0;
+	byte->a = 0;
+	byte->b = 0;
+	byte->next = NULL;
+	byte->prev = NULL;
+	byte->expr = NULL;
+	byte->label = name;
+	byte->raw_used = false;
+	byte->raw = 0x0;
+	list_init(&byte->symbols);
+	return byte;
+}
+
+struct aout_byte* aout_create_metadata_import_optional(char* name)
+{
+	struct aout_byte* byte = malloc(sizeof(struct aout_byte));
+	byte->type = AOUT_TYPE_METADATA_IMPORT_OPTIONAL;
 	byte->opcode = 0;
 	byte->a = 0;
 	byte->b = 0;
@@ -293,7 +327,8 @@ uint16_t aout_get_label_address(bstring name)
 				return mem_index;
 			}
 		}
-		else if (current->type == AOUT_TYPE_METADATA_IMPORT)
+		else if (current->type == AOUT_TYPE_METADATA_IMPORT ||
+                current->type == AOUT_TYPE_METADATA_IMPORT_OPTIONAL)
 		{
 			// Check to see if the requested label is
 			// actually imported.
@@ -327,6 +362,8 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 	struct lprov_entry* linker_adjustment = NULL;
 	struct lprov_entry* linker_section = NULL;
 	struct lprov_entry* linker_output = NULL;
+    struct lprov_entry* linker_jump = NULL;
+    struct lprov_entry* linker_optional = NULL;
 	struct lprov_entry* linker_temp = NULL;
 	uint32_t mem_index, out_index;
 	uint16_t inst;
@@ -358,7 +395,9 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 		}
 		else if (current_outer->type == AOUT_TYPE_METADATA_SECTION)
 		{
-			assert(current_outer->label != NULL);
+            // Ensure parameter is set.
+            if (current_outer->label == NULL)
+                dhalt(ERR_KEYWORD_PARAMETER_MISSING, "SECTION");
 
 			// We're exporting the current address as the beginning
 			// of a section.
@@ -377,7 +416,9 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 		}
 		else if (current_outer->type == AOUT_TYPE_METADATA_OUTPUT)
 		{
-			assert(current_outer->label != NULL);
+            // Ensure parameter is set.
+            if (current_outer->label == NULL)
+                dhalt(ERR_KEYWORD_PARAMETER_MISSING, "OUTPUT");
 
 			// We're exporting the current address as the beginning
 			// of a section.
@@ -393,7 +434,9 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 		}
 		else if (current_outer->type == AOUT_TYPE_METADATA_EXPORT)
 		{
-			assert(current_outer->label != NULL);
+            // Ensure parameter is set.
+            if (current_outer->label == NULL)
+                dhalt(ERR_KEYWORD_PARAMETER_MISSING, "EXPORT");
 
 			// We're exporting the address of this label in the
 			// object table.
@@ -410,6 +453,30 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 			linker_temp->next = linker_provided;
 			linker_provided = linker_temp;
 			printd(LEVEL_VERBOSE, "LINK REPLACE %s -> 0x%04X\n", current_outer->label, eaddr);
+		}
+		else if (current_outer->type == AOUT_TYPE_METADATA_JUMP)
+        {
+            // We're exporting the address of this label in the
+			// jump table, or exporting the position of the jump
+            // table.
+			if (!intermediate)
+				dhalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
+
+			// Resolve label position.
+            if (current_outer->label != NULL)
+            {
+    			ename = bfromcstr(current_outer->label);
+    			eaddr = aout_get_label_address(ename);
+    			bdestroy(ename);
+            }
+            else
+                eaddr = out_index;
+
+			// Create linker entry.
+			linker_temp = lprov_create(current_outer->label, eaddr);
+			linker_temp->next = linker_jump;
+			linker_jump = linker_temp;
+			printd(LEVEL_VERBOSE, "LINK JUMP %s -> 0x%04X\n", current_outer->label, eaddr);
 		}
 		else if (current_outer->type == AOUT_TYPE_NORMAL && current_outer->expr != NULL)
 		{
@@ -443,7 +510,8 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 						// Adjust memory address.
 						mem_index = current_inner->opcode;
 					}
-					else if (current_inner->type == AOUT_TYPE_METADATA_IMPORT)
+					else if (current_inner->type == AOUT_TYPE_METADATA_IMPORT ||
+                            current_inner->type == AOUT_TYPE_METADATA_IMPORT_OPTIONAL)
 					{
 						// An imported label (we don't need to adjust
 						// memory index because the existance of this type
@@ -460,8 +528,18 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 							expr_delete(current_outer->expr);
 							current_outer->expr = NULL;
 							linker_temp = lprov_create(current_inner->label, out_index);
-							linker_temp->next = linker_required;
-							linker_required = linker_temp;
+                            if (current_inner->type == AOUT_TYPE_METADATA_IMPORT)
+                            {
+                                linker_temp->next = linker_required;
+        						linker_required = linker_temp;
+                            }
+                            else if (current_inner->type == AOUT_TYPE_METADATA_IMPORT_OPTIONAL)
+                            {
+                                linker_temp->next = linker_optional;
+        						linker_optional = linker_temp;
+                            }
+                            else
+                                assert(false);
 							printd(LEVEL_VERBOSE, "LINK REPLACE 0x%04X -> %s\n", out_index, current_inner->label);
 							did_find = true;
 							break;
@@ -506,7 +584,10 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
 	if (intermediate)
 	{
 		fwrite(ldata_objfmt, 1, strlen(ldata_objfmt) + 1, out);
-		objfile_save(out, linker_provided, linker_required, linker_adjustment, linker_section, linker_output);
+		objfile_save(out, linker_provided, linker_required,
+                linker_adjustment, linker_section,
+                linker_output, linker_jump,
+                linker_optional);
 
 		// Adjust the "true origin" for .ORIGIN directivies because
 		// the linker table won't exist in the final result when

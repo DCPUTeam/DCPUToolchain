@@ -1,0 +1,53 @@
+:m35fd .dat 0
+:m35fd_sector .dat 0
+.DEFINE m35fd_message 0x1234
+.DEFINE load_point 0x1000
+.IMPORT _locate_device
+
+.EXPORT _disk_start
+:_disk_start
+    SET A, 0x1234
+    SET B, 0x4567
+    JSR _locate_device
+    SET [m35fd], A
+    SET A, 0x1
+    SET B, m35fd_message ; Set the interrupt message
+    HWI [m35fd]
+    
+    IAS _read_loop
+    :_wait_loop
+        SET PC, _wait_loop
+
+:_request_next_sector
+    IFE [m35fd_sector], 0x40 ; 0x40 * 512 = 0x8000 words
+        SET PC, _read_end
+    SET A, 0x2
+    SET X, [m35fd_sector]
+
+    SET Y, X ; Y = sector * 512 + 0x1000
+    MUL Y, 512
+    ADD Y, load_point
+
+    HWI [m35fd]
+    SET PC, POP
+
+:_read_loop
+    IFN A, m35fd_message
+        RFI 0
+
+    SET A, 0x0
+    HWI [m35fd]
+
+    IFE B, 0x1 ; The device is ready. Request the next sector.
+        JSR _request_next_sector
+
+    IFN C, 0x0 ; An error happened. TODO: Handle this.
+        RFI 0
+
+    RFI 0
+
+:_read_end
+    IAS 0
+    IAQ 0
+
+    SET PC, load_point

@@ -46,26 +46,28 @@ bstring yyfilename = NULL;
 
 	/* Line and file directives */
 	
-\#\ [0-9]+(\r\n|\r|\n)				rparse_dol(yytext, &yylineno);
-\#\ [0-9]+\ [^\r\n]*(\r\n|\r|\n)		rparse_do(yytext, &yylineno, &yyfilename);
-\#U\ [0-9]+\ [^\r\n]*(\r\n|\r|\n)		rparse_do(yytext, &yyulineno, &yyufilename);
+\#\ [0-9]+(\r\n|\r|\n)                  rparse_dol(yytext, &yylineno);
+\#\ [0-9]+\ [^\r\n]*(\r\n|\r|\n)        rparse_do(yytext, &yylineno, &yyfilename);
+\#U\ [0-9]+\ [^\r\n]*(\r\n|\r|\n)       rparse_do(yytext, &yyulineno, &yyufilename);
 
 	/* Assembler keywords */
 
-\.[Bb][Oo][Uu][Nn][Dd][Aa][Rr][Yy]		yylval.number = BOUNDARY; return KEYWORD;
-\.[Ee][Xx][Tt][Ee][Nn][Ss][Ii][Oo][Nn]		yylval.number = EXTENSION; return KEYWORD;
-\.[Ss][Ee][Ee][Kk]				yylval.number = SEEK; return KEYWORD;
-\.[Or][Rr][Ii][Gg][Ii][Nn]			yylval.number = ORIGIN; return KEYWORD;
-\.[Oo][Rr][Gg]					yylval.number = ORIGIN; return KEYWORD;
-\.[Ii][Nn][Cc][Bb][Ii][Nn]			yylval.number = INCBIN; return KEYWORD;
-\.[Ee][Xx][Pp][Oo][Rr][Tt]			yylval.number = EXPORT; return KEYWORD;
-\.[Ii][Mm][Pp][Oo][Rr][Tt]			yylval.number = IMPORT; return KEYWORD;
-\.[Ff][Ii][Ll][Ll]				yylval.number = FILL; return FILL;
-\.[Ss][Ee][Cc][Tt][Ii][Oo][Nn]			yylval.number = SECTION; return KEYWORD;
-\.[Oo][Uu][Tt][Pp][Uu][Tt]			yylval.number = OUTPUT; return KEYWORD;
-\.[Ss][Yy][Mm][Bb][Oo][Ll][ \t]*		BEGIN(IN_SYMBOL); yylval.number = SYMBOL; return KEYWORD;
-<IN_SYMBOL>[^\n]+				yylval.string = bfromcstr(yytext); return STRING;
-<IN_SYMBOL>(\r\n|\r|\n)				BEGIN(INITIAL); return NEWLINE;
+\.[Bb][Oo][Uu][Nn][Dd][Aa][Rr][Yy]      yylval.number = BOUNDARY; return KEYWORD;
+\.[Ee][Xx][Tt][Ee][Nn][Ss][Ii][Oo][Nn]  yylval.number = EXTENSION; return KEYWORD;
+\.[Ss][Ee][Ee][Kk]                      yylval.number = SEEK; return KEYWORD;
+\.[Or][Rr][Ii][Gg][Ii][Nn]              yylval.number = ORIGIN; return KEYWORD;
+\.[Oo][Rr][Gg]                          yylval.number = ORIGIN; return KEYWORD;
+\.[Ii][Nn][Cc][Bb][Ii][Nn]              yylval.number = INCBIN; return KEYWORD;
+\.[Ee][Xx][Pp][Oo][Rr][Tt]              yylval.number = EXPORT; return KEYWORD;
+\.[Ii][Mm][Pp][Oo][Rr][Tt]              yylval.number = IMPORT; return KEYWORD;
+[Oo][Pp][Tt][Ii][Oo][Nn][Aa][Ll]        yylval.number = IMPORT_OPTIONAL; return IMPORT_OPTIONAL;
+\.[Ff][Ii][Ll][Ll]                      yylval.number = FILL; return FILL;
+\.[Ss][Ee][Cc][Tt][Ii][Oo][Nn]          yylval.number = SECTION; return KEYWORD;
+\.[Oo][Uu][Tt][Pp][Uu][Tt]              yylval.number = OUTPUT; return KEYWORD;
+\.[Jj][Uu][Mm][Pp]                      yylval.number = JUMP; return KEYWORD;
+\.[Ss][Yy][Mm][Bb][Oo][Ll][ \t]*        BEGIN(IN_SYMBOL); yylval.number = SYMBOL; return KEYWORD;
+<IN_SYMBOL>[^\n]+                       yylval.string = bfromcstr(yytext); return STRING;
+<IN_SYMBOL>(\r\n|\r|\n)                 BEGIN(INITIAL); return NEWLINE;
 
 	/* Opcodes as numbers support */
 
@@ -205,7 +207,7 @@ bstring yyfilename = NULL;
 [Ee][Xx]			yylval.word = strdup(yytext); return REGISTER;
 [Ii][Aa]			yylval.word = strdup(yytext); return REGISTER;
 [Nn][Xx][Tt]			yylval.word = strdup(yytext); return REGISTER;
-[A-Za-z_]+[A-Za-z0-9_]*		yylval.word = strdup(yytext); return WORD;
+[A-Za-z_]+[A-Za-z0-9_]*  yylval.word = strdup(yytext); return WORD;
 0b[0-1]+			yylval.number = strtoul(yytext, NULL, 2); return ADDRESS;
 0x[0-9A-Fa-f]+			yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
 [0-9]+				yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;

@@ -1,9 +1,13 @@
 ; StubSys initalization and pass-off.
 SET PC, _kern_start
 
+; Jump table position.
+.JUMP
+
 ; Locates a hardware device based on the specified
 ; ID loaded into registers A and B.  The resulting
 ; message ID is loaded into register A.
+.EXPORT _locate_device
 :_locate_device
 	SET PUSH, A
 	SET PUSH, B
@@ -47,10 +51,15 @@ SET PC, _kern_start
 	SET B, 0x8000
 	HWI POP
 
-    ; Start program.
-    .IMPORT _start
-    JSR _start
+    ; Detect if we load from disk or direct start.
+    .IMPORT OPTIONAL _start
+    .IMPORT _disk_start
+    IFE _start, 0
+        JSR _disk_start
+    IFN _start, 0
+        JSR _start
 
     ; Handle program exit; just spin loop.
+    .EXPORT _kern_exit
     :_kern_exit
         SET PC, _kern_exit

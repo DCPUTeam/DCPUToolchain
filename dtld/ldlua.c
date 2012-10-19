@@ -27,6 +27,7 @@
 #include <osutil.h>
 #include <ppexprlua.h>
 #include <luaglob.h>
+#include <derr.h>
 #include "ldlua.h"
 #include "ldconv.h"
 #include "ldbins.h"
@@ -71,13 +72,14 @@ struct lua_optmst* bin_lua_load(bstring name)
 	// Execute the code in the new Lua context.
 	if (luaL_dofile(om->state, path->data) != 0)
 	{
-		printd(LEVEL_ERROR, "lua error was %s.\n", lua_tostring(om->state, -1));
+        const char* lerr = lua_tostring(om->state, -1);
 
 		// Return NULL.
 		lua_close(om->state);
 		bdestroy(om->name);
 		free(om);
 		bdestroy(path);
+        dhalt(ERR_LUA, lerr);
 		return NULL;
 	}
 
@@ -88,12 +90,11 @@ struct lua_optmst* bin_lua_load(bstring name)
 	// Ensure module table was provided.
 	if (lua_isnoneornil(om->state, module))
 	{
-		printd(LEVEL_ERROR, "failed to load optimizer module from %s.\n", path->data);
-
 		// Return NULL.
 		lua_close(om->state);
 		bdestroy(om->name);
 		free(om);
+        dhalt(ERR_OPTIMIZER_LOAD_FAILED, path->data);
 		bdestroy(path);
 		return NULL;
 	}

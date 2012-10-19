@@ -21,13 +21,7 @@
 #include "derr.h"
 
 // Error definition
-static jmp_buf errjmp;
-
-// Sets the halting method
-int dsethalt()
-{
-    return setjmp(errjmp);
-}
+jmp_buf __derrjmp;
 
 // Utility method for throwing errors.
 void dhalt(int errid, const char* errdata)
@@ -35,7 +29,8 @@ void dhalt(int errid, const char* errdata)
 	struct errinfo* err = malloc(sizeof(struct errinfo));
 	err->errid = errid;
 	err->errdata = errdata;
-	longjmp(errjmp, (long)err);
+	longjmp(__derrjmp, (long)err);
+    assert(false);
 }
 
 void dwarn(int errid, const char* errdata)

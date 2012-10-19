@@ -20,8 +20,23 @@ ERR_EXPRESSION_NOT_PERMITTED                         expression-not-permitted   
 ERR_EXPRESSION_DIVIDE_BY_ZERO                        expression-divide-by-zero              "expression '%s' evaluates to zero while being used as a divisor."
 ERR_OUTPUT_BEFORE_SECTION                            output-before-section                  ".OUTPUT is not permitted prior to .SECTION."
 ERR_INVALID_PARAMETER_COUNT                          instruction-invalid-parameter-count    "invalid parameter count for instruction."
+ERR_KEYWORD_PARAMETER_MISSING                        keyword-parameter-missing              "required keyword parameter for '%s' is missing."
+ERR_ONLY_IMPORT_OPTIONAL                             only-import-optional                   "only the .IMPORT directive may be followed by OPTIONAL."
 
 WARN_EXPRESSION_NOT_ADJUSTED                         expression-not-adjusted                "expressions will not be adjusted at link or relocation time. ensure labels are not used as part of expressions."
 WARN_USE_RELOCATION_NOT_ORIGIN                       origin-usage                           ".ORIGIN should not be used for relocation as it is not portable between kernels."
 WARN_RELATIVE_PC_ADDRESSING                          relative-jump                          "relative adjustments to PC (such as SUB PC, <n>) are not safe due to literal shortening."
 
+ERR_LABEL_AMBIGIOUS_PROVIDED_JUMP                    label-ambigious                        "label '%s' found in both exported and jump tables."
+ERR_CAN_NOT_OPEN_FILE                                file-not-open                          "unable to open '%s'."
+ERR_CAN_NOT_WRITE_FILE                               file-not-writable                      "unable to write to '%s'."
+ERR_LUA                                              lua                                    "lua error was '%s'."
+ERR_OBJECT_VERSION_MISMATCH                          object-version-mismatch                "the object file '%s' was written with a different version of the toolchain."
+ERR_OPTIMIZER_LOAD_FAILED                            optimizer-load-failed                  "failed to load optimizer module from '%s'."
+ERR_INVALID_TARGET_NAME                              invalid-target-name                    "invalid target type, must be 'image', 'static' or 'kernel'."
+ERR_BIN_LOAD_FAILED                                  bin-load-failed                        "failed to load bins from the object file '%s'."
+
+WARN_SKIPPING_SHORT_LITERALS_TYPE                    short-literals-skipped-type            "skipping short literal compression due to target type."
+WARN_SKIPPING_SHORT_LITERALS_REQUEST                 short-literals-skipped-request         "skipping short literal compression on request."
+WARN_KERNEL_NOT_PROVIDING_JUMP_LIST                  jump-list-missing                      "kernel did not specify a position to output a jump list with .JUMP."
+WARN_KERNEL_JUMP_LIST_NOT_EXPORTED                   jump-list-not-exported                 "the jump list was not exported along with the kernel."

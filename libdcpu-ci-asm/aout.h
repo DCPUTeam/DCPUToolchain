@@ -31,6 +31,8 @@
 #define AOUT_TYPE_METADATA_SECTION 6
 #define AOUT_TYPE_METADATA_OUTPUT 7
 #define AOUT_TYPE_METADATA_SEEK 8
+#define AOUT_TYPE_METADATA_JUMP 9
+#define AOUT_TYPE_METADATA_IMPORT_OPTIONAL 10
 
 struct aout_byte
 {
@@ -59,7 +61,9 @@ struct aout_byte* aout_create_metadata_incbin(char* path);
 struct aout_byte* aout_create_metadata_origin(uint16_t address);
 struct aout_byte* aout_create_metadata_seek(uint16_t address);
 struct aout_byte* aout_create_metadata_export(char* name);
+struct aout_byte* aout_create_metadata_jump(char* name);
 struct aout_byte* aout_create_metadata_import(char* name);
+struct aout_byte* aout_create_metadata_import_optional(char* name);
 struct aout_byte* aout_create_metadata_section(char* name);
 struct aout_byte* aout_create_metadata_output(char* name);
 struct aout_byte* aout_emit(struct aout_byte* byte);

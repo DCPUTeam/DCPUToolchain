@@ -440,13 +440,35 @@ void process_line(struct ast_node_line* line)
 				case IMPORT:
 					printd(LEVEL_VERBOSE, ".IMPORT %s", bstr2cstr(line->keyword_data_string, '0'));
 
-					// Emit export metadata.
+					// Emit import metadata.
 					aout_emit(aout_create_metadata_import(bstr2cstr(line->keyword_data_string, '0')));
 
 					break;
 
+                case IMPORT_OPTIONAL:
+					printd(LEVEL_VERBOSE, ".IMPORT OPTIONAL %s", bstr2cstr(line->keyword_data_string, '0'));
+
+					// Emit import metadata.
+					aout_emit(aout_create_metadata_import_optional(bstr2cstr(line->keyword_data_string, '0')));
+
+					break;
+
+				case JUMP:
+                    if (line->keyword_data_string == NULL)
+                        printd(LEVEL_VERBOSE, ".JUMP <table>");
+                    else
+    					printd(LEVEL_VERBOSE, ".JUMP %s", bstr2cstr(line->keyword_data_string, '0'));
+
+					// Emit jump metadata.
+                    if (line->keyword_data_string == NULL)
+    					aout_emit(aout_create_metadata_jump(NULL));
+                    else
+                    	aout_emit(aout_create_metadata_jump(bstr2cstr(line->keyword_data_string, '0')));
+
+					break;
+
 				default:
-					printd(LEVEL_VERBOSE, "\n");
+					printd(LEVEL_VERBOSE, "?? UNKNOWN KEYWORD\n");
 					dhalt(ERR_UNSUPPORTED_KEYWORD, NULL);
 			}
 

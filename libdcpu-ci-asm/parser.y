@@ -22,6 +22,7 @@
 #include <ppexpr.h>
 #include <debug.h>
 #include <assert.h>
+#include <derr.h>
 #include "node.h"
 #include "imap.h"
 
@@ -81,7 +82,7 @@ extern bstring	yyufilename;
 %token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT
 %token <token> ADD SUBTRACT MULTIPLY DIVIDE MODULUS EQUALS NOT_EQUALS LESS_THAN LESS_EQUALS GREATER_THAN GREATER_EQUALS
 %token <token> PAREN_OPEN PAREN_CLOSE BITWISE_AND BITWISE_BOR BITWISE_XOR BITWISE_NOT BOOLEAN_OR BOOLEAN_AND BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
-%token <token> LEX_PICK KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL SECTION OUTPUT SYMBOL SEEK
+%token <token> LEX_PICK KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL SECTION OUTPUT SYMBOL SEEK JUMP IMPORT_OPTIONAL
 %token <word> WORD REGISTER
 %token <string> STRING CHARACTER
 %token <number> ADDRESS
@@ -170,7 +171,22 @@ line:
 			$$->keyword_data_expr_2 = $3;
 			NODE_SET_GLOBALS($$);
 		} |
-		KEYWORD WORD NEWLINE
+		KEYWORD IMPORT_OPTIONAL WORD NEWLINE
+		{
+            if ((long)$1 != IMPORT)
+                dhalt(ERR_ONLY_IMPORT_OPTIONAL, NULL);
+			$$ = malloc(sizeof(struct ast_node_line));
+			$$->type = type_keyword;
+			$$->keyword = (long)IMPORT_OPTIONAL;
+			$$->instruction = NULL;
+			$$->label = NULL;
+			$$->prev = NULL;
+			$$->keyword_data_string = bfromcstr($3);
+			$$->keyword_data_expr_1 = NULL;
+			$$->keyword_data_expr_2 = NULL;
+			NODE_SET_GLOBALS($$);
+		} |
+        KEYWORD WORD NEWLINE
 		{
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;

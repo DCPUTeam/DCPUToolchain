@@ -2,18 +2,24 @@ This is the folder under which support for kernels is defined.  Each kernel can 
 specified to support a certain functionality set, of which only 'malloc', 'free',
 'errno' and 'exit' are absolutely required.
 
-Each kernel defines the available functions according to it's config.lua file, which
-is read in during compilation of DCPU-16 programs.  Where functionality is not provided
-by the kernel natively, the C standard library will emulate it.  Note that this may
-conflict with the kernel if the kernel does actually handle a given functionality but
-is not exposing it, so it important that if something is under the kernel's control
-(such as filesystem access), that the appropriate handles are provided for the C
-system library.
+Each kernel defines the available functions according to it's config.cmake file, which
+is read in when the kernel is built.  Where functionality is not provided by the kernel
+natively, language libraries may emulate it.  Note that this may conflict with the kernel
+if the kernel does actually handle a given functionality but is not exposing it,
+so it important that if something is under the kernel's control (such as filesystem
+access), that the appropriate handles are provided for language libraries to use.
+
+Although the following functions are defined in a C-like syntax, they are in fact
+assembly labels exported using the .JUMP directive.  Each parameter is stored in
+register A, then B then finally C.  There are never more than 3 parameters to a
+function.  If the function has a result, it is store in A.  The type information
+provided here is semantic to understand the type of information returned; it has
+no baring on the actual data (it's always technically words in the DCPU-16 memory).
 
 When defining functions, the function names should be preceded with `_stubapi_`
 to ensure global uniqueness and no conflicts.  That is, when defining the `malloc`
-function, in the config.lua file you would refer to it as `malloc`, but in the
-actual C definition you would name it `_stubapi_malloc` The full list of handles are:
+function, in the config.cmake file you would refer to it as `malloc`, but in the
+actual label definition you would name it `_stubapi_malloc` The full list of handles are:
 
 Memory Management
 ======================
@@ -22,7 +28,7 @@ void\* malloc(uint16\_t size)
 ------------------------------
 **Desciption:** Allocates a block of memory and returns the address.<br/>
 **Semantics:** If there is no available memory, this function should return a pointer
-to 0x0.  Thus 0x0 can never be allocated as memory to a C program.
+to 0x0.  Thus 0x0 can never be allocated as memory to a program.
 
 void free(void\* ptr)
 --------------------------
@@ -64,8 +70,8 @@ clean up as soon as it is viable.
 
 File Management
 ==================
-**Notice:** If the kernel does not provide these functions, the C system library will
-directly provide them by talking to the appropriate hardware and constructing an
+**Notice:** If the kernel does not provide these functions, at the very least, the C system
+library will directly provide them by talking to the appropriate hardware and constructing an
 appropriate filesystem (not specified).  If the kernel is handling disk devices,
 it must expose these APIs or risk corrupting data on the disk.
 
@@ -115,8 +121,8 @@ ignore the request or initiate a segmentation fault in the program (recommended)
 
 Other I/O Management
 ======================
-**Notice:** If the kernel does not provide these functions, the C system library will
-directly provide them by talking to the appropriate hardware and constructing an
+**Notice:** If the kernel does not provide these functions, at the very least, the C system
+library will directly provide them by talking to the appropriate hardware and constructing an
 appropriate filesystem (not specified).  If the kernel is handling disk devices,
 it must expose these APIs or risk corrupting data on the disk.
 

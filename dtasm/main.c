@@ -111,7 +111,6 @@ int main(int argc, char* argv[])
 
 	// Set up error handling.
 	errval = (struct errinfo*)dsethalt();
-
 	if (errval != NULL)
 	{
 		// FIXME: Use bstrings here.
