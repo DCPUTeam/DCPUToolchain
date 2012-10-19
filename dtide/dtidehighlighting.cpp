@@ -7,5 +7,7 @@ QSyntaxHighlighter* DTIDEHighlighting::getHighlighter(CodeSyntax syntax, QTextDo
         case DCPUAssembly:
             return new DCPUHighlighter(p);
             break;
+        default:
+            return NULL;
     }
 }

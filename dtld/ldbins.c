@@ -22,6 +22,7 @@
 #include <objfile.h>
 #include <assert.h>
 #include <debug.h>
+#include <derr.h>
 #include "ldbins.h"
 #include "ldbin.h"
 #include "ldlua.h"
@@ -45,6 +46,7 @@ int bin_seeker(const void* el, const void* indicator)
 ///
 void bins_init()
 {
+    ldbins.kernel = NULL;
 	list_init(&ldbins.bins);
 	list_attributes_seeker(&ldbins.bins, &bin_seeker);
 }
@@ -76,6 +78,37 @@ struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct 
 }
 
 ///
+/// Adds a new bin to the system with the specified name.
+///
+/// Adds a new bin to the system with the specified name and link
+/// information.
+///
+/// @param provided A linked list of provided labels.
+/// @param required A linked list of required labels.
+/// @param adjustment A linked list of addresses that need adjusting.
+/// @param section A linked list of defined sections.
+/// @param output A linked list of defined output areas.
+///
+struct ldbin* bins_set_kernel(struct lprov_entry* provided, struct lprov_entry* required, struct lprov_entry* adjustment, struct lprov_entry* section, struct lprov_entry* output)
+{
+	struct ldbin* bin;
+    if (ldbins.kernel != NULL)
+    {
+        derr(ERR_LINK_SET_KERNEL_TWICE, NULL);
+        return NULL;
+    }
+    bin = bin_create(name);
+	bin->provided = list_convert(provided);
+	bin->required = list_convert(required);
+	bin->adjustment = list_convert(adjustment);
+	bin->section = list_convert(section);
+	bin->output = list_convert(output);
+	bin->symbols = dbgfmt_create_list();
+    ldbins.kernel = bin;
+	return bin;
+}
+
+///
 /// Loads a new bin by reading a linker object from file.
 ///
 /// Adds a new bin by reading in a linker object stored on disk and
@@ -93,6 +126,7 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
 	struct lprov_entry* adjustment = NULL;
 	struct lprov_entry* section = NULL;
 	struct lprov_entry* output = NULL;
+    struct lprov_entry* jump = NULL;
 	struct ldbin* bin;
 	FILE* in;
 	char* test;
@@ -137,10 +171,10 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
 	}
 
 	// Load only the provided label entries into memory.
-	objfile_load(path.ref->data, in, &offset, &provided, &required, &adjustment, &section, &output);
+	objfile_load(path.ref->data, in, &offset, &provided, &required, &adjustment, &section, &output, &jump);
 
 	// Add the new bin.
-	bin = bins_add(path, provided, required, adjustment, section, output);
+	bin = bins_add(path, provided, required, adjustment, section, output, jump);
 
 	// Load all of the debugging symbols if requested.
 	if (loadDebugSymbols)
@@ -178,6 +212,88 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
 	lprov_free(adjustment);
 	lprov_free(section);
 	lprov_free(output);
+    lprov_free(jump);
+
+	return true;
+}
+
+///
+/// Loads a kernel bin from file.
+///
+/// Adds a "<kernel>" bin by reading in a kernel object stored on disk and
+/// automatically handling loading bytes and linker information into
+/// the bin.
+///
+/// @param path The path to load the kernel from.
+/// @return Whether the kernel bin was loaded successfully.
+///
+bool bins_load_kernel(freed_bstring path)
+{
+	uint16_t offset = 0, store;
+    struct lprov_entry* jump = NULL;
+	struct ldbin* bin;
+	FILE* in;
+	char* test;
+	bstring sympath;
+	int sympathi, sympathj, sympathk;
+
+	// Open the input file.
+	in = fopen(path.ref->data, "rb");
+
+	if (in == NULL)
+	{
+		// Handle the error.
+		printd(LEVEL_ERROR, "error: unable to open '%s'.\n", path.ref->data);
+		return false;
+	}
+
+	// Is this the object format?
+	test = malloc(strlen(ldata_objfmt) + 1);
+	memset(test, 0, strlen(ldata_objfmt) + 1);
+	fread(test, 1, strlen(ldata_objfmt), in);
+	fseek(in, 1, SEEK_CUR);
+	if (strcmp(test, ldata_objfmt) != 0)
+	{
+		// Handle the error.
+		return false;
+	}
+	free(test);
+
+	// Load only the provided label entries into memory.
+	objfile_load(path.ref->data, in, &offset, &provided, &required, &adjustment, &section, &output, &jump);
+
+	// Set the new kernel bin.
+	bin = bins_set_kernel(provided, required, adjustment, section, output, jump);
+
+	// Copy all of the input file's data into the output
+	// file, word by word.
+	while (true)
+	{
+		// Read a word into the bin.  The reason that
+		// we break inside the loop is that we are reading
+		// two bytes at a time and thus the EOF flag doesn't
+		// get set until we actually attempt to read past
+		// the end-of-file.  If we don't do this, we get a
+		// double read of the same data.
+		iread(&store, in);
+		if (feof(in))
+			break;
+		bin_write(bin, store);
+	}
+
+	// Close the file.
+	fclose(in);
+
+	// Free the list data in the struct lprov_entry
+	// pointers (since it's cloned by the bin system).  Don't
+	// free the debugging symbols however, as they are not
+	// cloned.
+	lprov_free(provided);
+	lprov_free(required);
+	lprov_free(adjustment);
+	lprov_free(section);
+	lprov_free(output);
+    lprov_free(jump);
 
 	return true;
 }
@@ -197,6 +313,7 @@ void bins_save(freed_bstring name, freed_bstring path, freed_bstring target, boo
 	struct lprov_entry* adjustment = NULL;
 	struct lprov_entry* section = NULL;
 	struct lprov_entry* outputs = NULL;
+    struct lprov_entry* jump = NULL;
 	bstring sympath;
 	assert(bin != NULL);
 
@@ -224,13 +341,25 @@ void bins_save(freed_bstring name, freed_bstring path, freed_bstring target, boo
 		section = list_revert(bin->section);
 		if (keepOutputs)
 			outputs = list_revert(bin->output);
-		objfile_save(out, provided, required, adjustment, section, outputs);
+		objfile_save(out, provided, required, adjustment, section, outputs, jump);
 		lprov_free(provided);
 		lprov_free(required);
 		lprov_free(adjustment);
 		lprov_free(section);
 		lprov_free(outputs);
+        lprov_free(jump);
 	}
+
+    // Check if we need to just write out the jump
+    // table.
+    if (biseqcstr(target.ref, "kernel"))
+    {
+		fwrite(ldata_objfmt, 1, strlen(ldata_objfmt) + 1, out);
+		if (keepOutputs)
+			outputs = list_revert(bin->output);
+		objfile_save(out, NULL, NULL, NULL, NULL, NULL, jump);
+        lprov_free(jump);
+    }
 
 	// Write each byte from the bin.
 	list_iterator_start(&bin->words);
@@ -656,15 +785,14 @@ int32_t bins_optimize(int target, int level)
 ///
 /// @param keepProvided Whether the provided label entries should be kept in the flattened
 ///			bin for re-exporting (for example in static libraries).
-/// @param allowMissing Whether the required table should be permitted to exist after
-///                     resolution (for example in kernels).
 ///
-void bins_resolve(bool keepProvided, bool allowMissing)
+void bins_resolve(bool keepProvided)
 {
 	struct lconv_entry* entry;
 	struct lconv_entry* required;
 	struct lconv_entry* provided;
 	struct lconv_entry* adjustment;
+    struct lconv_entry* jump;
 	struct ldbin* bin;
 	uint16_t* word;
 	size_t i, dk;
@@ -685,13 +813,8 @@ void bins_resolve(bool keepProvided, bool allowMissing)
 		assert(required != NULL);
 		if (provided == NULL)
 		{
-            if (allowMissing)
-                continue;
-            else
-            {
-			    printd(LEVEL_ERROR, "could not find label %s.\n", required->label->data);
-			    exit(1);
-            }
+		    printd(LEVEL_ERROR, "could not find label %s.\n", required->label->data);
+		    exit(1);
 		}
 
 		// Insert the required code.
@@ -721,25 +844,59 @@ void bins_resolve(bool keepProvided, bool allowMissing)
 	}
 	list_iterator_stop(bin->required);
 
+    // If this is not a kernel, but there is a kernel bin, iterate
+    // over all of the jump values and resolve them as well.
+	list_iterator_start(bin->jump);
+	while (list_iterator_hasnext(bin->jump))
+	{
+		// Get the required / provided matching labels.
+		jump = list_iterator_next(bin->jump);
+		provided = list_seek(bin->provided, required->label);
+
+		// TODO: Throw a proper error.
+		assert(required != NULL);
+		if (provided == NULL)
+		{
+		    printd(LEVEL_ERROR, "could not find label %s.\n", required->label->data);
+		    exit(1);
+		}
+
+		// Insert the required code.
+		word = list_get_at(&bin->words, required->address);
+		*word = provided->address;
+
+		// Add the deleted requirement as adjustment
+		adjustment = malloc(sizeof(struct lconv_entry));
+		if (provided->label == NULL)
+			adjustment->label = NULL;
+		else
+		{
+			adjustment->label = bfromcstr("");
+			bassign(adjustment->label, provided->label);
+		}
+
+		adjustment->bin = bfromcstr("");
+		bassign(adjustment->bin, bin->name);
+		adjustment->address = required->address;
+		if (bin->adjustment == NULL)
+		{
+			list_init(bin->adjustment);
+		}
+		list_append(bin->adjustment, adjustment);
+
+		printd(LEVEL_DEBUG, "resolve: %s (0x%4X) -> 0x%4X\n", required->label->data, required->address, provided->address);
+	}
+	list_iterator_stop(bin->required);
+
+
 	// Delete all of the required entries.
 	for (i = 0; i < list_size(bin->required); i++)
 	{
 		required = list_extract_at(bin->required, i);
 		provided = list_seek(bin->provided, required->label);
-        if (provided)
-        {
-	        bdestroy(required->label);
-		    free(required);
-            i--;
-        }
-        else if (!provided && allowMissing)
-        { 
-            // Needs to be kept.
-        }
-        else
-        {
-            assert(!provided && !allowMissing);
-        }
+        bdestroy(required->label);
+        free(required);
+        i--;
 	}
 
 	if (!keepProvided)
