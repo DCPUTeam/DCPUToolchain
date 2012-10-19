@@ -6,8 +6,22 @@
 #include "dtidesplash.h"
 #include "mainwindow.h"
 
+extern "C"
+{
+#include <osutil.h>
+#include <bstring.h>
+#include <debug.h>
+#include <iio.h>
+}
+
 int main(int argc, char** argv)
 {
+    // Some set up required for toolchain to work.
+	debug_setlevel(LEVEL_VERBOSE);
+	osutil_setarg0(bautofree(bfromcstr(argv[0])));
+	isetmode(IMODE_BIG);
+
+    // Now start the IDE.
     QApplication app(argc, argv);
 
     std::list<Toolchain*> toolchains;

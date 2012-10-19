@@ -1,4 +1,5 @@
 #include "dcputoolchain.h"
+#include "dcputoolchain_asm.h"
 #include <iostream>
 
 DCPUToolchainASM::DCPUToolchainASM() 
@@ -27,26 +28,29 @@ std::list<std::string> DCPUToolchainASM::GetExtensions()
 
 std::string DCPUToolchainASM::GetDefaultFileName()
 {
-    return "untitled.dasm";
+    return "untitled.dasm16";
 }
 
 void DCPUToolchainASM::Build(std::string filename, std::string outputDir, BuildAPI &api)
 {
-    QString outputFile = "test.bin";
-    
-    // run assembler
-    QProcess *dtasm = new QProcess();
-    QStringList arguments;
+    const char* cf = filename.c_str();
+    FILE* ob;
+    FILE* os;
 
-    arguments	<<  QString::fromStdString(filename)
-		<<  "-o"
-		<<  outputFile;
-
-    dtasm->start("./dtasm", arguments);
-
-    dtasm->waitForFinished();
-
-    api.AddOutputFile(outputFile.toStdString());
+    if (perform_assemble(cf, &ob, &os))
+    {
+        std::cout << "Assembling completed succesfully." << std::endl;
+        std::cout << "This is where the FILE* handles should be written out" << std::endl
+                  << "to disk so that the filenames can be pushed back on" << std::endl
+                  << "to the build queue to be processed further." << std::endl;
+        fclose(ob);
+        fclose(os);
+        api.AddOutputFile("CHANGEME.dcpu16");
+    }
+    else
+    {
+        std::cout << "Assembling failed!" << std::endl;
+    }
     api.End();
 }
 
@@ -96,3 +100,4 @@ void DCPUToolchain::Start(std::string path, DebuggingSession& session)
 
     dtemu->startDetached("./dtemu", arguments);
 }
+
