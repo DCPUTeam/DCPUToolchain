@@ -1,6 +1,6 @@
 /**
 
-	File:    main.c
+	File:	 main.c
 
 	Project:  DCPU-16 Tools
 	Component:  Module Manager
@@ -88,9 +88,9 @@ bool do_search(CURL* curl, bstring name, bool all)
 
 	// Print the local results.
     if (all)
-    	printd(LEVEL_DEFAULT, "all modules:\n");
+	printd(LEVEL_DEFAULT, "all modules:\n");
     else
-        printd(LEVEL_DEFAULT, "search results for %s:\n", name->data);
+	printd(LEVEL_DEFAULT, "search results for %s:\n", name->data);
 	while ((entry = readdir(dir)) != NULL)
 	{
 		fname = bfromcstr(&entry->d_name[0]);
@@ -110,7 +110,7 @@ bool do_search(CURL* curl, bstring name, bool all)
 			continue;
 		}
 		sstr = bmidstr(fname, 0, blength(fname) - 4);
-		printd(LEVEL_DEFAULT, "   %s (installed)\n", sstr->data);
+		printd(LEVEL_DEFAULT, "	  %s (installed)\n", sstr->data);
 		list_append(&installed, sstr->data);
 		bdestroy(sstr);
 		bdestroy(fname);
@@ -126,12 +126,12 @@ bool do_search(CURL* curl, bstring name, bool all)
 		btrimws(buffer);
 		sstr = bmidstr(buffer, 0, blength(buffer) - 4);
 		if (!list_contains(&installed, sstr->data))
-			printd(LEVEL_DEFAULT, "  %s\n", sstr->data);
+			printd(LEVEL_DEFAULT, "	 %s\n", sstr->data);
 		printed = true;
 		bdestroy(sstr);
 	}
 	if (!printed)
-		printd(LEVEL_DEFAULT, "   <no online results>\n");
+		printd(LEVEL_DEFAULT, "	  <no online results>\n");
 	bsclose(stream);
 	fclose(fp);
 
@@ -283,7 +283,7 @@ bool do_install_all(CURL* curl){
 			// check whether the installation was successful
 			if (install_status != 0)
 			{
-				printd(LEVEL_DEFAULT, "  %s failed to install.\n", sstr->data);
+				printd(LEVEL_DEFAULT, "	 %s failed to install.\n", sstr->data);
 				something_errored = true;
 			}
 			printd(LEVEL_DEFAULT, "\n");
@@ -293,7 +293,7 @@ bool do_install_all(CURL* curl){
 		bdestroy(sstr);
 	}
 	if (!printed)
-		printd(LEVEL_DEFAULT, "  <no modules available>\n");
+		printd(LEVEL_DEFAULT, "	 <no modules available>\n");
 	if (something_errored)
 		printd(LEVEL_DEFAULT, "errors occured\n");
 	if (!if_something_was_installed)
@@ -437,7 +437,7 @@ int main(int argc, char* argv[])
 		fprintf(stderr, "syntax:\n    dtmm");
 		arg_print_syntax(stderr, argtable, "\n");
 		fprintf(stderr, "options:\n");
-		arg_print_glossary(stderr, argtable, "    %-25s %s\n");
+		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
@@ -472,15 +472,15 @@ int main(int argc, char* argv[])
 
     // If all is set, set the name back to "".
     if (all)
-        bassigncstr(name, "");
+	bassigncstr(name, "");
 
     // If the name is "all" or "*", handle this as the all
     // boolean flag.
     if (biseqcstr(name, "all") || biseqcstr(name, "*"))
     {
-        bassigncstr(name, "");
-        all = 1;
-        printd(LEVEL_WARNING, "treating name as -a (all) flag");
+	bassigncstr(name, "");
+	all = 1;
+	printd(LEVEL_WARNING, "treating name as -a (all) flag");
     }
 
 	if (biseqcstrcaseless(command, "search") || biseqcstrcaseless(command, "se"))
@@ -488,30 +488,30 @@ int main(int argc, char* argv[])
 	else if (biseqcstrcaseless(command, "install") || biseqcstrcaseless(command, "in"))
     {
 		if (all)
-            return do_install_all(curl);
+	    return do_install_all(curl);
 		else
-            return do_install(curl, name);
+	    return do_install(curl, name);
     }
 	else if (biseqcstrcaseless(command, "uninstall") || biseqcstrcaseless(command, "rm"))
     {
 		if (all)
-            return do_uninstall_all(curl);
+	    return do_uninstall_all(curl);
 		else
-            return do_uninstall(curl, name);
+	    return do_uninstall(curl, name);
     }
 	else if (biseqcstrcaseless(command, "enable") || biseqcstrcaseless(command, "en"))
     {
 		if (all)
-            return do_enable_all(curl);
+	    return do_enable_all(curl);
 		else
-            return do_enable(curl, name);
+	    return do_enable(curl, name);
     }
 	else if (biseqcstrcaseless(command, "disable") || biseqcstrcaseless(command, "di") || biseqcstrcaseless(command, "dis"))
     {
 		if (all)
-            return do_disable_all(curl);
+	    return do_disable_all(curl);
 		else
-            return do_disable(curl, name);
+	    return do_disable(curl, name);
     }
 	else
 	{

@@ -147,7 +147,7 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 	    }
 	    break;
 
-    	case LEM1802_MEM_DUMP_PALETTE:
+	case LEM1802_MEM_DUMP_PALETTE:
 		printd(LEVEL_DEBUG, "LEM1802 DUMP PALETTE.\n");
 		vm->sleep_cycles += 16;
 		vm_hw_lem1802_mem_dump_default_palette(vm, val_b);

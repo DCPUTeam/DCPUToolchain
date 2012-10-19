@@ -234,10 +234,10 @@ struct process_parameter_results process_parameter(struct ast_node_parameter* pa
 
 		case type_raw:
 			result.v_raw = param->raw;
-            break;
+	    break;
 
-        default:
-            assert(false);
+	default:
+	    assert(false);
 	}
 
 	return result;
@@ -412,7 +412,7 @@ void process_line(struct ast_node_line* line)
 
 					break;
 
-                case SEEK:
+		case SEEK:
 					if (line->keyword_data_expr_1 == NULL)
 					{
 						if (line->keyword_data_string != NULL)
@@ -445,7 +445,7 @@ void process_line(struct ast_node_line* line)
 
 					break;
 
-                case IMPORT_OPTIONAL:
+		case IMPORT_OPTIONAL:
 					printd(LEVEL_VERBOSE, ".IMPORT OPTIONAL %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit import metadata.
@@ -454,16 +454,16 @@ void process_line(struct ast_node_line* line)
 					break;
 
 				case JUMP:
-                    if (line->keyword_data_string == NULL)
-                        printd(LEVEL_VERBOSE, ".JUMP <table>");
-                    else
-    					printd(LEVEL_VERBOSE, ".JUMP %s", bstr2cstr(line->keyword_data_string, '0'));
+		    if (line->keyword_data_string == NULL)
+			printd(LEVEL_VERBOSE, ".JUMP <table>");
+		    else
+					printd(LEVEL_VERBOSE, ".JUMP %s", bstr2cstr(line->keyword_data_string, '0'));
 
 					// Emit jump metadata.
-                    if (line->keyword_data_string == NULL)
-    					aout_emit(aout_create_metadata_jump(NULL));
-                    else
-                    	aout_emit(aout_create_metadata_jump(bstr2cstr(line->keyword_data_string, '0')));
+		    if (line->keyword_data_string == NULL)
+					aout_emit(aout_create_metadata_jump(NULL));
+		    else
+			aout_emit(aout_create_metadata_jump(bstr2cstr(line->keyword_data_string, '0')));
 
 					break;
 
@@ -546,13 +546,13 @@ void process_line(struct ast_node_line* line)
 				if (ppresults.a_label != NULL && ppresults.a_label_bracketed) ppresults.a = NXT;
 				if (ppresults.b_label != NULL && ppresults.b_label_bracketed) ppresults.b = NXT;
 
-                // Check for relative addressing.
-                if ((insttype->opcode == OP_ADD || insttype->opcode == OP_SUB ||
-                    insttype->opcode == OP_MUL || insttype->opcode == OP_DIV) && ppresults.a == PC)
-                {
-                    // Warn about relative addressing portability.
-                    dwarn(WARN_RELATIVE_PC_ADDRESSING, NULL);
-                }
+		// Check for relative addressing.
+		if ((insttype->opcode == OP_ADD || insttype->opcode == OP_SUB ||
+		    insttype->opcode == OP_MUL || insttype->opcode == OP_DIV) && ppresults.a == PC)
+		{
+		    // Warn about relative addressing portability.
+		    dwarn(WARN_RELATIVE_PC_ADDRESSING, NULL);
+		}
 
 				// Output the initial opcode.
 				if (insttype->opcode != OP_NONBASIC)
@@ -583,8 +583,8 @@ void process_line(struct ast_node_line* line)
 			aout_emit(aout_create_label(line->label->name));
 			break;
 
-        default:
-            assert(false);
+	default:
+	    assert(false);
 	}
 
 	// If we can associate debugging symbols with this instruction...

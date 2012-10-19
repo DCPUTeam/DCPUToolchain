@@ -4,13 +4,13 @@ QSyntaxHighlighter* DTIDEHighlighting::getHighlighter(CodeSyntax syntax, QTextDo
 {
     switch(syntax)
     {
-        case DCPUAssembly:
-            return new DCPUHighlighter(p);
-        case Brainfuck:
-            return NULL;
-        case C:
-            return NULL;
-        default:
-            return NULL;
+	case DCPUAssembly:
+	    return new DCPUHighlighter(p);
+	case Brainfuck:
+	    return NULL;
+	case C:
+	    return NULL;
+	default:
+	    return NULL;
     }
 }

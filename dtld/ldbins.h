@@ -39,9 +39,9 @@ struct
 
 void bins_init();
 struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct lprov_entry* required,
-        struct lprov_entry* adjustment, struct lprov_entry* section,
-        struct lprov_entry* output, struct lprov_entry* jump,
-        struct lprov_entry* optional);
+	struct lprov_entry* adjustment, struct lprov_entry* section,
+	struct lprov_entry* output, struct lprov_entry* jump,
+	struct lprov_entry* optional);
 void bins_set_kernel(struct lprov_entry* jump);
 bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbolExtension);
 bool bins_load_kernel(freed_bstring path);

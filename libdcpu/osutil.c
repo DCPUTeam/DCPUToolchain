@@ -22,7 +22,7 @@
 #else
 #include <libgen.h>
 #include <unistd.h>
-// #include <sys/time.h> is correct for Linux.  If #include <time.h> is
+// #include <sys/time.h> is correct for Linux.	If #include <time.h> is
 // required for Mac, please add the appropriate #ifdef APPLE instead of
 // changing this include.
 #include <sys/time.h>

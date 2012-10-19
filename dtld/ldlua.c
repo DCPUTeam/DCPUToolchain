@@ -72,14 +72,14 @@ struct lua_optmst* bin_lua_load(bstring name)
 	// Execute the code in the new Lua context.
 	if (luaL_dofile(om->state, path->data) != 0)
 	{
-        const char* lerr = lua_tostring(om->state, -1);
+	const char* lerr = lua_tostring(om->state, -1);
 
 		// Return NULL.
 		lua_close(om->state);
 		bdestroy(om->name);
 		free(om);
 		bdestroy(path);
-        dhalt(ERR_LUA, lerr);
+	dhalt(ERR_LUA, lerr);
 		return NULL;
 	}
 
@@ -94,7 +94,7 @@ struct lua_optmst* bin_lua_load(bstring name)
 		lua_close(om->state);
 		bdestroy(om->name);
 		free(om);
-        dhalt(ERR_OPTIMIZER_LOAD_FAILED, path->data);
+	dhalt(ERR_OPTIMIZER_LOAD_FAILED, path->data);
 		bdestroy(path);
 		return NULL;
 	}

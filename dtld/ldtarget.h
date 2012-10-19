@@ -1,11 +1,11 @@
 /**
 
-    File:           ldtarget.h
+    File:	    ldtarget.h
 
-    Project:        DCPU-16 Toolchain
-    Component:      Linker
+    Project:	    DCPU-16 Toolchain
+    Component:	    Linker
 
-    Authors:        James Rhodes
+    Authors:	    James Rhodes
 
     Description:    Provides definitions of target image types.
 

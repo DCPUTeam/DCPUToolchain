@@ -87,12 +87,12 @@ int main(int argc, char* argv[])
 		arg_print_syntax(stderr, argtable, "\n");
 		printd(LEVEL_DEFAULT, "options:\n");
 		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
-        if (show_help->count == 2)
-        {
-            printd(LEVEL_DEFAULT, "defined warnings:\n");
-            for (w = 0; w < _WARN_COUNT; w++)
-                printd(LEVEL_DEFAULT, "          %s\n", dwarnpolicy[w].name);
-        }
+	if (show_help->count == 2)
+	{
+	    printd(LEVEL_DEFAULT, "defined warnings:\n");
+	    for (w = 0; w < _WARN_COUNT; w++)
+		printd(LEVEL_DEFAULT, "		 %s\n", dwarnpolicy[w].name);
+	}
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}

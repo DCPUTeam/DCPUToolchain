@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
     struct arg_lit* legacy_mode = arg_lit0("l", "legacy", "Automatically initialize hardware to legacy values.");
     struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
     struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
-    struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
+    struct arg_lit* quiet = arg_litn("q", NULL,	 0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
     struct arg_int* radiation = arg_intn("r", NULL, "<n>", 0, 1, "Radiation factor (higher is less radiation)");
     struct arg_lit* catch_fire = arg_lit0("c", "catch-fire", "The virtual machine should catch fire instead of halting.");
     struct arg_end* end = arg_end(20);
@@ -156,9 +156,9 @@ int main(int argc, char* argv[])
 
     // Set radiation and catch fire settings.
     if (radiation->count == 1)
-        vm->radiation_factor = radiation->ival[0];
+	vm->radiation_factor = radiation->ival[0];
     if (catch_fire->count == 1)
-        vm->can_fire = true;
+	vm->can_fire = true;
 
     // Init hardware.
     vm_hw_timer_init(vm);

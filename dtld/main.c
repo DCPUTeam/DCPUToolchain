@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
 	void* argtable[] = { show_help, target_arg, keep_output_arg, little_endian_mode, opt_level, opt_mode, no_short_literals_arg,
-        symbol_ext, symbol_file, kernel_file, jumplist_file, warning_policies, output_file, input_files, verbose, quiet, end };
+	symbol_ext, symbol_file, kernel_file, jumplist_file, warning_policies, output_file, input_files, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -118,10 +118,10 @@ int main(int argc, char* argv[])
 			target = IMAGE_STATIC_LIBRARY;
 		else if (strcmp(target_arg->sval[0], "kernel") == 0)
 			target = IMAGE_KERNEL;
-        else
+	else
 		{
 			// Invalid option.
-            dhalt(ERR_INVALID_TARGET_NAME, NULL);
+	    dhalt(ERR_INVALID_TARGET_NAME, NULL);
 		}
 	}
 
@@ -131,31 +131,31 @@ int main(int argc, char* argv[])
 	for (i = 0; i < input_files->count; i++)
 		if (!bins_load(bautofree(bfromcstr(input_files->filename[i])), symbol_file->count > 0, (symbol_file->count > 0 && symbol_ext->count > 0) ? symbol_ext->sval[0] : "dsym16"))
 			// Failed to load one of the input files.
-            dhalt(ERR_BIN_LOAD_FAILED, input_files->filename[i]);
+	    dhalt(ERR_BIN_LOAD_FAILED, input_files->filename[i]);
 	bins_associate();
 	bins_sectionize();
 	bins_flatten(bautofree(bfromcstr("output")));
     if (target == IMAGE_KERNEL)
-        bins_write_jump();
+	bins_write_jump();
 	saved = bins_optimize(
 			opt_mode->count == 0 ? OPTIMIZE_SIZE : OPTIMIZE_SPEED,
 			opt_level->count == 0 ? OPTIMIZE_NONE : opt_level->ival[0]);
 	if (no_short_literals_arg->count == 0 && target != IMAGE_STATIC_LIBRARY)
 		saved += bins_compress();
 	else if (no_short_literals_arg->count == 0)
-        dwarn(WARN_SKIPPING_SHORT_LITERALS_TYPE, NULL);
+	dwarn(WARN_SKIPPING_SHORT_LITERALS_TYPE, NULL);
 	else
-        dwarn(WARN_SKIPPING_SHORT_LITERALS_REQUEST, NULL);
+	dwarn(WARN_SKIPPING_SHORT_LITERALS_REQUEST, NULL);
 	bins_resolve(
-            target == IMAGE_STATIC_LIBRARY,
-            target == IMAGE_STATIC_LIBRARY);
+	    target == IMAGE_STATIC_LIBRARY,
+	    target == IMAGE_STATIC_LIBRARY);
 	bins_save(
-            bautofree(bfromcstr("output")),
-            bautofree(bfromcstr(output_file->filename[0])),
-            target,
-            keep_output_arg->count > 0,
-            symbol_file->count > 0 ? symbol_file->filename[0] : NULL,
-            jumplist_file->count > 0 ? jumplist_file->filename[0] : NULL);
+	    bautofree(bfromcstr("output")),
+	    bautofree(bfromcstr(output_file->filename[0])),
+	    target,
+	    keep_output_arg->count > 0,
+	    symbol_file->count > 0 ? symbol_file->filename[0] : NULL,
+	    jumplist_file->count > 0 ? jumplist_file->filename[0] : NULL);
 	bins_free();
 	if (saved > 0)
 		printd(LEVEL_DEFAULT, "linker: saved %i words during optimization.\n", saved);

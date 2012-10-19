@@ -55,12 +55,12 @@ void vm_hw_interrupt(vm_t* vm, uint16_t index)
 {
     if (index < HW_MAX)
     {
-        hw_t device = vm_hw_list[index];
+	hw_t device = vm_hw_list[index];
 
-        if (vm->debug) printd(LEVEL_DEBUG, "\nInterrupting device 0x%04X (0x%08X): %p\n", index, device.id, device.handler);
+	if (vm->debug) printd(LEVEL_DEBUG, "\nInterrupting device 0x%04X (0x%08X): %p\n", index, device.id, device.handler);
 
-        if (device.handler != NULL)
-        device.handler(vm, device.userdata);
+	if (device.handler != NULL)
+	device.handler(vm, device.userdata);
     }
 }
 
@@ -89,8 +89,8 @@ void vm_hw_free_all(vm_t* vm)
 
     while (vm_hw_connected[id] != 0 && id < HW_MAX)
     {
-        id++;
-        if (vm_hw_list[id].free_handler != NULL)
-            vm_hw_list[id].free_handler(vm_hw_list[id].userdata);
+	id++;
+	if (vm_hw_list[id].free_handler != NULL)
+	    vm_hw_list[id].free_handler(vm_hw_list[id].userdata);
     }
 }

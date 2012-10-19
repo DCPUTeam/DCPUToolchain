@@ -30,15 +30,15 @@ QString CodeEditor::getExtension()
 void CodeEditor::setHighlighter()
 {
     if(highlighter != NULL)
-        delete highlighter;
+	delete highlighter;
 
     std::string ext = getExtension().toStdString();
     lang = toolchain->GetLanguageByExtension(ext);
     
     if(lang != NULL)
-        highlighter = DTIDEHighlighting::getHighlighter(lang->GetCodeSyntax(), document());
+	highlighter = DTIDEHighlighting::getHighlighter(lang->GetCodeSyntax(), document());
     else
-        highlighter = NULL;
+	highlighter = NULL;
 
 }
 
@@ -55,8 +55,8 @@ int CodeEditor::lineNumberAreaWidth()
 
     while(max >= 10)
     {
-        max /= 10;
-        digits++;
+	max /= 10;
+	digits++;
     }
 
     return 6 + fontMetrics().width(QLatin1Char('1')) * digits;
@@ -67,12 +67,12 @@ int CodeEditor::lineNumberAreaWidth()
 void CodeEditor::updateLineNumberArea(const QRect& rect, int dy)
 {
     if(dy)
-        lineNumberArea->scroll(0, dy);
+	lineNumberArea->scroll(0, dy);
     else
-        lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
+	lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
 
     if(rect.contains(viewport()->rect()))
-        emit blockCountChanged(0);
+	emit blockCountChanged(0);
 }
 
 void CodeEditor::resizeEvent(QResizeEvent* e)
@@ -100,48 +100,48 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent* event)
 
     while(block.isValid() && top <= event->rect().bottom())
     {
-        if(block.isVisible() && bottom >= event->rect().top())
-        {
-            QString number = QString::number(blockNumber + 1);
-            painter.setPen(Qt::black);
+	if(block.isVisible() && bottom >= event->rect().top())
+	{
+	    QString number = QString::number(blockNumber + 1);
+	    painter.setPen(Qt::black);
 
-            painter.drawText(0, top, lineNumberArea->width(), fontMetrics().height(), Qt::AlignCenter, number);
-        }
+	    painter.drawText(0, top, lineNumberArea->width(), fontMetrics().height(), Qt::AlignCenter, number);
+	}
 
-        block = block.next();
-        top = bottom;
-        bottom = top + (int) blockBoundingRect(block).height();
-        ++blockNumber;
+	block = block.next();
+	top = bottom;
+	bottom = top + (int) blockBoundingRect(block).height();
+	++blockNumber;
    }
 }
 
 void CodeEditor::keyPressEvent(QKeyEvent* event)
 {
     QKeyEvent* space = new QKeyEvent(
-            event->type(),
-            Qt::Key_Space,
-            event->modifiers(),
-            QString(" "));
+	    event->type(),
+	    Qt::Key_Space,
+	    event->modifiers(),
+	    QString(" "));
 
     if(event->key() == Qt::Key_Tab)
     {
-        for(int i = 0; i < 4; i++)
-            QPlainTextEdit::keyPressEvent(space);
+	for(int i = 0; i < 4; i++)
+	    QPlainTextEdit::keyPressEvent(space);
     }
     else if(event->key() == Qt::Key_Return)
     {
-        QTextCursor c = textCursor();
-        c.movePosition(QTextCursor::StartOfBlock);
-        c.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-        
-        QString previousLine = c.selectedText();
-        int count = 0;
-        int idx = 0;
-        while(previousLine[idx++] == ' ') count++;
-        
-        QPlainTextEdit::keyPressEvent(event);
-        for(int i = 0; i < count; i++) 
-            QPlainTextEdit::keyPressEvent(space);
+	QTextCursor c = textCursor();
+	c.movePosition(QTextCursor::StartOfBlock);
+	c.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+	
+	QString previousLine = c.selectedText();
+	int count = 0;
+	int idx = 0;
+	while(previousLine[idx++] == ' ') count++;
+	
+	QPlainTextEdit::keyPressEvent(event);
+	for(int i = 0; i < count; i++) 
+	    QPlainTextEdit::keyPressEvent(space);
     }
     else
     {
@@ -150,9 +150,9 @@ void CodeEditor::keyPressEvent(QKeyEvent* event)
 
     if(!dirty && !event->text().isEmpty())
     {
-        dirty = true;
-        fileName += "*";
-        emit fileNameChanged(fileName);
+	dirty = true;
+	fileName += "*";
+	emit fileNameChanged(fileName);
     }
 }
 
@@ -160,7 +160,7 @@ void CodeEditor::saveFile()
 {
     if(path.isEmpty())
     {
-        path = QFileDialog::getSaveFileName(this);
+	path = QFileDialog::getSaveFileName(this);
     }
 
     QFileInfo f(path);
@@ -172,9 +172,9 @@ void CodeEditor::saveFile()
 
     if(file.open(QIODevice::WriteOnly))
     {
-        QTextStream stream(&file);
-        stream << toPlainText();
-        stream << "\n";
+	QTextStream stream(&file);
+	stream << toPlainText();
+	stream << "\n";
     }
 
 
@@ -185,7 +185,7 @@ QString CodeEditor::getPath()
 {
     if(path.isEmpty())
     {
-        saveFile();
+	saveFile();
     }
 
     return path;

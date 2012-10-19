@@ -29,8 +29,8 @@ struct lprov_entry* objfile_get_last(struct lprov_entry* first)
 }
 
 void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov_entry** provided,
-        struct lprov_entry** required, struct lprov_entry** adjustment, struct lprov_entry** section,
-        struct lprov_entry** output, struct lprov_entry** jump, struct lprov_entry** optional)
+	struct lprov_entry** required, struct lprov_entry** adjustment, struct lprov_entry** section,
+	struct lprov_entry** output, struct lprov_entry** jump, struct lprov_entry** optional)
 {
 	struct ldata_entry* entry = NULL;
 	struct lprov_entry* prov_last = provided == NULL ? NULL : objfile_get_last(*provided);
@@ -124,7 +124,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 
 			output_last = output_current;
 		}
-        else if (entry->mode == LABEL_JUMP && adjustment != NULL)
+	else if (entry->mode == LABEL_JUMP && adjustment != NULL)
 		{
 			jump_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
@@ -161,9 +161,9 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 }
 
 void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* required,
-        struct lprov_entry* adjustment, struct lprov_entry* section,
-        struct lprov_entry* output, struct lprov_entry* jump, 
-        struct lprov_entry* optional)
+	struct lprov_entry* adjustment, struct lprov_entry* section,
+	struct lprov_entry* output, struct lprov_entry* jump, 
+	struct lprov_entry* optional)
 {
 	struct ldata_entry* entry = NULL;
 
@@ -238,10 +238,10 @@ void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* r
 		entry = malloc(sizeof(struct ldata_entry));
 		entry->mode = LABEL_JUMP;
 		entry->address = jump->address;
-        if (jump->label == NULL)
-    		memset(entry->label, 0, 256);
-        else
-    		strcpy(entry->label, jump->label);
+	if (jump->label == NULL)
+		memset(entry->label, 0, 256);
+	else
+		strcpy(entry->label, jump->label);
 		ldata_write(out, entry);
 		free(entry);
 

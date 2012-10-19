@@ -26,23 +26,23 @@ class StandardLibraryEntryFunction : public IFunctionDeclaration
 public:
     virtual StackMap generateLocalsStackMap()
     {
-        // The standard library entry point accepts no parameters.
-    	StackMap map;
+	// The standard library entry point accepts no parameters.
+	StackMap map;
 	    return map;
 
-        //throw new CompilerException(0, "internal", "Attempted to generate local stack map for internal standard library entry point.");
+	//throw new CompilerException(0, "internal", "Attempted to generate local stack map for internal standard library entry point.");
     }
     
     virtual StackMap generateParametersStackMap()
     {
-        // The standard library entry point accepts no parameters.
-    	StackMap map;
+	// The standard library entry point accepts no parameters.
+	StackMap map;
 	    return map;
     }
 
     virtual IType* getPointerType()
     {
-        throw new CompilerException(0, "internal", "Attempted to get reference type for internal standard library entry point.");
+	throw new CompilerException(0, "internal", "Attempted to get reference type for internal standard library entry point.");
     }
 };
 
@@ -184,13 +184,13 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 	if (main != NULL && main->block != NULL /* Check it's not just a declaration, but a definition. */)
 	{
 		// Get the stack table of _stdlib_entry.
-        StandardLibraryEntryFunction* func = new StandardLibraryEntryFunction();
+	StandardLibraryEntryFunction* func = new StandardLibraryEntryFunction();
 		StackFrame* frame = context.generateStackFrame(func, false);
-        delete func;
+	delete func;
 
 		// Output assembly for calling main.
-        // NOTE: _stdlib_enter() should never return or bad things will happen!
-        // NOTE: _stdlib_enter() always takes 0 parameters!
+	// NOTE: _stdlib_enter() should never return or bad things will happen!
+	// NOTE: _stdlib_enter() always takes 0 parameters!
 		*block <<  "	SET X, " << frame->getParametersSize() << std::endl;
 		*block <<  "	SET Z, 0" << std::endl;
 		*block <<  "	JSR _stack_caller_init" << std::endl;

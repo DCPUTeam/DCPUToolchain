@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     
 /*    DTIDESplash* splash = new DTIDESplash(toolchains);
     if(!splash->exec())
-        return 0;
+	return 0;
    
     DTIDE mainWindow(splash->toolchain, splash->fileName);*/
 

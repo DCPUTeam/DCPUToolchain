@@ -9,21 +9,21 @@ DCPUHighlighter::DCPUHighlighter(QTextDocument* parent): QSyntaxHighlighter(pare
     QStringList instructions;
 
     instructions    << "set" << "add" << "sub"
-                    << "mul" << "mli" << "div"
-                    << "dvi" << "mod" << "mdi"
-                    << "and" << "bor" << "xor"
-                    << "shr" << "asr" << "shl"
-                    << "ifb" << "ifc" << "ife"
-                    << "ifn" << "ifg" << "ifa"
-                    << "ifl" << "ifu" << "adx"
-                    << "sbx" << "sti" << "std";
+		    << "mul" << "mli" << "div"
+		    << "dvi" << "mod" << "mdi"
+		    << "and" << "bor" << "xor"
+		    << "shr" << "asr" << "shl"
+		    << "ifb" << "ifc" << "ife"
+		    << "ifn" << "ifg" << "ifa"
+		    << "ifl" << "ifu" << "adx"
+		    << "sbx" << "sti" << "std";
 
     foreach(const QString& instruction, instructions)
     {
-        rule.pattern = QRegExp(QString("([ ]+)?") + instruction, Qt::CaseInsensitive);
-        rule.format = instructionFormat;
+	rule.pattern = QRegExp(QString("([ ]+)?") + instruction, Qt::CaseInsensitive);
+	rule.format = instructionFormat;
 
-        highlightingRules.append(rule);
+	highlightingRules.append(rule);
     }
 
     labelFormat.setForeground(Qt::blue);
@@ -45,15 +45,15 @@ void DCPUHighlighter::highlightBlock(const QString& text)
 {
     foreach(const HighlightingRule& rule, highlightingRules)
     {
-        QRegExp expr(rule.pattern);
-        int index = expr.indexIn(text);
+	QRegExp expr(rule.pattern);
+	int index = expr.indexIn(text);
 
-        while(index >= 0)
-        {
-            int length = expr.matchedLength();
-            setFormat(index, length, rule.format);
-            index = expr.indexIn(text, index + length);
-        }
+	while(index >= 0)
+	{
+	    int length = expr.matchedLength();
+	    setFormat(index, length, rule.format);
+	    index = expr.indexIn(text, index + length);
+	}
     }
 }
 

@@ -38,9 +38,9 @@ void DCPUToolchainASM::Build(std::string filename, std::string outputDir, BuildA
     QProcess *dtasm = new QProcess();
     QStringList arguments;
 
-    arguments   <<  QString::fromStdString(filename)
-                <<  "-o"
-                <<  outputFile;
+    arguments	<<  QString::fromStdString(filename)
+		<<  "-o"
+		<<  outputFile;
 
     dtasm->start("./dtasm", arguments);
 
@@ -92,7 +92,7 @@ void DCPUToolchain::Start(std::string path, DebuggingSession& session)
     QProcess* dtemu = new QProcess();
     QStringList arguments;
 
-    arguments   << QString::fromStdString(path);
+    arguments	<< QString::fromStdString(path);
 
     dtemu->startDetached("./dtemu", arguments);
 }

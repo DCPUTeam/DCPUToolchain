@@ -8,8 +8,8 @@
 	Authors:	James Rhodes
 
 	Description:	Implements error handling infrastructure
-                    so that the toolchain can safely handle
-                    errors as they occur.
+		    so that the toolchain can safely handle
+		    errors as they occur.
 
 **/
 
@@ -67,7 +67,7 @@ void dsetwarnpolicy(struct arg_str* warning_policies)
 				dwarnpolicy[w].silence = false;
 		else if (strcmp(warning_policies->sval[i], "error") == 0)
 			for (w = 0; w < _WARN_COUNT; w++)
-                dwarnpolicy[w].treat_as_error = true;
+		dwarnpolicy[w].treat_as_error = true;
 		else
 		{
 			// Loop through enabling any that match.
@@ -88,30 +88,30 @@ void dsetwarnpolicy(struct arg_str* warning_policies)
 				}
 			}
 
-            // Loop through any prefixed with error.
+	    // Loop through any prefixed with error.
 			if (strlen(warning_policies->sval[i]) > 6 && warning_policies->sval[i][0] == 'e' &&
 				warning_policies->sval[i][1] == 'r' && warning_policies->sval[i][2] == 'r' &&
-                warning_policies->sval[i][3] == 'o' && warning_policies->sval[i][4] == 'r' &&
-                warning_policies->sval[i][5] == '=')
+		warning_policies->sval[i][3] == 'o' && warning_policies->sval[i][4] == 'r' &&
+		warning_policies->sval[i][5] == '=')
 			{
 				for (w = 0; w < _WARN_COUNT; w++)
 				{
 					if (strcmp(dwarnpolicy[w].name, warning_policies->sval[i] + 6) == 0)
-                        dwarnpolicy[w].treat_as_error = true;
+			dwarnpolicy[w].treat_as_error = true;
 				}
 			}
-            
-            // Loop through any prefixed with no-error.
+	    
+	    // Loop through any prefixed with no-error.
 			if (strlen(warning_policies->sval[i]) > 9 && warning_policies->sval[i][0] == 'n' &&
 				warning_policies->sval[i][1] == 'o' && warning_policies->sval[i][2] == '-' &&
-                warning_policies->sval[i][3] == 'e' && warning_policies->sval[i][4] == 'r' &&
-                warning_policies->sval[i][5] == 'r' && warning_policies->sval[i][6] == 'o' &&
+		warning_policies->sval[i][3] == 'e' && warning_policies->sval[i][4] == 'r' &&
+		warning_policies->sval[i][5] == 'r' && warning_policies->sval[i][6] == 'o' &&
 				warning_policies->sval[i][7] == 'r' && warning_policies->sval[i][8] == '=')
 			{
 				for (w = 0; w < _WARN_COUNT; w++)
 				{
 					if (strcmp(dwarnpolicy[w].name, warning_policies->sval[i] + 9) == 0)
-                        dwarnpolicy[w].treat_as_error = true;
+			dwarnpolicy[w].treat_as_error = true;
 				}
 			}
 		}
