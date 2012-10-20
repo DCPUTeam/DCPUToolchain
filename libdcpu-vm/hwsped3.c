@@ -38,16 +38,16 @@
 #include "dcpuops.h"
 #include "glfwutils.h"
 
-#define SPED3_SPEED 0.8f
+#define SPED3_SPEED 0.8
 
 // Credit for the rotation logic: https://github.com/SirCmpwn/Tomato/blob/master/Tomato/Hardware/SPED3.cs#L34
 
-float compare_degrees(float A, float B)
+double compare_degrees(double A, double B)
 {
     if(A > 180 && B < 180)
-    return (360 - A) + B;
+        return (360 - A) + B;
     if(A < 180 && B > 180)
-    return -((360 - B) + A);
+        return -((360 - B) + A);
 
     return B - A;
 }
@@ -56,24 +56,23 @@ void vm_hw_sped3_update_rot(struct sped3_hardware* hw)
 {
     if (hw->rot_current != hw->rot_target)
     {
-    if(abs(hw->rot_target - hw->rot_current) < SPED3_SPEED)
-    {
-	hw->rot_current = hw->rot_target;
+        if (abs(hw->rot_target - hw->rot_current) < SPED3_SPEED)
+	        hw->rot_current = hw->rot_target;
+        else
+        {
+	        if (compare_degrees(hw->rot_current, hw->rot_target) <= 0)
+	            hw->rot_current -= SPED3_SPEED;
+	        else
+	            hw->rot_current += SPED3_SPEED;
+	
+	        while(hw->rot_current < 0)
+	            hw->rot_current += 360.0;
+      
+	        hw->rot_current = fmod(hw->rot_current, 360);
+        }
     }
     else
-    {
-	if(compare_degrees(hw->rot_current, hw->rot_target) <= 0)
-	hw->rot_current -= SPED3_SPEED;
-	else
-	hw->rot_current += SPED3_SPEED;
-	
-	while(hw->rot_current < 0)
-	hw->rot_current += 360.f;
-      
-	hw->rot_current = fmod(hw->rot_current, 360);
-    }
-    }
-    else hw->state = SPED3_STATE_RUNNING;
+        hw->state = SPED3_STATE_RUNNING;
 }
 
 void vm_hw_sped3_set_color(struct sped3_hardware* hw, uint8_t cc, uint8_t intensity)
@@ -125,7 +124,7 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud)
 
     vm_hw_sped3_update_rot(hw);
 
-    glRotatef(hw->rot_current, 0.f, 0.f, 1.f);
+    glRotatef((GLfloat)hw->rot_current, 0.f, 0.f, 1.f);
 
     glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT);

@@ -50,12 +50,12 @@ void vm_hw_timer_interrupt(vm_t* vm, void* ud)
     {
 	case TIMER_SET_ENABLED:
 	    if (vm->registers[REG_B] == 0x0)
-		break;
+		    break;
 	    else
 	    {
-		if (vm->registers[REG_B] > 60) break;
-		hw->clock_target = (DCPU_TICKS_KHZ * 1000 * vm->registers[REG_B]) / 60;
-		vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
+		    if (vm->registers[REG_B] > 60) break;
+		    hw->clock_target = (DCPU_TICKS_KHZ * 1000 * vm->registers[REG_B]) / 60;
+		    vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
 	    }
 
 	    break;

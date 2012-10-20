@@ -25,8 +25,8 @@ struct timer_hardware
 	uint16_t hook_id;
 	uint16_t hw_id;
 
-	float clock_target;
-	float clock_ticks;
+	uint16_t clock_target;
+	uint16_t clock_ticks;
 
 	uint16_t message;
 };

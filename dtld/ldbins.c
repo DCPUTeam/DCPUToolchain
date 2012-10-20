@@ -267,12 +267,10 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
 ///
 bool bins_load_kernel(freed_bstring path)
 {
-	uint16_t offset = 0, store;
+	uint16_t offset = 0;
     struct lprov_entry* jump = NULL;
 	FILE* in;
 	char* test;
-	bstring sympath;
-	int sympathi, sympathj, sympathk;
 
 	// Open the input file.
 	in = fopen(path.ref->data, "rb");
@@ -463,7 +461,7 @@ void bins_sectionize()
 	struct ldbin* bin;
 	struct ldbin* target;
 	list_t create;
-	size_t i, dk;
+	size_t i;
 	int steal, stolen, index, base;
 	bstring name;
 
@@ -585,7 +583,7 @@ void bins_flatten(freed_bstring name)
 	struct ldbin* target;
 	struct ldbin* bin;
 	bstring start, desired;
-	size_t i, dk;
+	size_t i;
 
 	// Create the output bin.
 	target = bin_create(name);
@@ -687,7 +685,7 @@ void bins_write_jump()
     struct ldbin* empty;
     struct lconv_entry* entry;
     struct lconv_entry* adjust;
-    int i;
+    unsigned int i;
 
     // Ensure bins have been flattened.
     assert(list_size(&ldbins.bins) == 1);
@@ -699,9 +697,9 @@ void bins_write_jump()
     // anything to write.
     if (bin->jump == NULL)
     {
-	printd(LEVEL_EVERYTHING, "no jump list in flattened bin\n");
-	dwarn(WARN_KERNEL_NOT_PROVIDING_JUMP_LIST, NULL);
-	return;
+        printd(LEVEL_EVERYTHING, "no jump list in flattened bin\n");
+        dwarn(WARN_KERNEL_NOT_PROVIDING_JUMP_LIST, NULL);
+        return;
     }
 
     // Find the NULL entry if it exists.
@@ -709,16 +707,16 @@ void bins_write_jump()
     list_iterator_start(bin->jump);
     while (list_iterator_hasnext(bin->jump))
     {
-	entry = list_iterator_next(bin->jump);
-	printd(LEVEL_EVERYTHING, " >> %s\n", entry->label->data);
-	if (entry->label == NULL || blength(entry->label) == 0)
-	{
-	    // Found it.
-	    found = true;
-	    pos = entry->address;
-	    list_iterator_stop(bin->jump);
-	    break;
-	}
+        entry = list_iterator_next(bin->jump);
+        printd(LEVEL_EVERYTHING, " >> %s\n", entry->label->data);
+        if (entry->label == NULL || blength(entry->label) == 0)
+        {
+            // Found it.
+            found = true;
+            pos = entry->address;
+            list_iterator_stop(bin->jump);
+            break;
+        }
     }
     list_iterator_stop(bin->jump);
 
@@ -726,9 +724,9 @@ void bins_write_jump()
     // is no jump list to write.
     if (!found)
     {
-	printd(LEVEL_EVERYTHING, "no NULL entry in jump list\n");
-	dwarn(WARN_KERNEL_NOT_PROVIDING_JUMP_LIST, NULL);
-	return;
+        printd(LEVEL_EVERYTHING, "no NULL entry in jump list\n");
+        dwarn(WARN_KERNEL_NOT_PROVIDING_JUMP_LIST, NULL);
+        return;
     }
 
     // Print out the bin before adding any jump entries.
@@ -738,49 +736,49 @@ void bins_write_jump()
     // updating references and adding words to the target bin.
     for (i = 0; i < list_size(bin->jump); i++)
     {
-	entry = list_get_at(bin->jump, i);
-	if (entry->label == NULL || blength(entry->label) == 0)
-	    continue;
+        entry = list_get_at(bin->jump, i);
+        if (entry->label == NULL || blength(entry->label) == 0)
+            continue;
 
-	// We add 0x0000 to the jump list, not yet actually placing
-	// a value in there, and then we replace it with the value
-	// since by adding a new word, we'll change the position.
-	empty = bin_create(bautofree(bfromcstr("<temp>")));
-	empty->provided = list_create();
-	empty->required = list_create();
-	empty->adjustment = list_create();
-	empty->output = list_create();
-	empty->jump = list_create();
-	empty->optional = list_create();
-	empty->symbols = dbgfmt_create_list();
-	bin_write(empty, 0x0000);
-	bin_move(&ldbins.bins, bin, empty, pos, 0, 1);
-	bin_destroy(empty);
-	bin_print("after move", bin);
+        // We add 0x0000 to the jump list, not yet actually placing
+        // a value in there, and then we replace it with the value
+        // since by adding a new word, we'll change the position.
+        empty = bin_create(bautofree(bfromcstr("<temp>")));
+        empty->provided = list_create();
+        empty->required = list_create();
+        empty->adjustment = list_create();
+        empty->output = list_create();
+        empty->jump = list_create();
+        empty->optional = list_create();
+        empty->symbols = dbgfmt_create_list();
+        bin_write(empty, 0x0000);
+        bin_move(&ldbins.bins, bin, empty, pos, 0, 1);
+        bin_destroy(empty);
+        bin_print("after move", bin);
 
-	// The entry address has now been adjusted by bin_move.	 Set
-	// the actual value.
-	*(uint16_t*)(list_get_at(&bin->words, pos)) = entry->address;
+        // The entry address has now been adjusted by bin_move.	 Set
+        // the actual value.
+        *(uint16_t*)(list_get_at(&bin->words, pos)) = entry->address;
 
-	// Show information.
-	printd(LEVEL_EVERYTHING, "added jump list entry at 0x%04X pointing to 0x%04X (%s)\n", pos, entry->address, entry->label->data);
+        // Show information.
+        printd(LEVEL_EVERYTHING, "added jump list entry at 0x%04X pointing to 0x%04X (%s)\n", pos, entry->address, entry->label->data);
 
-	// Add an adjustment value associated with this.
-	adjust = malloc(sizeof(struct lconv_entry));
-	adjust->bin = bstrcpy(bin->name);
-	adjust->label = NULL;
-	adjust->address = pos;
-	list_append(bin->adjustment, adjust);
+        // Add an adjustment value associated with this.
+        adjust = malloc(sizeof(struct lconv_entry));
+        adjust->bin = bstrcpy(bin->name);
+        adjust->label = NULL;
+        adjust->address = pos;
+        list_append(bin->adjustment, adjust);
 
-	// Now update our jump list entry's position to point to
-	// the jump table entry.
-	entry->address = pos;
+        // Now update our jump list entry's position to point to
+        // the jump table entry.
+        entry->address = pos;
 
-	// Increase the position by 1.
-	pos += 1;
+        // Increase the position by 1.
+        pos += 1;
 
-	// Print out the bin with jump entries.
-	bin_print("jump entries", bin);
+        // Print out the bin with jump entries.
+        bin_print("jump entries", bin);
     }
 }
 
@@ -824,7 +822,6 @@ int32_t bins_optimize(int target, int level)
 ///
 void bins_resolve(bool keepProvided, bool allowMissing)
 {
-	struct lconv_entry* entry;
 	struct lconv_entry* required;
 	struct lconv_entry* provided;
 	struct lconv_entry* adjustment;
@@ -832,7 +829,7 @@ void bins_resolve(bool keepProvided, bool allowMissing)
     struct lconv_entry* optional;
 	struct ldbin* bin;
 	uint16_t* word;
-	size_t i, dk;
+	size_t i;
 
 	// Get the first bin.
 	assert(list_size(&ldbins.bins) == 1);

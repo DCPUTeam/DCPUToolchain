@@ -17,6 +17,7 @@
 #include <setjmp.h>
 #include <ppexpr.h>
 #include <argtable2.h>
+#include <assert.h>
 #include "debug.h"
 #include "derr.h"
 

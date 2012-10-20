@@ -51,8 +51,8 @@ struct sped3_hardware
 
     uint16_t mem;
     uint16_t num;
-    float rot_target;
-    float rot_current;
+    double rot_target;
+    double rot_current;
 
     uint16_t state;
     vm_t* vm;

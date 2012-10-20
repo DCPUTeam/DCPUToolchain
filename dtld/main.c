@@ -29,7 +29,7 @@
 int main(int argc, char* argv[])
 {
 	// Define our variables.
-	int nerrors, i, w;
+	int nerrors, i;
 	int32_t saved = 0; // The number of words saved during compression and optimization.
 	struct errinfo* errval;
 	const char* prepend = "error: ";
