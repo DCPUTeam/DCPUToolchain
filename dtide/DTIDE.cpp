@@ -19,12 +19,13 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(cycleUpdate()));
-    timer->start(0);
+    timer->start(1);
 }
 
 void DTIDE::cycleUpdate()
 {
-    this->toolchain->Cycle();
+    for(int i = 0; i < 100; i++) // 1ms = 1kHz, 100 * 1kHz = 100kHz
+        this->toolchain->Cycle();
 }
 
 void DTIDE::addCodeTab(const QString& fileName)
