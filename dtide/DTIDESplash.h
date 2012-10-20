@@ -4,7 +4,7 @@
 #include <QDebug>
 
 #include "Backends.h"
-#include "ui_Splash.h"
+#include "ui_splash.h"
 
 class DTIDESplash: public QDialog, private Ui::splash
 {

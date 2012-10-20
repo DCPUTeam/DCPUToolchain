@@ -34,7 +34,7 @@ if(${QT4_FOUND})
         Toolchains/DT/dtemu.h
     )
         
-    set(dtide_FORMS "UI/splash.ui")
+    set(dtide_FORMS "ui/splash.ui")
 
     QT4_WRAP_CPP(dtide_HEADERS_MOC ${dtide_HEADERS})
     QT4_WRAP_UI(dtide_FORMS_HEADERS ${dtide_FORMS})

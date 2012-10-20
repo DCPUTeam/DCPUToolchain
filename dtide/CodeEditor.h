@@ -13,7 +13,7 @@
 #include <QFileInfo>
 
 #include "DTIDEHighlighting.h"
-#include "DTIDEBuildApi.h"
+#include "DTIDEBuildAPI.h"
 #include "Backends.h"
 
 class CodeEditor: public QPlainTextEdit
