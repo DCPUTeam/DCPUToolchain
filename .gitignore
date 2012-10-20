@@ -99,3 +99,4 @@ docs/html/*
 # Cython build artifacts #
 *.so
 cython_debug
+dtgame/

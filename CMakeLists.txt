@@ -131,6 +131,9 @@ add_subdirectory(dtmm)
 add_subdirectory(dtdb)
 add_subdirectory(dtdb-gui)
 add_subdirectory(dtemu)
+if(EXISTS "${toolchain_SOURCE_DIR}/dtgame/CMakeLists.txt")
+    add_subdirectory(dtgame)
+endif(EXISTS "${toolchain_SOURCE_DIR}/dtgame/CMakeLists.txt")
 
 # Add documentation.
 add_subdirectory(docs)
