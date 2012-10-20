@@ -5,7 +5,7 @@ find_package(OpenGL REQUIRED)
 find_package(Qt4)
 if(${QT4_FOUND})
     set(dtide_SOURCES 
-        Main.cpp 
+        main.cpp 
         Backends.cpp
         DTIDE.cpp
         DTIDETabWidget.cpp
