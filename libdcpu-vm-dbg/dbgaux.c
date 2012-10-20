@@ -328,7 +328,7 @@ void ddbg_hardware_change_hook(vm_t* vm, uint16_t id, void* ud)
 		case TIMER_ID:
 		{
 			struct timer_hardware* hw = (struct timer_hardware*) ud;
-			fprintf(output, "%d:%04x:%f:%u\n",
+			fprintf(output, "%d:%04x:%u:%u\n",
 				id, TIMER_ID,
 				hw->clock_target,
 				hw->message);
