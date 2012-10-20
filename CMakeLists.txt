@@ -88,6 +88,11 @@ endif()
 set(GLFW_BUILD_EXAMPLES OFF CACHE INTERNAL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE INTERNAL "" FORCE)
 
+# Define available build options.
+option(BUILD_KERNELS "Build all the kernels" ON)
+option(BUILD_STDLIB "Build the C standard library" ON)
+option(BUILD_DOCS "Build the documentation if possible" ON)
+
 # Find Bison and Flex
 find_package(FLEX)
 find_package(BISON)
@@ -137,11 +142,17 @@ if(EXISTS "${toolchain_SOURCE_DIR}/dtgame/CMakeLists.txt")
 endif(EXISTS "${toolchain_SOURCE_DIR}/dtgame/CMakeLists.txt")
 
 # Add documentation.
-add_subdirectory(docs)
+if(${BUILD_DOCS})
+    add_subdirectory(docs)
+endif()
 
 # Add kernel and standard libraries.
-add_subdirectory(kernel)
-add_subdirectory(stdlib-c)
+if(${BUILD_KERNELS})
+    add_subdirectory(kernel)
+endif()
+if(${BUILD_STDLIB})
+    add_subdirectory(stdlib-c)
+endif()
 
 # Add test suite.
 enable_testing()
