@@ -103,6 +103,7 @@ add_subdirectory(third-party/bstring)
 add_subdirectory(third-party/simclist)
 add_subdirectory(third-party/curl)
 add_subdirectory(third-party/lua)
+add_subdirectory(tool-errgen)
 add_subdirectory(libdcpu)
 add_subdirectory(libdcpu-pp-expr)
 add_subdirectory(libdcpu-vm)
@@ -139,9 +140,7 @@ endif(EXISTS "${toolchain_SOURCE_DIR}/dtgame/CMakeLists.txt")
 add_subdirectory(docs)
 
 # Add kernel and standard libraries.
-if(EXISTS "${toolchain_SOURCE_DIR}/kernel/CMakeLists.txt")
-    #add_subdirectory(kernel)
-endif(EXISTS "${toolchain_SOURCE_DIR}/kernel/CMakeLists.txt")
+add_subdirectory(kernel)
 add_subdirectory(stdlib-c)
 
 # Add test suite.

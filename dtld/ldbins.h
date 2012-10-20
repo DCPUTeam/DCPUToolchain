@@ -34,18 +34,25 @@
 struct
 {
 	list_t bins;
+    struct lprov_entry* kernel;
 } ldbins;
 
 void bins_init();
-struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct lprov_entry* required, struct lprov_entry* adjustment, struct lprov_entry* section, struct lprov_entry* output);
+struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct lprov_entry* required,
+	struct lprov_entry* adjustment, struct lprov_entry* section,
+	struct lprov_entry* output, struct lprov_entry* jump,
+	struct lprov_entry* optional);
+void bins_set_kernel(struct lprov_entry* jump);
 bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbolExtension);
-void bins_save(freed_bstring name, freed_bstring path, freed_bstring target, bool keepOutputs, const char* symbolFilename);
+bool bins_load_kernel(freed_bstring path);
+void bins_save(freed_bstring name, freed_bstring path, int target, bool keepOutputs, const char* symbolFilename, const char* jumplistFilename);
 bool bins_write(freed_bstring name, uint16_t word);
 void bins_associate();
 void bins_sectionize();
+void bins_write_jump();
 void bins_flatten(freed_bstring name);
 int32_t bins_optimize(int target, int level);
-void bins_resolve(bool keepProvided);
+void bins_resolve(bool keepProvided, bool allowMissing);
 uint16_t bins_compress();
 void bins_free();
 

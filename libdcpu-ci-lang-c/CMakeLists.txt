@@ -31,8 +31,6 @@ add_library(libdcpu-ci-lang-c STATIC
     nodes/NCharacter.h
     nodes/NContinueStatement.cpp
     nodes/NContinueStatement.h
-    nodes/NDebugStatement.cpp
-    nodes/NDebugStatement.h
     nodes/NDeclaration.h
     nodes/NDeclarations.cpp
     nodes/NDeclarations.h

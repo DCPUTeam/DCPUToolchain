@@ -31,7 +31,7 @@
 #include <debug.h>
 #include <assem.h>
 #include <node.h>
-#include <aerr.h>
+#include <derr.h>
 #include <aout.h>
 
 extern int yyparse();
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 	list_t symbols;
 	bstring temp = NULL;
 	uint16_t final;
-	int i, w;	
+	int i, w;
 	const char* prepend = "error: ";
 	const char* warnprefix = "no-";
 	int msglen;
@@ -87,12 +87,12 @@ int main(int argc, char* argv[])
 		arg_print_syntax(stderr, argtable, "\n");
 		printd(LEVEL_DEFAULT, "options:\n");
 		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
-        if (show_help->count == 2)
-        {
-            printd(LEVEL_DEFAULT, "defined warnings:\n");
-            for (w = 0; w < _WARN_COUNT; w++)
-                printd(LEVEL_DEFAULT, "          %s\n", warnpolicies[w].name);
-        }
+	if (show_help->count == 2)
+	{
+	    printd(LEVEL_DEFAULT, "defined warnings:\n");
+	    for (w = 0; w < _WARN_COUNT; w++)
+		printd(LEVEL_DEFAULT, "		 %s\n", dwarnpolicy[w].name);
+	}
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
@@ -107,74 +107,18 @@ int main(int argc, char* argv[])
 	isetmode(little_endian_mode->count == 0 ? IMODE_BIG : IMODE_LITTLE);
 
 	// Set up warning policies.
-	for (i = 0; i < warning_policies->count; i++)
-	{
-		if (strcmp(warning_policies->sval[i], "all") == 0)
-			for (w = 0; w < _WARN_COUNT; w++)
-				warnpolicies[w].silence = false;
-		else if (strcmp(warning_policies->sval[i], "error") == 0)
-			for (w = 0; w < _WARN_COUNT; w++)
-                warnpolicies[w].treat_as_error = true;
-		else
-		{
-			// Loop through enabling any that match.
-			for (w = 0; w < _WARN_COUNT; w++)
-			{
-				if (strcmp(warnpolicies[w].name, warning_policies->sval[i]) == 0)
-					warnpolicies[w].silence = false;
-			}
-
-			// Loop through disabling any that match.
-			if (strlen(warning_policies->sval[i]) > 3 && warning_policies->sval[i][0] == 'n' &&
-				warning_policies->sval[i][1] == 'o' && warning_policies->sval[i][2] == '-')
-			{
-				for (w = 0; w < _WARN_COUNT; w++)
-				{
-					if (strcmp(warnpolicies[w].name, warning_policies->sval[i] + 3) == 0)
-						warnpolicies[w].silence = true;
-				}
-			}
-
-            // Loop through any prefixed with error.
-			if (strlen(warning_policies->sval[i]) > 6 && warning_policies->sval[i][0] == 'e' &&
-				warning_policies->sval[i][1] == 'r' && warning_policies->sval[i][2] == 'r' &&
-                warning_policies->sval[i][3] == 'o' && warning_policies->sval[i][4] == 'r' &&
-                warning_policies->sval[i][5] == '=')
-			{
-				for (w = 0; w < _WARN_COUNT; w++)
-				{
-					if (strcmp(warnpolicies[w].name, warning_policies->sval[i] + 6) == 0)
-                        warnpolicies[w].treat_as_error = true;
-				}
-			}
-            
-            // Loop through any prefixed with no-error.
-			if (strlen(warning_policies->sval[i]) > 9 && warning_policies->sval[i][0] == 'n' &&
-				warning_policies->sval[i][1] == 'o' && warning_policies->sval[i][2] == '-' &&
-                warning_policies->sval[i][3] == 'e' && warning_policies->sval[i][4] == 'r' &&
-                warning_policies->sval[i][5] == 'r' && warning_policies->sval[i][6] == 'o' &&
-				warning_policies->sval[i][7] == 'r' && warning_policies->sval[i][8] == '=')
-			{
-				for (w = 0; w < _WARN_COUNT; w++)
-				{
-					if (strcmp(warnpolicies[w].name, warning_policies->sval[i] + 9) == 0)
-                        warnpolicies[w].treat_as_error = true;
-				}
-			}
-		}
-	}
+    dsetwarnpolicy(warning_policies);
 
 	// Set up error handling.
-	errval = (struct errinfo*)setjmp(errjmp);
-
+	errval = (struct errinfo*)dsethalt();
 	if (errval != NULL)
 	{
 		// FIXME: Use bstrings here.
-		msglen = strlen(err_strings[errval->errid]) + strlen(prepend) + 1;
+		msglen = strlen(derrstr[errval->errid]) + strlen(prepend) + 1;
 		msg = malloc(msglen);
 		memset(msg, '\0', msglen);
 		strcat(msg, prepend);
-		strcat(msg, err_strings[errval->errid]);
+		strcat(msg, derrstr[errval->errid]);
 		printd(LEVEL_ERROR, msg, errval->errdata);
 
 		// Handle the error.

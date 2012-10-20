@@ -1,21 +1,22 @@
 /**
 
-    File:       dcpuops.c
+    File:	dcpuops.c
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-vm
+    Project:	DCPU-16 Tools
+    Component:	LibDCPU-vm
 
-    Authors:    James Rhodes
-            Aaron Miller
+    Authors:	James Rhodes
+	    Aaron Miller
 
     Description:    Handles opcode instructions in the
-            virtual machine.
+	    virtual machine.
 
 **/
 
 #define PRIVATE_VM_ACCESS
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <debug.h>
 #include "dcpubase.h"
 #include "dcpuops.h"
@@ -24,26 +25,26 @@
 
 #define VM_CHECK_ARITHMETIC_FLOW(op, val_a, val_b) \
     if ((int32_t)val_a op (int32_t)val_b < (int32_t)0) \
-        vm->ex = AR_UNDERFLOW; \
+	vm->ex = AR_UNDERFLOW; \
     else if ((int32_t)val_a op (int32_t)val_b > (int32_t)AR_MAX) \
-        vm->ex = AR_OVERFLOW; \
+	vm->ex = AR_OVERFLOW; \
     else \
-        vm->ex = AR_NOFLOW;
+	vm->ex = AR_NOFLOW;
 
 #define VM_CHECK_ARITHMETIC_FLOW_EX(op, val_a, val_b, val_ex) \
     if ((int32_t)val_a op (int32_t)val_b + (int32_t)val_ex < (int32_t)0) \
-        vm->ex = AR_UNDERFLOW; \
+	vm->ex = AR_UNDERFLOW; \
     else if ((int32_t)val_a op (int32_t)val_b + (int32_t)val_ex > (int32_t)AR_MAX) \
-        vm->ex = AR_OVERFLOW; \
+	vm->ex = AR_OVERFLOW; \
     else \
-        vm->ex = AR_NOFLOW;
+	vm->ex = AR_NOFLOW;
 
 #define VM_SKIP_RESET if(vm->skip) {vm->skip = false; return;}
 #define VM_BRANCHING_SKIP if(vm->skip) { return; }
 
 #define VM_HOOK_FIRE(var) \
     if (var >= (uint16_t*)&vm->ram && var < (uint16_t*)&vm->ram + 0x10000) \
-        vm_hook_fire(vm, (uint16_t)(var - (uint16_t*)&vm->ram), HOOK_ON_WRITE, NULL);
+	vm_hook_fire(vm, (uint16_t)(var - (uint16_t*)&vm->ram), HOOK_ON_WRITE, NULL);
 
 #define OP_NUM_CYCLES(count) vm->sleep_cycles += (count - 1);
 
@@ -55,55 +56,55 @@ uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos)
     // we're skipping.
     if (vm->skip)
     {
-        if ((loc >= NXT_VAL_A && loc <= NXT_VAL_J) || loc == NXT)
-            vm_consume_word(vm);
+	if ((loc >= NXT_VAL_A && loc <= NXT_VAL_J) || loc == NXT)
+	    vm_consume_word(vm);
 
-        return &vm->dummy;
+	return &vm->dummy;
     }
 
     // Otherwise, run normally.
     if (loc >= REG_A && loc <= REG_J)
-        return &vm->registers[loc];
+	return &vm->registers[loc];
     else if (loc >= VAL_A && loc <= VAL_J)
-        return &vm->ram[vm->registers[loc - VAL_A]];
+	return &vm->ram[vm->registers[loc - VAL_A]];
     else if (loc >= NXT_VAL_A && loc <= NXT_VAL_J)
     {
-        vm->sleep_cycles += 1; // Resolving this costs an additional cycle
-        return &vm->ram[(uint16_t)(vm->registers[loc - NXT_VAL_A] + vm_consume_word(vm))];
+	vm->sleep_cycles += 1; // Resolving this costs an additional cycle
+	return &vm->ram[(uint16_t)(vm->registers[loc - NXT_VAL_A] + vm_consume_word(vm))];
     }
     else if (loc == PUSH_POP)
     {
-        if (pos == POS_A)
-            t = vm->sp++;
-        else if (pos == POS_B)
-            t = --vm->sp;
-        else
-            t = vm->sp;
+	if (pos == POS_A)
+	    t = vm->sp++;
+	else if (pos == POS_B)
+	    t = --vm->sp;
+	else
+	    t = vm->sp;
 
-        return &vm->ram[t];
+	return &vm->ram[t];
     }
     else if (loc == PEEK)
-        return &vm->ram[vm->sp];
+	return &vm->ram[vm->sp];
     else if (loc == PICK)
     {
-        vm->sleep_cycles += 1; // Resolving this costs an additional cycle
-        return &vm->ram[(uint16_t)(vm->sp + vm_consume_word(vm))];
+	vm->sleep_cycles += 1; // Resolving this costs an additional cycle
+	return &vm->ram[(uint16_t)(vm->sp + vm_consume_word(vm))];
     }
     else if (loc == IA)
-        return &vm->ia;
+	return &vm->ia;
     else if (loc == SP)
-        return &vm->sp;
+	return &vm->sp;
     else if (loc == PC)
-        return &vm->pc;
+	return &vm->pc;
     else if (loc == EX)
-        return &vm->ex;
+	return &vm->ex;
     else if (loc == NXT)
     {
-        vm->sleep_cycles += 1; //Resolving this costs an additional cycle
-        return &vm->ram[vm_consume_word(vm)];
+	vm->sleep_cycles += 1; //Resolving this costs an additional cycle
+	return &vm->ram[vm_consume_word(vm)];
     }
     else
-        return &vm->dummy; // Dummy position for assignments that silently fail.
+	return &vm->dummy; // Dummy position for assignments that silently fail.
 }
 
 // Sometimes an instruction will get the value of 'a' for a second
@@ -115,27 +116,27 @@ uint16_t vm_resolve_value_once(vm_t* vm, uint16_t val, uint8_t pos)
 {
     switch (val)
     {
-        case NXT:
-            return vm->ram[(uint16_t)vm->ram[(uint16_t)(vm->pc - 1)]];
+	case NXT:
+	    return vm->ram[(uint16_t)vm->ram[(uint16_t)(vm->pc - 1)]];
 
-        case PUSH_POP:
-            return vm->ram[vm->sp];
+	case PUSH_POP:
+	    return vm->ram[vm->sp];
 
-        case PICK:
-            return vm->ram[(uint16_t)(vm->sp + vm->ram[(uint16_t)(vm->pc - 1)])];
+	case PICK:
+	    return vm->ram[(uint16_t)(vm->sp + vm->ram[(uint16_t)(vm->pc - 1)])];
 
-        case NXT_VAL_A:
-        case NXT_VAL_B:
-        case NXT_VAL_C:
-        case NXT_VAL_X:
-        case NXT_VAL_Y:
-        case NXT_VAL_Z:
-        case NXT_VAL_I:
-        case NXT_VAL_J:
-            return vm->ram[(uint16_t)(vm->registers[val - NXT_VAL_A] + vm->ram[(uint16_t)(vm->pc - 1)])];
+	case NXT_VAL_A:
+	case NXT_VAL_B:
+	case NXT_VAL_C:
+	case NXT_VAL_X:
+	case NXT_VAL_Y:
+	case NXT_VAL_Z:
+	case NXT_VAL_I:
+	case NXT_VAL_J:
+	    return vm->ram[(uint16_t)(vm->registers[val - NXT_VAL_A] + vm->ram[(uint16_t)(vm->pc - 1)])];
 
-        default:
-            return vm_resolve_value(vm, val, pos);
+	default:
+	    return vm_resolve_value(vm, val, pos);
     }
 }
 
@@ -147,52 +148,52 @@ void vm_op_fire(vm_t* vm)
 
     if(screen_id == -1)
     {
-        for(i = 0; i < count; i++)
-        {
-            device = vm_hw_get_device(vm, i);
-            if(device.id == 0x7349F615)
-            {
-                vm->registers[REG_A] = 0;
-                vm->registers[REG_B] = 0x1000;
-                vm_hw_interrupt(vm, i);
+	for(i = 0; i < count; i++)
+	{
+	    device = vm_hw_get_device(vm, i);
+	    if(device.id == 0x7349F615)
+	    {
+		vm->registers[REG_A] = 0;
+		vm->registers[REG_B] = 0x1000;
+		vm_hw_interrupt(vm, i);
 
-                vm->registers[REG_A] = 1;
-                vm->registers[REG_B] = 0x1000 + 0x17F;
-                vm_hw_interrupt(vm, i);
+		vm->registers[REG_A] = 1;
+		vm->registers[REG_B] = 0x1000 + 0x17F;
+		vm_hw_interrupt(vm, i);
 
-                screen_id = i;
-                break;
-            }
-        }
+		screen_id = i;
+		break;
+	    }
+	}
     }
 
     if(vm->fire_cycles < vm->fire_cycles_target)
     {
-        vm->fire_cycles++;
-        return;
+	vm->fire_cycles++;
+	return;
     }
     else
     {
-        uint16_t pos = 0x1000, length = 0, fill = 0, idx = 0;
-        
-        vm->fire_cycles = 0;
-        vm->fire_cycles_target = DCPU_TICKS_KHZ * 1000;
-        
-        while(pos < 0x1000 + 0x300)
-        {
-            length = rand() % 100;
-            fill = rand() % 0x10000;
+	uint16_t pos = 0x1000, length = 0, fill = 0, idx = 0;
+	
+	vm->fire_cycles = 0;
+	vm->fire_cycles_target = DCPU_TICKS_KHZ * 1000;
+	
+	while(pos < 0x1000 + 0x300)
+	{
+	    length = rand() % 100;
+	    fill = rand() % 0x10000;
 
-            for(idx = 0; idx < length; idx++)
-            {
-                vm->ram[pos + idx] = fill;
-                vm_hook_fire(vm, pos + idx, HOOK_ON_WRITE, NULL);
-            }
+	    for(idx = 0; idx < length; idx++)
+	    {
+		vm->ram[pos + idx] = fill;
+		vm_hook_fire(vm, pos + idx, HOOK_ON_WRITE, NULL);
+	    }
 
-            if(pos + length < pos)
-                break;
-            pos += length;
-        }
+	    if(pos + length < pos)
+		break;
+	    pos += length;
+	}
     }
 }
 
@@ -200,17 +201,17 @@ void vm_op_radiation(vm_t* vm)
 {
     if(vm->radiation_cycles < vm->radiation_cycles_target)
     {
-        vm->radiation_cycles++;
-        return;
+	vm->radiation_cycles++;
+	return;
     }
     else
     {
-        uint16_t pos = rand() % 0x10000, bit = rand() % 15;
-        vm->radiation_cycles = 0;
-        vm->radiation_cycles_target = DCPU_TICKS_KHZ * vm->radiation_factor * (rand() % 10);
+	uint16_t pos = rand() % 0x10000, bit = rand() % 15;
+	vm->radiation_cycles = 0;
+	vm->radiation_cycles_target = DCPU_TICKS_KHZ * vm->radiation_factor * (rand() % 10);
 
-        vm->ram[pos] = vm->ram[pos] ^ (1 << bit);
-        vm_hook_fire(vm, pos, HOOK_ON_WRITE, NULL);
+	vm->ram[pos] = vm->ram[pos] ^ (1 << bit);
+	vm_hook_fire(vm, pos, HOOK_ON_WRITE, NULL);
    }
 }
 
@@ -302,13 +303,13 @@ void vm_op_div(vm_t* vm, uint16_t b, uint16_t a)
 
     if (val_a != 0)
     {
-        *store_b = val_b / val_a;
-        vm->ex = ((val_b << 16) / val_a) & 0xffff;
+	*store_b = val_b / val_a;
+	vm->ex = ((val_b << 16) / val_a) & 0xffff;
     }
     else
     {
-        *store_b = 0;
-        vm->ex = 0;
+	*store_b = 0;
+	vm->ex = 0;
     }
 
     VM_HOOK_FIRE(store_b);
@@ -328,13 +329,13 @@ void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a)
 
     if (val_a != 0)
     {
-        *store_b = val_b / val_a;
-        vm->ex = ((val_b << 16) / val_a) & 0xffff;
+	*store_b = val_b / val_a;
+	vm->ex = ((val_b << 16) / val_a) & 0xffff;
     }
     else
     {
-        *store_b = 0;
-        vm->ex = 0;
+	*store_b = 0;
+	vm->ex = 0;
     }
 
     VM_HOOK_FIRE(store_b);
@@ -353,9 +354,9 @@ void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
     VM_SKIP_RESET;
 
     if(val_a == 0) 
-        *store_b = 0;
+	*store_b = 0;
     else
-        *store_b = val_b % val_a;
+	*store_b = val_b % val_a;
 
     VM_HOOK_FIRE(store_b);
 }
@@ -372,9 +373,9 @@ void vm_op_mod(vm_t* vm, uint16_t b, uint16_t a)
     VM_SKIP_RESET;
 
     if (val_a != 0)
-        *store_b = val_b % val_a;
+	*store_b = val_b % val_a;
     else
-        *store_b = 0;
+	*store_b = 0;
 
     VM_HOOK_FIRE(store_b);
 }
@@ -684,13 +685,13 @@ void vm_op_iaq(vm_t* vm, uint16_t a)
     
     if (val_a == 0)
     {
-        printd(LEVEL_DEBUG, "turning off interrupt queue\n");
-        vm->queue_interrupts = false;
+	printd(LEVEL_DEBUG, "turning off interrupt queue\n");
+	vm->queue_interrupts = false;
     }
     else
     {
-        printd(LEVEL_DEBUG, "turning on interrupt queue\n");
-        vm->queue_interrupts = true;
+	printd(LEVEL_DEBUG, "turning on interrupt queue\n");
+	vm->queue_interrupts = true;
     }
 }
 
@@ -724,21 +725,21 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
     VM_SKIP_RESET;
     if (val_a < vm_hw_count(vm))
     {
-        queried_device = vm_hw_get_device(vm, val_a);
+	queried_device = vm_hw_get_device(vm, val_a);
 
-        printd(LEVEL_DEBUG, "hwq: index %d %08X\n", val_a, queried_device.id);
+	printd(LEVEL_DEBUG, "hwq: index %d %08X\n", val_a, queried_device.id);
 
-        *store_a = (queried_device.id & 0x0000FFFF) >>  0;
-        *store_b = (queried_device.id & 0xFFFF0000) >> 16;
-        *store_c = queried_device.version;
-        *store_x = (queried_device.manufacturer & 0x0000FFFF) >>  0;
-        *store_y = (queried_device.manufacturer & 0xFFFF0000) >> 16;
+	*store_a = (queried_device.id & 0x0000FFFF) >>	0;
+	*store_b = (queried_device.id & 0xFFFF0000) >> 16;
+	*store_c = queried_device.version;
+	*store_x = (queried_device.manufacturer & 0x0000FFFF) >>  0;
+	*store_y = (queried_device.manufacturer & 0xFFFF0000) >> 16;
 
-        VM_HOOK_FIRE(store_a);
-        VM_HOOK_FIRE(store_b);
-        VM_HOOK_FIRE(store_c);
-        VM_HOOK_FIRE(store_x);
-        VM_HOOK_FIRE(store_y);
+	VM_HOOK_FIRE(store_a);
+	VM_HOOK_FIRE(store_b);
+	VM_HOOK_FIRE(store_c);
+	VM_HOOK_FIRE(store_x);
+	VM_HOOK_FIRE(store_y);
     }
     vm->skip = false;
 }

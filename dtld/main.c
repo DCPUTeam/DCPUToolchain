@@ -19,25 +19,35 @@
 #include <debug.h>
 #include <osutil.h>
 #include <iio.h>
+#include <derr.h>
 #include "objfile.h"
 #include "lprov.h"
 #include "ldata.h"
 #include "ldbins.h"
+#include "ldtarget.h"
 
 int main(int argc, char* argv[])
 {
 	// Define our variables.
-	int nerrors, i;
-	bstring target;
+	int nerrors, i, w;
 	int32_t saved = 0; // The number of words saved during compression and optimization.
+	struct errinfo* errval;
+	const char* prepend = "error: ";
+	const char* warnprefix = "no-";
+	int msglen;
+	char* msg;
+    int target;
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
-	struct arg_str* target_arg = arg_str0("l", "link-as", "target", "Link as the specified object, can be 'image' or 'static'.");
+	struct arg_str* target_arg = arg_str0("l", "link-as", "target", "Link as the specified object, can be 'image', 'static' or 'kernel'.");
 	struct arg_file* symbol_file = arg_file0("s", "symbols", "<file>", "Produce a combined symbol file (~triples memory usage!).");
 	struct arg_str* symbol_ext = arg_str0(NULL, "symbol-extension", "ext", "When -s is used, specifies the extension for symbol files.  Defaults to \"dsym16\".");
 	struct arg_file* input_files = arg_filen(NULL, NULL, "<file>", 1, 100, "The input object files.");
 	struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
+    struct arg_file* kernel_file = arg_file0("k", "kernel", "<file>", "Directly link in the specified kernel.");
+    struct arg_file* jumplist_file = arg_file0("j", "jumplist", "<file>", "Link against the specified jumplist.");
+	struct arg_str* warning_policies = arg_strn("W", NULL, "policy", 0, _WARN_COUNT * 2 + 10, "Modify warning policies.");
 	struct arg_lit* keep_output_arg = arg_lit0(NULL, "keep-outputs", "Keep the .OUTPUT entries in the final static library (used for stdlib).");
 	struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
 	struct arg_lit* no_short_literals_arg = arg_lit0(NULL, "no-short-literals", "Do not compress literals to short literals.");
@@ -46,7 +56,8 @@ int main(int argc, char* argv[])
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, target_arg, keep_output_arg, little_endian_mode, opt_level, opt_mode, no_short_literals_arg, symbol_ext, symbol_file, output_file, input_files, verbose, quiet, end };
+	void* argtable[] = { show_help, target_arg, keep_output_arg, little_endian_mode, opt_level, opt_mode, no_short_literals_arg,
+	symbol_ext, symbol_file, kernel_file, jumplist_file, warning_policies, output_file, input_files, verbose, quiet, end };
 
 	// Parse arguments.
 	nerrors = arg_parse(argc, argv, argtable);
@@ -74,21 +85,43 @@ int main(int argc, char* argv[])
 	// Set endianness.
 	isetmode(little_endian_mode->count == 0 ? IMODE_BIG : IMODE_LITTLE);
 
+    // Set up warning policies.
+    dsetwarnpolicy(warning_policies);
+
+	// Set up error handling.
+	errval = (struct errinfo*)dsethalt();
+	if (errval != NULL)
+	{
+		// FIXME: Use bstrings here.
+		msglen = strlen(derrstr[errval->errid]) + strlen(prepend) + 1;
+		msg = malloc(msglen);
+		memset(msg, '\0', msglen);
+		strcat(msg, prepend);
+		strcat(msg, derrstr[errval->errid]);
+		printd(LEVEL_ERROR, msg, errval->errdata);
+
+		// Handle the error.
+		printd(LEVEL_ERROR, "linker: error occurred.\n");
+
+		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+		return 1;
+	}
+
 	// Check to make sure target is correct.
 	if (target_arg->count == 0)
-		target = bfromcstr("image");
+		target = IMAGE_APPLICATION;
 	else
 	{
 		if (strcmp(target_arg->sval[0], "image") == 0)
-			target = bfromcstr("image");
+			target = IMAGE_APPLICATION;
 		else if (strcmp(target_arg->sval[0], "static") == 0)
-			target = bfromcstr("static");
-		else
+			target = IMAGE_STATIC_LIBRARY;
+		else if (strcmp(target_arg->sval[0], "kernel") == 0)
+			target = IMAGE_KERNEL;
+	else
 		{
 			// Invalid option.
-			printd(LEVEL_ERROR, "linker: invalid target type, must be 'image' or 'static'.\n");
-			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-			return 1;
+	    dhalt(ERR_INVALID_TARGET_NAME, NULL);
 		}
 	}
 
@@ -97,25 +130,32 @@ int main(int argc, char* argv[])
 	bins_init();
 	for (i = 0; i < input_files->count; i++)
 		if (!bins_load(bautofree(bfromcstr(input_files->filename[i])), symbol_file->count > 0, (symbol_file->count > 0 && symbol_ext->count > 0) ? symbol_ext->sval[0] : "dsym16"))
-		{
 			// Failed to load one of the input files.
-			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-			return 1;
-		}
+	    dhalt(ERR_BIN_LOAD_FAILED, input_files->filename[i]);
 	bins_associate();
 	bins_sectionize();
 	bins_flatten(bautofree(bfromcstr("output")));
+    if (target == IMAGE_KERNEL)
+	bins_write_jump();
 	saved = bins_optimize(
 			opt_mode->count == 0 ? OPTIMIZE_SIZE : OPTIMIZE_SPEED,
 			opt_level->count == 0 ? OPTIMIZE_NONE : opt_level->ival[0]);
-	if (no_short_literals_arg->count == 0 && biseqcstr(target, "static") != true)
+	if (no_short_literals_arg->count == 0 && target != IMAGE_STATIC_LIBRARY)
 		saved += bins_compress();
 	else if (no_short_literals_arg->count == 0)
-		printd(LEVEL_WARNING, "linker: skipping short literal compression due to target type.\n");
+	dwarn(WARN_SKIPPING_SHORT_LITERALS_TYPE, NULL);
 	else
-		printd(LEVEL_WARNING, "linker: skipping short literal compression on request.\n");
-	bins_resolve(biseqcstr(target, "static") == true);
-	bins_save(bautofree(bfromcstr("output")), bautofree(bfromcstr(output_file->filename[0])), bautofree(target), keep_output_arg->count > 0, symbol_file->count > 0 ? symbol_file->filename[0] : NULL);
+	dwarn(WARN_SKIPPING_SHORT_LITERALS_REQUEST, NULL);
+	bins_resolve(
+	    target == IMAGE_STATIC_LIBRARY,
+	    target == IMAGE_STATIC_LIBRARY);
+	bins_save(
+	    bautofree(bfromcstr("output")),
+	    bautofree(bfromcstr(output_file->filename[0])),
+	    target,
+	    keep_output_arg->count > 0,
+	    symbol_file->count > 0 ? symbol_file->filename[0] : NULL,
+	    jumplist_file->count > 0 ? jumplist_file->filename[0] : NULL);
 	bins_free();
 	if (saved > 0)
 		printd(LEVEL_DEFAULT, "linker: saved %i words during optimization.\n", saved);

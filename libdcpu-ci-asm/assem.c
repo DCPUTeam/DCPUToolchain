@@ -23,11 +23,11 @@
 #include <simclist.h>
 #include <ddata.h>
 #include <debug.h>
+#include <derr.h>
 #include "node.h"
 #include "dcpu.h"
 #include "imap.h"
 #include "aout.h"
-#include "aerr.h"
 #include "parser.h"
 
 list_t* assem_dbg_symbols = NULL;
@@ -137,7 +137,7 @@ struct process_parameter_results process_address(struct ast_node_address* param)
 		{
 			// Attempt to use a register in brackets that can't be.
 			printd(LEVEL_VERBOSE, "\n");
-			ahalt(ERR_NEXTED_REGISTER_UNSUPPORTED, param->addcmpt);
+			dhalt(ERR_NEXTED_REGISTER_UNSUPPORTED, param->addcmpt);
 		}
 
 		printd(LEVEL_VERBOSE, "[%s+%s]", btmp->data, registr->name);
@@ -197,7 +197,7 @@ struct process_parameter_results process_register(struct ast_node_register* para
 	{
 		// Attempt to use a register in brackets that can't be.
 		printd(LEVEL_VERBOSE, "\n");
-		ahalt(ERR_BRACKETED_REGISTER_UNSUPPORTED, param->value);
+		dhalt(ERR_BRACKETED_REGISTER_UNSUPPORTED, param->value);
 	}
 	else
 	{
@@ -234,10 +234,10 @@ struct process_parameter_results process_parameter(struct ast_node_parameter* pa
 
 		case type_raw:
 			result.v_raw = param->raw;
-            break;
+	    break;
 
-        default:
-            assert(false);
+	default:
+	    assert(false);
 	}
 
 	return result;
@@ -257,7 +257,7 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 		if (t.v_raw)
 		{
 			printd(LEVEL_VERBOSE, "\n");
-			ahalt(ERR_GEN_UNSUPPORTED_PARAMETER, NULL);
+			dhalt(ERR_GEN_UNSUPPORTED_PARAMETER, NULL);
 		}
 
 		result.a = t.v;
@@ -273,7 +273,7 @@ struct process_parameters_results process_parameters(struct ast_node_parameters*
 			if (t.v_raw)
 			{
 				printd(LEVEL_VERBOSE, "\n");
-				ahalt(ERR_GEN_UNSUPPORTED_PARAMETER, NULL);
+				dhalt(ERR_GEN_UNSUPPORTED_PARAMETER, NULL);
 			}
 
 			result.b = t.v;
@@ -366,14 +366,14 @@ void process_line(struct ast_node_line* line)
 					if (line->keyword_data_expr_1 == NULL || line->keyword_data_expr_2 == NULL)
 					{
 						if (line->keyword_data_string != NULL)
-							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, line->keyword_data_string->data);
+							dhalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, line->keyword_data_string->data);
 						else
-							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
+							dhalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
 					}
 
 					// Emit N words with value X
-					flimit = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
-					fchar = expr_evaluate(line->keyword_data_expr_2, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
+					flimit = expr_evaluate(line->keyword_data_expr_1, &dhalt_label_resolution_not_permitted, &dhalt_expression_exit_handler);
+					fchar = expr_evaluate(line->keyword_data_expr_2, &dhalt_label_resolution_not_permitted, &dhalt_expression_exit_handler);
 					for (i = 0; i < flimit; i++)
 						aout_emit(aout_create_raw(fchar));
 
@@ -399,12 +399,12 @@ void process_line(struct ast_node_line* line)
 					if (line->keyword_data_expr_1 == NULL)
 					{
 						if (line->keyword_data_string != NULL)
-							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, line->keyword_data_string->data);
+							dhalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, line->keyword_data_string->data);
 						else
-							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
+							dhalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
 					}
 
-					opos = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
+					opos = expr_evaluate(line->keyword_data_expr_1, &dhalt_label_resolution_not_permitted, &dhalt_expression_exit_handler);
 					printd(LEVEL_VERBOSE, ".ORIGIN 0x%04X", opos);
 
 					// Emit origin set metadata.
@@ -412,16 +412,16 @@ void process_line(struct ast_node_line* line)
 
 					break;
 
-                case SEEK:
+		case SEEK:
 					if (line->keyword_data_expr_1 == NULL)
 					{
 						if (line->keyword_data_string != NULL)
-							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, line->keyword_data_string->data);
+							dhalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, line->keyword_data_string->data);
 						else
-							ahalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
+							dhalt(ERR_LABEL_RESOLUTION_NOT_PERMITTED, "");
 					}
 
-					opos = expr_evaluate(line->keyword_data_expr_1, &ahalt_label_resolution_not_permitted, &ahalt_expression_exit_handler);
+					opos = expr_evaluate(line->keyword_data_expr_1, &dhalt_label_resolution_not_permitted, &dhalt_expression_exit_handler);
 					printd(LEVEL_VERBOSE, ".SEEK 0x%04X", opos);
 
 					// Emit seek metadata.
@@ -440,14 +440,36 @@ void process_line(struct ast_node_line* line)
 				case IMPORT:
 					printd(LEVEL_VERBOSE, ".IMPORT %s", bstr2cstr(line->keyword_data_string, '0'));
 
-					// Emit export metadata.
+					// Emit import metadata.
 					aout_emit(aout_create_metadata_import(bstr2cstr(line->keyword_data_string, '0')));
 
 					break;
 
+		case IMPORT_OPTIONAL:
+					printd(LEVEL_VERBOSE, ".IMPORT OPTIONAL %s", bstr2cstr(line->keyword_data_string, '0'));
+
+					// Emit import metadata.
+					aout_emit(aout_create_metadata_import_optional(bstr2cstr(line->keyword_data_string, '0')));
+
+					break;
+
+				case JUMP:
+		    if (line->keyword_data_string == NULL)
+			printd(LEVEL_VERBOSE, ".JUMP <table>");
+		    else
+					printd(LEVEL_VERBOSE, ".JUMP %s", bstr2cstr(line->keyword_data_string, '0'));
+
+					// Emit jump metadata.
+		    if (line->keyword_data_string == NULL)
+					aout_emit(aout_create_metadata_jump(NULL));
+		    else
+			aout_emit(aout_create_metadata_jump(bstr2cstr(line->keyword_data_string, '0')));
+
+					break;
+
 				default:
-					printd(LEVEL_VERBOSE, "\n");
-					ahalt(ERR_UNSUPPORTED_KEYWORD, NULL);
+					printd(LEVEL_VERBOSE, "?? UNKNOWN KEYWORD\n");
+					dhalt(ERR_UNSUPPORTED_KEYWORD, NULL);
 			}
 
 			printd(LEVEL_VERBOSE, "\n");
@@ -485,7 +507,7 @@ void process_line(struct ast_node_line* line)
 					else // Something that isn't handled by DAT.
 					{
 						printd(LEVEL_VERBOSE, "\n");
-						ahalt(ERR_DAT_UNSUPPORTED_PARAMETER, NULL);
+						dhalt(ERR_DAT_UNSUPPORTED_PARAMETER, NULL);
 					}
 
 					dcurrent = dcurrent->prev;
@@ -497,7 +519,7 @@ void process_line(struct ast_node_line* line)
 				insttype = get_instruction_by_name(line->instruction->instruction);
 
 				if (insttype == NULL)
-					ahalt(ERR_UNKNOWN_OPCODE, line->instruction->instruction);
+					dhalt(ERR_UNKNOWN_OPCODE, line->instruction->instruction);
 
 				printd(LEVEL_VERBOSE, "EMIT %s", insttype->name);
 
@@ -512,7 +534,7 @@ void process_line(struct ast_node_line* line)
 				else if (line->instruction->parameters == NULL)
 				{
 					// Halt and error.
-					ahalt(ERR_INVALID_PARAMETER_COUNT, NULL);
+					dhalt(ERR_INVALID_PARAMETER_COUNT, NULL);
 				}
 
 				// Process parameters normally.
@@ -524,13 +546,13 @@ void process_line(struct ast_node_line* line)
 				if (ppresults.a_label != NULL && ppresults.a_label_bracketed) ppresults.a = NXT;
 				if (ppresults.b_label != NULL && ppresults.b_label_bracketed) ppresults.b = NXT;
 
-                // Check for relative addressing.
-                if ((insttype->opcode == OP_ADD || insttype->opcode == OP_SUB ||
-                    insttype->opcode == OP_MUL || insttype->opcode == OP_DIV) && ppresults.a == PC)
-                {
-                    // Warn about relative addressing portability.
-                    awarn(WARN_RELATIVE_PC_ADDRESSING, NULL);
-                }
+		// Check for relative addressing.
+		if ((insttype->opcode == OP_ADD || insttype->opcode == OP_SUB ||
+		    insttype->opcode == OP_MUL || insttype->opcode == OP_DIV) && ppresults.a == PC)
+		{
+		    // Warn about relative addressing portability.
+		    dwarn(WARN_RELATIVE_PC_ADDRESSING, NULL);
+		}
 
 				// Output the initial opcode.
 				if (insttype->opcode != OP_NONBASIC)
@@ -561,8 +583,8 @@ void process_line(struct ast_node_line* line)
 			aout_emit(aout_create_label(line->label->name));
 			break;
 
-        default:
-            assert(false);
+	default:
+	    assert(false);
 	}
 
 	// If we can associate debugging symbols with this instruction...

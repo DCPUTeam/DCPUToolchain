@@ -68,7 +68,7 @@ typedef uint8_t bool;
 #define PC	    0x1C
 #define EX	    0x1D
 #define NXT	    0x1E
-#define NXT_LIT     0x1F
+#define NXT_LIT	    0x1F
 
 // Meta-value definitions (used internally)
 #define IA	0xFF
@@ -159,7 +159,7 @@ typedef struct
     uint16_t ram[0x10000];	  ///< The virtual machine's main RAM segment.
     uint16_t dummy;	       ///< A dummy position that is used internally to silently redirect assignments.
     uint16_t irq[256];	      ///< The interrupt queue.
-    uint16_t irq_count;        ///< The number of interrupts currently in the queue.
+    uint16_t irq_count;	       ///< The number of interrupts currently in the queue.
     uint16_t sleep_cycles;	  ///< An internal counter used to measure how many additional cycles the VM should sleep for.
     uint8_t queue_interrupts;	 ///< Whether the interrupt queue is enabled.
     uint8_t halted;	       ///< Whether the virtual machine is currently halted.
@@ -167,8 +167,8 @@ typedef struct
     uint8_t skip;	     ///< Whether the virtual machine will skip the next instruction.
     uint8_t debug;	      ///< Whether the virtual machine will output each instruction to standard output.
 
-    bool can_fire;      ///< Will the DCPU catch fire on an invalid operation?
-    bool on_fire;       ///< Is the DCPU on fire?
+    bool can_fire;	///< Will the DCPU catch fire on an invalid operation?
+    bool on_fire;	///< Is the DCPU on fire?
     int fire_cycles;
     int fire_cycles_target;
     int radiation_factor;

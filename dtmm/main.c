@@ -1,6 +1,6 @@
 /**
 
-	File:    main.c
+	File:	 main.c
 
 	Project:  DCPU-16 Tools
 	Component:  Module Manager
@@ -38,7 +38,7 @@ size_t read_data(void* buff, size_t elsize, size_t nelem, void* param)
 	return fread(buff, elsize, nelem, (FILE*)param);
 }
 
-bool do_search(CURL* curl, bstring name)
+bool do_search(CURL* curl, bstring name, bool all)
 {
 	DIR* dir;
 	bool printed;
@@ -87,6 +87,9 @@ bool do_search(CURL* curl, bstring name)
 	fclose(fp);
 
 	// Print the local results.
+    if (all)
+	printd(LEVEL_DEFAULT, "all modules:\n");
+    else
 	printd(LEVEL_DEFAULT, "search results for %s:\n", name->data);
 	while ((entry = readdir(dir)) != NULL)
 	{
@@ -107,7 +110,7 @@ bool do_search(CURL* curl, bstring name)
 			continue;
 		}
 		sstr = bmidstr(fname, 0, blength(fname) - 4);
-		printd(LEVEL_DEFAULT, "   %s (installed)\n", sstr->data);
+		printd(LEVEL_DEFAULT, "	  %s (installed)\n", sstr->data);
 		list_append(&installed, sstr->data);
 		bdestroy(sstr);
 		bdestroy(fname);
@@ -123,12 +126,12 @@ bool do_search(CURL* curl, bstring name)
 		btrimws(buffer);
 		sstr = bmidstr(buffer, 0, blength(buffer) - 4);
 		if (!list_contains(&installed, sstr->data))
-			printd(LEVEL_DEFAULT, "  %s\n", sstr->data);
+			printd(LEVEL_DEFAULT, "	 %s\n", sstr->data);
 		printed = true;
 		bdestroy(sstr);
 	}
 	if (!printed)
-		printd(LEVEL_DEFAULT, "   <no online results>\n");
+		printd(LEVEL_DEFAULT, "	  <no online results>\n");
 	bsclose(stream);
 	fclose(fp);
 
@@ -280,7 +283,7 @@ bool do_install_all(CURL* curl){
 			// check whether the installation was successful
 			if (install_status != 0)
 			{
-				printd(LEVEL_DEFAULT, "  %s failed to install.\n", sstr->data);
+				printd(LEVEL_DEFAULT, "	 %s failed to install.\n", sstr->data);
 				something_errored = true;
 			}
 			printd(LEVEL_DEFAULT, "\n");
@@ -290,7 +293,7 @@ bool do_install_all(CURL* curl){
 		bdestroy(sstr);
 	}
 	if (!printed)
-		printd(LEVEL_DEFAULT, "  <no modules available>\n");
+		printd(LEVEL_DEFAULT, "	 <no modules available>\n");
 	if (something_errored)
 		printd(LEVEL_DEFAULT, "errors occured\n");
 	if (!if_something_was_installed)
@@ -408,24 +411,25 @@ int main(int argc, char* argv[])
 	bstring command;
 	bstring name;
 	bstring modpath;
+    int all;
 
 	// Define arguments.
 	struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
 	struct arg_str* cmdopt = arg_str1(NULL, NULL, "<command>", "The command; either 'search', 'install', 'uninstall', 'enable' or 'disable'.");
 	struct arg_str* nameopt = arg_str0(NULL, NULL, "<name>", "The name of the module to search for, install, uninstall, enable or disable.");
-	struct arg_lit* all = arg_lit0("a", "all", "Apply this command to all available / installed modules.");
+	struct arg_lit* all_flag = arg_lit0("a", "all", "Apply this command to all available / installed modules.");
 	struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
 	struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
 	struct arg_end* end = arg_end(20);
-	void* argtable[] = { show_help, cmdopt, all, nameopt, verbose, quiet, end };
+	void* argtable[] = { show_help, cmdopt, all_flag, nameopt, verbose, quiet, end };
 
 	// Parse arguments.
 	int nerrors = arg_parse(argc, argv, argtable);
 
 	version_print(bautofree(bfromcstr("Module Manager")));
-	if (nerrors != 0 || show_help->count != 0 || (all->count == 0 && nameopt->count == 0))
+	if (nerrors != 0 || show_help->count != 0 || (all_flag->count == 0 && nameopt->count == 0))
 	{
-		if (all->count == 0 && nameopt->count == 0)
+		if (all_flag->count == 0 && nameopt->count == 0)
 			printd(LEVEL_ERROR, "error: must have either module name or -a.");
 		if (show_help->count != 0)
 			arg_print_errors(stderr, end, "mm");
@@ -433,7 +437,7 @@ int main(int argc, char* argv[])
 		fprintf(stderr, "syntax:\n    dtmm");
 		arg_print_syntax(stderr, argtable, "\n");
 		fprintf(stderr, "options:\n");
-		arg_print_glossary(stderr, argtable, "    %-25s %s\n");
+		arg_print_glossary(stderr, argtable, "	  %-25s %s\n");
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
 		return 1;
 	}
@@ -463,20 +467,52 @@ int main(int argc, char* argv[])
 	}
 	bdestroy(modpath);
 
+    // Convert all flag.
+    all = (all_flag->count > 0);
+
+    // If all is set, set the name back to "".
+    if (all)
+	bassigncstr(name, "");
+
+    // If the name is "all" or "*", handle this as the all
+    // boolean flag.
+    if (biseqcstr(name, "all") || biseqcstr(name, "*"))
+    {
+	bassigncstr(name, "");
+	all = 1;
+	printd(LEVEL_WARNING, "treating name as -a (all) flag");
+    }
+
 	if (biseqcstrcaseless(command, "search") || biseqcstrcaseless(command, "se"))
-		return do_search(curl, name);
+		return do_search(curl, name, all);
 	else if (biseqcstrcaseless(command, "install") || biseqcstrcaseless(command, "in"))
-		if (all) return do_install_all(curl);
-		else return do_install(curl, name);
+    {
+		if (all)
+	    return do_install_all(curl);
+		else
+	    return do_install(curl, name);
+    }
 	else if (biseqcstrcaseless(command, "uninstall") || biseqcstrcaseless(command, "rm"))
-		if (all) return do_uninstall_all(curl);
-		else return do_uninstall(curl, name);
+    {
+		if (all)
+	    return do_uninstall_all(curl);
+		else
+	    return do_uninstall(curl, name);
+    }
 	else if (biseqcstrcaseless(command, "enable") || biseqcstrcaseless(command, "en"))
-		if (all) return do_enable_all(curl);
-		else return do_enable(curl, name);
+    {
+		if (all)
+	    return do_enable_all(curl);
+		else
+	    return do_enable(curl, name);
+    }
 	else if (biseqcstrcaseless(command, "disable") || biseqcstrcaseless(command, "di") || biseqcstrcaseless(command, "dis"))
-		if (all) return do_disable_all(curl);
-		else return do_disable(curl, name);
+    {
+		if (all)
+	    return do_disable_all(curl);
+		else
+	    return do_disable(curl, name);
+    }
 	else
 	{
 		printd(LEVEL_ERROR, "unknown command (must be search, install, uninstall, enable or disable).");

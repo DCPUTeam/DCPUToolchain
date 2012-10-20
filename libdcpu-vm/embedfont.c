@@ -39,8 +39,8 @@ int main(int argc, char** argv)
 
   if (argc < 3) {
     fprintf(stderr, "USAGE: %s {sym} {rsrc}\n\n"
-        "  Creates {sym}.c from the contents of {rsrc}\n",
-        argv[0]);
+	"  Creates {sym}.c from the contents of {rsrc}\n",
+	argv[0]);
     return EXIT_FAILURE;
   }
 

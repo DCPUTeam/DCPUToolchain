@@ -24,6 +24,8 @@
 #define LABEL_ADJUSTMENT 3
 #define LABEL_SECTION 4
 #define LABEL_OUTPUT 5
+#define LABEL_JUMP 6
+#define LABEL_OPTIONAL 7
 
 struct ldata_entry
 {
@@ -32,7 +34,7 @@ struct ldata_entry
 	uint16_t address;
 };
 
-static const char ldata_objfmt[] = "OBJECT-FORMAT-1.0";
+static const char ldata_objfmt[] = "OBJECT-FORMAT-1.1";
 struct ldata_entry* ldata_read(FILE* in);
 void ldata_write(FILE* out, struct ldata_entry* entry);
 void ldata_free(struct ldata_entry* entry);

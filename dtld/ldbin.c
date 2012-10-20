@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <debug.h>
+#include <derr.h>
 #include "ldbin.h"
 #include "ldconv.h"
 #include "ddata.h"
@@ -42,6 +43,8 @@ struct ldbin* bin_create(freed_bstring name)
 	bin->adjustment = NULL;
 	bin->section = NULL;
 	bin->output = NULL;
+    bin->jump = NULL;
+    bin->optional = NULL;
 	bin->symbols = NULL;
 	return bin;
 }
@@ -58,6 +61,8 @@ void bin_destroy(struct ldbin* bin)
 	if (bin->adjustment != NULL) list_prov_destroy(bin->adjustment);
 	if (bin->section != NULL) list_prov_destroy(bin->section);
 	if (bin->output != NULL) list_prov_destroy(bin->output);
+	if (bin->jump != NULL) list_prov_destroy(bin->jump);
+	if (bin->optional != NULL) list_prov_destroy(bin->optional);
 	if (bin->symbols != NULL) dbgfmt_free(bin->symbols);
 	list_destroy(&bin->words);
 	bdestroy(bin->name);
@@ -172,6 +177,8 @@ void bin_insert(list_t* all, struct ldbin* to, struct ldbin* from, size_t at, si
 	bin_info_insert(all, to, to->required, from, from->required, false, false, at, offset, count);
 	bin_info_insert(all, to, to->adjustment, from, from->adjustment, true, false, at, offset, count);
 	bin_info_insert(all, to, to->output, from, from->output, false, true, at, offset, count);
+	bin_info_insert(all, to, to->jump, from, from->jump, false, false, at, offset, count);
+	bin_info_insert(all, to, to->optional, from, from->optional, false, false, at, offset, count);
 	bin_info_insert_symbols(to, from, at, offset, count);
 }
 
@@ -206,6 +213,8 @@ void bin_remove(list_t* all, struct ldbin* bin, size_t offset, size_t count)
 	bin_info_remove(all, bin, bin->required, false, offset, count);
 	bin_info_remove(all, bin, bin->adjustment, true, offset, count);
 	bin_info_remove(all, bin, bin->output, false, offset, count);
+	bin_info_remove(all, bin, bin->jump, false, offset, count);
+	bin_info_remove(all, bin, bin->optional, false, offset, count);
 	bin_info_remove_symbols(bin, offset, count);
 }
 

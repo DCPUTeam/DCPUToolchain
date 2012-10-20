@@ -121,38 +121,38 @@ void vm_execute(vm_t* vm, const char* execution_dump)
     vm_timing_start_timer(&cycle_timer);
     while ((!vm->halted) && (!vm->exit))
     {
-    	if (vm_timing_has_reached_mics(&freq_timer, 1000000))
-    	{
-    	    printf("current speed:    %lld kHz\n", freq_cycle_count/1000);
-    	    vm_timing_reset_timer(&freq_timer);
-    	    freq_cycle_count = 0;
-    	}
+	if (vm_timing_has_reached_mics(&freq_timer, 1000000))
+	{
+	    printf("current speed:    %lld kHz\n", freq_cycle_count/1000);
+	    vm_timing_reset_timer(&freq_timer);
+	    freq_cycle_count = 0;
+	}
 
-    	vm_cycle(vm);
-    	freq_cycle_count++;
-    	cycle_count++;
-    	
-    	if (cycle_count == DCPU_NUM_TIMING_TICKS)
-    	{
-    	    // setting to 950 instead of 1000 to account for the timing overhead
-    	    // of approx 50 mics
-    	    sleep_mics += (int)(DCPU_NUM_TIMING_TICKS*DCPU_MICS_PER_CYCLE - 50 - vm_timing_get_cur_elapsed_mics(&cycle_timer));
-    	    cycle_count = 0;
-    	    if (sleep_mics > 0)
-    	    {
-        		vm_timing_sleep_microseconds(sleep_mics);
-        		// set sleep counter to negative value
-        		// (because of sleeping too long with usleep)
-        		sleep_mics = (int)(DCPU_NUM_TIMING_TICKS*DCPU_MICS_PER_CYCLE - vm_timing_get_cur_elapsed_mics(&cycle_timer));
-    	    }
-    	    vm_timing_reset_timer(&cycle_timer);
-    	}
+	vm_cycle(vm);
+	freq_cycle_count++;
+	cycle_count++;
+	
+	if (cycle_count == DCPU_NUM_TIMING_TICKS)
+	{
+	    // setting to 950 instead of 1000 to account for the timing overhead
+	    // of approx 50 mics
+	    sleep_mics += (int)(DCPU_NUM_TIMING_TICKS*DCPU_MICS_PER_CYCLE - 50 - vm_timing_get_cur_elapsed_mics(&cycle_timer));
+	    cycle_count = 0;
+	    if (sleep_mics > 0)
+	    {
+			vm_timing_sleep_microseconds(sleep_mics);
+			// set sleep counter to negative value
+			// (because of sleeping too long with usleep)
+			sleep_mics = (int)(DCPU_NUM_TIMING_TICKS*DCPU_MICS_PER_CYCLE - vm_timing_get_cur_elapsed_mics(&cycle_timer));
+	    }
+	    vm_timing_reset_timer(&cycle_timer);
+	}
     }
     
 
     if (vm->dump != NULL)
     {
-    	fclose(vm->dump);
-    	vm->dump = NULL;
+	fclose(vm->dump);
+	vm->dump = NULL;
     }
 }

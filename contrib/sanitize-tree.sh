@@ -15,7 +15,7 @@
 SETTING_INDENT_USED=false
 SETTING_INDENT="-i8 -bad -bap -bl -bli0 -cli4 -ut -cbi0 -ss -npcs -npsl -ncs -di0 -nbc -bls -blf -ts8 -lp -ip2 -ppi0 -il0 -l1000"
 SETTING_ASTYLE_USED=true
-SETTING_ASTYLE="--style=allman -S4 -C -S -N -Y -M40 -p -U -H --align-pointer=type --lineend=linux -q -n --exclude=stdlib-c "
+SETTING_ASTYLE="--style=allman -s4 -C -S -N -Y -M40 -p -U -H --align-pointer=type --lineend=linux -q -n --exclude=stdlib-c "
 ##########  SETTINGS END  ############
 
 if [ "$(which indent 2>/dev/null)" == "" ] && $SETTING_INDENT_USED; then

@@ -37,7 +37,7 @@
 	lua_pushnumber(L, REG_J); \
 	lua_setglobal(L, "REG_J"); \
  \
- 	lua_pushnumber(L, VAL_A); \
+	lua_pushnumber(L, VAL_A); \
     lua_setglobal(L, "VAL_A"); \
 	lua_pushnumber(L, VAL_B); \
 	lua_setglobal(L, "VAL_B"); \

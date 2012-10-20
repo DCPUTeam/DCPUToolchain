@@ -45,7 +45,7 @@ class BuildAPI
 {
 private:
   // Maintain state here to determine what file is currently
-  // building.  You could use multiple BuildAPIs to do parallel
+  // building.	You could use multiple BuildAPIs to do parallel
   // builds.
 public:
   // Implemented by IDE.
@@ -103,10 +103,10 @@ public:
   // Debugging interface.
   bool Has(int devid, std::string name); // Whether there is any data for this name.
   //template <class T> T Get<T>(int devid, std::string name, ...); // Each device has a known set of properties (like the screen
-                                              // might expose the colour and and character in each frame with
-                                              // different names).  Varargs are used to pass in information.
+					      // might expose the colour and and character in each frame with
+					      // different names).  Varargs are used to pass in information.
   void Hide(int devid); // Indicates the emulator / debugger should not show any visible reference of this device
-                        // as the IDE wants to draw it itself (for LEM1802 / SPED3 screens).
+			// as the IDE wants to draw it itself (for LEM1802 / SPED3 screens).
   void Show(int devid); // Indicates the emulator should show this device again.
 };
 
@@ -126,9 +126,9 @@ public:
 
   // Devices.
   void SetActiveDevice(int devid, Device& device); // Provides the IDE with a reference to an active device, such as
-                                                   // any LEM1802 screens, etc. which the IDE can then draw inline.
-                                                   // Device IDs are used to differentiate between two devices of the 
-                                                   // same type (e.g. two LEM1802 screens).
+						   // any LEM1802 screens, etc. which the IDE can then draw inline.
+						   // Device IDs are used to differentiate between two devices of the 
+						   // same type (e.g. two LEM1802 screens).
 };
 
 enum ModuleType

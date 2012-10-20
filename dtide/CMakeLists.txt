@@ -8,6 +8,7 @@ if(${QT4_FOUND})
         mainwindow.cpp
         highlighters/dcpuhighlighter.cpp
         toolchains/dcputoolchain.cpp
+        toolchains/dcputoolchain_asm.c
         dtidetabwidget.cpp
         dtidesplash.cpp
         dtidehighlighting.cpp
@@ -30,6 +31,16 @@ if(${QT4_FOUND})
     add_definitions(${QT_DEFINITIONS})
 
     include_directories(
+        ${simclist_SOURCE_DIR}
+        ${argtable2_SOURCE_DIR}
+        ${bstring_SOURCE_DIR}
+        ${libdcpu_SOURCE_DIR}
+        ${libdcpu-ci-asm_SOURCE_DIR}
+        ${libdcpu-ci-objfmt_SOURCE_DIR}
+        ${libdcpu-pp_SOURCE_DIR}
+        ${libdcpu-pp-expr_SOURCE_DIR}
+        ${libdcpu-ci-objfmt_SOURCE_DIR}
+        ${libdcpu-ci-dbgfmt_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}
     )
 
@@ -41,6 +52,9 @@ if(${QT4_FOUND})
     )
     target_link_libraries(dtide
         ${QT_LIBRARIES}
+        bstring
+        argtable2
+        libdcpu-ci-asm
     )
 else()
     message("Not building IDE due to lack of Qt 4 libraries.")

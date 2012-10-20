@@ -17,6 +17,35 @@
 #include "NFunctionDeclaration.h"
 #include "NArrayDeclaration.h"
 
+///
+/// Defines the function that handles calling the standard
+/// library entry point.
+///
+class StandardLibraryEntryFunction : public IFunctionDeclaration
+{
+public:
+    virtual StackMap generateLocalsStackMap()
+    {
+	// The standard library entry point accepts no parameters.
+	StackMap map;
+	    return map;
+
+	//throw new CompilerException(0, "internal", "Attempted to generate local stack map for internal standard library entry point.");
+    }
+    
+    virtual StackMap generateParametersStackMap()
+    {
+	// The standard library entry point accepts no parameters.
+	StackMap map;
+	    return map;
+    }
+
+    virtual IType* getPointerType()
+    {
+	throw new CompilerException(0, "internal", "Attempted to get reference type for internal standard library entry point.");
+    }
+};
+
 AsmBlock* NDeclarations::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
@@ -25,10 +54,9 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 	*block << ".IMPORT _stack_caller_init" << std::endl;
 	*block << ".IMPORT _stack_caller_init_overlap" << std::endl;
 	*block << ".IMPORT _stack_callee_return" << std::endl;
-	*block << ".IMPORT _halt" << std::endl;
-	*block << ".IMPORT _halt_debug" << std::endl;
+    *block << ".IMPORT cfunc__stdlib_enter" << std::endl;
 
-	// Add file and line information.
+    // Add file and line information.
 	*block << this->getFileAndLineState();
 
 	// Tell the generator that we are the root.
@@ -153,16 +181,20 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 
 	// Deal with the main setup.
 	NFunctionDeclaration* main = (NFunctionDeclaration*)context.getFunction("main");
-	if (main != NULL)
+	if (main != NULL && main->block != NULL /* Check it's not just a declaration, but a definition. */)
 	{
-		// Get the stack table of main.
-		StackFrame* frame = context.generateStackFrame(main, false);
+		// Get the stack table of _stdlib_entry.
+	StandardLibraryEntryFunction* func = new StandardLibraryEntryFunction();
+		StackFrame* frame = context.generateStackFrame(func, false);
+	delete func;
 
 		// Output assembly for calling main.
+	// NOTE: _stdlib_enter() should never return or bad things will happen!
+	// NOTE: _stdlib_enter() always takes 0 parameters!
 		*block <<  "	SET X, " << frame->getParametersSize() << std::endl;
-		*block <<  "	SET Z, _halt" << std::endl;
+		*block <<  "	SET Z, 0" << std::endl;
 		*block <<  "	JSR _stack_caller_init" << std::endl;
-		*block <<  "	SET PC, cfunc_main" << std::endl;
+		*block <<  "	SET PC, cfunc__stdlib_enter" << std::endl;
 
 		// Clean up frame.
 		context.finishStackFrame(frame);

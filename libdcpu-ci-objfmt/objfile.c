@@ -28,7 +28,9 @@ struct lprov_entry* objfile_get_last(struct lprov_entry* first)
 	return first;
 }
 
-void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov_entry** provided, struct lprov_entry** required, struct lprov_entry** adjustment, struct lprov_entry** section, struct lprov_entry** output)
+void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov_entry** provided,
+	struct lprov_entry** required, struct lprov_entry** adjustment, struct lprov_entry** section,
+	struct lprov_entry** output, struct lprov_entry** jump, struct lprov_entry** optional)
 {
 	struct ldata_entry* entry = NULL;
 	struct lprov_entry* prov_last = provided == NULL ? NULL : objfile_get_last(*provided);
@@ -41,6 +43,10 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 	struct lprov_entry* section_current = NULL;
 	struct lprov_entry* output_last = output == NULL ? NULL : objfile_get_last(*output);
 	struct lprov_entry* output_current = NULL;
+	struct lprov_entry* jump_last = jump == NULL ? NULL : objfile_get_last(*jump);
+	struct lprov_entry* jump_current = NULL;
+	struct lprov_entry* opt_last = optional == NULL ? NULL : objfile_get_last(*optional);
+	struct lprov_entry* opt_current = NULL;
 	uint16_t section_last_address = 0;
 	size_t sz;
 
@@ -118,7 +124,29 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 
 			output_last = output_current;
 		}
-		
+	else if (entry->mode == LABEL_JUMP && adjustment != NULL)
+		{
+			jump_current = lprov_create(strdup(entry->label), entry->address + *offset);
+
+			if (jump_last == NULL)
+				*jump = jump_current;
+			else
+				jump_last->next = jump_current;
+
+			jump_last = jump_current;
+		}
+		else if (entry->mode == LABEL_OPTIONAL && required != NULL)
+		{
+		    opt_current = lprov_create(strdup(entry->label), entry->address + *offset);
+
+			if (opt_last == NULL)
+				*optional = opt_current;
+			else
+				opt_last->next = opt_current;
+
+			opt_last = opt_current;
+		}
+
 		ldata_free(entry);
 		entry = ldata_read(in);
 	}
@@ -132,7 +160,10 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 	fseek(in, sz, SEEK_SET);
 }
 
-void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* required, struct lprov_entry* adjustment, struct lprov_entry* section, struct lprov_entry* output)
+void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* required,
+	struct lprov_entry* adjustment, struct lprov_entry* section,
+	struct lprov_entry* output, struct lprov_entry* jump, 
+	struct lprov_entry* optional)
 {
 	struct ldata_entry* entry = NULL;
 
@@ -199,6 +230,35 @@ void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* r
 		free(entry);
 
 		output = output->next;
+	}
+
+    // Now write out the jump table.
+	while (jump != NULL)
+	{
+		entry = malloc(sizeof(struct ldata_entry));
+		entry->mode = LABEL_JUMP;
+		entry->address = jump->address;
+	if (jump->label == NULL)
+		memset(entry->label, 0, 256);
+	else
+		strcpy(entry->label, jump->label);
+		ldata_write(out, entry);
+		free(entry);
+
+		jump = jump->next;
+	}
+
+    // Now write out the optional table.
+	while (optional != NULL)
+	{
+		entry = malloc(sizeof(struct ldata_entry));
+		entry->mode = LABEL_OPTIONAL;
+		entry->address = optional->address;
+		strcpy(entry->label, optional->label);
+		ldata_write(out, entry);
+		free(entry);
+
+		optional = optional->next;
 	}
 
 	// Now write out the NULL entry.

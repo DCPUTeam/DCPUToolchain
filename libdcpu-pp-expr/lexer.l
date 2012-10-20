@@ -49,6 +49,12 @@
 \|				return BITWISE_BOR;
 \^				return BITWISE_XOR;
 \~				return BITWISE_NOT;
+\<\<            return LEFT_SHIFT;
+\>\>            return RIGHT_SHIFT;
+\|\|            return BOOLEAN_OR;
+\&\&            return BOOLEAN_AND;
+\^\^            return BOOLEAN_XOR;
+\!              return BOOLEAN_NOT;
 
 	/* General stuff */
 

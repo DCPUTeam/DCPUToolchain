@@ -98,13 +98,13 @@ void vm_hw_keyboard_handle_key(GLFWwindow w, int key, int state)
 			index = 0x90;
 			break;
 
-        case GLFW_KEY_F8:
-            if(state)
-            {
-                g_hw->vm->radiation = !g_hw->vm->radiation;
-                printf("DCPU radiation: %s\n", g_hw->vm->radiation ? "ACTIVE" : "INACTIVE");
-            }
-            break;
+	case GLFW_KEY_F8:
+	    if(state)
+	    {
+		g_hw->vm->radiation = !g_hw->vm->radiation;
+		printf("DCPU radiation: %s\n", g_hw->vm->radiation ? "ACTIVE" : "INACTIVE");
+	    }
+	    break;
 		
 		default:
 			if(g_hw->lowercase)

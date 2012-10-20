@@ -1,11 +1,11 @@
 /**
 
-    File:           GLFWutils.h
+    File:	    GLFWutils.h
 
-    Project:        DCPU-16 Toolchain
-    Component:      LibDCPU-VM
+    Project:	    DCPU-16 Toolchain
+    Component:	    LibDCPU-VM
 
-    Authors:        Patrick Flick
+    Authors:	    Patrick Flick
 
     Description:    Declares utility functions for glfw.
 

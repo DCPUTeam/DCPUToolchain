@@ -8,8 +8,6 @@ if(NOT MSVC)
     set_source_files_properties(${FLEX_dtasm-lexer_OUTPUTS} ${BISON_dtasm-parser_OUTPUTS} PROPERTIES COMPILE_FLAGS -Wno-implicit-function-declaration)
 endif()
 add_library(libdcpu-ci-asm STATIC
-    aerr.c
-    aerr.h
     aout.c
     aout.h
     assem.c

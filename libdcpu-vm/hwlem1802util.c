@@ -148,7 +148,7 @@ int vm_hw_lem1802_util_loadpng(int* out_width, int* out_height, int* out_has_alp
 	* call
 	*
 	* PNG_TRANSFORM_STRIP_16 |
-	* PNG_TRANSFORM_PACKING  forces 8 bit
+	* PNG_TRANSFORM_PACKING	 forces 8 bit
 	* PNG_TRANSFORM_EXPAND forces to
 	*  expand a palette into RGB
 	*/
@@ -161,7 +161,7 @@ int vm_hw_lem1802_util_loadpng(int* out_width, int* out_height, int* out_has_alp
 		*out_has_alpha = 1;
 		break;
 		case PNG_COLOR_TYPE_RGB:
-		*out_has_alpha  = 0;
+		*out_has_alpha	= 0;
 		break;
 		default:
 		printd(LEVEL_ERROR, "lem1802: error loading default font: color type not supported\n");

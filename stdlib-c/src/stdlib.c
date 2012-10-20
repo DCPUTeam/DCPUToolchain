@@ -42,9 +42,9 @@ void free(void* ptr)
 {
 	__asm
 	{
-		.IMPORT free
+		.IMPORT _stubapi_free
 		SET A, <ptr>
-		JSR free
+		JSR [_stubapi_free]
 	}
 }
 
@@ -54,9 +54,9 @@ void* malloc(size_t size)
 	void** store = &result;
 	__asm
 	{
-		.IMPORT malloc
+		.IMPORT _stubapi_malloc
 		SET A, <size>
-		JSR malloc
+		JSR [_stubapi_malloc]
 		SET <store>, A
 	}
 	return result;
@@ -79,10 +79,14 @@ void* realloc(void* ptr, size_t size)
 // Environment:
 void abort()
 {
-	__asm
-	{
-		JSR _halt
-	}
+    __asm
+    {
+	.IMPORT _stubapi_exit
+	SET A, -1
+	JSR [_stubapi_exit]
+    }
+    // Process is terminated by kernel after this
+    // point.  No further code is executed.
 }
 
 // Searching and sorting:

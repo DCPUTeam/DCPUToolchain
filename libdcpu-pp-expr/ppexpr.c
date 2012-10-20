@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
+#include <derr.h>
 #include "ppexpr.h"
 
 struct expr* expr_new(struct expr* a, int op, struct expr* b)
@@ -56,7 +57,7 @@ struct expr* expr_new_label(freed_bstring label)
 
 uint16_t expr_evaluate(struct expr* e, uint16_t(*labelreplace)(bstring label), void(*errexit)(int code, void* data))
 {
-	uint16_t t;
+	uint16_t t, t2;
 
 	switch (e->type)
 	{
@@ -107,6 +108,20 @@ uint16_t expr_evaluate(struct expr* e, uint16_t(*labelreplace)(bstring label), v
 					return recursive_evaluate(e->a) | recursive_evaluate(e->b);
 				case EXPR_OP_XOR:
 					return recursive_evaluate(e->a) ^ recursive_evaluate(e->b);
+		case EXPR_OP_BOOLEAN_NOT:
+		    return ! recursive_evaluate(e->b);
+		case EXPR_OP_BOOLEAN_AND:
+		    return recursive_evaluate(e->a) && recursive_evaluate(e->b);
+		case EXPR_OP_BOOLEAN_OR:
+		    return recursive_evaluate(e->a) || recursive_evaluate(e->b);
+		case EXPR_OP_BOOLEAN_XOR:
+		    t = recursive_evaluate(e->a);
+		    t2 = recursive_evaluate(e->b);
+		    return ((t || t2) && !(t && t2));
+		case EXPR_OP_LEFT_SHIFT:
+		    return recursive_evaluate(e->a) << recursive_evaluate(e->b);
+		case EXPR_OP_RIGHT_SHIFT:
+		    return recursive_evaluate(e->a) >> recursive_evaluate(e->b);
 				default:
 					return 0;
 			}
@@ -214,3 +229,6 @@ void expr_delete(struct expr* e)
 	// Free the expression itself.
 	free(e);
 }
+
+// Functions for helping with halting things.
+
