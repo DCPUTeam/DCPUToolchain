@@ -12,9 +12,9 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-#include "dtidehighlighting.h"
-#include "dtidebuildapi.h"
-#include "backends.h"
+#include "DTIDEHighlighting.h"
+#include "DTIDEBuildApi.h"
+#include "Backends.h"
 
 class CodeEditor: public QPlainTextEdit
 {

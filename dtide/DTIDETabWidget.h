@@ -4,7 +4,7 @@
 #include <QTabWidget>
 #include <QFileInfo>
 
-#include "codeeditor.h"
+#include "CodeEditor.h"
 
 class DTIDETabWidget: public QTabWidget
 {

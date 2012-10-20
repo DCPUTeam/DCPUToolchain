@@ -3,7 +3,7 @@
 
 #include <string>
 #include <list>
-#include "../backends.h"
+#include "../../Backends.h"
 
 #include <QDebug>
 #include <QProcess>
@@ -24,19 +24,20 @@ public:
     CodeSyntax GetCodeSyntax();
 };
 
-class DCPUToolchain: public Toolchain
+class DCPUToolchain : public Toolchain
 {
 public:
-    std::string GetName();
+    virtual std::string GetName();
+    virtual std::string GetDescription();
+    virtual std::list<std::string> GetAuthors();
+    virtual std::string GetLicense();
+    virtual void Cycle();
 
-    std::string GetDescription();
+    virtual std::list<Language*> GetLanguages();
 
-    std::list<std::string> GetAuthors();
-    std::string GetLicense();
+    virtual void Start(std::string path, DebuggingSession& session);
+    virtual void Stop(DebuggingSession& session);
 
-    std::list<Language*> GetLanguages();
-
-    void Start(std::string path, DebuggingSession& session);
 };
 
 #endif

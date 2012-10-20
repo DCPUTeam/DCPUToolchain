@@ -9,10 +9,11 @@
 #include <QKeySequence>
 #include <QDebug>
 #include <QFileDialog>
+#include <QTimer>
 
-#include "backends.h"
-#include "codeeditor.h"
-#include "dtidetabwidget.h"
+#include "Backends.h"
+#include "CodeEditor.h"
+#include "DTIDETabWidget.h"
 
 class DTIDE: public QMainWindow
 {
@@ -34,6 +35,8 @@ private slots:
    void openFile(); 
    void saveFile();
 
+   void cycleUpdate();
+
    void compileProject();
    void compileAndRunProject();
 
@@ -42,6 +45,7 @@ private:
     QMenuBar* menu;
     QAction* nextTab;
     Toolchain* toolchain;
+    QTimer* timer;
 
     void setupMenuBar();
     void setupActions();

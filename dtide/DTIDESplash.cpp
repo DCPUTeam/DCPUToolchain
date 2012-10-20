@@ -1,4 +1,4 @@
-#include "dtidesplash.h"
+#include "DTIDESplash.h"
 
 DTIDESplash::DTIDESplash(std::list<Toolchain*> t, QWidget* parent): QDialog(parent)
 {

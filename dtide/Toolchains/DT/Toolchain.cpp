@@ -1,6 +1,13 @@
-#include "dcputoolchain.h"
-#include "dcputoolchain_asm.h"
+#include "Toolchain.h"
+#include "dtasm.h"
+#include "dtemu.h"
 #include <iostream>
+#include <cstdlib>
+
+#ifdef WIN32
+#include <io.h>
+#define mktemp _mktemp
+#endif
 
 DCPUToolchainASM::DCPUToolchainASM() 
 {
@@ -34,24 +41,34 @@ std::string DCPUToolchainASM::GetDefaultFileName()
 void DCPUToolchainASM::Build(std::string filename, std::string outputDir, BuildAPI &api)
 {
     const char* cf = filename.c_str();
-    FILE* ob;
-    FILE* os;
+    const char* t_ob = "dtcpu.XXXXXX";
+    const char* t_os = "dtsym.XXXXXX";
+    char* ob = (char*)malloc(strlen(t_ob) + 1);
+    char* os = (char*)malloc(strlen(t_os) + 1);
+    memcpy(ob, t_ob, strlen(t_ob) + 1);
+    memcpy(os, t_os, strlen(t_os) + 1);
+    // FIXME: Create a function in osutil for creating a temporary filename.
+    // FIXME: Create a global "temporary file" manager that cleans up files
+    //        that were created during builds when the IDE exits.
+    mktemp(ob);
+    mktemp(os);
 
-    if (perform_assemble(cf, &ob, &os))
+    if (perform_assemble(cf, ob, os))
     {
-        std::cout << "Assembling completed succesfully." << std::endl;
-        std::cout << "This is where the FILE* handles should be written out" << std::endl
-                  << "to disk so that the filenames can be pushed back on" << std::endl
-                  << "to the build queue to be processed further." << std::endl;
-        fclose(ob);
-        fclose(os);
-        api.AddOutputFile("CHANGEME.dcpu16");
+        api.AddOutputFile(ob);
+        unlink(os);
+        std::cout << "Assembling success!" << std::endl;
     }
     else
     {
+        unlink(ob);
+        unlink(os);
         std::cout << "Assembling failed!" << std::endl;
     }
     api.End();
+
+    free(ob);
+    free(os);
 }
 
 CodeSyntax DCPUToolchainASM::GetCodeSyntax()
@@ -93,11 +110,16 @@ std::list<Language*> DCPUToolchain::GetLanguages()
 
 void DCPUToolchain::Start(std::string path, DebuggingSession& session)
 {
-    QProcess* dtemu = new QProcess();
-    QStringList arguments;
-
-    arguments	<< QString::fromStdString(path);
-
-    dtemu->startDetached("./dtemu", arguments);
+    // Tell the emulator to start.
+    start_emulation(path.c_str());
 }
 
+void DCPUToolchain::Cycle()
+{
+    cycle_emulation();
+}
+
+void DCPUToolchain::Stop(DebuggingSession& session)
+{
+    stop_emulation();
+}

@@ -1,4 +1,4 @@
-#include "dcputoolchain_asm.h"
+#include "dtasm.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,17 +19,19 @@
 #include <derr.h>
 #include <aout.h>
 
-
 extern int yyparse();
 extern FILE* yyin, *yyout;
 char* fileloc = NULL;
 
 bool perform_assemble(const char* input_filename,
-        FILE** output_binary, FILE** output_symbols)
+        const char* output_binary_filename,
+        const char* output_symbols_filename)
 {
 	bstring pp_result_name;
 	list_t symbols;
 	uint16_t final;
+    FILE* output_binary;
+    FILE* output_symbols;
 
 	// Run the preprocessor.
 	ppfind_add_autopath(bautofree(bfromcstr(input_filename)));
@@ -75,25 +77,25 @@ bool perform_assemble(const char* input_filename,
 	process_root(&ast_root, &symbols);
 
 	// Open up output files.
-	*output_binary = tmpfile();
-	if (*output_binary == NULL)
+	output_binary = fopen(output_binary_filename, "wb+");
+	if (output_binary == NULL)
 	{
 		printd(LEVEL_ERROR, "assembler: binary file not writable.\n");
         return false;
 	}
-	*output_symbols = tmpfile();
-	if (*output_symbols == NULL)
+	output_symbols = fopen(output_symbols_filename, "wb+");
+	if (output_symbols == NULL)
 	{
 		printd(LEVEL_ERROR, "assembler: binary file not writable.\n");
-        fclose(*output_binary);
-        *output_binary = NULL;
+        fclose(output_binary);
+        output_binary = NULL;
         return false;
 	}
 
 	// Write content.
     // FIXME: Second argument to aout_write is whether to generate intermediate code.
     //        When the linker is part of the build process, change this parameter.
-	final = aout_write(*output_binary, false, false);
+	final = aout_write(output_binary, false, false);
 	printd(LEVEL_VERBOSE, "assembler: completed successfully.\n");
 
     // Set the address of any debugging symbols that don't have an address
@@ -104,10 +106,12 @@ bool perform_assemble(const char* input_filename,
     list_iterator_stop(&symbols);
 
     // Write symbols.
-    // FIXME: Need to define dbgfmt_write_file which takes a pre-existing FILE* rather
-    //        than opening a new file.
-    //dbgfmt_write_file(*output_symbols, &symbols);
-    //printd(LEVEL_VERBOSE, "assembler: wrote debugging symbols.\n");
+    dbgfmt_write(bfromcstr(output_symbols_filename), &symbols);
+    printd(LEVEL_VERBOSE, "assembler: wrote debugging symbols.\n");
+    
+    // Close files.
+    fclose(output_binary);
+    fclose(output_symbols);
 
     return true;
 }

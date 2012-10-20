@@ -2,9 +2,9 @@
 
 #include <list>
 
-#include "backends.h"
-#include "dtidesplash.h"
-#include "mainwindow.h"
+#include "Backends.h"
+#include "DTIDESplash.h"
+#include "DTIDE.h"
 
 extern "C"
 {
@@ -27,13 +27,13 @@ int main(int argc, char** argv)
     std::list<Toolchain*> toolchains;
     toolchains.insert(toolchains.end(), new DCPUToolchain());
     
-/*    DTIDESplash* splash = new DTIDESplash(toolchains);
+    /*DTIDESplash* splash = new DTIDESplash(toolchains);
     if(!splash->exec())
-	return 0;
+	    return 0;
    
     DTIDE mainWindow(splash->toolchain, splash->fileName);*/
 
-    DTIDE mainWindow(new DCPUToolchain(), "lol.dasm");
+    DTIDE mainWindow(new DCPUToolchain(), "test.dasm16");
     mainWindow.show();
 
     return app.exec();

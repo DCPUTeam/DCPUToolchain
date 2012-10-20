@@ -1,4 +1,4 @@
-#include "codeeditor.h"
+#include "CodeEditor.h"
 
 CodeEditor::CodeEditor(Toolchain* t, QString filename, QWidget* parent): QPlainTextEdit(parent)
 {
@@ -13,6 +13,8 @@ CodeEditor::CodeEditor(Toolchain* t, QString filename, QWidget* parent): QPlainT
     highlightCurrentLine();
 
     fileName = filename;
+    // FIXME: Remove this; this just makes it so Ctrl-S doesn't ask for a filename.
+    path = filename;
     toolchain = t;
     dirty = false;
 
@@ -30,16 +32,15 @@ QString CodeEditor::getExtension()
 void CodeEditor::setHighlighter()
 {
     if(highlighter != NULL)
-	delete highlighter;
+        delete highlighter;
 
     std::string ext = getExtension().toStdString();
     lang = toolchain->GetLanguageByExtension(ext);
     
     if(lang != NULL)
-	highlighter = DTIDEHighlighting::getHighlighter(lang->GetCodeSyntax(), document());
+        highlighter = DTIDEHighlighting::getHighlighter(lang->GetCodeSyntax(), document());
     else
-	highlighter = NULL;
-
+        highlighter = NULL;
 }
 
 
@@ -55,8 +56,8 @@ int CodeEditor::lineNumberAreaWidth()
 
     while(max >= 10)
     {
-	max /= 10;
-	digits++;
+        max /= 10;
+        digits++;
     }
 
     return 6 + fontMetrics().width(QLatin1Char('1')) * digits;

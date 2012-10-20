@@ -1,4 +1,4 @@
-#include "dtidetabwidget.h"
+#include "DTIDETabWidget.h"
 
 DTIDETabWidget::DTIDETabWidget(QWidget* parent): QTabWidget(parent)
 {

@@ -1,4 +1,4 @@
-#include "dtidehighlighting.h"
+#include "DTIDEHighlighting.h"
 
 QSyntaxHighlighter* DTIDEHighlighting::getHighlighter(CodeSyntax syntax, QTextDocument* p)
 {

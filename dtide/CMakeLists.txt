@@ -4,25 +4,36 @@ project(dtide)
 find_package(Qt4)
 if(${QT4_FOUND})
     set(dtide_SOURCES 
-        main.cpp 
-        mainwindow.cpp
-        highlighters/dcpuhighlighter.cpp
-        toolchains/dcputoolchain.cpp
-        toolchains/dcputoolchain_asm.c
-        dtidetabwidget.cpp
-        dtidesplash.cpp
-        dtidehighlighting.cpp
-        dtidebuildapi.cpp
-        backends.cpp
-        codeeditor.cpp)
-    set(dtide_HEADERS 
-        mainwindow.h
-        highlighters/dcpuhighlighter.h
-        dtidetabwidget.h
-        dtidesplash.h
-        codeeditor.h)
+        Main.cpp 
+        Backends.cpp
+        DTIDE.cpp
+        DTIDETabWidget.cpp
+        DTIDESplash.cpp
+        DTIDEBuildAPI.cpp
+        DTIDEHighlighting.cpp
+        CodeEditor.cpp
+        Highlighters/DCPUHighlighter.cpp
+        Toolchains/DT/Toolchain.cpp
+        Toolchains/DT/dtasm.c
+        Toolchains/DT/dtemu.c
+    )
+    set(dtide_HEADERS
+        Backends.h
+        DTIDE.h
+        DTIDETabWidget.h
+        DTIDESplash.h
+        DTIDEBuildAPI.h
+        DTIDEHighlighting.h
+        CodeEditor.h
+        Highlighters/Highlighters.h
+        Highlighters/DCPUHighlighter.h
+        Toolchains/Toolchains.h
+        Toolchains/DT/Toolchain.h
+        Toolchains/DT/dtasm.h
+        Toolchains/DT/dtemu.h
+    )
         
-    set(dtide_FORMS "ui/splash.ui")
+    set(dtide_FORMS "UI/Splash.ui")
 
     QT4_WRAP_CPP(dtide_HEADERS_MOC ${dtide_HEADERS})
     QT4_WRAP_UI(dtide_FORMS_HEADERS ${dtide_FORMS})
@@ -41,13 +52,17 @@ if(${QT4_FOUND})
         ${libdcpu-pp-expr_SOURCE_DIR}
         ${libdcpu-ci-objfmt_SOURCE_DIR}
         ${libdcpu-ci-dbgfmt_SOURCE_DIR}
+        ${libdcpu-vm_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}
+        ${GLFW_SOURCE_DIR}/include
+        ${png_SOURCE_DIR}
     )
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
     add_executable(dtide ${dtide_SOURCES}
         ${dtide_HEADERS_MOC}
+        ${dtide_HEADERS}
         ${dtide_FORMS_HEADERS}
     )
     target_link_libraries(dtide
@@ -55,6 +70,12 @@ if(${QT4_FOUND})
         bstring
         argtable2
         libdcpu-ci-asm
+        libdcpu-vm
+        png
+        z
+        glfw
+        ${GLFW_LIBRARIES}
+        ${OPENGL_LIBRARIES}
     )
 else()
     message("Not building IDE due to lack of Qt 4 libraries.")

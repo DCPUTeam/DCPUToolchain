@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "DTIDE.h"
 
 DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(parent)
 {
@@ -16,6 +16,15 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
 
     toolchain = t;
     addCodeTab(fileName);
+
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(cycleUpdate()));
+    timer->start(0);
+}
+
+void DTIDE::cycleUpdate()
+{
+    this->toolchain->Cycle();
 }
 
 void DTIDE::addCodeTab(const QString& fileName)

@@ -1,4 +1,4 @@
-#include "dcpuhighlighter.h"
+#include "DCPUHighlighter.h"
 
 DCPUHighlighter::DCPUHighlighter(QTextDocument* parent): QSyntaxHighlighter(parent)
 {
@@ -20,10 +20,10 @@ DCPUHighlighter::DCPUHighlighter(QTextDocument* parent): QSyntaxHighlighter(pare
 
     foreach(const QString& instruction, instructions)
     {
-	rule.pattern = QRegExp(QString("([ ]+)?") + instruction, Qt::CaseInsensitive);
-	rule.format = instructionFormat;
+        rule.pattern = QRegExp(QString("([ ]+)?") + instruction, Qt::CaseInsensitive);
+        rule.format = instructionFormat;
 
-	highlightingRules.append(rule);
+        highlightingRules.append(rule);
     }
 
     labelFormat.setForeground(Qt::blue);
@@ -45,15 +45,15 @@ void DCPUHighlighter::highlightBlock(const QString& text)
 {
     foreach(const HighlightingRule& rule, highlightingRules)
     {
-	QRegExp expr(rule.pattern);
-	int index = expr.indexIn(text);
+        QRegExp expr(rule.pattern);
+        int index = expr.indexIn(text);
 
-	while(index >= 0)
-	{
-	    int length = expr.matchedLength();
-	    setFormat(index, length, rule.format);
-	    index = expr.indexIn(text, index + length);
-	}
+        while(index >= 0)
+        {
+            int length = expr.matchedLength();
+            setFormat(index, length, rule.format);
+            index = expr.indexIn(text, index + length);
+        }
     }
 }
 
