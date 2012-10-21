@@ -46,6 +46,7 @@ struct errinfo
 
 // Utility method for throwing errors.
 #define dsethalt() (setjmp(__derrjmp))
+struct errinfo* derrinfo();
 void dhalt(int errid, const char* errdata);
 void dwarn(int errid, const char* errdata);
 #ifdef ARGTABLE2

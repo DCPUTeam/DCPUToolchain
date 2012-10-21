@@ -110,9 +110,10 @@ int main(int argc, char* argv[])
     dsetwarnpolicy(warning_policies);
 
 	// Set up error handling.
-	errval = (struct errinfo*)dsethalt();
-	if (errval != NULL)
+	if (dsethalt())
 	{
+        errval = derrinfo();
+
 		// FIXME: Use bstrings here.
 		msglen = strlen(derrstr[errval->errid]) + strlen(prepend) + 1;
 		msg = malloc(msglen);

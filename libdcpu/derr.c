@@ -23,14 +23,20 @@
 
 // Error definition
 jmp_buf __derrjmp;
+struct errinfo* __derrcurrent = NULL;
+
+struct errinfo* derrinfo()
+{
+    return __derrcurrent;
+}
 
 // Utility method for throwing errors.
 void dhalt(int errid, const char* errdata)
 {
-	struct errinfo* err = malloc(sizeof(struct errinfo));
-	err->errid = errid;
-	err->errdata = errdata;
-	longjmp(__derrjmp, (long)err);
+	__derrcurrent = malloc(sizeof(struct errinfo));
+	__derrcurrent->errid = errid;
+	__derrcurrent->errdata = errdata;
+	longjmp(__derrjmp, 1);
     assert(false);
 }
 
