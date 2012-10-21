@@ -202,9 +202,8 @@ bool CodeEditor::build()
     return true;
 }
 
-void CodeEditor::run()
+void CodeEditor::run(DebuggingSession* s)
 {
-    DebuggingSession s;
     toolchain->Start(buildAPI.output, s);
 }
 

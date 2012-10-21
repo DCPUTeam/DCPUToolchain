@@ -17,6 +17,8 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
     toolchain = t;
     addCodeTab(fileName);
 
+    debuggingSession = 0;
+
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(cycleUpdate()));
     timer->start(1);
@@ -24,8 +26,17 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
 
 void DTIDE::cycleUpdate()
 {
-    for(int i = 0; i < 100; i++) // 1ms = 1kHz, 100 * 1kHz = 100kHz
-        this->toolchain->Cycle();
+    if(debuggingSession != 0)
+    {
+        for(int i = 0; i < 100; i++) // 1ms = 1kHz, 100 * 1kHz = 100kHz
+            this->toolchain->Cycle();
+
+        while(debuggingSession->HasMessages())
+        {
+            DebuggingMessage m = debuggingSession->GetMessage();
+            qDebug() << "Messages!";
+        }
+    }
 }
 
 void DTIDE::addCodeTab(const QString& fileName)
@@ -92,11 +103,13 @@ QSize DTIDE::sizeHint()
 
 void DTIDE::compileAndRunProject()
 {
+    debuggingSession = new DTIDEDebuggingSession();
+
     compileProject();
     for(int i = 0; i < tabs->count(); i++)
     {
-	CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
-	w->run();
+    	CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+    	w->run(debuggingSession);
     }
 }
 
@@ -104,8 +117,8 @@ void DTIDE::compileProject()
 {
     for(int i = 0; i < tabs->count(); i++)
     {
-	CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
-	w->build();
+    	CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+    	w->build();
     }
 }
 

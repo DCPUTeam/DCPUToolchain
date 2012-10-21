@@ -12,6 +12,7 @@ if(${QT4_FOUND})
         DTIDESplash.cpp
         DTIDEBuildAPI.cpp
         DTIDEHighlighting.cpp
+        DTIDEDebuggingSession.cpp
         CodeEditor.cpp
         Highlighters/DCPUHighlighter.cpp
         Toolchains/DT/Toolchain.cpp
@@ -25,6 +26,7 @@ if(${QT4_FOUND})
         DTIDESplash.h
         DTIDEBuildAPI.h
         DTIDEHighlighting.h
+        DTIDEDebuggingSession.h
         CodeEditor.h
         Highlighters/Highlighters.h
         Highlighters/DCPUHighlighter.h

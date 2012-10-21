@@ -9,6 +9,57 @@
 #define mktemp _mktemp
 #endif
 
+void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
+{
+}
+
+void DCPUToolchain_WriteHook(vm_t* vm, uint16_t pos, void* ud)
+{
+    DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
+    DebuggingMessage m;
+    MemoryMessage payload;
+
+    payload.pos = pos;
+    payload.value = vm->ram[pos];
+
+    m.type = MemoryType;
+    m.value = (MessageValue&) payload;
+
+    t->debuggingSession->AddMessage(m);
+}
+
+void DCPUToolchain_InterruptHook(vm_t* vm, uint16_t pos, void* ud)
+{
+    DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
+
+}
+
+void DCPUToolchain_HardwareHook(vm_t* vm, uint16_t pos, void* ud)
+{
+    DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
+
+}
+
+void DCPUToolchain_60HZHook(vm_t* vm, uint16_t pos, void* ud)
+{
+    DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
+    DebuggingMessage m;
+    StatusMessage payload;
+
+    for(int i = 0; i < 8; i++)
+        payload.registers[i] = vm->registers[i];
+
+    payload.pc = vm->pc;
+    payload.sp = vm->sp;
+    payload.ia = vm->ia;
+    payload.ex = vm->ex;
+
+    m.type = StatusType;
+    m.value = (MessageValue&) payload;
+
+    t->debuggingSession->AddMessage(m);
+}
+
 DCPUToolchainASM::DCPUToolchainASM() 
 {
 }
@@ -108,10 +159,19 @@ std::list<Language*> DCPUToolchain::GetLanguages()
     return list;
 }
 
-void DCPUToolchain::Start(std::string path, DebuggingSession& session)
+void DCPUToolchain::Start(std::string path, DebuggingSession* session)
 {
     // Tell the emulator to start.
-    start_emulation(path.c_str());
+    debuggingSession = session;
+    start_emulation(
+        path.c_str(), 
+        &DCPUToolchain_CycleHook, 
+        &DCPUToolchain_WriteHook, 
+        &DCPUToolchain_InterruptHook,
+        &DCPUToolchain_HardwareHook,
+        &DCPUToolchain_60HZHook,
+
+        static_cast<void*>(this));
 }
 
 void DCPUToolchain::Cycle()
@@ -123,3 +183,5 @@ void DCPUToolchain::Stop(DebuggingSession& session)
 {
     stop_emulation();
 }
+
+

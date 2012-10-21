@@ -14,6 +14,7 @@
 #include "Backends.h"
 #include "CodeEditor.h"
 #include "DTIDETabWidget.h"
+#include "DTIDEDebuggingSession.h"
 
 class DTIDE: public QMainWindow
 {
@@ -45,6 +46,7 @@ private:
     QMenuBar* menu;
     QAction* nextTab;
     Toolchain* toolchain;
+    DTIDEDebuggingSession* debuggingSession;
     QTimer* timer;
 
     void setupMenuBar();

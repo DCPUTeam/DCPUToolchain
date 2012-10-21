@@ -3,7 +3,51 @@
 
 #include <list>
 #include <string>
+#include <deque>
 #include <stdint.h>
+
+enum MessageType
+{
+    StatusType,
+    HardwareType,
+    MemoryType
+};
+
+class StatusMessage
+{
+public:
+    uint16_t registers[8];
+    uint16_t pc;
+    uint16_t sp;
+    uint16_t ia;
+    uint16_t ex;
+};
+
+class HardwareMessage 
+{
+
+};
+
+class MemoryMessage
+{
+public:
+    uint16_t pos;
+    uint16_t value;
+};
+
+union MessageValue
+{
+    StatusMessage status;
+    HardwareMessage hardware;
+    MemoryMessage memory;
+};
+
+class DebuggingMessage
+{
+public:
+    MessageType type;
+    MessageValue value;
+};
 
 enum CodeSyntax
 {
@@ -111,6 +155,8 @@ public:
     void Show(int devid); // Indicates the emulator should show this device again.
 };
 
+; 
+
 class DebuggingSession
 {
 public:
@@ -130,6 +176,12 @@ public:
 						                             // any LEM1802 screens, etc. which the IDE can then draw inline.
 						                             // Device IDs are used to differentiate between two devices of the 
 						                             // same type (e.g. two LEM1802 screens).
+    bool HasMessages(); 
+    virtual void AddMessage(DebuggingMessage m) = 0;
+    DebuggingMessage GetMessage();
+
+private:
+    std::deque<DebuggingMessage> m_Queue; 
 };
 
 enum ModuleType
@@ -195,7 +247,7 @@ public:
     Language* GetLanguageByExtension(std::string ext);
   
     // Debugging / execution interface.
-    virtual void Start(std::string path, DebuggingSession& session) = 0;
+    virtual void Start(std::string path, DebuggingSession* session) = 0;
     //virtual void Pause(DebuggingSession& session) = 0;
     //virtual void Continue(DebuggingSession& session) = 0;
     virtual void Stop(DebuggingSession& session) = 0;

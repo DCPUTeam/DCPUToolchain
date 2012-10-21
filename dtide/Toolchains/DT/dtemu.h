@@ -7,8 +7,9 @@ extern "C" {
 
 #include <dcpu.h>
 #include <stdio.h>
+#include <dcpuhook.h>
     
-bool start_emulation(const char* filename);
+bool start_emulation(const char* filename, vm_hook cyclehook, vm_hook writehook, vm_hook interrupthook, vm_hook hardwarehook, vm_hook sixtyhz, void* toolchain);
 void cycle_emulation();
 void stop_emulation();
 

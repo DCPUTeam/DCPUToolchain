@@ -24,7 +24,7 @@
 static bool has_initialized_glfw3 = false;
 static vm_t* vm = NULL;
 
-bool start_emulation(const char* filename)
+bool start_emulation(const char* filename, vm_hook cyclehook, vm_hook writehook, vm_hook interrupthook, vm_hook hardwarehook, vm_hook sixtyhz, void* toolchain)
 {
     FILE* load;
     uint16_t flash[0x10000];
@@ -80,6 +80,14 @@ bool start_emulation(const char* filename)
     vm_hw_sped3_init(vm);
     vm_hw_m35fd_init(vm);
     vm_hw_lua_init(vm);
+
+    // Register hooks.
+    vm_hook_register(vm, cyclehook, HOOK_ON_POST_CYCLE, toolchain);
+    vm_hook_register(vm, writehook, HOOK_ON_WRITE, toolchain);
+    vm_hook_register(vm, interrupthook, HOOK_ON_INTERRUPT, toolchain);
+    vm_hook_register(vm, hardwarehook, HOOK_ON_HARDWARE_CHANGE, toolchain);
+    vm_hook_register(vm, sixtyhz, HOOK_ON_60HZ, toolchain);
+
     return true;
 }
 

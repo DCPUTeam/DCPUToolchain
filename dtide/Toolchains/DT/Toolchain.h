@@ -35,9 +35,10 @@ public:
 
     virtual std::list<Language*> GetLanguages();
 
-    virtual void Start(std::string path, DebuggingSession& session);
+    virtual void Start(std::string path, DebuggingSession* session);
     virtual void Stop(DebuggingSession& session);
 
+    DebuggingSession* debuggingSession;
 };
 
 #endif
