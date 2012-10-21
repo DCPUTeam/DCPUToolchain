@@ -5,7 +5,7 @@ find_package(OpenGL REQUIRED)
 find_package(Qt4)
 if(${QT4_FOUND})
     set(dtide_SOURCES 
-        Main.cpp 
+        main.cpp 
         Backends.cpp
         DTIDE.cpp
         DTIDETabWidget.cpp
@@ -34,7 +34,7 @@ if(${QT4_FOUND})
         Toolchains/DT/dtemu.h
     )
         
-    set(dtide_FORMS "UI/Splash.ui")
+    set(dtide_FORMS "ui/splash.ui")
 
     QT4_WRAP_CPP(dtide_HEADERS_MOC ${dtide_HEADERS})
     QT4_WRAP_UI(dtide_FORMS_HEADERS ${dtide_FORMS})
