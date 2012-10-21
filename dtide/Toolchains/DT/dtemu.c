@@ -78,11 +78,13 @@ bool start_emulation(const char* filename, vm_hook cyclehook, vm_hook writehook,
     // And then use the VM.
     vm = vm_create();
     vm_flash(vm, flash);
+    vm_hook_initialize();
+    vm_hw_initialize();
 
     // Init hardware.
     vm_hw_timer_init(vm);
     vm_hw_lem1802_init(vm);
-    vm_hw_sped3_init(vm);
+    //vm_hw_sped3_init(vm);
     vm_hw_m35fd_init(vm);
     vm_hw_lua_init(vm);
 
@@ -122,6 +124,5 @@ void stop_emulation()
     vm_hw_free_all(vm);
     vm_free(vm);
     vm = NULL;
-    glfwTerminate();
     has_initialized_glfw3 = false;
 }
