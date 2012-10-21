@@ -12,19 +12,13 @@
 
 **/
 
-#ifndef __DCPU_LIBDCPU_IMPL_H
-#define __DCPU_LIBDCPU_IMPL_H
+#ifndef __DCPU_LIBDCPUPP_IMPL_H
+#define __DCPU_LIBDCPUPP_IMPL_H
 
-#include <dcpu.h>
+#include "pp.h"
+#include <bstring.h>
 #include <simclist.h>
-
-typedef bool(*has_t)();
-typedef char(*pop_t)();
-typedef void(*push_t)(char);
-
-void ppimpl(has_t has_input, pop_t input, push_t output);
-
-#ifdef PREPROCESSOR_INTERNALS
+#include <ppexpr.h>
 
 ///
 /// Defines the preprocessor state.
@@ -36,7 +30,10 @@ typedef struct
     has_t has_input;
     pop_t input;
     push_t output;
-    list_t handlers;    
+    list_t handlers;
+    unsigned int current_line;
+    bstring current_filename;
+    bstring default_filename;
 } state_t;
 
 ///
@@ -51,8 +48,22 @@ struct __match
 typedef void(*match_handler_t)(state_t* state, struct __match* match, bool* reprocess);
 typedef struct __match match_t;
 
-char ppimpl_get_input(state_t* state);
+///
+/// Defines a parameter passed to a preprocessor directive.
+///
+typedef struct
+{
+    int type;
+    int number;
+    bstring string;
+    struct expr* expr;
+    list_t list;
+} parameter_t;
 
-#endif
+char ppimpl_get_input(state_t* state);
+unsigned int ppimpl_get_current_line(state_t* state);
+bstring ppimpl_get_current_filename(state_t* state);
+char* ppimpl_get_location(state_t* state);
+void ppimpl_printf(state_t* state, const char* msg, ...);
 
 #endif

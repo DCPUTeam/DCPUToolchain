@@ -84,6 +84,28 @@ else()
     include(cotire)
 endif()
 
+# Define a function that automatically sorts
+# source files into groups for Visual Studio.
+function(auto_group project)
+    if(MSVC)
+        get_property(srcs TARGET ${project} PROPERTY SOURCES)
+        foreach(o ${srcs})
+            get_filename_component(oabs ${o} ABSOLUTE)
+            file(RELATIVE_PATH i ${${project}_SOURCE_DIR} ${oabs})
+            get_filename_component(ipath ${i} PATH)
+            get_filename_component(iext ${i} EXT)
+            if(NOT "${ipath}" STREQUAL "")
+                string(REPLACE / \\ winpath ${ipath})
+                if("${iext}" STREQUAL ".c" OR "${iext}" STREQUAL ".cpp")
+                    source_group(Source\ Files\\${winpath} FILES ${o})
+                elseif("${iext}" STREQUAL ".h")
+                    source_group(Header\ Files\\${winpath} FILES ${o})
+                endif()
+            endif()
+        endforeach()
+    endif()
+endfunction()
+
 # Set GLFW options.
 set(GLFW_BUILD_EXAMPLES OFF CACHE INTERNAL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE INTERNAL "" FORCE)

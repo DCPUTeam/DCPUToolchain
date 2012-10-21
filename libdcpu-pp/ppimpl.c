@@ -11,8 +11,11 @@
 
 #include <assert.h>
 #include <bstring.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
 #include "ppimpl.h"
-#include "ppimpl_test.h"
+#include "directives/asm.h"
 
 ///
 /// Retrieves a character from either cached or provided input.
@@ -22,7 +25,65 @@ char ppimpl_get_input(state_t* state)
     if (list_size(&state->cached_input) > 0)
         return (char)list_extract_at(&state->cached_input, 0);
     else
-        return state->input();
+    {
+        char c = state->input();
+
+        // If this is a newline, increment the current line count.
+        if (c == '\n')
+            state->current_line += 1;
+
+        return c;
+    }
+}
+
+///
+/// Retrieves the current line number.
+///
+unsigned int ppimpl_get_current_line(state_t* state)
+{
+    return state->current_line;
+}
+
+///
+/// Retrieves the current filename, or "<unknown>" if not previously set.
+///
+bstring ppimpl_get_current_filename(state_t* state)
+{
+    if (state->current_filename == NULL)
+        return state->default_filename;
+    else
+        return state->current_filename;
+}
+
+///
+/// Generates a char* that contains location information for use with
+/// warnings or errors.  Since the location string is generated, you
+/// should free it if possible (but this is not the case when using
+/// dhalt).
+///
+char* ppimpl_get_location(state_t* state)
+{
+    bstring b = bformat("line %u of '%s'", ppimpl_get_current_line(state), ppimpl_get_current_filename(state)->data);
+    return b->data;
+}
+
+///
+/// Prints a formatted string to the input cache of the current state.
+///
+void ppimpl_printf(state_t* state, const char* fmt, ...)
+{
+    char* store;
+    int count, i;
+    va_list argptr;
+    va_start(argptr, fmt);
+    count = vsnprintf(NULL, 0, fmt, argptr);
+    store = malloc(count + 1);
+    memset(store, '\0', count);
+    vsnprintf(store, count, fmt, argptr);
+    va_end(argptr);
+    for (i = count - 1; i >= 0; i--)
+        list_insert_at(&state->cached_input, (void*)store[i], 0);
+    free(store);
 }
 
 ///
@@ -32,6 +93,7 @@ char ppimpl_get_input(state_t* state)
 bool ppimpl_match_test(list_t* output_cache, match_t* match)
 {
     size_t i;
+    int32_t j;
 
     // Check if the output cache is even long enough to hold
     // the match.
@@ -54,10 +116,10 @@ bool ppimpl_match_test(list_t* output_cache, match_t* match)
     {
         // We have to make sure that we only have spaces or tabs between
         // the first character of the text and a \n or the start of the output.
-        i = list_size(output_cache) - (size_t)blength(match->text.ref) - 1;
-        while (i >= 0)
+        j = (int32_t)(list_size(output_cache) - (size_t)blength(match->text.ref) - 1);
+        while (j >= 0)
         {
-            switch ((char)list_get_at(output_cache, i))
+            switch ((char)list_get_at(output_cache, j))
             {
             case ' ':
             case '\t':
@@ -70,12 +132,12 @@ bool ppimpl_match_test(list_t* output_cache, match_t* match)
                 // Anything else means that it's not at the start.
                 return false;
             }
-            i--;
+            j--;
         }
 
         // If we reach here, check if i == 0, which means that we've
         // matched the start of the input (which also counts as a match).
-        if (i == 0)
+        if (j <= 0)
             return true;
         else
             assert(false); // Something is not right.
@@ -165,6 +227,9 @@ void ppimpl(has_t has_input, pop_t input, push_t output)
     state.has_input = has_input;
     state.input = input;
     state.output = output;
-    ppimpl_test_register(&state);
+    state.current_line = 0;
+    state.current_filename = NULL;
+    state.default_filename = bfromcstr("<unknown>");
+    ppimpl_asm_line_register(&state);
     ppimpl_process(&state);
 }

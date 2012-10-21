@@ -19,6 +19,7 @@ add_library(libdcpu STATIC
     derr.defs.h
     derr.c
     derr.h
+    err.d
     bfile.h
     dcpu.h
     dirent.portable.h

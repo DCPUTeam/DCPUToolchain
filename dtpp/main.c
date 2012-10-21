@@ -13,6 +13,7 @@
 
 #include <dcpu.h>
 #include <ppimpl.h>
+#include <derr.h>
 
 char next = '\0';
 
@@ -34,6 +35,18 @@ void output(char o)
 
 int main(int argc, char* argv[])
 {
+	struct errinfo* errval;
+
+    if (dsethalt())
+    {
+        errval = derrinfo();
+        printf("error occurred while preprocessing:\n");
+        printf(derrstr[errval->errid], errval->errdata);
+        getc(stdin);
+        getc(stdin);
+        return 1;
+    }
+
     printf("! terminates input.\n\n");
     ppimpl(has_input, input, output);
     getc(stdin);

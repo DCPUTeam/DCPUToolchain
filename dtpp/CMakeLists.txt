@@ -11,6 +11,7 @@ include_directories(
     ${libdcpu_SOURCE_DIR}
     ${libdcpu-pp_SOURCE_DIR}
     ${libdcpu-pp_BINARY_DIR}
+    ${libdcpu-pp-expr_SOURCE_DIR}
     ${FLEX_UNISTD_INCLUDE}
 )
 target_link_libraries(dtpp

@@ -40,3 +40,6 @@ WARN_SKIPPING_SHORT_LITERALS_TYPE                    short-literals-skipped-type
 WARN_SKIPPING_SHORT_LITERALS_REQUEST                 short-literals-skipped-request         "skipping short literal compression on request."
 WARN_KERNEL_NOT_PROVIDING_JUMP_LIST                  jump-list-missing                      "kernel did not specify a position to output a jump list with .JUMP."
 WARN_KERNEL_JUMP_LIST_NOT_EXPORTED                   jump-list-not-exported                 "the jump list was not exported along with the kernel."
+
+ERR_PP_LINE_PARAMETERS_INCORRECT                     pp-line-parameters-incorrect           "incorrect parameters for .LINE near %s."
+ERR_PP_ULINE_PARAMETERS_INCORRECT                    pp-uline-parameters-incorrect          "incorrect parameters for .ULINE near %s."
