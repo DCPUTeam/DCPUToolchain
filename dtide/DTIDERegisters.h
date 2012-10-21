@@ -18,6 +18,10 @@ public:
 public slots:
     void setRegisters(StatusMessage);
 
+signals:
+    void start();
+    void pause();
+    void step();
 };
 
 #endif

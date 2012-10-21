@@ -236,6 +236,8 @@ public:
     virtual std::list<std::string> GetAuthors() = 0;
     virtual std::string GetLicense() = 0;
     virtual void Cycle() = 0;
+    virtual void Step() = 0;
+    virtual void SendStatus() = 0;
 
     // Configuration interface.
     //virtual std::list<ConfigurationOption> GetOptions() = 0;
@@ -248,9 +250,9 @@ public:
   
     // Debugging / execution interface.
     virtual void Start(std::string path, DebuggingSession* session) = 0;
-    //virtual void Pause(DebuggingSession& session) = 0;
+    virtual void Pause(DebuggingSession* session) = 0;
     //virtual void Continue(DebuggingSession& session) = 0;
-    virtual void Stop(DebuggingSession& session) = 0;
+    virtual void Stop(DebuggingSession* session) = 0;
     //virtual void AddBreakpoint(DebuggingSession& session, std::string path, int line) = 0;
     //virtual void AddBreakpoint(DebuggingSession& session, uint16_t memory) = 0;
     //virtual void AttachDevice(DebuggingSession& session, Device& device) = 0;

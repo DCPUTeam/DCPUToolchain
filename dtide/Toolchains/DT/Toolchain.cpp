@@ -42,23 +42,10 @@ void DCPUToolchain_HardwareHook(vm_t* vm, uint16_t pos, void* ud)
 
 void DCPUToolchain_60HZHook(vm_t* vm, uint16_t pos, void* ud)
 {
-    DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
-    DebuggingMessage m;
-    StatusMessage payload;
 
-    for(int i = 0; i < 8; i++)
-        payload.registers[i] = vm->registers[i];
-
-    payload.pc = vm->pc;
-    payload.sp = vm->sp;
-    payload.ia = vm->ia;
-    payload.ex = vm->ex;
-
-    m.type = StatusType;
-    m.value = (MessageValue&) payload;
-
-    t->debuggingSession->AddMessage(m);
 }
+
+
 
 DCPUToolchainASM::DCPUToolchainASM() 
 {
@@ -122,6 +109,7 @@ void DCPUToolchainASM::Build(std::string filename, std::string outputDir, BuildA
     free(os);
 }
 
+
 CodeSyntax DCPUToolchainASM::GetCodeSyntax()
 {
     return DCPUAssembly;
@@ -163,6 +151,7 @@ void DCPUToolchain::Start(std::string path, DebuggingSession* session)
 {
     // Tell the emulator to start.
     debuggingSession = session;
+    paused = false;
     start_emulation(
         path.c_str(), 
         &DCPUToolchain_CycleHook, 
@@ -174,14 +163,55 @@ void DCPUToolchain::Start(std::string path, DebuggingSession* session)
         static_cast<void*>(this));
 }
 
+void DCPUToolchain::AddStatusMessage(vm_t* vm)
+{
+    DebuggingMessage m;
+    StatusMessage payload;
+
+    if(vm == 0)
+        return;
+
+    for(int i = 0; i < 8; i++)
+        payload.registers[i] = vm->registers[i];
+
+    payload.pc = vm->pc;
+    payload.sp = vm->sp;
+    payload.ia = vm->ia;
+    payload.ex = vm->ex;
+
+    m.type = StatusType;
+    m.value = (MessageValue&) payload;
+
+    debuggingSession->AddMessage(m);
+}
+
+void DCPUToolchain::SendStatus()
+{
+    vm_t* vm = get_vm();
+
+    AddStatusMessage(vm);
+}
+
 void DCPUToolchain::Cycle()
+{
+    if(!paused)
+    {
+        cycle_emulation();
+    }
+}
+
+void DCPUToolchain::Step()
 {
     cycle_emulation();
 }
 
-void DCPUToolchain::Stop(DebuggingSession& session)
+void DCPUToolchain::Stop(DebuggingSession* session)
 {
     stop_emulation();
 }
 
+void DCPUToolchain::Pause(DebuggingSession* session)
+{
+    paused = true;
+}
 

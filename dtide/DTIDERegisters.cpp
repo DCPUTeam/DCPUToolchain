@@ -3,6 +3,9 @@
 DTIDERegisters::DTIDERegisters(QWidget* parent): QWidget(parent)
 {
     setupUi(this);
+    connect(btn_step, SIGNAL(clicked()), this, SIGNAL(step()));
+    connect(btn_run, SIGNAL(clicked()), this, SIGNAL(start()));
+    connect(btn_stop, SIGNAL(clicked()), this, SIGNAL(pause()));
 }
 
 QSize DTIDERegisters::sizeHint()

@@ -13,7 +13,7 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
     setupSignals();
     setupDockWidgets();
 
-    resize(QSize(640, 480));
+    resize(QSize(640, 580));
 
     toolchain = t;
     addCodeTab(fileName);
@@ -27,10 +27,20 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
 
 void DTIDE::cycleUpdate()
 {
+    runCycles(100); // 1ms = 1kHz, 100 * 1kHz = 100kHz
+}
+
+void DTIDE::runCycles(int count)
+{
     if(debuggingSession != 0)
     {
-        for(int i = 0; i < 100; i++) // 1ms = 1kHz, 100 * 1kHz = 100kHz
-            this->toolchain->Cycle();
+        if(count == 1)
+            this->toolchain->Step();
+        else
+            for(int i = 0; i < count; i++) 
+                this->toolchain->Cycle();
+
+        this->toolchain->SendStatus();
 
         while(debuggingSession->HasMessages())
         {
@@ -45,6 +55,7 @@ void DTIDE::cycleUpdate()
         }
     }
 }
+
 
 void DTIDE::addCodeTab(const QString& fileName)
 {
@@ -93,6 +104,9 @@ void DTIDE::setupDockWidgets()
 {
     registers = new DTIDERegisters(this);
     connect(this, SIGNAL(setRegisters(StatusMessage)), registers, SLOT(setRegisters(StatusMessage)));
+    connect(registers, SIGNAL(step()), this, SLOT(step()));
+    connect(registers, SIGNAL(start()), this, SLOT(compileAndRunProject()));
+    connect(registers, SIGNAL(pause()), this, SLOT(pause()));
 
     QDockWidget* registersDockWidget = new QDockWidget(tr("Registers"), this);
     registersDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea |
@@ -103,6 +117,20 @@ void DTIDE::setupDockWidgets()
     addDockWidget(Qt::RightDockWidgetArea, registersDockWidget);
 }
 
+void DTIDE::step()
+{
+    runCycles(1);
+}
+
+void DTIDE::stop()
+{
+    toolchain->Stop(debuggingSession);
+}
+
+void DTIDE::pause()
+{
+    toolchain->Pause(debuggingSession);
+}
 
 void DTIDE::newFile()
 {
@@ -145,4 +173,7 @@ void DTIDE::compileProject()
 }
 
 
-
+void DTIDE::closeEvent(QCloseEvent* event)
+{
+    // clean up
+}

@@ -29,6 +29,8 @@ public:
 
 protected:
     void addCodeTab(const QString& fileName);
+    void runCycles(int count);
+    void closeEvent(QCloseEvent* event);
 
 signals:
     void fileSave();
@@ -40,6 +42,9 @@ private slots:
    void saveFile();
 
    void cycleUpdate();
+   void step();
+   void stop();
+   void pause();
 
    void compileProject();
    void compileAndRunProject();

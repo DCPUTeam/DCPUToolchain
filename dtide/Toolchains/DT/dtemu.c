@@ -24,6 +24,11 @@
 static bool has_initialized_glfw3 = false;
 static vm_t* vm = NULL;
 
+vm_t* get_vm(void)
+{
+    return vm;
+}
+
 bool start_emulation(const char* filename, vm_hook cyclehook, vm_hook writehook, vm_hook interrupthook, vm_hook hardwarehook, vm_hook sixtyhz, void* toolchain)
 {
     FILE* load;
