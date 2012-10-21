@@ -13,6 +13,7 @@ if(${QT4_FOUND})
         DTIDEBuildAPI.cpp
         DTIDEHighlighting.cpp
         DTIDEDebuggingSession.cpp
+        DTIDERegisters.cpp
         CodeEditor.cpp
         Highlighters/DCPUHighlighter.cpp
         Toolchains/DT/Toolchain.cpp
@@ -27,6 +28,7 @@ if(${QT4_FOUND})
         DTIDEBuildAPI.h
         DTIDEHighlighting.h
         DTIDEDebuggingSession.h
+        DTIDERegisters.h
         CodeEditor.h
         Highlighters/Highlighters.h
         Highlighters/DCPUHighlighter.h
@@ -36,7 +38,10 @@ if(${QT4_FOUND})
         Toolchains/DT/dtemu.h
     )
         
-    set(dtide_FORMS "ui/splash.ui")
+    set(dtide_FORMS 
+        "ui/splash.ui"
+        "ui/registers.ui"
+    )
 
     QT4_WRAP_CPP(dtide_HEADERS_MOC ${dtide_HEADERS})
     QT4_WRAP_UI(dtide_FORMS_HEADERS ${dtide_FORMS})

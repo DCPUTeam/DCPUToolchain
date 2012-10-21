@@ -10,10 +10,12 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QTimer>
+#include <QDockWidget>
 
 #include "Backends.h"
 #include "CodeEditor.h"
 #include "DTIDETabWidget.h"
+#include "DTIDERegisters.h"
 #include "DTIDEDebuggingSession.h"
 
 class DTIDE: public QMainWindow
@@ -30,6 +32,7 @@ protected:
 
 signals:
     void fileSave();
+    void setRegisters(StatusMessage);
 
 private slots:
    void newFile();
@@ -43,6 +46,7 @@ private slots:
 
 private:
     DTIDETabWidget* tabs;
+    DTIDERegisters* registers;
     QMenuBar* menu;
     QAction* nextTab;
     Toolchain* toolchain;
@@ -52,6 +56,7 @@ private:
     void setupMenuBar();
     void setupActions();
     void setupSignals();
+    void setupDockWidgets();
 };
 
 #endif

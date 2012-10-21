@@ -11,6 +11,7 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
     setupMenuBar();
     setupActions();
     setupSignals();
+    setupDockWidgets();
 
     resize(QSize(640, 480));
 
@@ -34,7 +35,13 @@ void DTIDE::cycleUpdate()
         while(debuggingSession->HasMessages())
         {
             DebuggingMessage m = debuggingSession->GetMessage();
-            qDebug() << "Messages!";
+            switch(m.type)
+            {
+                case StatusType:
+                    StatusMessage status = (StatusMessage&) m.value;
+                    emit setRegisters(status);
+                    break;
+            }
         }
     }
 }
@@ -81,6 +88,21 @@ void DTIDE::setupMenuBar()
     project->addAction("Compil&e", this, SLOT(compileProject()), tr("Ctrl+E"));
     project->addAction("Compile and &run", this, SLOT(compileAndRunProject()), tr("Ctrl+R"));
 }
+
+void DTIDE::setupDockWidgets()
+{
+    registers = new DTIDERegisters(this);
+    connect(this, SIGNAL(setRegisters(StatusMessage)), registers, SLOT(setRegisters(StatusMessage)));
+
+    QDockWidget* registersDockWidget = new QDockWidget(tr("Registers"), this);
+    registersDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea |
+        Qt::RightDockWidgetArea);
+
+    registersDockWidget->setWidget(registers);
+    registersDockWidget->setMinimumWidth(100);
+    addDockWidget(Qt::RightDockWidgetArea, registersDockWidget);
+}
+
 
 void DTIDE::newFile()
 {
