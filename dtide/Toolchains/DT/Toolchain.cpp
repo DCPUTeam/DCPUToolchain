@@ -7,7 +7,10 @@
 #ifdef WIN32
 #include <io.h>
 #define mktemp _mktemp
+#else
+#include <unistd.h>
 #endif
+
 
 void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
 {
