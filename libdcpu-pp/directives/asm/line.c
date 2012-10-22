@@ -56,15 +56,19 @@ void ppimpl_asm_line_register(state_t* state)
 {
     // Register .LINE directive.
     match_t* match = malloc(sizeof(match_t));
-    match->text = bautofree(bfromcstr(".LINE"));
+    match->text = bautofree(bfromcstr(".LINE "));
     match->handler = line_handle;
+    match->userdata = NULL;
     match->line_start_only = true;
+    match->identifier_only = false;
     list_append(&state->handlers, match);
 
     // Register .ULINE directive.
     match = malloc(sizeof(match_t));
-    match->text = bautofree(bfromcstr(".ULINE"));
+    match->text = bautofree(bfromcstr(".ULINE "));
     match->handler = uline_handle;
+    match->userdata = NULL;
     match->line_start_only = true;
+    match->identifier_only = false;
     list_append(&state->handlers, match);
 }

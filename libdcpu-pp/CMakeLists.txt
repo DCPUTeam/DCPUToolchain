@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu-pp)
 
-bison_target(libdcpu-pp-parser ppparamparser.y ${CMAKE_CURRENT_BINARY_DIR}/ppparamparser.c COMPILE_FLAGS "-d -y")
-flex_target(libdcpu-pp-lexer ppparamlexer.l ${CMAKE_CURRENT_BINARY_DIR}/ppparamlexer.c COMPILE_FLAGS \"--header-file=${CMAKE_CURRENT_BINARY_DIR}/ppparamlexer.h\")
-add_flex_bison_dependency(libdcpu-pp-lexer libdcpu-pp-parser)
+bison_target(libdcpu-pp-param-parser ppparamparser.y ${CMAKE_CURRENT_BINARY_DIR}/ppparamparser.c COMPILE_FLAGS "-d -y")
+flex_target(libdcpu-pp-param-lexer ppparamlexer.l ${CMAKE_CURRENT_BINARY_DIR}/ppparamlexer.c COMPILE_FLAGS \"--header-file=${CMAKE_CURRENT_BINARY_DIR}/ppparamlexer.h\")
+add_flex_bison_dependency(libdcpu-pp-param-lexer libdcpu-pp-param-parser)
 if(NOT MSVC)
-    set_source_files_properties(${FLEX_libdcpu-pp-lexer_OUTPUTS} ${BISON_libdcpu-pp-parser_OUTPUTS} PROPERTIES COMPILE_FLAGS -Wno-implicit-function-declaration)
+    set_source_files_properties(${FLEX_libdcpu-pp-param-lexer_OUTPUTS} ${BISON_libdcpu-pp-param-parser_OUTPUTS} PROPERTIES COMPILE_FLAGS -Wno-implicit-function-declaration)
 endif()
 add_library(libdcpu-pp STATIC
     pp.h
@@ -14,8 +14,8 @@ add_library(libdcpu-pp STATIC
     ppparam.h
     ppparamlexer.l
     ppparamparser.y
-    ${FLEX_libdcpu-pp-lexer_OUTPUTS}
-    ${BISON_libdcpu-pp-parser_OUTPUTS}
+    ${FLEX_libdcpu-pp-param-lexer_OUTPUTS}
+    ${BISON_libdcpu-pp-param-parser_OUTPUTS}
     directives/asm.h
     directives/asm/line.c
     directives/asm/include.c

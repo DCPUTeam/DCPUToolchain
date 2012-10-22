@@ -34,6 +34,8 @@ typedef struct
     unsigned int current_line;
     bstring current_filename;
     bstring default_filename;
+    bool in_single_string;
+    bool in_double_string;
 } state_t;
 
 ///
@@ -43,7 +45,9 @@ struct __match
 {
     freed_bstring text;
     void(*handler)(state_t* state, struct __match* match, bool* reprocess);
+    void* userdata;
     bool line_start_only; //< Whether this match can only be made at the start of a line (ignoring whitespace).
+    bool identifier_only; //< Whether this match is treated as an identifier.
 };
 typedef void(*match_handler_t)(state_t* state, struct __match* match, bool* reprocess);
 typedef struct __match match_t;
@@ -60,10 +64,12 @@ typedef struct
     list_t list;
 } parameter_t;
 
+bool ppimpl_has_input(state_t* state);
 char ppimpl_get_input(state_t* state);
 unsigned int ppimpl_get_current_line(state_t* state);
 bstring ppimpl_get_current_filename(state_t* state);
 char* ppimpl_get_location(state_t* state);
 void ppimpl_printf(state_t* state, const char* msg, ...);
+bool ppimpl_isolates(char c, bool at_start);
 
 #endif
