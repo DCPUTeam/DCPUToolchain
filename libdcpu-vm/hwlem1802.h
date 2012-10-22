@@ -58,8 +58,8 @@ struct lem1802_hardware
     
     
     int window_closed;
-
-    GLFWwindow window;
+    
+    void* context;
     int width, height;
 
 
