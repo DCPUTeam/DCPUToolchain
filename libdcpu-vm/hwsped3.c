@@ -117,10 +117,7 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud)
     vm_hw_sped3_update_rot(hw);
 
     if(vm->host == NULL)
-    {
-        printf("Returning due to NULL host\n");
         return;
-    }
 
     vm->host->activate_context(hw->context); 
 

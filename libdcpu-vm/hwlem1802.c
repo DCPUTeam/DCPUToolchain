@@ -224,41 +224,44 @@ void vm_hw_lem1802_init_glfw(struct lem1802_hardware* hw)
 
 void vm_hw_lem1802_glfw_draw(struct lem1802_hardware* hw)
 {
-    hw->vm->host->activate_context(hw->context);
-    if (hw->texture_has_changed)
+    if(hw->vm->host != NULL)
     {
-	    glBindTexture (GL_TEXTURE_2D, hw->texture_id);
-	    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	    glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, HW_LEM1802_SCREEN_TEXTURE_WIDTH, HW_LEM1802_SCREEN_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, hw->glfw_texture);
-	    hw->texture_has_changed = 0;
+        hw->vm->host->activate_context(hw->context);
+        if (hw->texture_has_changed)
+        {
+	        glBindTexture (GL_TEXTURE_2D, hw->texture_id);
+	        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	        glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, HW_LEM1802_SCREEN_TEXTURE_WIDTH, HW_LEM1802_SCREEN_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, hw->glfw_texture);
+	        hw->texture_has_changed = 0;
+        }
+
+        // OpenGL rendering goes here...
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glEnable (GL_TEXTURE_2D); /* enable texture mapping */
+        glBindTexture (GL_TEXTURE_2D, hw->texture_id); /* bind to our texture, has id of 13 */
+
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f,0.0f); /* lower left corner of image */
+        glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner
+        
+        glTexCoord2f(0.0f, 1.0f); /* upper left corner of image */
+        glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
+        
+        glTexCoord2f(1.0f, 1.0f); /* upper right corner of image */
+        glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner
+        
+        glTexCoord2f(1.0f, 0.0f); /* lower right corner of image */
+        glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner
+
+        glEnd();
+
+        glDisable (GL_TEXTURE_2D); /* disable texture mapping */
+
+        // Swap front and back rendering buffers
+        hw->vm->host->swap_buffers(hw->context);
     }
-
-    // OpenGL rendering goes here...
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glEnable (GL_TEXTURE_2D); /* enable texture mapping */
-    glBindTexture (GL_TEXTURE_2D, hw->texture_id); /* bind to our texture, has id of 13 */
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f,0.0f); /* lower left corner of image */
-    glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner
-    
-    glTexCoord2f(0.0f, 1.0f); /* upper left corner of image */
-    glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
-    
-    glTexCoord2f(1.0f, 1.0f); /* upper right corner of image */
-    glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner
-    
-    glTexCoord2f(1.0f, 0.0f); /* lower right corner of image */
-    glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner
-
-    glEnd();
-
-    glDisable (GL_TEXTURE_2D); /* disable texture mapping */
-
-    // Swap front and back rendering buffers
-    hw->vm->host->swap_buffers(hw->context);
 }
 
 void vm_hw_lem1802_update_texture(struct lem1802_hardware* hw)
@@ -359,8 +362,9 @@ void vm_hw_lem1802_free(void *ud)
     vm_hook_unregister(hw->vm, hw->cycle_hook);
     vm_hook_unregister(hw->vm, hw->break_hook);
     vm_hw_unregister(hw->vm, hw->hw_id);
-   
-    hw->vm->host->destroy_context(hw->context); 
+    
+    if(hw->vm->host != NULL) 
+        hw->vm->host->destroy_context(hw->context); 
     free(hw->glfw_texture);
     free(hw);
 }

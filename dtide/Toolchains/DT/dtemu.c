@@ -84,7 +84,7 @@ bool start_emulation(const char* filename, vm_hook cyclehook, vm_hook writehook,
     // Init hardware.
     vm_hw_timer_init(vm);
     vm_hw_lem1802_init(vm);
-    //vm_hw_sped3_init(vm);
+    vm_hw_sped3_init(vm);
     vm_hw_m35fd_init(vm);
     vm_hw_lua_init(vm);
 
