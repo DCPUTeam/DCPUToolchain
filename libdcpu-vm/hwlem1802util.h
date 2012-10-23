@@ -1,16 +1,16 @@
 /**
 
-	File:		lem1802util.h
+    File:        lem1802util.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU-VM
+    Project:    DCPU-16 Toolchain
+    Component:    LibDCPU-VM
 
-	Authors:	James Rhodes
-			José Manuel Díez
-			Tyrel Haveman
-			Patrick Flick
+    Authors:    James Rhodes
+            Josï¿½ Manuel Dï¿½ez
+            Tyrel Haveman
+            Patrick Flick
 
-	Description:	Declares utility functions for LEM1802.
+    Description:    Declares utility functions for LEM1802.
 
 **/
 

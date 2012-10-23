@@ -27,14 +27,14 @@ void DTDBRunner::gotStderr()
 
     foreach(QString line, lines)
     {
-	if(line.indexOf(':') != -1)
-	{
-	    QStringList args = line.split(":", QString::SkipEmptyParts);
-	    if(args[0] == "vm")
-	    {
-		processVMUpdate(args);
-	    }
-	}
+    if(line.indexOf(':') != -1)
+    {
+        QStringList args = line.split(":", QString::SkipEmptyParts);
+        if(args[0] == "vm")
+        {
+        processVMUpdate(args);
+        }
+    }
     }
 }
 
@@ -60,9 +60,9 @@ void DTDBRunner::processVMUpdate(QStringList args)
     QList<QString> registers;
     foreach(QString reg, args)
     {
-	int number = reg.toInt();
-	QString r = QString("0x%1").arg(number, 4, 16, QChar('0'));
-	registers.append(r);
+    int number = reg.toInt();
+    QString r = QString("0x%1").arg(number, 4, 16, QChar('0'));
+    registers.append(r);
     }
     emit vmUpdated(registers);
 }

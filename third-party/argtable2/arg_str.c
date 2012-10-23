@@ -123,8 +123,8 @@ struct arg_str* arg_strn(const char* shortopts,
     size_t nbytes;
     struct arg_str *result;
 
-	/* foolproof things by ensuring maxcount is not less than mincount */
-	maxcount = (maxcount<mincount) ? mincount : maxcount;
+    /* foolproof things by ensuring maxcount is not less than mincount */
+    maxcount = (maxcount<mincount) ? mincount : maxcount;
 
     nbytes = sizeof(struct arg_str)     /* storage for struct arg_str */
            + maxcount * sizeof(char*);  /* storage for sval[maxcount] array */

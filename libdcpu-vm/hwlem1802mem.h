@@ -1,16 +1,16 @@
 /**
 
-	File:		lem1802mem.h
+    File:        lem1802mem.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU-VM
+    Project:    DCPU-16 Toolchain
+    Component:    LibDCPU-VM
 
-	Authors:	James Rhodes
-			José Manuel Díez
-			Tyrel Haveman
-			Patrick Flick
+    Authors:    James Rhodes
+            Josï¿½ Manuel Dï¿½ez
+            Tyrel Haveman
+            Patrick Flick
 
-	Description:	Handles internal LEM1802 memory.
+    Description:    Handles internal LEM1802 memory.
 
 **/
 
@@ -21,28 +21,28 @@
 #include "dcpu.h"
 #include "hwlem1802.h"
 
-#define HW_LEM1802_DISCONNECTED				0
-#define HW_LEM1802_DEFAULT_FONT_LOC			0
-#define HW_LEM1802_DEFAULT_PALETTE_LOC			0
-#define HW_LEM1802_INTERNAL				0
-#define HW_LEM1802_SCREEN_WIDTH				32
-#define HW_LEM1802_SCREEN_HEIGHT			12
-#define HW_LEM1802_SCREEN_BORDER_WIDTH			6
-#define HW_LEM1802_SCREEN_BORDER_HEIGHT			6
-#define HW_LEM1802_SCREEN_MEMSIZE			(32 * 12)
+#define HW_LEM1802_DISCONNECTED                0
+#define HW_LEM1802_DEFAULT_FONT_LOC            0
+#define HW_LEM1802_DEFAULT_PALETTE_LOC            0
+#define HW_LEM1802_INTERNAL                0
+#define HW_LEM1802_SCREEN_WIDTH                32
+#define HW_LEM1802_SCREEN_HEIGHT            12
+#define HW_LEM1802_SCREEN_BORDER_WIDTH            6
+#define HW_LEM1802_SCREEN_BORDER_HEIGHT            6
+#define HW_LEM1802_SCREEN_MEMSIZE            (32 * 12)
 
-#define HW_LEM1802_FONT_NUM_CHARS			128
-#define HW_LEM1802_FONT_MEMSIZE				(128 * 2)
-#define HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH		4
-#define HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT		8
-
-
-#define HW_LEM1802_SCREEN_TEXTURE_HEIGHT		(HW_LEM1802_SCREEN_HEIGHT*HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT+2*HW_LEM1802_SCREEN_BORDER_HEIGHT)
-#define HW_LEM1802_SCREEN_TEXTURE_WIDTH			(HW_LEM1802_SCREEN_WIDTH*HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH+2*HW_LEM1802_SCREEN_BORDER_WIDTH)
+#define HW_LEM1802_FONT_NUM_CHARS            128
+#define HW_LEM1802_FONT_MEMSIZE                (128 * 2)
+#define HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH        4
+#define HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT        8
 
 
-#define HW_LEM1802_FONT_IMG_COLS			32
-#define HW_LEM1802_FONT_IMG_WIDTH			128
+#define HW_LEM1802_SCREEN_TEXTURE_HEIGHT        (HW_LEM1802_SCREEN_HEIGHT*HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT+2*HW_LEM1802_SCREEN_BORDER_HEIGHT)
+#define HW_LEM1802_SCREEN_TEXTURE_WIDTH            (HW_LEM1802_SCREEN_WIDTH*HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH+2*HW_LEM1802_SCREEN_BORDER_WIDTH)
+
+
+#define HW_LEM1802_FONT_IMG_COLS            32
+#define HW_LEM1802_FONT_IMG_WIDTH            128
 
 // Macros for accessing the texture
 #define HW_LEM1802_FONT_RGB_COOR(x, y) (3*((y*HW_LEM1802_FONT_IMG_WIDTH)+x))

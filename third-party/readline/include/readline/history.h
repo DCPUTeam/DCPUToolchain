@@ -26,7 +26,7 @@
 extern "C" {
 #endif
 
-#include <time.h>		/* XXX - for history timestamp code */
+#include <time.h>        /* XXX - for history timestamp code */
 
 #if defined READLINE_LIBRARY
 #  include "rlstdc.h"
@@ -45,24 +45,24 @@ typedef char *histdata_t;
 /* The structure used to store a history entry. */
 typedef struct _hist_entry {
   char *line;
-  char *timestamp;		/* char * rather than time_t for read/write */
+  char *timestamp;        /* char * rather than time_t for read/write */
   histdata_t data;
 } HIST_ENTRY;
 
 /* Size of the history-library-managed space in history entry HS. */
-#define HISTENT_BYTES(hs)	(strlen ((hs)->line) + strlen ((hs)->timestamp))
+#define HISTENT_BYTES(hs)    (strlen ((hs)->line) + strlen ((hs)->timestamp))
 
 /* A structure used to pass the current state of the history stuff around. */
 typedef struct _hist_state {
-  HIST_ENTRY **entries;		/* Pointer to the entries themselves. */
-  int offset;			/* The location pointer within this array. */
-  int length;			/* Number of elements within this array. */
-  int size;			/* Number of slots allocated to this array. */
+  HIST_ENTRY **entries;        /* Pointer to the entries themselves. */
+  int offset;            /* The location pointer within this array. */
+  int length;            /* Number of elements within this array. */
+  int size;            /* Number of slots allocated to this array. */
   int flags;
 } HISTORY_STATE;
 
 /* Flag values for the `flags' member of HISTORY_STATE. */
-#define HS_STIFLED	0x01
+#define HS_STIFLED    0x01
 
 /* Initialization and state management. */
 

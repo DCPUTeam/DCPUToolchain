@@ -1,13 +1,13 @@
 /**
  *
- *	File:		math.c
+ *    File:        math.c
  *
- *	Project:	DCPU-16 Toolchain
- *	Component:	C Standard Library
+ *    Project:    DCPU-16 Toolchain
+ *    Component:    C Standard Library
  *
- *	Authors:	James Rhodes
+ *    Authors:    James Rhodes
  *
- *	Description:	Provides mathematical functions.
+ *    Description:    Provides mathematical functions.
  *
  **/
 

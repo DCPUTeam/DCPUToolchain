@@ -1,14 +1,14 @@
 /**
 
-	File:		timing.h
+    File:        timing.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-vm
+    Project:    DCPU-16 Tools
+    Component:    LibDCPU-vm
 
-	Authors:	Patrick Flick
+    Authors:    Patrick Flick
 
-	Description:	Declares the timing functions for precise timing of
-			the 100 kHz cycle speed.
+    Description:    Declares the timing functions for precise timing of
+            the 100 kHz cycle speed.
 
 **/
 
@@ -17,8 +17,8 @@
 
 
 struct vm_tod_timer {
-	long long mics_since_midnight_start;
-	long long mics_since_midnight_end;
+    long long mics_since_midnight_start;
+    long long mics_since_midnight_end;
 };
 
 long long vm_timing_microsecsonds_since_midnight_GMT();

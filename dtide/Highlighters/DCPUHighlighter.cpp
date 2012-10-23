@@ -9,14 +9,14 @@ DCPUHighlighter::DCPUHighlighter(QTextDocument* parent): QSyntaxHighlighter(pare
     QStringList instructions;
 
     instructions    << "set" << "add" << "sub"
-		    << "mul" << "mli" << "div"
-		    << "dvi" << "mod" << "mdi"
-		    << "and" << "bor" << "xor"
-		    << "shr" << "asr" << "shl"
-		    << "ifb" << "ifc" << "ife"
-		    << "ifn" << "ifg" << "ifa"
-		    << "ifl" << "ifu" << "adx"
-		    << "sbx" << "sti" << "std";
+            << "mul" << "mli" << "div"
+            << "dvi" << "mod" << "mdi"
+            << "and" << "bor" << "xor"
+            << "shr" << "asr" << "shl"
+            << "ifb" << "ifc" << "ife"
+            << "ifn" << "ifg" << "ifa"
+            << "ifl" << "ifu" << "adx"
+            << "sbx" << "sti" << "std";
 
     foreach(const QString& instruction, instructions)
     {

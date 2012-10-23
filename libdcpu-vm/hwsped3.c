@@ -1,13 +1,13 @@
 /**
 
-    File:	    hwsped3.c
+    File:        hwsped3.c
 
-    Project:	    DCPU-16 Tools
-    Component:	    LibDCPU-vm
+    Project:        DCPU-16 Tools
+    Component:        LibDCPU-vm
 
-    Authors:	    Jose Manuel Diez
-		    David Herberth
-		    Patrick Flick
+    Authors:        Jose Manuel Diez
+            David Herberth
+            Patrick Flick
 
     Description:    Implements the SPED-3 specification.
 **/
@@ -57,18 +57,18 @@ void vm_hw_sped3_update_rot(struct sped3_hardware* hw)
     if (hw->rot_current != hw->rot_target)
     {
         if (abs(hw->rot_target - hw->rot_current) < SPED3_SPEED)
-	        hw->rot_current = hw->rot_target;
+            hw->rot_current = hw->rot_target;
         else
         {
-	        if (compare_degrees(hw->rot_current, hw->rot_target) <= 0)
-	            hw->rot_current -= SPED3_SPEED;
-	        else
-	            hw->rot_current += SPED3_SPEED;
-	
-	        while(hw->rot_current < 0)
-	            hw->rot_current += 360.0;
+            if (compare_degrees(hw->rot_current, hw->rot_target) <= 0)
+                hw->rot_current -= SPED3_SPEED;
+            else
+                hw->rot_current += SPED3_SPEED;
+    
+            while(hw->rot_current < 0)
+                hw->rot_current += 360.0;
       
-	        hw->rot_current = fmod(hw->rot_current, 360);
+            hw->rot_current = fmod(hw->rot_current, 360);
         }
     }
     else
@@ -85,17 +85,17 @@ void vm_hw_sped3_set_color(struct sped3_hardware* hw, uint8_t cc, uint8_t intens
     switch (cc)
     {
         case 0:
-        	glColor3f(0.05f * k, 0.05f * k, 0.05f * k);
-        	break;
+            glColor3f(0.05f * k, 0.05f * k, 0.05f * k);
+            break;
         case 1:
-        	glColor3f(1.f * k, 0.f, 0.f);
-        	break;
+            glColor3f(1.f * k, 0.f, 0.f);
+            break;
         case 2:
-        	glColor3f(0.f, 1.f * k, 0.f);
-        	break;
+            glColor3f(0.f, 1.f * k, 0.f);
+            break;
         case 3:
-        	glColor3f(0.f, 0.f, 1.f * k);
-        	break;
+            glColor3f(0.f, 0.f, 1.f * k);
+            break;
     }
 }
 
@@ -109,9 +109,9 @@ void vm_hw_sped3_cycle(vm_t* vm, uint16_t pos, void* ud)
     
     if (hw->window_closed)
     {
-    	//vm_hw_sped3_free(ud);
-    	vm->exit = 1;
-    	return;
+        //vm_hw_sped3_free(ud);
+        vm->exit = 1;
+        return;
     }
 
     vm_hw_sped3_update_rot(hw);
@@ -164,17 +164,17 @@ void vm_hw_sped3_interrupt(vm_t* vm, void* ud)
     switch (vm->registers[REG_A])
     {
         case SPED3_INTERRUPT_POLL:
-        	vm->registers[REG_B] = hw->state;
-          	break;
+            vm->registers[REG_B] = hw->state;
+              break;
         case SPED3_INTERRUPT_MAP:
-        	hw->mem = vm->registers[REG_X];
-        	hw->num = vm->registers[REG_Y];
-        	hw->state = SPED3_STATE_RUNNING;
-        	break;
+            hw->mem = vm->registers[REG_X];
+            hw->num = vm->registers[REG_Y];
+            hw->state = SPED3_STATE_RUNNING;
+            break;
         case SPED3_INTERRUPT_ROTATE:
-        	hw->rot_target = vm->registers[REG_X];
-        	hw->state = SPED3_STATE_TURNING;
-        	break;
+            hw->rot_target = vm->registers[REG_X];
+            hw->state = SPED3_STATE_TURNING;
+            break;
     }
 }
 

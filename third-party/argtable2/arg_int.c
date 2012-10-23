@@ -295,8 +295,8 @@ struct arg_int* arg_intn(const char* shortopts,
     size_t nbytes;
     struct arg_int *result;
 
-	/* foolproof things by ensuring maxcount is not less than mincount */
-	maxcount = (maxcount<mincount) ? mincount : maxcount;
+    /* foolproof things by ensuring maxcount is not less than mincount */
+    maxcount = (maxcount<mincount) ? mincount : maxcount;
 
     nbytes = sizeof(struct arg_int)     /* storage for struct arg_int */
            + maxcount * sizeof(int);    /* storage for ival[maxcount] array */

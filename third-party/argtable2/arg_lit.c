@@ -95,10 +95,10 @@ struct arg_lit* arg_litn(const char* shortopts,
                          int maxcount,
                          const char *glossary)
     {
-	struct arg_lit *result;
+    struct arg_lit *result;
 
-	/* foolproof things by ensuring maxcount is not less than mincount */
-	maxcount = (maxcount<mincount) ? mincount : maxcount;
+    /* foolproof things by ensuring maxcount is not less than mincount */
+    maxcount = (maxcount<mincount) ? mincount : maxcount;
 
     result = (struct arg_lit*)malloc(sizeof(struct arg_lit));
     if (result)

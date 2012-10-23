@@ -64,7 +64,7 @@ typedef intptr_t GLFWintptr;
 typedef struct _GLFWcontextNSGL
 {
     id           pixelFormat;
-    id	         context;
+    id             context;
 } _GLFWcontextNSGL;
 
 
@@ -74,7 +74,7 @@ typedef struct _GLFWcontextNSGL
 typedef struct _GLFWwindowNS
 {
     id           object;
-    id	         delegate;
+    id             delegate;
     id           view;
     unsigned int modifierFlags;
 } _GLFWwindowNS;
