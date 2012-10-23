@@ -1,13 +1,13 @@
 /**
  *
- *	File:		screen.h
+ *    File:        screen.h
  *
- *	Project:	DCPU-16 Toolchain
- *	Component:	C Extended Library
+ *    Project:    DCPU-16 Toolchain
+ *    Component:    C Extended Library
  *
- *	Authors:	James Rhodes
+ *    Authors:    James Rhodes
  *
- *	Description:	Provides access to the screen.
+ *    Description:    Provides access to the screen.
  *
  **/
 

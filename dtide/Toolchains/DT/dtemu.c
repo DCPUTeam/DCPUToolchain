@@ -53,7 +53,7 @@ bool start_emulation(const char* filename, vm_hook cyclehook, vm_hook writehook,
     load = fopen(filename, "rb");
     if (load == NULL)
     {
-	    fprintf(stderr, "emulator: unable to load %s from disk.\n", filename);
+        fprintf(stderr, "emulator: unable to load %s from disk.\n", filename);
         return false;
     }
 
@@ -71,7 +71,7 @@ bool start_emulation(const char* filename, vm_hook cyclehook, vm_hook writehook,
     if (biseq(ss, st))
     {
         fprintf(stderr, "emulator: it appears you passed intermediate code for execution.  link\n");
-        fprintf(stderr, "	the input code with the toolchain linker to execute it.\n");
+        fprintf(stderr, "    the input code with the toolchain linker to execute it.\n");
         return false;
     }
 
@@ -108,7 +108,7 @@ void cycle_emulation()
 
     if (vm != NULL)
     {
-	    vm_cycle(vm);
+        vm_cycle(vm);
 
         if (vm->halted)
         {

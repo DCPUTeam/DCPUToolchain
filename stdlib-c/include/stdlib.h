@@ -1,13 +1,13 @@
 /**
  *
- *	File:		stdlib.h
+ *    File:        stdlib.h
  *
- *	Project:	DCPU-16 Toolchain
- *	Component:	C Standard Library
+ *    Project:    DCPU-16 Toolchain
+ *    Component:    C Standard Library
  *
- *	Authors:	James Rhodes
+ *    Authors:    James Rhodes
  *
- *	Description:	Provides standard library functions.
+ *    Description:    Provides standard library functions.
  *
  **/
 
@@ -28,8 +28,8 @@
 // Structures:
 struct div_s
 {
-	int quot;
-	int rem;
+    int quot;
+    int rem;
 };
 
 // String conversion:
@@ -69,8 +69,8 @@ struct div_s div(int numerator, int denominator);
 
 //typedef struct
 //{
-//	long int quot;
-//	long int rem;
+//    long int quot;
+//    long int rem;
 //} ldiv_t;
 
 #endif

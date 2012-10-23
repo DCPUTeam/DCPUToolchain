@@ -138,8 +138,8 @@ struct arg_dbl* arg_dbln(const char* shortopts,
     size_t nbytes;
     struct arg_dbl *result;
 
-	/* foolproof things by ensuring maxcount is not less than mincount */
-	maxcount = (maxcount<mincount) ? mincount : maxcount;
+    /* foolproof things by ensuring maxcount is not less than mincount */
+    maxcount = (maxcount<mincount) ? mincount : maxcount;
 
     nbytes = sizeof(struct arg_dbl)     /* storage for struct arg_dbl */
            + (maxcount+1) * sizeof(double);  /* storage for dval[maxcount] array plus one extra for padding to memory boundary */

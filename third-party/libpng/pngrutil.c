@@ -1215,7 +1215,7 @@ png_handle_sRGB(png_structp png_ptr, png_infop info_ptr, png_uint_32 length)
           */
          png_ptr->rgb_to_gray_red_coeff   =  6968; /* 0.212639005871510 */
          png_ptr->rgb_to_gray_green_coeff = 23434; /* 0.715168678767756 */
-         /* png_ptr->rgb_to_gray_blue_coeff  =  2366; 0.072192315360734	*/
+         /* png_ptr->rgb_to_gray_blue_coeff  =  2366; 0.072192315360734    */
 
          /* The following keeps the cHRM chunk from destroying the
           * coefficients again in the event that it follows the sRGB chunk.

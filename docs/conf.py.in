@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.abspath('@SPHINX_EXT_PATH@'))
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
-	'toolchain'
+    'toolchain'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -134,13 +134,13 @@ html_static_path = ['_static']
 
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
-	'index': '@SPHINX_SOURCE_PATH@/indexsidebar.html',
+    'index': '@SPHINX_SOURCE_PATH@/indexsidebar.html',
 }
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
 html_additional_pages = {
-	'index': '@SPHINX_SOURCE_PATH@/indexcontent.html',
+    'index': '@SPHINX_SOURCE_PATH@/indexcontent.html',
 }
 
 # If false, no module index is generated.

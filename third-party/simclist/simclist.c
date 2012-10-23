@@ -526,19 +526,19 @@ int list_insert_at(list_t *restrict l, const void *data, unsigned int pos) {
 }
 
 int list_delete(list_t *restrict l, const void *data) {
-	int pos, r;
+    int pos, r;
 
-	pos = list_locate(l, data);
-	if (pos < 0)
-		return -1;
+    pos = list_locate(l, data);
+    if (pos < 0)
+        return -1;
 
-	r = list_delete_at(l, pos);
-	if (r < 0)
-		return -1;
+    r = list_delete_at(l, pos);
+    if (r < 0)
+        return -1;
 
     assert(list_repOk(l));
 
-	return 0;
+    return 0;
 }
 
 int list_delete_at(list_t *restrict l, unsigned int pos) {

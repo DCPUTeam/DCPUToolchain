@@ -440,7 +440,7 @@ static int convertMacKeyCode(unsigned int macKeyCode)
                                                userInfo:nil];
 
     [self addTrackingArea:trackingArea];
-	[super updateTrackingAreas];
+    [super updateTrackingAreas];
 }
 
 - (void)keyDown:(NSEvent *)event

@@ -69,9 +69,9 @@ for i in $FILES; do
             indent $SETTING_INDENT $STORE -o $OUTPUT
             cat $OUTPUT > $STORE
         fi
-	if $SETTING_ASTYLE_USED; then
-	        astyle $SETTING_ASTYLE $STORE
-	fi
+    if $SETTING_ASTYLE_USED; then
+            astyle $SETTING_ASTYLE $STORE
+    fi
 
         # Add our current temporary storage file
         # back into the index under the original file
@@ -92,9 +92,9 @@ for i in $FILES; do
             indent $SETTING_INDENT $i -o $i.fmtd
             mv $i.fmtd $i
         fi
-	if $SETTING_ASTYLE_USED; then
-	        astyle $SETTING_ASTYLE $i
-	fi
+    if $SETTING_ASTYLE_USED; then
+            astyle $SETTING_ASTYLE $i
+    fi
     fi 
 done
 

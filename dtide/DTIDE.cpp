@@ -158,8 +158,8 @@ void DTIDE::compileAndRunProject()
     compileProject();
     for(int i = 0; i < tabs->count(); i++)
     {
-    	CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
-    	w->run(debuggingSession);
+        CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        w->run(debuggingSession);
     }
 }
 
@@ -167,8 +167,8 @@ void DTIDE::compileProject()
 {
     for(int i = 0; i < tabs->count(); i++)
     {
-    	CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
-    	w->build();
+        CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        w->build();
     }
 }
 

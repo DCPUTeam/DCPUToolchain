@@ -599,7 +599,7 @@ int list_sort(list_t *restrict l, int versus);
  * This function prepares the list to be iterated.
  *
  * @param l     list to operate
- * @return 		0 if the list cannot be currently iterated. >0 otherwise
+ * @return         0 if the list cannot be currently iterated. >0 otherwise
  * 
  * @see list_iterator_stop()
  */
@@ -609,7 +609,7 @@ int list_iterator_start(list_t *restrict l);
  * return the next element in the iteration session.
  *
  * @param l     list to operate
- * @return		element datum, or NULL on errors
+ * @return        element datum, or NULL on errors
  */
 void *list_iterator_next(list_t *restrict l);
 

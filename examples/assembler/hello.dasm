@@ -18,32 +18,32 @@ set pc, main
 
 :end set pc, end
 
-:getscreen	
+:getscreen    
     hwn a
     set i, 0x0
     :getscreen_loop
-    	ifg i, a
-    		set pc, getscreen_notfound
+        ifg i, a
+            set pc, getscreen_notfound
 
-   	:getscreen_check
-   		hwq i
-   		ifn a, [screen_lsb]
-   			set pc, getscreen_inc
-   		ifn b, [screen_msb]
-   			set pc, getscreen_inc
-   		set pc, getscreen_found
-   			
- 	:getscreen_inc
- 		add i, 1
- 		set pc, getscreen_loop
- 		
- 	:getscreen_found
- 		set a, i
- 		set pc, pop
- 	
- 	:getscreen_notfound
- 		set a, 0x0
- 		set pc, pop
+       :getscreen_check
+           hwq i
+           ifn a, [screen_lsb]
+               set pc, getscreen_inc
+           ifn b, [screen_msb]
+               set pc, getscreen_inc
+           set pc, getscreen_found
+               
+     :getscreen_inc
+         add i, 1
+         set pc, getscreen_loop
+         
+     :getscreen_found
+         set a, i
+         set pc, pop
+     
+     :getscreen_notfound
+         set a, 0x0
+         set pc, pop
 
 :printstr
   ife [a], 0

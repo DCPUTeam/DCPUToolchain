@@ -1,14 +1,14 @@
 /**
 
-    File:	    lem1802.c
+    File:        lem1802.c
 
-    Project:	    DCPU-16 Tools
-    Component:	    LibDCPU-vm
+    Project:        DCPU-16 Tools
+    Component:        LibDCPU-vm
 
-    Authors:	    James Rhodes
-		    José Manuel Díez
-		    Tyrel Haveman
-		    Patrick Flick
+    Authors:        James Rhodes
+            José Manuel Díez
+            Tyrel Haveman
+            Patrick Flick
 
     Description:    Handles LEM1802 functions
 
@@ -46,18 +46,18 @@ void vm_hw_lem1802_write(vm_t* vm, uint16_t pos, void* ud)
     // Are we updating a general cell?
     if (location_screen != HW_LEM1802_DISCONNECTED && pos >= location_screen && pos <= location_screen + 0x17F)
     {
-    	hw->screen_was_updated = 1;
+        hw->screen_was_updated = 1;
     }
     // Are we updating a font character?
     else if (location_font != HW_LEM1802_DEFAULT_FONT_LOC && pos >= location_font && pos < location_font + 0x100)
     {
     //printf("updatefont at pos %x\n", location_font);
-    	hw->screen_was_updated = 1;
+        hw->screen_was_updated = 1;
     }
     else if (location_palette != HW_LEM1802_DEFAULT_PALETTE_LOC && pos >= location_palette && pos < location_palette + 0x10)
     {
-    	hw->screen_was_updated = 1;
-    	hw->border_was_updated = 1;
+        hw->screen_was_updated = 1;
+        hw->border_was_updated = 1;
     }
 }
 
@@ -74,19 +74,19 @@ void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos, void* ud)
 
     if (hw->window_closed)
     {
-    	vm->exit = 1;
-    	return;
+        vm->exit = 1;
+        return;
     }
     
     // blink every 60 frames (i.e. at 1 Hz)
     if (hw->blink_tick < 60)
     {
-    	hw->blink_tick++;
+        hw->blink_tick++;
     }
     else
     {
-    	hw->blink_tick = 0;
-    	hw->blink_status = 1 - hw->blink_status;
+        hw->blink_tick = 0;
+        hw->blink_status = 1 - hw->blink_status;
     }
 
     // update the texture from the screen and font memory
@@ -109,47 +109,47 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 
     switch (requested_action)
     {
-    	case LEM1802_MEM_MAP_SCREEN:
-    	    printd(LEVEL_DEBUG, "LEM1802 SCREEN MAPPED: %u.\n", val_b);
-    	    vm_hw_lem1802_mem_set_screen(hw, val_b);
-    	    vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
-    	    hw->screen_was_updated = 1;
-    	    break;
+        case LEM1802_MEM_MAP_SCREEN:
+            printd(LEVEL_DEBUG, "LEM1802 SCREEN MAPPED: %u.\n", val_b);
+            vm_hw_lem1802_mem_set_screen(hw, val_b);
+            vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
+            hw->screen_was_updated = 1;
+            break;
     
-    	case LEM1802_MEM_MAP_FONT:
-    	    printd(LEVEL_DEBUG, "LEM1802 FONT MAPPED.\n");
-    	    vm_hw_lem1802_mem_set_font(hw, val_b);
-    	    hw->screen_was_updated = 1;
-    	    break;
+        case LEM1802_MEM_MAP_FONT:
+            printd(LEVEL_DEBUG, "LEM1802 FONT MAPPED.\n");
+            vm_hw_lem1802_mem_set_font(hw, val_b);
+            hw->screen_was_updated = 1;
+            break;
     
-    	case LEM1802_MEM_MAP_PALETTE:
-    	    printd(LEVEL_DEBUG, "LEM1802 PALETTE MAPPED.\n");
-    	    vm_hw_lem1802_mem_set_palette(hw, val_b);
-    	    hw->screen_was_updated = 1;
-    	    hw->border_was_updated = 1;
-    	    break;
+        case LEM1802_MEM_MAP_PALETTE:
+            printd(LEVEL_DEBUG, "LEM1802 PALETTE MAPPED.\n");
+            vm_hw_lem1802_mem_set_palette(hw, val_b);
+            hw->screen_was_updated = 1;
+            hw->border_was_updated = 1;
+            break;
     
-    	case LEM1802_SET_BORDER_COLOR:
-    	    printd(LEVEL_DEBUG, "LEM1802 BORDER SET.\n");
-    	    vm_hw_lem1802_set_border(hw, val_b);
-    	    break;
+        case LEM1802_SET_BORDER_COLOR:
+            printd(LEVEL_DEBUG, "LEM1802 BORDER SET.\n");
+            vm_hw_lem1802_set_border(hw, val_b);
+            break;
     
-    	case LEM1802_MEM_DUMP_FONT:
-    	    printd(LEVEL_DEBUG, "LEM1802 DUMP FONT.\n");
-    	    vm->sleep_cycles += 256;
-    	    for (idx = 0; idx < 128; idx++)
-    	    {
-    		store = vm_hw_lem1802_mem_get_font_default_representation(idx);
-    		vm->ram[val_b + idx * 2] = (uint16_t)(store >> 16);
-    		vm->ram[val_b + idx * 2 + 1] = (uint16_t)((store << 16) >> 16);
-    	    }
-    	    break;
+        case LEM1802_MEM_DUMP_FONT:
+            printd(LEVEL_DEBUG, "LEM1802 DUMP FONT.\n");
+            vm->sleep_cycles += 256;
+            for (idx = 0; idx < 128; idx++)
+            {
+            store = vm_hw_lem1802_mem_get_font_default_representation(idx);
+            vm->ram[val_b + idx * 2] = (uint16_t)(store >> 16);
+            vm->ram[val_b + idx * 2 + 1] = (uint16_t)((store << 16) >> 16);
+            }
+            break;
     
-    	case LEM1802_MEM_DUMP_PALETTE:
-    		printd(LEVEL_DEBUG, "LEM1802 DUMP PALETTE.\n");
-    		vm->sleep_cycles += 16;
-    		vm_hw_lem1802_mem_dump_default_palette(vm, val_b);
-    		break;
+        case LEM1802_MEM_DUMP_PALETTE:
+            printd(LEVEL_DEBUG, "LEM1802 DUMP PALETTE.\n");
+            vm->sleep_cycles += 16;
+            vm_hw_lem1802_mem_dump_default_palette(vm, val_b);
+            break;
     }
 }
 
@@ -170,15 +170,15 @@ void vm_hw_lem1802_glfw_resize_handler(GLFWwindow window, int w, int h)
     
     if (new_aspect_ratio > original_aspect_ratio)
     {
-	// black areas on the sides
-    	x_frust = (double)w/(h * original_aspect_ratio);
-    	glOrtho(-x_frust, x_frust, -1.0, 1.0, -1.0, 2.0);
+    // black areas on the sides
+        x_frust = (double)w/(h * original_aspect_ratio);
+        glOrtho(-x_frust, x_frust, -1.0, 1.0, -1.0, 2.0);
     }
     else
     {
-	// black areas top and bottom
-    	y_frust = (h * original_aspect_ratio)/((double) w);
-    	glOrtho(-1.0, 1.0, -y_frust, y_frust, -1.0, 2.0);
+    // black areas top and bottom
+        y_frust = (h * original_aspect_ratio)/((double) w);
+        glOrtho(-1.0, 1.0, -y_frust, y_frust, -1.0, 2.0);
     }
     
     // redraw
@@ -229,11 +229,11 @@ void vm_hw_lem1802_glfw_draw(struct lem1802_hardware* hw)
         hw->vm->host->activate_context(hw->context);
         if (hw->texture_has_changed)
         {
-	        glBindTexture (GL_TEXTURE_2D, hw->texture_id);
-	        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	        glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, HW_LEM1802_SCREEN_TEXTURE_WIDTH, HW_LEM1802_SCREEN_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, hw->glfw_texture);
-	        hw->texture_has_changed = 0;
+            glBindTexture (GL_TEXTURE_2D, hw->texture_id);
+            glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, HW_LEM1802_SCREEN_TEXTURE_WIDTH, HW_LEM1802_SCREEN_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, hw->glfw_texture);
+            hw->texture_has_changed = 0;
         }
 
         // OpenGL rendering goes here...
@@ -273,32 +273,32 @@ void vm_hw_lem1802_update_texture(struct lem1802_hardware* hw)
     
     if (location_screen != HW_LEM1802_DISCONNECTED)
     {
-    	i = 0;
-    	if (hw->screen_was_updated)
-    	{
-    	    for (pos = location_screen; pos <= location_screen + 0x17F; pos++)
-    	    {
-        		val = hw->vm->ram[pos];
-        		x = i % HW_LEM1802_SCREEN_WIDTH;
-        		y = i / HW_LEM1802_SCREEN_WIDTH;
-        		vm_hw_lem1802_mem_put_char_to_screen(hw, val, x, y);
-        		i++;
-    	    }
-    	    hw->screen_was_updated = 0;
-    	    hw->texture_has_changed = 1;
-    	}
+        i = 0;
+        if (hw->screen_was_updated)
+        {
+            for (pos = location_screen; pos <= location_screen + 0x17F; pos++)
+            {
+                val = hw->vm->ram[pos];
+                x = i % HW_LEM1802_SCREEN_WIDTH;
+                y = i / HW_LEM1802_SCREEN_WIDTH;
+                vm_hw_lem1802_mem_put_char_to_screen(hw, val, x, y);
+                i++;
+            }
+            hw->screen_was_updated = 0;
+            hw->texture_has_changed = 1;
+        }
         
-    	// update border
-    	if (hw->border_was_updated)
-    	{
-    	    vm_hw_lem1802_mem_draw_border(hw);
-    	    hw->border_was_updated = 0;
-    	    hw->texture_has_changed = 1;
-    	}
+        // update border
+        if (hw->border_was_updated)
+        {
+            vm_hw_lem1802_mem_draw_border(hw);
+            hw->border_was_updated = 0;
+            hw->texture_has_changed = 1;
+        }
     }
     else
     {
-	    // TODO blank/disconnected screen !?
+        // TODO blank/disconnected screen !?
     }
 }
 

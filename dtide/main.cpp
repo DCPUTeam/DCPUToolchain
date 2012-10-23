@@ -18,9 +18,9 @@ extern "C"
 int main(int argc, char** argv)
 {
     // Some set up required for toolchain to work.
-	debug_setlevel(LEVEL_VERBOSE);
-	osutil_setarg0(bautofree(bfromcstr(argv[0])));
-	isetmode(IMODE_BIG);
+    debug_setlevel(LEVEL_VERBOSE);
+    osutil_setarg0(bautofree(bfromcstr(argv[0])));
+    isetmode(IMODE_BIG);
 
     // Start glfw.
     glfwInit();
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     
     /*DTIDESplash* splash = new DTIDESplash(toolchains);
     if(!splash->exec())
-	    return 0;
+        return 0;
    
     DTIDE mainWindow(splash->toolchain, splash->fileName);*/
 

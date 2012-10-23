@@ -64,9 +64,9 @@ extern "C" {
 #endif
 
 /* Hex-encoded Readline version number. */
-#define RL_READLINE_VERSION	0x0500		/* Readline 5.0 */
-#define RL_VERSION_MAJOR	5
-#define RL_VERSION_MINOR	0
+#define RL_READLINE_VERSION    0x0500        /* Readline 5.0 */
+#define RL_VERSION_MAJOR    5
+#define RL_VERSION_MINOR    0
 
 /* Readline data structures. */
 
@@ -81,9 +81,9 @@ enum undo_code { UNDO_DELETE, UNDO_INSERT, UNDO_BEGIN, UNDO_END };
 /* What an element of THE_UNDO_LIST looks like. */
 typedef struct undo_list {
   struct undo_list *next;
-  int start, end;		/* Where the change took place. */
-  char *text;			/* The text to insert, if undoing a delete. */
-  enum undo_code what;		/* Delete, Insert, Begin, End. */
+  int start, end;        /* Where the change took place. */
+  char *text;            /* The text to insert, if undoing a delete. */
+  enum undo_code what;        /* Delete, Insert, Begin, End. */
 } UNDO_LIST;
 
 /* The current undo list for RL_LINE_BUFFER. */
@@ -98,9 +98,9 @@ typedef struct _funmap {
 READLINE_DLL_IMPEXP FUNMAP **funmap;
 
 /* **************************************************************** */
-/*								    */
-/*	     Functions available to bind to key sequences	    */
-/*								    */
+/*                                    */
+/*         Functions available to bind to key sequences        */
+/*                                    */
 /* **************************************************************** */
 
 /* Bindable commands for numeric arguments. */
@@ -294,9 +294,9 @@ READLINE_DLL_IMPEXP int rl_vi_bword PARAMS((int, int));
 READLINE_DLL_IMPEXP int rl_vi_eword PARAMS((int, int));
 
 /* **************************************************************** */
-/*								    */
-/*			Well Published Functions		    */
-/*								    */
+/*                                    */
+/*            Well Published Functions            */
+/*                                    */
 /* **************************************************************** */
 
 /* Readline functions. */
@@ -484,14 +484,14 @@ READLINE_DLL_IMPEXP char *filename_completion_function PARAMS((const char *, int
 #endif
 
 /* **************************************************************** */
-/*								    */
-/*			Well Published Variables		    */
-/*								    */
+/*                                    */
+/*            Well Published Variables            */
+/*                                    */
 /* **************************************************************** */
 
 /* The version of this incarnation of the readline library. */
-READLINE_DLL_IMPEXP const char *rl_library_version;		/* e.g., "4.2" */
-READLINE_DLL_IMPEXP int rl_readline_version;			/* e.g., 0x0402 */
+READLINE_DLL_IMPEXP const char *rl_library_version;        /* e.g., "4.2" */
+READLINE_DLL_IMPEXP int rl_readline_version;            /* e.g., 0x0402 */
 
 /* True if this is real GNU readline. */
 READLINE_DLL_IMPEXP int rl_gnu_readline_p;
@@ -775,8 +775,8 @@ READLINE_DLL_IMPEXP int rl_ignore_completion_duplicates;
 READLINE_DLL_IMPEXP int rl_inhibit_completion;
 
 /* Definitions available for use by readline clients. */
-#define RL_PROMPT_START_IGNORE	'\001'
-#define RL_PROMPT_END_IGNORE	'\002'
+#define RL_PROMPT_START_IGNORE    '\001'
+#define RL_PROMPT_END_IGNORE    '\002'
 
 /* Possible values for do_replace argument to rl_filename_quoting_function,
    called by rl_complete_internal. */
@@ -785,33 +785,33 @@ READLINE_DLL_IMPEXP int rl_inhibit_completion;
 #define MULT_MATCH      2
 
 /* Possible state values for rl_readline_state */
-#define RL_STATE_NONE		0x00000		/* no state; before first call */
+#define RL_STATE_NONE        0x00000        /* no state; before first call */
 
-#define RL_STATE_INITIALIZING	0x00001		/* initializing */
-#define RL_STATE_INITIALIZED	0x00002		/* initialization done */
-#define RL_STATE_TERMPREPPED	0x00004		/* terminal is prepped */
-#define RL_STATE_READCMD	0x00008		/* reading a command key */
-#define RL_STATE_METANEXT	0x00010		/* reading input after ESC */
-#define RL_STATE_DISPATCHING	0x00020		/* dispatching to a command */
-#define RL_STATE_MOREINPUT	0x00040		/* reading more input in a command function */
-#define RL_STATE_ISEARCH	0x00080		/* doing incremental search */
-#define RL_STATE_NSEARCH	0x00100		/* doing non-inc search */
-#define RL_STATE_SEARCH		0x00200		/* doing a history search */
-#define RL_STATE_NUMERICARG	0x00400		/* reading numeric argument */
-#define RL_STATE_MACROINPUT	0x00800		/* getting input from a macro */
-#define RL_STATE_MACRODEF	0x01000		/* defining keyboard macro */
-#define RL_STATE_OVERWRITE	0x02000		/* overwrite mode */
-#define RL_STATE_COMPLETING	0x04000		/* doing completion */
-#define RL_STATE_SIGHANDLER	0x08000		/* in readline sighandler */
-#define RL_STATE_UNDOING	0x10000		/* doing an undo */
-#define RL_STATE_INPUTPENDING	0x20000		/* rl_execute_next called */
-#define RL_STATE_TTYCSAVED	0x40000		/* tty special chars saved */
+#define RL_STATE_INITIALIZING    0x00001        /* initializing */
+#define RL_STATE_INITIALIZED    0x00002        /* initialization done */
+#define RL_STATE_TERMPREPPED    0x00004        /* terminal is prepped */
+#define RL_STATE_READCMD    0x00008        /* reading a command key */
+#define RL_STATE_METANEXT    0x00010        /* reading input after ESC */
+#define RL_STATE_DISPATCHING    0x00020        /* dispatching to a command */
+#define RL_STATE_MOREINPUT    0x00040        /* reading more input in a command function */
+#define RL_STATE_ISEARCH    0x00080        /* doing incremental search */
+#define RL_STATE_NSEARCH    0x00100        /* doing non-inc search */
+#define RL_STATE_SEARCH        0x00200        /* doing a history search */
+#define RL_STATE_NUMERICARG    0x00400        /* reading numeric argument */
+#define RL_STATE_MACROINPUT    0x00800        /* getting input from a macro */
+#define RL_STATE_MACRODEF    0x01000        /* defining keyboard macro */
+#define RL_STATE_OVERWRITE    0x02000        /* overwrite mode */
+#define RL_STATE_COMPLETING    0x04000        /* doing completion */
+#define RL_STATE_SIGHANDLER    0x08000        /* in readline sighandler */
+#define RL_STATE_UNDOING    0x10000        /* doing an undo */
+#define RL_STATE_INPUTPENDING    0x20000        /* rl_execute_next called */
+#define RL_STATE_TTYCSAVED    0x40000        /* tty special chars saved */
 
-#define RL_STATE_DONE		0x80000		/* done; accepted line */
+#define RL_STATE_DONE        0x80000        /* done; accepted line */
 
-#define RL_SETSTATE(x)		(rl_readline_state |= (x))
-#define RL_UNSETSTATE(x)	(rl_readline_state &= ~(x))
-#define RL_ISSTATE(x)		(rl_readline_state & (x))
+#define RL_SETSTATE(x)        (rl_readline_state |= (x))
+#define RL_UNSETSTATE(x)    (rl_readline_state &= ~(x))
+#define RL_ISSTATE(x)        (rl_readline_state & (x))
 
 struct readline_state {
   /* line state */
