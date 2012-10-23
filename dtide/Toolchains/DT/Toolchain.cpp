@@ -25,7 +25,6 @@ void DCPUToolchain_ActivateContext(void* context)
 {
     QGLWidget* w = static_cast<QGLWidget*>(context);
     w->makeCurrent();
-    w->renderText(0, 0, "lol");
 }
 
 void DCPUToolchain_SwapBuffers(void* context)
@@ -42,7 +41,7 @@ void DCPUToolchain_DestroyContext(void* context)
 
 void* DCPUToolchain_GetUD(void* context)
 {
-    // FIXME
+    return NULL;
 }
 
 void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
