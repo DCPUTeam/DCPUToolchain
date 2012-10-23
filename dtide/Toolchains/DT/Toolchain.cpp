@@ -17,7 +17,6 @@ void* DCPUToolchain_CreateContext(const char* title, int width, int height, bool
 {
     QString qtitle = QString::fromLocal8Bit(title);
     QGLWidget* context = g_this->gl->requestWidget(qtitle, width, height);
-
     return context;
 }
 
@@ -31,7 +30,6 @@ void DCPUToolchain_SwapBuffers(void* context)
 {
     QGLWidget* w = static_cast<QGLWidget*>(context);
     w->swapBuffers();
-    w->doneCurrent();
 } 
 
 void DCPUToolchain_DestroyContext(void* context)
