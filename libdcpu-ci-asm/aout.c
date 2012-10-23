@@ -39,6 +39,11 @@ extern char* fileloc;
 
 void aout_reset(void)
 {
+    if(start != NULL)
+        free(start);
+    if(end != NULL)
+        free(end);
+
     start = NULL;
     end = NULL;
 }
