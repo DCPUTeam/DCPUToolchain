@@ -6,8 +6,7 @@
 #include "../../Backends.h"
 
 #include <QDebug>
-#include <QProcess>
-#include <QStringList>
+#include <QGLWidget>
 
 extern "C" {
 #include <dcpu.h>

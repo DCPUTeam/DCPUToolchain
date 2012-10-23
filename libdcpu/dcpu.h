@@ -144,13 +144,19 @@ typedef uint8_t bool;
 #define DCPU_MICS_PER_CYCLE	    (1000/DCPU_TICKS_KHZ)
 
 // Host context structure
+typedef void* (*create_context_t)(const char*, int, int, bool, void*);
+typedef void (*destroy_context_t)(void* context);
+typedef void (*activate_context_t)(void* context);
+typedef void (*swap_buffers_t)(void* context);
+typedef void* (*get_ud_t)(void* ud);
+
 typedef struct
 {
-    void* (*create_context)(const char* title, int width, int height, bool resizeable, void* ud);
-    void (*destroy_context)(void* context);
-    void (*activate_context)(void* context);
-    void (*swap_buffers)(void* context);
-    void* (*get_ud)(void* ud);
+    create_context_t create_context;
+    destroy_context_t destroy_context;
+    activate_context_t activate_context;
+    swap_buffers_t swap_buffers;
+    get_ud_t get_ud;
 } host_context_t;
 
 ///

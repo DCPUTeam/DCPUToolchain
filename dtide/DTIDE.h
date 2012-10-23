@@ -17,6 +17,7 @@
 #include "DTIDETabWidget.h"
 #include "DTIDERegisters.h"
 #include "DTIDEDebuggingSession.h"
+#include "DTIDEGLWidgets.h"
 
 class DTIDE: public QMainWindow
 {
@@ -49,13 +50,16 @@ private slots:
    void compileProject();
    void compileAndRunProject();
 
+   void addGLWidget(QGLWidget*, QString, int, int);
+
 private:
     DTIDETabWidget* tabs;
     DTIDERegisters* registers;
+    DTIDEDebuggingSession* debuggingSession;
+    DTIDEGLWidgets* glWidgets;
     QMenuBar* menu;
     QAction* nextTab;
     Toolchain* toolchain;
-    DTIDEDebuggingSession* debuggingSession;
     QTimer* timer;
 
     void setupMenuBar();

@@ -7,7 +7,12 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
     tabs = new DTIDETabWidget(this);
     tabs->setMovable(true);
     setCentralWidget(tabs);
-   
+ 
+    debuggingSession = 0;
+    glWidgets = new DTIDEGLWidgets();
+    toolchain = t;
+    toolchain->SetWidgetFactory(glWidgets);
+  
     setupMenuBar();
     setupActions();
     setupSignals();
@@ -15,10 +20,7 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
 
     resize(QSize(640, 580));
 
-    toolchain = t;
     addCodeTab(fileName);
-
-    debuggingSession = 0;
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(cycleUpdate()));
@@ -71,6 +73,8 @@ void DTIDE::addCodeTab(const QString& fileName)
     tabs->addTab(editor, fileName);
 }
 
+
+
 void DTIDE::setupActions()
 {
     nextTab = new QAction(tr("Next tab"), this);
@@ -82,6 +86,7 @@ void DTIDE::setupActions()
 void DTIDE::setupSignals()
 {
     connect(this, SIGNAL(fileSave()), tabs, SLOT(fileSave()));
+    connect(glWidgets, SIGNAL(spawnGLWidget(QGLWidget*, QString, int, int)), this, SLOT(addGLWidget(QGLWidget*, QString, int, int)));
 }
 
 void DTIDE::setupMenuBar()
@@ -115,6 +120,17 @@ void DTIDE::setupDockWidgets()
     registersDockWidget->setWidget(registers);
     registersDockWidget->setMinimumWidth(100);
     addDockWidget(Qt::RightDockWidgetArea, registersDockWidget);
+}
+
+void DTIDE::addGLWidget(QGLWidget* w, QString title, int width, int height)
+{
+    qDebug() << "Adding DockWidget";
+    QDockWidget* glDockWidget = new QDockWidget(title, this);
+    glDockWidget->setWidget(w);
+    glDockWidget->setMinimumWidth(width);
+    glDockWidget->setMinimumHeight(height);
+    glDockWidget->setFloating(true);
+    addDockWidget(Qt::LeftDockWidgetArea, glDockWidget);
 }
 
 void DTIDE::step()

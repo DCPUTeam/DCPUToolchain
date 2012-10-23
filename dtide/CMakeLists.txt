@@ -14,6 +14,7 @@ if(${QT4_FOUND})
         DTIDEHighlighting.cpp
         DTIDEDebuggingSession.cpp
         DTIDERegisters.cpp
+        DTIDEGLWidgets.cpp
         CodeEditor.cpp
         Highlighters/DCPUHighlighter.cpp
         Toolchains/DT/Toolchain.cpp
@@ -29,6 +30,7 @@ if(${QT4_FOUND})
         DTIDEHighlighting.h
         DTIDEDebuggingSession.h
         DTIDERegisters.h
+        DTIDEGLWidgets.h
         CodeEditor.h
         Highlighters/Highlighters.h
         Highlighters/DCPUHighlighter.h
@@ -46,6 +48,7 @@ if(${QT4_FOUND})
     QT4_WRAP_CPP(dtide_HEADERS_MOC ${dtide_HEADERS})
     QT4_WRAP_UI(dtide_FORMS_HEADERS ${dtide_FORMS})
 
+    set(QT_USE_QTOPENGL TRUE)
     include(${QT_USE_FILE})
     add_definitions(${QT_DEFINITIONS})
 

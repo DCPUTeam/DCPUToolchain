@@ -11,6 +11,39 @@
 #include <unistd.h>
 #endif
 
+DCPUToolchain* g_this;
+
+void* DCPUToolchain_CreateContext(const char* title, int width, int height, bool resizeable, void* ud)
+{
+    QString qtitle = QString::fromLocal8Bit(title);
+    QGLWidget* context = g_this->gl->requestWidget(qtitle, width, height);
+
+    return context;
+}
+
+void DCPUToolchain_ActivateContext(void* context)
+{
+    QGLWidget* w = static_cast<QGLWidget*>(context);
+    w->makeCurrent();
+    w->renderText(0, 0, "lol");
+}
+
+void DCPUToolchain_SwapBuffers(void* context)
+{
+    QGLWidget* w = static_cast<QGLWidget*>(context);
+    w->swapBuffers();
+    w->doneCurrent();
+} 
+
+void DCPUToolchain_DestroyContext(void* context)
+{
+    // FIXME
+}
+
+void* DCPUToolchain_GetUD(void* context)
+{
+    // FIXME
+}
 
 void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
 {
@@ -152,16 +185,29 @@ std::list<Language*> DCPUToolchain::GetLanguages()
 
 void DCPUToolchain::Start(std::string path, DebuggingSession* session)
 {
+    // For the lack of a proper solution...
+    g_this = this;
+
     // Tell the emulator to start.
     debuggingSession = session;
     paused = false;
     start_emulation(
+        /* Binary path */
         path.c_str(), 
+
+        /* VM Hooks */
         &DCPUToolchain_CycleHook, 
         &DCPUToolchain_WriteHook, 
         &DCPUToolchain_InterruptHook,
         &DCPUToolchain_HardwareHook,
         &DCPUToolchain_60HZHook,
+
+        /* Host context */
+        &DCPUToolchain_CreateContext,
+        &DCPUToolchain_DestroyContext,
+        &DCPUToolchain_ActivateContext,
+        &DCPUToolchain_SwapBuffers,
+        &DCPUToolchain_GetUD,
 
         static_cast<void*>(this));
 }

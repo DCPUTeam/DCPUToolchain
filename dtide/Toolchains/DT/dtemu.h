@@ -10,7 +10,22 @@ extern "C" {
 #include <dcpuhook.h>
 
 vm_t* get_vm(void);    
-bool start_emulation(const char* filename, vm_hook cyclehook, vm_hook writehook, vm_hook interrupthook, vm_hook hardwarehook, vm_hook sixtyhz, void* toolchain);
+bool start_emulation(
+    const char* filename, 
+    
+    vm_hook cyclehook, 
+    vm_hook writehook,
+    vm_hook interrupthook, 
+    vm_hook hardwarehook, 
+    vm_hook sixtyhz, 
+
+    create_context_t create_context,
+    activate_context_t activate_context,
+    swap_buffers_t swap_buffers,
+    destroy_context_t destroy_context,
+    get_ud_t get_ud,
+
+    void* toolchain);
 void cycle_emulation();
 void stop_emulation();
 

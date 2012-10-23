@@ -5,6 +5,7 @@
 #include <string>
 #include <deque>
 #include <stdint.h>
+#include "DTIDEGLWidgets.h"
 
 enum MessageType
 {
@@ -243,6 +244,9 @@ public:
     //virtual std::list<ConfigurationOption> GetOptions() = 0;
     //virtual ConfigurationOption GetOption() = 0;
     //virtual void SetOption(std::string Name, ConfigurationType Type, ConfigurationValue Value) = 0;
+ 
+    // Host context stuff
+    virtual void SetWidgetFactory(DTIDEGLWidgets* gl);
   
     // Language interface.
     virtual std::list<Language*> GetLanguages() = 0;
@@ -263,6 +267,8 @@ public:
     // Modules and extensions.
     //virtual std::list<Module&> GetModules() = 0;
     //virtual std::list<Device&> GetCustomDevices() = 0;
+    DTIDEGLWidgets* gl;
+
 };
 
 #include "Toolchains/Toolchains.h"

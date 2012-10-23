@@ -29,13 +29,30 @@ vm_t* get_vm(void)
     return vm;
 }
 
-bool start_emulation(const char* filename, vm_hook cyclehook, vm_hook writehook, vm_hook interrupthook, vm_hook hardwarehook, vm_hook sixtyhz, void* toolchain)
+bool start_emulation(
+    const char* filename,
+
+    vm_hook cyclehook, 
+    vm_hook writehook, 
+    vm_hook interrupthook, 
+    vm_hook hardwarehook, 
+    vm_hook sixtyhz, 
+
+    create_context_t create_context,
+    destroy_context_t destroy_context,
+    activate_context_t activate_context,
+    swap_buffers_t swap_buffers,
+    get_ud_t get_ud,
+    
+    void* toolchain)
 {
     FILE* load;
     uint16_t flash[0x10000];
     char leading[0x100];
     unsigned int i;
     bstring ss, st;
+    host_context_t* dtide = malloc(sizeof(host_context_t));
+
 
     // Stop any existing emulation.
     if (vm != NULL)
@@ -75,6 +92,13 @@ bool start_emulation(const char* filename, vm_hook cyclehook, vm_hook writehook,
         return false;
     }
 
+    // Initialize the host context
+    dtide->create_context = create_context;
+    dtide->destroy_context = destroy_context;
+    dtide->activate_context = activate_context;
+    dtide->swap_buffers = swap_buffers;
+    dtide->get_ud = get_ud;
+
     // And then use the VM.
     vm = vm_create();
     vm_flash(vm, flash);
@@ -83,8 +107,9 @@ bool start_emulation(const char* filename, vm_hook cyclehook, vm_hook writehook,
 
     // Init hardware.
     vm_hw_timer_init(vm);
+    vm->host = dtide;
     vm_hw_lem1802_init(vm);
-    vm_hw_sped3_init(vm);
+//    vm_hw_sped3_init(vm);
     vm_hw_m35fd_init(vm);
     vm_hw_lua_init(vm);
 
