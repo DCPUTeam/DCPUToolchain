@@ -16,6 +16,7 @@ QGLWidget* DTIDEGLWidgets::requestWidget(QString title, int width, int height)
 
     emit spawnGLWidget(res, title, width, height);
 
+    res->makeCurrent();
     return res;
 }
 
