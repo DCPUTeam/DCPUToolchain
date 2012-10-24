@@ -83,11 +83,24 @@ void ppimpl_printf(state_t* state, const char* fmt, ...)
     char* store;
     int count, i;
     va_list argptr;
+#ifndef WIN32
+    va_list argptrc;
+#endif
     va_start(argptr, fmt);
+#ifndef WIN32
+    va_copy(argptrc, argptr);
+#endif
     count = vsnprintf(NULL, 0, fmt, argptr);
+#ifndef WIN32
+    count++;
+#endif
     store = malloc(count + 1);
-    memset(store, '\0', count);
+    memset(store, '\0', count + 1);
+#ifndef WIN32
+    vsnprintf(store, count, fmt, argptrc);
+#else
     vsnprintf(store, count, fmt, argptr);
+#endif
     va_end(argptr);
     for (i = count - 1; i >= 0; i--)
         list_insert_at(&state->cached_input, (void*)store[i], 0);
