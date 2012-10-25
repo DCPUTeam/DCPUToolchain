@@ -156,6 +156,7 @@ extern "C" {
   #else
     #include <GL/gl.h>
   #endif
+  #define GLFW_INCLUDE_GLU
   #if defined(GLFW_INCLUDE_GLU)
     #include <GL/glu.h>
   #endif
