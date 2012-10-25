@@ -24,6 +24,7 @@ private:
     QTextCharFormat instructionFormat;
     QTextCharFormat commentFormat;
     QTextCharFormat labelFormat;
+    QTextCharFormat registerFormat;
 
 };
 

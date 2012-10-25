@@ -8,6 +8,15 @@ DCPUHighlighter::DCPUHighlighter(QTextDocument* parent): QSyntaxHighlighter(pare
 
     instructionFormat.setFontWeight(QFont::Bold);
     instructionFormat.setForeground(HEX_COLOR(0x00, 0x00, 0xff));
+
+    commentFormat.setFontItalic(true);
+    commentFormat.setForeground(HEX_COLOR(0x77, 0x88, 0x99));
+
+    labelFormat.setFontWeight(QFont::Bold);
+    labelFormat.setForeground(HEX_COLOR(0x46, 0x82, 0xb4));
+
+    registerFormat.setForeground(HEX_COLOR(0x99, 0x32, 0xcc));
+
     QStringList instructions;
 
     instructions    << "set" << "add" << "sub"
@@ -25,26 +34,40 @@ DCPUHighlighter::DCPUHighlighter(QTextDocument* parent): QSyntaxHighlighter(pare
 
     foreach(const QString& instruction, instructions)
     {
-        rule.pattern = QRegExp(QString("([ ]+)?") + instruction, Qt::CaseInsensitive);
+        rule.pattern = QRegExp(QString("([ ]+)?\\b") + instruction + QString("\\b"), Qt::CaseInsensitive);
         rule.format = instructionFormat;
 
         highlightingRules.append(rule);
     }
 
-    labelFormat.setFontWeight(QFont::Bold);
-    labelFormat.setForeground(HEX_COLOR(0x46, 0x82, 0xb4));
-    rule.pattern = QRegExp("([ ]+)?[a-z0-9_]+:", Qt::CaseInsensitive);
+
+    rule.pattern = QRegExp("([ ]+)?[a-zA-Z0-9_]+:", Qt::CaseInsensitive);
     rule.format = labelFormat;
     highlightingRules.append(rule);
 
-    rule.pattern = QRegExp("([ ]+)?:[a-z0-9_]+");
+    rule.pattern = QRegExp("([ ]+)?:[a-zA-Z0-9_]+");
     highlightingRules.append(rule);
 
-    commentFormat.setFontItalic(true);
-    commentFormat.setForeground(HEX_COLOR(0x77, 0x88, 0x99));
     rule.pattern = QRegExp("([ ]+)?;(.+)", Qt::CaseInsensitive);
     rule.format = commentFormat;
     highlightingRules.append(rule); 
+
+    QStringList registers;
+    registers   << "a" << "b" << "c"
+                << "x" << "y" << "z"
+                << "i" << "j" << "pc"
+                << "sp" << "peek" << "push"
+                << "pop";
+    
+    foreach(const QString& reg, registers)
+    {
+        rule.pattern = QRegExp(QString("\\b") + reg + QString("\\b"), Qt::CaseInsensitive);
+        rule.format = registerFormat;
+
+        highlightingRules.append(rule);
+    }
+
+
 }
 
 void DCPUHighlighter::highlightBlock(const QString& text)
