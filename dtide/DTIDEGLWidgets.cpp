@@ -27,6 +27,6 @@ void DTIDEGLWidgets::killWidgets()
         QGLWidget* w = activeWidgets.takeFirst();
         emit killDockWidget(w);
 
-        delete w;
+        w->close();
     }
 }
