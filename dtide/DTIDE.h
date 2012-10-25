@@ -51,6 +51,7 @@ private slots:
    void compileAndRunProject();
 
    void addGLWidget(QGLWidget*, QString, int, int);
+   void killDockWidget(QGLWidget*);
 
 private:
     DTIDETabWidget* tabs;
@@ -61,6 +62,7 @@ private:
     QAction* nextTab;
     Toolchain* toolchain;
     QTimer* timer;
+    QList<QDockWidget*> dockWidgets;
 
     void setupMenuBar();
     void setupActions();

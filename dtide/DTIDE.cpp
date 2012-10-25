@@ -64,7 +64,6 @@ void DTIDE::addCodeTab(const QString& fileName)
     QFont font;
     font.setFamily("Monospace");
     font.setFixedPitch(true);
-    font.setPointSize(10);
     
     CodeEditor* editor = new CodeEditor(toolchain, fileName, this);
     connect(editor, SIGNAL(fileNameChanged(QString)), tabs, SLOT(updateTitle(QString)));
@@ -87,6 +86,7 @@ void DTIDE::setupSignals()
 {
     connect(this, SIGNAL(fileSave()), tabs, SLOT(fileSave()));
     connect(glWidgets, SIGNAL(spawnGLWidget(QGLWidget*, QString, int, int)), this, SLOT(addGLWidget(QGLWidget*, QString, int, int)));
+    connect(glWidgets, SIGNAL(killDockWidget(QGLWidget*)), this, SLOT(killDockWidget(QGLWidget*)));
 }
 
 void DTIDE::setupMenuBar()
@@ -124,13 +124,14 @@ void DTIDE::setupDockWidgets()
 
 void DTIDE::addGLWidget(QGLWidget* w, QString title, int width, int height)
 {
-    qDebug() << "Adding DockWidget";
     QDockWidget* glDockWidget = new QDockWidget(title, this);
     glDockWidget->setWidget(w);
     glDockWidget->setMinimumWidth(width);
     glDockWidget->setMinimumHeight(height);
     glDockWidget->setFloating(true);
     addDockWidget(Qt::LeftDockWidgetArea, glDockWidget);
+
+    dockWidgets.append(glDockWidget);
 }
 
 void DTIDE::step()
@@ -169,9 +170,10 @@ QSize DTIDE::sizeHint()
 
 void DTIDE::compileAndRunProject()
 {
+    stop();
     debuggingSession = new DTIDEDebuggingSession();
-
     compileProject();
+
     for(int i = 0; i < tabs->count(); i++)
     {
     	CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
@@ -188,8 +190,21 @@ void DTIDE::compileProject()
     }
 }
 
-
 void DTIDE::closeEvent(QCloseEvent* event)
 {
     // clean up
+}
+
+void DTIDE::killDockWidget(QGLWidget* w)
+{
+    for(int i = 0; i < dockWidgets.size(); i++)
+    {
+        QDockWidget* dW = dockWidgets[i];
+        if(dW->widget() == w)
+        {
+            removeDockWidget(dW);
+            dockWidgets.removeAt(i);
+            return;
+        }
+    }
 }

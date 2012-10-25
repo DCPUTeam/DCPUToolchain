@@ -11,9 +11,14 @@ public:
     DTIDEGLWidgets();
 
     QGLWidget* requestWidget(QString title, int width, int height);
+    void killWidgets();
 
 signals:
     void spawnGLWidget(QGLWidget*, QString, int, int);
+    void killDockWidget(QGLWidget*);
+
+private:
+    QList<QGLWidget*> activeWidgets;
 };
 
 #endif
