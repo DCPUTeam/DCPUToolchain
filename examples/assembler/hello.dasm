@@ -22,7 +22,7 @@ set pc, main
     hwn z
     set i, 0x0
     :getscreen_loop
-    	ifg i, z
+    	ife i, z
     		set pc, getscreen_notfound
 
    	:getscreen_check
