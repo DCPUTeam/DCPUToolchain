@@ -1,14 +1,14 @@
 /**
 
-	File:		ldlua.h
+    File:       ldlua.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	Linker
+    Project:    DCPU-16 Toolchain
+    Component:  Linker
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Provides optimization infrastructure for Lua-based
-			optimizers.
+    Description:    Provides optimization infrastructure for Lua-based
+            optimizers.
 
 **/
 

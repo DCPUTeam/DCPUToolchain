@@ -1,13 +1,13 @@
 /**
 
-	File:		breakpoint.h
+    File:       breakpoint.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU-VM-DBG
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU-VM-DBG
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares breakpoint structures.
+    Description:    Declares breakpoint structures.
 
 **/
 
@@ -19,8 +19,8 @@
 
 struct backtrace_entry
 {
-	uint16_t caller;
-	uint16_t callee;
+    uint16_t caller;
+    uint16_t callee;
 };
 
 struct backtrace_entry* backtrace_entry_create(uint16_t caller, uint16_t callee);

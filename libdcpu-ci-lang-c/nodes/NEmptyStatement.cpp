@@ -1,13 +1,13 @@
 /**
 
-	File:		NEmptyStatement.cpp
+    File:       NEmptyStatement.cpp
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Defines the NEmptyStatement AST class.
+    Description:    Defines the NEmptyStatement AST class.
 
 **/
 
@@ -17,12 +17,12 @@
 
 AsmBlock* NEmptyStatement::compile(AsmGenerator& context)
 {
-	// Generate an empty block.
-	AsmBlock* block = new AsmBlock();
-	return block;
+    // Generate an empty block.
+    AsmBlock* block = new AsmBlock();
+    return block;
 }
 
 AsmBlock* NEmptyStatement::reference(AsmGenerator& context)
 {
-	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an empty statement.");
+    throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an empty statement.");
 }

@@ -16,14 +16,14 @@ QSize DTIDERegisters::sizeHint()
 void DTIDERegisters::setRegisters(StatusMessage m)
 {
     QStringList registers;
-    for(int i = 0; i < 8; i++)
+    for (int i = 0; i < 8; i++)
     {
         QString r = QString("0x%1").arg(m.registers[i], 4, 16, QChar('0'));
         registers.append(r);
     }
-   
+
     // TODO: Fix this mess.
-    
+
     reg_A->setText(registers[0]);
     reg_B->setText(registers[1]);
     reg_C->setText(registers[2]);

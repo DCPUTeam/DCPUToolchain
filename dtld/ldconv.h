@@ -1,14 +1,14 @@
 /**
 
-	File:		ldconv.h
+    File:       ldconv.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	Linker
+    Project:    DCPU-16 Toolchain
+    Component:  Linker
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Converts object format structures to linked lists
-			so that they can be easily modified and cloned.
+    Description:    Converts object format structures to linked lists
+            so that they can be easily modified and cloned.
 
 **/
 
@@ -21,9 +21,9 @@
 
 struct lconv_entry
 {
-	bstring label;
-	bstring bin;
-	uint16_t address;
+    bstring label;
+    bstring bin;
+    uint16_t address;
 };
 
 list_t* list_create();

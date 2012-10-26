@@ -1,13 +1,13 @@
 /**
 
-    File:	    lem1802.h
+    File:       lem1802.h
 
-    Project:	    DCPU-16 Tools
-    Component:	    LibDCPU-vm
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-vm
 
-    Authors:	    James Rhodes
-		    José manuel Díez
-		    Patrick Flick
+    Authors:        James Rhodes
+            José manuel Díez
+            Patrick Flick
 
     Description:    Handles LEM1802 functions
 
@@ -19,15 +19,15 @@
 #include <GL/glfw3.h>
 #include "dcpu.h"
 
-#define LEM1802_ID		    0x7349F615
-#define LEM1802_VERSION		    0x1802
-#define LEM1802_MANUFACTURER	    0x1C6C8B36
+#define LEM1802_ID          0x7349F615
+#define LEM1802_VERSION         0x1802
+#define LEM1802_MANUFACTURER        0x1C6C8B36
 
-#define LEM1802_MEM_MAP_SCREEN	    0
-#define LEM1802_MEM_MAP_FONT	    1
-#define LEM1802_MEM_MAP_PALETTE	    2
+#define LEM1802_MEM_MAP_SCREEN      0
+#define LEM1802_MEM_MAP_FONT        1
+#define LEM1802_MEM_MAP_PALETTE     2
 #define LEM1802_SET_BORDER_COLOR    3
-#define LEM1802_MEM_DUMP_FONT	    4
+#define LEM1802_MEM_DUMP_FONT       4
 #define LEM1802_MEM_DUMP_PALETTE    5
 
 struct lem1802_hardware
@@ -40,25 +40,25 @@ struct lem1802_hardware
     uint16_t write_hook;
     uint16_t break_hook;
     uint16_t hw_id;
-    
+
     uint16_t palette_location;
     uint16_t font_location;
     uint16_t screen_location;
     uint16_t border_color;
-    
+
     // status parameter for efficiency
     uint16_t border_was_updated;
     uint16_t screen_was_updated;
-    
+
     uint16_t blink_status;
     unsigned int blink_tick;
-    unsigned char * glfw_texture;
+    unsigned char* glfw_texture;
     int texture_has_changed;
     GLint texture_id;
-    
-    
+
+
     int window_closed;
-    
+
     void* context;
     int width, height;
 

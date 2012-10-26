@@ -1,14 +1,14 @@
 /**
 
-	File:		hwlua.h
+    File:       hwlua.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-VM
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-VM
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares functions used to
-			host custom Lua hardware.
+    Description:    Declares functions used to
+            host custom Lua hardware.
 
 **/
 

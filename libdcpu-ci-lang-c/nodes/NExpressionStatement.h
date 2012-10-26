@@ -1,13 +1,13 @@
 /**
 
-	File:		NExpressionStatement.h
+    File:       NExpressionStatement.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the NExpressionStatement AST class.
+    Description:    Declares the NExpressionStatement AST class.
 
 **/
 
@@ -19,12 +19,12 @@
 
 class NExpressionStatement : public NStatement
 {
-	public:
-		NExpression& expression;
-		NExpressionStatement(NExpression& expression) :
-			expression(expression), NStatement("expression") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
+public:
+    NExpression& expression;
+    NExpressionStatement(NExpression& expression) :
+        expression(expression), NStatement("expression") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
 };
 
 #endif

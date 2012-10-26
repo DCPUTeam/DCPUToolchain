@@ -1,16 +1,16 @@
 /**
 
-	File:		lem1802util.h
+    File:       lem1802util.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU-VM
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU-VM
 
-	Authors:	James Rhodes
-			José Manuel Díez
-			Tyrel Haveman
-			Patrick Flick
+    Authors:    James Rhodes
+            José Manuel Díez
+            Tyrel Haveman
+            Patrick Flick
 
-	Description:	Declares utility functions for LEM1802.
+    Description:    Declares utility functions for LEM1802.
 
 **/
 
@@ -19,8 +19,8 @@
 
 #include <stdint.h>
 
-void vm_hw_lem1802_util_raw2rgb(uint16_t raw, unsigned char * rgb);
-uint16_t vm_hw_lem1802_util_rgb2raw(unsigned char * rgb);
+void vm_hw_lem1802_util_raw2rgb(uint16_t raw, unsigned char* rgb);
+uint16_t vm_hw_lem1802_util_rgb2raw(unsigned char* rgb);
 int vm_hw_lem1802_util_loadpng(int* out_width, int* out_height, int* out_has_alpha, unsigned char** outData);
 
 #endif

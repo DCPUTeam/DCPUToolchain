@@ -1,14 +1,14 @@
 /**
 
-	File:		imap.h
+    File:       imap.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares functions and structures for the instruction
-			and register maps.
+    Description:    Declares functions and structures for the instruction
+            and register maps.
 
 **/
 
@@ -23,15 +23,15 @@
 
 struct instruction_mapping
 {
-	const char* name;
-	uint16_t opcode;
-	uint16_t nbopcode;
+    const char* name;
+    uint16_t opcode;
+    uint16_t nbopcode;
 };
 
 struct register_mapping
 {
-	const char* name;
-	uint16_t value;
+    const char* name;
+    uint16_t value;
 };
 
 struct instruction_mapping* get_instruction_by_value(uint16_t opcode, uint16_t nbopcode);

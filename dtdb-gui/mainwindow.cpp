@@ -2,7 +2,7 @@
 #include <QtDebug>
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget* parent)
 {
     setupUi(this);
     runner = new DTDBRunner();

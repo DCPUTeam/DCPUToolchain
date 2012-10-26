@@ -1,13 +1,13 @@
 /**
 
-	File:		tests.h
+    File:       tests.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU Test Suite
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU Test Suite
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Defines available tests.
+    Description:    Defines available tests.
 
 **/
 

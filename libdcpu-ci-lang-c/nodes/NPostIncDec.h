@@ -1,13 +1,13 @@
 /**
 
-	File:		NPostIncDec.h
+    File:       NPostIncDec.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	Patrick Flick
+    Authors:    Patrick Flick
 
-	Description:	Declares the NPostIncDec AST class.
+    Description:    Declares the NPostIncDec AST class.
 
 **/
 
@@ -18,14 +18,14 @@
 
 class NPostIncDec : public NExpression
 {
-	public:
-		NExpression& expr;
-		int op;
-		NPostIncDec(NExpression& expr, int op) :
-			expr(expr), op(op), NExpression("postincdec") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType* getExpressionType(AsmGenerator& context);
+public:
+    NExpression& expr;
+    int op;
+    NPostIncDec(NExpression& expr, int op) :
+        expr(expr), op(op), NExpression("postincdec") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
+    virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

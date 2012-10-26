@@ -1,14 +1,14 @@
 /**
 
-	File:		dcpuhook.h
+    File:       dcpuhook.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-vm
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-vm
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the hooking mechanism for observing
-			when the VM's RAM changes.
+    Description:    Declares the hooking mechanism for observing
+            when the VM's RAM changes.
 
 **/
 
@@ -17,14 +17,14 @@
 
 #include "dcpu.h"
 
-#define HOOK_ON_NONE		0
-#define HOOK_ON_WRITE		1
-#define HOOK_ON_POST_CYCLE	2
-#define HOOK_ON_BREAK		3
-#define HOOK_ON_PRE_CYCLE	4
-#define HOOK_ON_INTERRUPT	5
-#define HOOK_ON_60HZ		6
-#define HOOK_ON_HARDWARE_CHANGE 7 
+#define HOOK_ON_NONE        0
+#define HOOK_ON_WRITE       1
+#define HOOK_ON_POST_CYCLE  2
+#define HOOK_ON_BREAK       3
+#define HOOK_ON_PRE_CYCLE   4
+#define HOOK_ON_INTERRUPT   5
+#define HOOK_ON_60HZ        6
+#define HOOK_ON_HARDWARE_CHANGE 7
 
 #ifdef PRIVATE_VM_ACCESS
 void vm_hook_fire(vm_t* vm, uint16_t pos, uint16_t mode, void* ud);

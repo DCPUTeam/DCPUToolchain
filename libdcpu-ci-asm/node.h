@@ -1,13 +1,13 @@
 /**
 
-	File:		node.h
+    File:       node.h
 
-	Project:	DCPU-16 Tools
-	Component:	Assembler
+    Project:    DCPU-16 Tools
+    Component:  Assembler
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares node structures for the AST.
+    Description:    Declares node structures for the AST.
 
 **/
 
@@ -22,88 +22,88 @@
 // Address
 typedef struct ast_node_address
 {
-	struct expr* value;
-	uint8_t	 bracketed;
-	uint8_t	 added;
-	char*	 addcmpt;
+    struct expr* value;
+    uint8_t  bracketed;
+    uint8_t  added;
+    char*    addcmpt;
 } ast_node_address_t;
 
 // Register
 struct ast_node_register
 {
-	char*	 value;
-	uint8_t	 bracketed;
+    char*    value;
+    uint8_t  bracketed;
 };
 
 // Type enumeration
 enum ast_node_type
 {
-	type_raw,
-	type_keyword,
-	type_address,
-	type_register,
-	type_parameter,
-	type_parameters,
-	type_instruction,
-	type_label
+    type_raw,
+    type_keyword,
+    type_address,
+    type_register,
+    type_parameter,
+    type_parameters,
+    type_instruction,
+    type_label
 };
 
 // Parameter
 struct ast_node_parameter
 {
-	enum ast_node_type type;
-	struct ast_node_address* address;
-	struct ast_node_register* registr;
-	bstring raw;
-	struct ast_node_parameter* prev;
+    enum ast_node_type type;
+    struct ast_node_address* address;
+    struct ast_node_register* registr;
+    bstring raw;
+    struct ast_node_parameter* prev;
 };
 
 // Parameters
 struct ast_node_parameters
 {
-	struct ast_node_parameter* last;
+    struct ast_node_parameter* last;
 };
 
 // Instruction
 struct ast_node_instruction
 {
-	char* instruction;
-	struct ast_node_parameters* parameters;
+    char* instruction;
+    struct ast_node_parameters* parameters;
 };
 
 // Label
 struct ast_node_label
 {
-	char* name;
+    char* name;
 };
 
 // Line
 struct ast_node_line
 {
-	enum ast_node_type type;
-	int keyword;
-	struct ast_node_label* label;
-	struct ast_node_instruction* instruction;
-	struct ast_node_line* prev;
-	bstring keyword_data_string;
-	struct expr* keyword_data_expr_1;
-	struct expr* keyword_data_expr_2;
-	int line;
-	int uline;
-	bstring file;
-	bstring ufile;
+    enum ast_node_type type;
+    int keyword;
+    struct ast_node_label* label;
+    struct ast_node_instruction* instruction;
+    struct ast_node_line* prev;
+    bstring keyword_data_string;
+    struct expr* keyword_data_expr_1;
+    struct expr* keyword_data_expr_2;
+    int line;
+    int uline;
+    bstring file;
+    bstring ufile;
 };
 
 // Lines
 struct ast_node_lines
 {
-	struct ast_node_line* last;
+    struct ast_node_line* last;
 };
 
 // Root
 struct ast_node_root
 {
-	struct ast_node_lines* values;
+    struct ast_node_lines* values;
 };
 
 // External root reference.

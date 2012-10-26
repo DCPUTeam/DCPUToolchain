@@ -24,7 +24,7 @@ public:
     uint16_t ex;
 };
 
-class HardwareMessage 
+class HardwareMessage
 {
 
 };
@@ -90,7 +90,7 @@ class BuildAPI
 {
 private:
     // Maintain state here to determine what file is currently
-    // building.	You could use multiple BuildAPIs to do parallel
+    // building.    You could use multiple BuildAPIs to do parallel
     // builds.
 public:
     // Implemented by IDE.
@@ -139,7 +139,7 @@ public:
     std::string GetDescription();
     std::string GetDocumentationURL();
     std::string GetAuthors();
-  
+
     // Configuration interface (e.g. setting filename for disk device...)
     std::list<ConfigurationOption> GetOptions();
     ConfigurationOption GetOption();
@@ -149,14 +149,14 @@ public:
     bool Has(int devid, std::string name); // Whether there is any data for this name.
     //template <class T>
     //T Get<T>(int devid, std::string name, ...)  // Each device has a known set of properties (like the screen
-					                            // might expose the colour and and character in each frame with
-					                            // different names).  Varargs are used to pass in information.
+    // might expose the colour and and character in each frame with
+    // different names).  Varargs are used to pass in information.
     void Hide(int devid); // Indicates the emulator / debugger should not show any visible reference of this device
-		    // as the IDE wants to draw it itself (for LEM1802 / SPED3 screens).
+    // as the IDE wants to draw it itself (for LEM1802 / SPED3 screens).
     void Show(int devid); // Indicates the emulator should show this device again.
 };
 
-; 
+;
 
 class DebuggingSession
 {
@@ -174,15 +174,15 @@ public:
 
     // Devices.
     void SetActiveDevice(int devid, Device& device); // Provides the IDE with a reference to an active device, such as
-						                             // any LEM1802 screens, etc. which the IDE can then draw inline.
-						                             // Device IDs are used to differentiate between two devices of the 
-						                             // same type (e.g. two LEM1802 screens).
-    bool HasMessages(); 
+    // any LEM1802 screens, etc. which the IDE can then draw inline.
+    // Device IDs are used to differentiate between two devices of the
+    // same type (e.g. two LEM1802 screens).
+    bool HasMessages();
     virtual void AddMessage(DebuggingMessage m) = 0;
     DebuggingMessage GetMessage();
 
 private:
-    std::deque<DebuggingMessage> m_Queue; 
+    std::deque<DebuggingMessage> m_Queue;
 };
 
 enum ModuleType
@@ -244,14 +244,14 @@ public:
     //virtual std::list<ConfigurationOption> GetOptions() = 0;
     //virtual ConfigurationOption GetOption() = 0;
     //virtual void SetOption(std::string Name, ConfigurationType Type, ConfigurationValue Value) = 0;
- 
+
     // Host context stuff
     virtual void SetWidgetFactory(DTIDEGLWidgets* gl);
-  
+
     // Language interface.
     virtual std::list<Language*> GetLanguages() = 0;
     Language* GetLanguageByExtension(std::string ext);
-  
+
     // Debugging / execution interface.
     virtual void Start(std::string path, DebuggingSession* session) = 0;
     virtual void Pause(DebuggingSession* session) = 0;

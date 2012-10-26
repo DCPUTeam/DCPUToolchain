@@ -1,14 +1,14 @@
 /**
 
-	File:		Lists.h
+    File:       Lists.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares lists that are common to all
-			AST nodes.
+    Description:    Declares lists that are common to all
+            AST nodes.
 
 **/
 

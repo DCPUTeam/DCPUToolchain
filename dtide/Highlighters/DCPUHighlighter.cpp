@@ -20,19 +20,19 @@ DCPUHighlighter::DCPUHighlighter(QTextDocument* parent): QSyntaxHighlighter(pare
     QStringList instructions;
 
     instructions    << "set" << "add" << "sub"
-        		    << "mul" << "mli" << "div"
-        		    << "dvi" << "mod" << "mdi"
-        		    << "and" << "bor" << "xor"
-        		    << "shr" << "asr" << "shl"
-        		    << "ifb" << "ifc" << "ife"
-        		    << "ifn" << "ifg" << "ifa"
-        		    << "ifl" << "ifu" << "adx"
-        		    << "sbx" << "sti" << "std"
+                    << "mul" << "mli" << "div"
+                    << "dvi" << "mod" << "mdi"
+                    << "and" << "bor" << "xor"
+                    << "shr" << "asr" << "shl"
+                    << "ifb" << "ifc" << "ife"
+                    << "ifn" << "ifg" << "ifa"
+                    << "ifl" << "ifu" << "adx"
+                    << "sbx" << "sti" << "std"
                     << "jsr" << "int" << "iag"
                     << "ias" << "rfi" << "iaq"
                     << "hwn" << "hwq" << "hwi";
 
-    foreach(const QString& instruction, instructions)
+    foreach(const QString & instruction, instructions)
     {
         rule.pattern = QRegExp(QString("([ ]+)?\\b") + instruction + QString("\\b"), Qt::CaseInsensitive);
         rule.format = instructionFormat;
@@ -50,7 +50,7 @@ DCPUHighlighter::DCPUHighlighter(QTextDocument* parent): QSyntaxHighlighter(pare
 
     rule.pattern = QRegExp("([ ]+)?;(.+)", Qt::CaseInsensitive);
     rule.format = commentFormat;
-    highlightingRules.append(rule); 
+    highlightingRules.append(rule);
 
     QStringList registers;
     registers   << "a" << "b" << "c"
@@ -58,8 +58,8 @@ DCPUHighlighter::DCPUHighlighter(QTextDocument* parent): QSyntaxHighlighter(pare
                 << "i" << "j" << "pc"
                 << "sp" << "peek" << "push"
                 << "pop";
-    
-    foreach(const QString& reg, registers)
+
+    foreach(const QString & reg, registers)
     {
         rule.pattern = QRegExp(QString("\\b") + reg + QString("\\b"), Qt::CaseInsensitive);
         rule.format = registerFormat;
@@ -72,12 +72,12 @@ DCPUHighlighter::DCPUHighlighter(QTextDocument* parent): QSyntaxHighlighter(pare
 
 void DCPUHighlighter::highlightBlock(const QString& text)
 {
-    foreach(const HighlightingRule& rule, highlightingRules)
+    foreach(const HighlightingRule & rule, highlightingRules)
     {
         QRegExp expr(rule.pattern);
         int index = expr.indexIn(text);
 
-        while(index >= 0)
+        while (index >= 0)
         {
             int length = expr.matchedLength();
             setFormat(index, length, rule.format);

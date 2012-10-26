@@ -1,15 +1,15 @@
 /**
 
-	File:		bopen-01.c
+    File:       bopen-01.c
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU Test Suite
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU Test Suite
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Tests the bopen() and bclose() methods
-			to ensure that they correctly open and close
-			files.
+    Description:    Tests the bopen() and bclose() methods
+            to ensure that they correctly open and close
+            files.
 
 **/
 
@@ -18,13 +18,13 @@
 
 int bopen_01()
 {
-	BFILE* f;
+    BFILE* f;
 
-	f = bfopen("nonexistant.blah", "rb");
-	TEST_EXPECT(f == NULL);
-	f = bfopen("test.txt", "rb");
-	TEST_EXPECT(f != NULL);
-	bfclose(f);
+    f = bfopen("nonexistant.blah", "rb");
+    TEST_EXPECT(f == NULL);
+    f = bfopen("test.txt", "rb");
+    TEST_EXPECT(f != NULL);
+    bfclose(f);
 
-	TEST_SUCCESS;
+    TEST_SUCCESS;
 }

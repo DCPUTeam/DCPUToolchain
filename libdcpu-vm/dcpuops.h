@@ -1,15 +1,15 @@
 /**
 
-	File:		dcpuops.h
+    File:       dcpuops.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-vm
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-vm
 
-	Authors:	James Rhodes
-			Tyrel Haveman
+    Authors:    James Rhodes
+            Tyrel Haveman
 
-	Description:	Declares functions that handle individual
-			opcodes in the virtual machine.
+    Description:    Declares functions that handle individual
+            opcodes in the virtual machine.
 
 **/
 

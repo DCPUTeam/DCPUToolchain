@@ -1,19 +1,19 @@
 /**
 
-	File:		hwkeyboard.h
+    File:       hwkeyboard.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-vm
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-vm
 
-	Authors:	Jose Manuel Diez
+    Authors:    Jose Manuel Diez
 
-	Description: Function signatures for the keyboard.
+    Description: Function signatures for the keyboard.
 **/
 
 #ifndef __DCPUKEYBOARD_H
 #define __DCPUKEYBOARD_H
 
-#define KB_BUFFER_COUNT	   100
+#define KB_BUFFER_COUNT    100
 #define KB_PRESSED_COUNT   0x91
 
 #define KB_INTERRUPT_CLEAR 0
@@ -26,19 +26,19 @@
 
 struct keyboard_hardware
 {
-	hw_t device;
-	vm_t* vm;
+    hw_t device;
+    vm_t* vm;
 
-	uint16_t hw_id;
-	
-	uint16_t* buffer;
-	uint16_t buffer_idx_r;
-	uint16_t buffer_idx_w;
+    uint16_t hw_id;
 
-	bool* pressed;
+    uint16_t* buffer;
+    uint16_t buffer_idx_r;
+    uint16_t buffer_idx_w;
 
-	uint16_t interrupt_message;
-	bool lowercase;
+    bool* pressed;
+
+    uint16_t interrupt_message;
+    bool lowercase;
 };
 
 void vm_hw_keyboard_handle_char(GLFWwindow w, int key);

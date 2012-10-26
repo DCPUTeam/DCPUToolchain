@@ -1,14 +1,14 @@
 /**
 
-	File:		aerr.h
+    File:       aerr.h
 
-	Project:	DCPU-16 Tools
-	Component:	Assembler
+    Project:    DCPU-16 Tools
+    Component:  Assembler
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares error codes and functions in the
-			error handling infrastructure.
+    Description:    Declares error codes and functions in the
+            error handling infrastructure.
 
 **/
 
@@ -23,10 +23,10 @@
 // Structure for holding warning policy information
 struct warnpolicy
 {
-	int errid;
-	const char* name;
-	bool treat_as_error; //< Whether the warning should be treated as an error.
-	bool silence; //< Whether the warning should be silenced.
+    int errid;
+    const char* name;
+    bool treat_as_error; //< Whether the warning should be treated as an error.
+    bool silence; //< Whether the warning should be silenced.
 };
 
 // Error codes
@@ -40,8 +40,8 @@ extern struct warnpolicy warnpolicies[];
 // Structure for holding error information
 struct errinfo
 {
-	int errid;
-	const char* errdata;
+    int errid;
+    const char* errdata;
 };
 
 // Utility method for throwing errors.

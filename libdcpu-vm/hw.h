@@ -1,14 +1,14 @@
 /**
 
-	File:		hw.h
+    File:       hw.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-vm
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-vm
 
-	Authors:	José Manuel Díez
+    Authors:    José Manuel Díez
 
-	Description:	Defines the type which holds a hardware device,
-			provides a mechanism to call interrupts on them
+    Description:    Defines the type which holds a hardware device,
+            provides a mechanism to call interrupts on them
 
 **/
 

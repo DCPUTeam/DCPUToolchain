@@ -1,13 +1,13 @@
 /**
 
-	File:		NPreIncDec.h
+    File:       NPreIncDec.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	Patrick Flick
+    Authors:    Patrick Flick
 
-	Description:	Declares the NPreIncDec AST class.
+    Description:    Declares the NPreIncDec AST class.
 
 **/
 
@@ -18,14 +18,14 @@
 
 class NPreIncDec : public NExpression
 {
-	public:
-		NExpression& expr;
-		int op;
-		NPreIncDec(int op, NExpression& expr) :
-			expr(expr), op(op), NExpression("preincdec") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType* getExpressionType(AsmGenerator& context);
+public:
+    NExpression& expr;
+    int op;
+    NPreIncDec(int op, NExpression& expr) :
+        expr(expr), op(op), NExpression("preincdec") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
+    virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

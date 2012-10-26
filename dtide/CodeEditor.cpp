@@ -4,7 +4,7 @@ CodeEditor::CodeEditor(Toolchain* t, QString filename, QWidget* parent): QPlainT
 {
     highlighter = NULL;
     lineNumberArea = new LineNumberArea(this);
-    
+
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
     connect(this, SIGNAL(updateRequest(QRect, int)), this, SLOT(updateLineNumberArea(QRect, int)));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
@@ -31,13 +31,13 @@ QString CodeEditor::getExtension()
 
 void CodeEditor::setHighlighter()
 {
-    if(highlighter != NULL)
+    if (highlighter != NULL)
         delete highlighter;
 
     std::string ext = getExtension().toStdString();
     lang = toolchain->GetLanguageByExtension(ext);
-    
-    if(lang != NULL)
+
+    if (lang != NULL)
         highlighter = DTIDEHighlighting::getHighlighter(lang->GetCodeSyntax(), document());
     else
         highlighter = NULL;
@@ -54,7 +54,7 @@ int CodeEditor::lineNumberAreaWidth()
     int digits = 1;
     int max = qMax(1, blockCount());
 
-    while(max >= 10)
+    while (max >= 10)
     {
         max /= 10;
         digits++;
@@ -67,13 +67,13 @@ int CodeEditor::lineNumberAreaWidth()
 
 void CodeEditor::updateLineNumberArea(const QRect& rect, int dy)
 {
-    if(dy)
-    	lineNumberArea->scroll(0, dy);
+    if (dy)
+        lineNumberArea->scroll(0, dy);
     else
-    	lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
+        lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
 
-    if(rect.contains(viewport()->rect()))
-	emit blockCountChanged(0);
+    if (rect.contains(viewport()->rect()))
+        emit blockCountChanged(0);
 }
 
 void CodeEditor::resizeEvent(QResizeEvent* e)
@@ -99,69 +99,69 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent* event)
     int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
     int bottom = top + (int) blockBoundingRect(block).height();
 
-    while(block.isValid() && top <= event->rect().bottom())
+    while (block.isValid() && top <= event->rect().bottom())
     {
-    	if(block.isVisible() && bottom >= event->rect().top())
-    	{
-    	    QString number = QString::number(blockNumber + 1);
-    	    painter.setPen(Qt::black);
-    
-    	    painter.drawText(0, top, lineNumberArea->width(), fontMetrics().height(), Qt::AlignCenter, number);
-    	}
-    
-    	block = block.next();
-    	top = bottom;
-    	bottom = top + (int) blockBoundingRect(block).height();
-    	++blockNumber;
-   }
+        if (block.isVisible() && bottom >= event->rect().top())
+        {
+            QString number = QString::number(blockNumber + 1);
+            painter.setPen(Qt::black);
+
+            painter.drawText(0, top, lineNumberArea->width(), fontMetrics().height(), Qt::AlignCenter, number);
+        }
+
+        block = block.next();
+        top = bottom;
+        bottom = top + (int) blockBoundingRect(block).height();
+        ++blockNumber;
+    }
 }
 
 void CodeEditor::keyPressEvent(QKeyEvent* event)
 {
     QKeyEvent* space = new QKeyEvent(
-	    event->type(),
-	    Qt::Key_Space,
-	    event->modifiers(),
-	    QString(" "));
+        event->type(),
+        Qt::Key_Space,
+        event->modifiers(),
+        QString(" "));
 
-    if(event->key() == Qt::Key_Tab)
+    if (event->key() == Qt::Key_Tab)
     {
-    	for(int i = 0; i < 4; i++)
-    	    QPlainTextEdit::keyPressEvent(space);
+        for (int i = 0; i < 4; i++)
+            QPlainTextEdit::keyPressEvent(space);
     }
-    else if(event->key() == Qt::Key_Return)
+    else if (event->key() == Qt::Key_Return)
     {
-    	QTextCursor c = textCursor();
-    	c.movePosition(QTextCursor::StartOfBlock);
-    	c.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-    	
-    	QString previousLine = c.selectedText();
-    	int count = 0;
-    	int idx = 0;
-    	while(previousLine[idx++] == ' ') count++;
-    	
-    	QPlainTextEdit::keyPressEvent(event);
-    	for(int i = 0; i < count; i++) 
-    	    QPlainTextEdit::keyPressEvent(space);
+        QTextCursor c = textCursor();
+        c.movePosition(QTextCursor::StartOfBlock);
+        c.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+
+        QString previousLine = c.selectedText();
+        int count = 0;
+        int idx = 0;
+        while (previousLine[idx++] == ' ') count++;
+
+        QPlainTextEdit::keyPressEvent(event);
+        for (int i = 0; i < count; i++)
+            QPlainTextEdit::keyPressEvent(space);
     }
     else
     {
-       QPlainTextEdit::keyPressEvent(event);
+        QPlainTextEdit::keyPressEvent(event);
     }
 
-    if(!dirty && !event->text().isEmpty())
+    if (!dirty && !event->text().isEmpty())
     {
-    	dirty = true;
-    	fileName += "*";
-    	emit fileNameChanged(fileName);
+        dirty = true;
+        fileName += "*";
+        emit fileNameChanged(fileName);
     }
 }
 
 void CodeEditor::saveFile()
 {
-    if(path.isEmpty())
+    if (path.isEmpty())
     {
-    	path = QFileDialog::getSaveFileName(this);
+        path = QFileDialog::getSaveFileName(this);
     }
 
     QFileInfo f(path);
@@ -171,11 +171,11 @@ void CodeEditor::saveFile()
     dirty = false;
     QFile file(path);
 
-    if(file.open(QIODevice::WriteOnly))
+    if (file.open(QIODevice::WriteOnly))
     {
-    	QTextStream stream(&file);
-    	stream << toPlainText();
-    	stream << "\n";
+        QTextStream stream(&file);
+        stream << toPlainText();
+        stream << "\n";
     }
 
 
@@ -184,9 +184,9 @@ void CodeEditor::saveFile()
 
 QString CodeEditor::getPath()
 {
-    if(path.isEmpty())
+    if (path.isEmpty())
     {
-    	saveFile();
+        saveFile();
     }
 
     return path;

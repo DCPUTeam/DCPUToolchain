@@ -1,13 +1,13 @@
 /**
 
-	File:		NWhileStatement.h
+    File:       NWhileStatement.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the NWhileStatement AST class.
+    Description:    Declares the NWhileStatement AST class.
 
 **/
 
@@ -20,13 +20,13 @@
 
 class NWhileStatement : public NStatement
 {
-	public:
-		NExpression& eval;
-		NBlock& expr;
-		NWhileStatement(NExpression& eval, NBlock& expr) :
-			eval(eval), expr(expr), NStatement("while") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
+public:
+    NExpression& eval;
+    NBlock& expr;
+    NWhileStatement(NExpression& eval, NBlock& expr) :
+        eval(eval), expr(expr), NStatement("while") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
 };
 
 #endif

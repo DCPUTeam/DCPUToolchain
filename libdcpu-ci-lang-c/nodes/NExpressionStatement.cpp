@@ -1,13 +1,13 @@
 /**
 
-	File:		NExpressionStatement.cpp
+    File:       NExpressionStatement.cpp
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Defines the NExpressionStatement AST class.
+    Description:    Defines the NExpressionStatement AST class.
 
 **/
 
@@ -17,10 +17,10 @@
 
 AsmBlock* NExpressionStatement::compile(AsmGenerator& context)
 {
-	return this->expression.compile(context);
+    return this->expression.compile(context);
 }
 
 AsmBlock* NExpressionStatement::reference(AsmGenerator& context)
 {
-	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an expression statement.");
+    throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an expression statement.");
 }

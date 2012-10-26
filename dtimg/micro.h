@@ -1,14 +1,14 @@
 /**
 
-	File:		micro.h
+    File:       micro.h
 
-	Project:	DCPU-16 Tools
-	Component:	Image Smasher
+    Project:    DCPU-16 Tools
+    Component:  Image Smasher
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Defines function for getting a filesystem writer
-			for the micro filesystem format.
+    Description:    Defines function for getting a filesystem writer
+            for the micro filesystem format.
 
 **/
 

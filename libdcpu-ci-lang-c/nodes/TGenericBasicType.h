@@ -1,13 +1,13 @@
 /**
 
-	File:		TGenericBasicType.h
+    File:       TGenericBasicType.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	Patrick Flick
+    Authors:    Patrick Flick
 
-	Description:	Declares the TGenericBasicType Type class.
+    Description:    Declares the TGenericBasicType Type class.
 
 **/
 
@@ -23,29 +23,29 @@
 
 class TGenericBasicType: public IType
 {
-	private:
+private:
 
 
-	public:
+public:
 
-		virtual std::string getName() const
-		{
-			throw new CompilerException(0, "<internal>",
-						    "Unable to get name of generic basic type (internal error).");
-		}
+    virtual std::string getName() const
+    {
+        throw new CompilerException(0, "<internal>",
+                                    "Unable to get name of generic basic type (internal error).");
+    }
 
-		virtual std::string getInternalName() const
-		{
-			throw new CompilerException(0, "<internal>",
-						    "Unable to get internal name of generic basic type (internal error).");
-		}
+    virtual std::string getInternalName() const
+    {
+        throw new CompilerException(0, "<internal>",
+                                    "Unable to get internal name of generic basic type (internal error).");
+    }
 
-		bool isBasicType() const;
-		bool isStruct() const;
-		bool isPointer() const;
+    bool isBasicType() const;
+    bool isStruct() const;
+    bool isPointer() const;
 
-		static IType* promoteTypes(IType* typeA, IType* typeB);
-		static AsmBlock* compileBinaryOperator(NBinaryOperator* binopNode, AsmGenerator& context);
+    static IType* promoteTypes(IType* typeA, IType* typeB);
+    static AsmBlock* compileBinaryOperator(NBinaryOperator* binopNode, AsmGenerator& context);
 };
 #endif
 

@@ -1,14 +1,14 @@
 /**
 
-	File:		iio.h
+    File:       iio.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Provides functions for reading and writing
-			assembler instructions in the correct endianness.
+    Description:    Provides functions for reading and writing
+            assembler instructions in the correct endianness.
 
 **/
 

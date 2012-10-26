@@ -1,13 +1,13 @@
 /**
 
-	File:		NCharacter.h
+    File:       NCharacter.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the NCharacter AST class.
+    Description:    Declares the NCharacter AST class.
 
 **/
 
@@ -18,12 +18,12 @@
 
 class NCharacter : public NExpression
 {
-	public:
-		std::string value;
-		NCharacter(std::string value) : value(value), NExpression("character") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType* getExpressionType(AsmGenerator& context);
+public:
+    std::string value;
+    NCharacter(std::string value) : value(value), NExpression("character") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
+    virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

@@ -1,14 +1,14 @@
 /**
 
-	File:		base.h
+    File:       base.h
 
-	Project:	DCPU-16 Tools
-	Component:	Image Smasher
+    Project:    DCPU-16 Tools
+    Component:  Image Smasher
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Defines universal structure for calling operations
-			on filesystem writers.
+    Description:    Defines universal structure for calling operations
+            on filesystem writers.
 
 **/
 
@@ -21,10 +21,10 @@
 
 struct fs_writer
 {
-	void (*init)(BFILE* out);
-	void (*write_kernel)(BFILE* out, BFILE* in, int count);
-	void (*write_file)(BFILE* out, BFILE* in, freed_bstring name);
-	void (*close)(BFILE* out);
+    void (*init)(BFILE* out);
+    void (*write_kernel)(BFILE* out, BFILE* in, int count);
+    void (*write_file)(BFILE* out, BFILE* in, freed_bstring name);
+    void (*close)(BFILE* out);
 };
 
 #endif

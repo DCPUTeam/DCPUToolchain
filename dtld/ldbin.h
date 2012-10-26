@@ -1,14 +1,14 @@
 /**
 
-	File:		ldbin.h
+    File:       ldbin.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	Linker
+    Project:    DCPU-16 Toolchain
+    Component:  Linker
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Provides section bins for storing code in while
-			section and output dependencies are resolved.
+    Description:    Provides section bins for storing code in while
+            section and output dependencies are resolved.
 
 **/
 
@@ -23,16 +23,16 @@
 
 struct ldbin
 {
-	bstring name;
-	list_t* provided;
-	list_t* required;
-	list_t* adjustment;
-	list_t* section;
-	list_t* output;
+    bstring name;
+    list_t* provided;
+    list_t* required;
+    list_t* adjustment;
+    list_t* section;
+    list_t* output;
     list_t* jump;
     list_t* optional;
-	list_t* symbols;
-	list_t words;
+    list_t* symbols;
+    list_t words;
 };
 
 struct ldbin* bin_create(freed_bstring name);

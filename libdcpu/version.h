@@ -1,14 +1,14 @@
 /**
 
-	File:		version.h
+    File:       version.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the functions that provide version
-			information.
+    Description:    Declares the functions that provide version
+            information.
 
 **/
 

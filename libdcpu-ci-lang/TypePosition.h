@@ -1,13 +1,13 @@
 /**
 
-	File:		TypePosition.h
+    File:       TypePosition.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the TypePosition class.
+    Description:    Declares the TypePosition class.
 
 **/
 
@@ -19,21 +19,21 @@
 
 class TypePosition
 {
-	private:
-		bool m_Found;
-		bool m_Global;
-		bool m_Function;
-		bool m_IsFunctionParameter;
-		bool m_PreviousStackFrame;
-		uint16_t m_Position;
-		std::string m_FunctionName;
-	public:
-		TypePosition(bool isFound, bool isGlobal, bool isFunctionParameter, bool previousStackFrame, uint16_t position);
-		TypePosition(bool isFound, std::string funcName);
-		bool isFound();
-		bool isFunction();
-		std::string getAddress();
-		std::string pushAddress(char registr);
+private:
+    bool m_Found;
+    bool m_Global;
+    bool m_Function;
+    bool m_IsFunctionParameter;
+    bool m_PreviousStackFrame;
+    uint16_t m_Position;
+    std::string m_FunctionName;
+public:
+    TypePosition(bool isFound, bool isGlobal, bool isFunctionParameter, bool previousStackFrame, uint16_t position);
+    TypePosition(bool isFound, std::string funcName);
+    bool isFound();
+    bool isFunction();
+    std::string getAddress();
+    std::string pushAddress(char registr);
 };
 
 #endif

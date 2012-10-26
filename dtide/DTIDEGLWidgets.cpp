@@ -22,7 +22,7 @@ QGLWidget* DTIDEGLWidgets::requestWidget(QString title, int width, int height)
 
 void DTIDEGLWidgets::killWidgets()
 {
-    while(!activeWidgets.isEmpty())
+    while (!activeWidgets.isEmpty())
     {
         QGLWidget* w = activeWidgets.takeFirst();
         emit killDockWidget(w);

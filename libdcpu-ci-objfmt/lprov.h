@@ -1,14 +1,14 @@
 /**
 
-	File:		lprov.h
+    File:       lprov.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-objfmt
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-objfmt
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares structures and functions for the
-			provided labels linked-list.
+    Description:    Declares structures and functions for the
+            provided labels linked-list.
 
 **/
 
@@ -19,9 +19,9 @@
 
 struct lprov_entry
 {
-	char* label;
-	uint16_t address;
-	struct lprov_entry* next;
+    char* label;
+    uint16_t address;
+    struct lprov_entry* next;
 };
 
 struct lprov_entry* lprov_create(char* label, uint16_t address);

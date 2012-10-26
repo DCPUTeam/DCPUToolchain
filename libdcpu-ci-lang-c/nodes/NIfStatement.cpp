@@ -1,13 +1,13 @@
 /**
 
-	File:		NIfStatement.cpp
+    File:       NIfStatement.cpp
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Defines the NIfStatement AST class.
+    Description:    Defines the NIfStatement AST class.
 
 **/
 
@@ -17,57 +17,57 @@
 
 AsmBlock* NIfStatement::compile(AsmGenerator& context)
 {
-	AsmBlock* block = new AsmBlock();
+    AsmBlock* block = new AsmBlock();
 
-	// Add file and line information.
-	*block << this->getFileAndLineState();
+    // Add file and line information.
+    *block << this->getFileAndLineState();
 
-	// Create labels for the if statement.
-	std::string truelbl = context.getRandomLabel("if");
-	std::string falselbl = "";
-	std::string endlbl = context.getRandomLabel("end");
+    // Create labels for the if statement.
+    std::string truelbl = context.getRandomLabel("if");
+    std::string falselbl = "";
+    std::string endlbl = context.getRandomLabel("end");
 
-	if (this->if_false != NULL)
-		falselbl = context.getRandomLabel("else");
+    if (this->if_false != NULL)
+        falselbl = context.getRandomLabel("else");
 
-	// When an expression is evaluated, the result goes into the A register.
-	AsmBlock* expr = this->eval.compile(context);
-	*block << *expr;
-	delete expr;
+    // When an expression is evaluated, the result goes into the A register.
+    AsmBlock* expr = this->eval.compile(context);
+    *block << *expr;
+    delete expr;
 
-	// Check the value of A to see where the flow should go.
-	*block <<		"	IFE A, 0x1" << std::endl;
-	*block <<		"		SET PC, " << truelbl << std::endl;
+    // Check the value of A to see where the flow should go.
+    *block <<       "   IFE A, 0x1" << std::endl;
+    *block <<       "       SET PC, " << truelbl << std::endl;
 
-	if (this->if_false != NULL)
-		*block <<	"	SET PC, " << falselbl << std::endl;
-	else
-		*block <<	"	SET PC, " << endlbl << std::endl;
+    if (this->if_false != NULL)
+        *block <<   "   SET PC, " << falselbl << std::endl;
+    else
+        *block <<   "   SET PC, " << endlbl << std::endl;
 
-	// Compile the true block.
-	AsmBlock* trueblk = this->if_true.compile(context);
-	*block << ":" << truelbl << std::endl;
-	*block << *trueblk;
-	*block <<	"	SET PC, " << endlbl << std::endl;
-	delete trueblk;
+    // Compile the true block.
+    AsmBlock* trueblk = this->if_true.compile(context);
+    *block << ":" << truelbl << std::endl;
+    *block << *trueblk;
+    *block <<   "   SET PC, " << endlbl << std::endl;
+    delete trueblk;
 
-	// Compile the false block if we have one.
-	if (this->if_false != NULL)
-	{
-		AsmBlock* falseblk = this->if_false->compile(context);
-		*block << ":" << falselbl << std::endl;
-		*block << *falseblk;
-		*block <<	"	SET PC, " << endlbl << std::endl;
-		delete falseblk;
-	}
+    // Compile the false block if we have one.
+    if (this->if_false != NULL)
+    {
+        AsmBlock* falseblk = this->if_false->compile(context);
+        *block << ":" << falselbl << std::endl;
+        *block << *falseblk;
+        *block <<   "   SET PC, " << endlbl << std::endl;
+        delete falseblk;
+    }
 
-	// And insert the end label.
-	*block << ":" << endlbl << std::endl;
+    // And insert the end label.
+    *block << ":" << endlbl << std::endl;
 
-	return block;
+    return block;
 }
 
 AsmBlock* NIfStatement::reference(AsmGenerator& context)
 {
-	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an if statement.");
+    throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an if statement.");
 }

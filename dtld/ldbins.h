@@ -1,14 +1,14 @@
 /**
 
-	File:		ldbins.h
+    File:       ldbins.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	Linker
+    Project:    DCPU-16 Toolchain
+    Component:  Linker
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Provides a section bin list upon which operations
-			can then be performed.
+    Description:    Provides a section bin list upon which operations
+            can then be performed.
 
 **/
 
@@ -33,15 +33,15 @@
 ///
 struct
 {
-	list_t bins;
+    list_t bins;
     struct lprov_entry* kernel;
 } ldbins;
 
 void bins_init();
 struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct lprov_entry* required,
-	struct lprov_entry* adjustment, struct lprov_entry* section,
-	struct lprov_entry* output, struct lprov_entry* jump,
-	struct lprov_entry* optional);
+                       struct lprov_entry* adjustment, struct lprov_entry* section,
+                       struct lprov_entry* output, struct lprov_entry* jump,
+                       struct lprov_entry* optional);
 void bins_set_kernel(struct lprov_entry* jump);
 bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbolExtension);
 bool bins_load_kernel(freed_bstring path);

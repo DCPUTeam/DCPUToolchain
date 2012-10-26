@@ -1,13 +1,13 @@
 /**
 
-	File:		StackMap.h
+    File:       StackMap.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the StackMap typedef.
+    Description:    Declares the StackMap typedef.
 
 **/
 
@@ -25,15 +25,15 @@ class IType;
 // an assignment operator so that we can use it inside std::vector.
 class StackPair
 {
-	public:
-		std::string first;
-		IType* second;
+public:
+    std::string first;
+    IType* second;
 
-		StackPair(std::string key, IType* value) : first(key), second(value) { };
-		inline StackPair& operator=(const StackPair& other)
-		{
-			throw new std::runtime_error("Attempt to use assignment operator on partial-const class IType (internal error)!");
-		}
+    StackPair(std::string key, IType* value) : first(key), second(value) { };
+    inline StackPair& operator=(const StackPair& other)
+    {
+        throw new std::runtime_error("Attempt to use assignment operator on partial-const class IType (internal error)!");
+    }
 };
 typedef std::vector<StackPair> StackMap;
 

@@ -1,14 +1,14 @@
 /**
 
-	File:		debug.h
+    File:       debug.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares functions for logging and determining
-			the level of logging appropriate.
+    Description:    Declares functions for logging and determining
+            the level of logging appropriate.
 
 **/
 

@@ -1,11 +1,11 @@
 /**
 
-    File:	 hwlua.c
+    File:    hwlua.c
 
-    Project:	DCPU-16 Tools
-    Component:	  LibDCPU-VM
+    Project:    DCPU-16 Tools
+    Component:    LibDCPU-VM
 
-    Authors:	James Rhodes
+    Authors:    James Rhodes
 
     Description:    Hosts custom Lua-based hardware.
 
@@ -52,8 +52,8 @@ void vm_hw_lua_cycle(vm_t* vm, uint16_t pos, void* ud)
     cycle = lua_gettop(hw->state);
     if (lua_isnoneornil(hw->state, -1))
     {
-	lua_pop(hw->state, 1);
-	return;
+        lua_pop(hw->state, 1);
+        return;
     }
 
     // Load function and arguments.
@@ -63,8 +63,8 @@ void vm_hw_lua_cycle(vm_t* vm, uint16_t pos, void* ud)
     // Call the function.
     if (lua_pcall(hw->state, 1, 0, 0) != 0)
     {
-	printf("lua error in cycle was %s.\n", lua_tostring(hw->state, -1));
-	lua_pop(hw->state, 1);
+        printf("lua error in cycle was %s.\n", lua_tostring(hw->state, -1));
+        lua_pop(hw->state, 1);
     }
     lua_pop(hw->state, 1);
 }
@@ -77,8 +77,8 @@ void vm_hw_lua_write(vm_t* vm, uint16_t pos, void* ud)
     write = lua_gettop(hw->state);
     if (lua_isnoneornil(hw->state, write))
     {
-	lua_pop(hw->state, 1);
-	return;
+        lua_pop(hw->state, 1);
+        return;
     }
 
     // Load function and arguments.
@@ -89,8 +89,8 @@ void vm_hw_lua_write(vm_t* vm, uint16_t pos, void* ud)
     // Call the function.
     if (lua_pcall(hw->state, 2, 0, 0) != 0)
     {
-	printf("lua error in write was %s.\n", lua_tostring(hw->state, -1));
-	lua_pop(hw->state, 1);
+        printf("lua error in write was %s.\n", lua_tostring(hw->state, -1));
+        lua_pop(hw->state, 1);
     }
     lua_pop(hw->state, 1);
 }
@@ -103,8 +103,8 @@ void vm_hw_lua_60hz(vm_t* vm, uint16_t pos, void* ud)
     o60hz = lua_gettop(hw->state);
     if (lua_isnoneornil(hw->state, o60hz))
     {
-	lua_pop(hw->state, 1);
-	return;
+        lua_pop(hw->state, 1);
+        return;
     }
 
     // Load function and arguments.
@@ -115,8 +115,8 @@ void vm_hw_lua_60hz(vm_t* vm, uint16_t pos, void* ud)
     // Call the function.
     if (lua_pcall(hw->state, 2, 0, 0) != 0)
     {
-	printf("lua error in 60hz was %s.\n", lua_tostring(hw->state, -1));
-	lua_pop(hw->state, 1);
+        printf("lua error in 60hz was %s.\n", lua_tostring(hw->state, -1));
+        lua_pop(hw->state, 1);
     }
     lua_pop(hw->state, 1);
 }
@@ -129,8 +129,8 @@ void vm_hw_lua_interrupt(vm_t* vm, void* ud)
     interrupt = lua_gettop(hw->state);
     if (lua_isnoneornil(hw->state, interrupt))
     {
-	lua_pop(hw->state, 1);
-	return;
+        lua_pop(hw->state, 1);
+        return;
     }
 
     // Load function and arguments.
@@ -140,8 +140,8 @@ void vm_hw_lua_interrupt(vm_t* vm, void* ud)
     // Call the function.
     if (lua_pcall(hw->state, 1, 0, 0) != 0)
     {
-	printf("lua error in interrupt was %s.\n", lua_tostring(hw->state, -1));
-	lua_pop(hw->state, 1);
+        printf("lua error in interrupt was %s.\n", lua_tostring(hw->state, -1));
+        lua_pop(hw->state, 1);
     }
     lua_pop(hw->state, 1);
 }
@@ -172,13 +172,13 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
     // Execute the code in the new Lua context.
     if (luaL_dofile(hw->state, path->data) != 0)
     {
-	printf("lua error was %s.\n", lua_tostring(hw->state, -1));
+        printf("lua error was %s.\n", lua_tostring(hw->state, -1));
 
-	// Return NULL.
-	lua_close(hw->state);
-	free(hw);
-	bdestroy(path);
-	return NULL;
+        // Return NULL.
+        lua_close(hw->state);
+        free(hw);
+        bdestroy(path);
+        return NULL;
     }
 
     // Load tables.
@@ -190,13 +190,13 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
     // Ensure both tables were provided.
     if (lua_isnoneornil(hw->state, module) || lua_isnoneornil(hw->state, hwinfo))
     {
-	printf("failed to load hardware from %s.\n", path->data);
+        printf("failed to load hardware from %s.\n", path->data);
 
-	// Return NULL.
-	lua_close(hw->state);
-	free(hw);
-	bdestroy(path);
-	return NULL;
+        // Return NULL.
+        lua_close(hw->state);
+        free(hw);
+        bdestroy(path);
+        return NULL;
     }
 
     // Check to see whether the module is
@@ -205,13 +205,13 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
     modtype = bfromcstr(lua_tostring(hw->state, -1));
     if (!biseqcstrcaseless(modtype, "Hardware"))
     {
-	// Return NULL.
-	lua_pop(hw->state, 1);
-	lua_close(hw->state);
-	free(hw);
-	bdestroy(modtype);
-	bdestroy(path);
-	return NULL;
+        // Return NULL.
+        lua_pop(hw->state, 1);
+        lua_close(hw->state);
+        free(hw);
+        bdestroy(modtype);
+        bdestroy(path);
+        return NULL;
     }
     lua_pop(hw->state, 1);
     bdestroy(modtype);
@@ -271,51 +271,51 @@ void vm_hw_lua_init(vm_t* vm)
     dir = opendir(hwpath->data);
     if (dir == NULL)
     {
-	// The directory does not exist, so we don't load
-	// any custom hardware.
-	vm_lua_online = false;
-	bdestroy(hwpath);
-	bdestroy(ext);
-	return;
+        // The directory does not exist, so we don't load
+        // any custom hardware.
+        vm_lua_online = false;
+        bdestroy(hwpath);
+        bdestroy(ext);
+        return;
     }
 
     // Load each file from the hw directory.
     while ((entry = readdir(dir)) != NULL)
     {
-	name = bfromcstr(&entry->d_name[0]);
+        name = bfromcstr(&entry->d_name[0]);
 
-	// Check to see whether it is a lua file.
-	if (binstr(name, blength(name) - 4, ext) == BSTR_ERR)
-	{
-	    // Not a Lua file, skip over and
-	    // then continue.
-	    bdestroy(name);
-	    continue;
-	}
+        // Check to see whether it is a lua file.
+        if (binstr(name, blength(name) - 4, ext) == BSTR_ERR)
+        {
+            // Not a Lua file, skip over and
+            // then continue.
+            bdestroy(name);
+            continue;
+        }
 
-	// Check to see if it is a normal file.
+        // Check to see if it is a normal file.
 #if defined(DT_REG)
-	if (entry->d_type != DT_REG)
+        if (entry->d_type != DT_REG)
 #elif defined(DT_DIR)
-	if (entry->d_type == DT_DIR)
+        if (entry->d_type == DT_DIR)
 #elif defined(DT_UNKNOWN)
-	if (entry->d_type == DT_UNKNOWN)
+        if (entry->d_type == DT_UNKNOWN)
 #else
 #error Build system must support DT_REG, DT_DIR or DT_UNKNOWN in dirent.h.
 #endif
-	{
-	    // Not a file, skip over and then
-	    // continue.
-	    bdestroy(name);
-	    continue;
-	}
+        {
+            // Not a file, skip over and then
+            // continue.
+            bdestroy(name);
+            continue;
+        }
 
-	// Attempt to load the Lua file.
-	printf("loading Lua hardware from: %s\n", name->data);
-	vm_hw_lua_load(vm, name);
+        // Attempt to load the Lua file.
+        printf("loading Lua hardware from: %s\n", name->data);
+        vm_hw_lua_load(vm, name);
 
-	// Free data.
-	bdestroy(name);
+        // Free data.
+        bdestroy(name);
     }
 
     // Free resources.

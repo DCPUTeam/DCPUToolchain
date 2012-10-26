@@ -9,10 +9,10 @@ void DTIDETabWidget::goToNextTab()
 {
     int cur = currentIndex() + 1;
 
-    if(cur <= count() - 1)
-	setCurrentIndex(cur);
+    if (cur <= count() - 1)
+        setCurrentIndex(cur);
     else
-	setCurrentIndex(0);
+        setCurrentIndex(0);
 }
 
 void DTIDETabWidget::updateTitle(QString title)

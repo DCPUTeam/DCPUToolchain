@@ -7,12 +7,12 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
     tabs = new DTIDETabWidget(this);
     tabs->setMovable(true);
     setCentralWidget(tabs);
- 
+
     debuggingSession = 0;
     glWidgets = new DTIDEGLWidgets();
     toolchain = t;
     toolchain->SetWidgetFactory(glWidgets);
-  
+
     setupMenuBar();
     setupActions();
     setupSignals();
@@ -34,20 +34,20 @@ void DTIDE::cycleUpdate()
 
 void DTIDE::runCycles(int count)
 {
-    if(debuggingSession != 0)
+    if (debuggingSession != 0)
     {
-        if(count == 1)
+        if (count == 1)
             this->toolchain->Step();
         else
-            for(int i = 0; i < count; i++) 
+            for (int i = 0; i < count; i++)
                 this->toolchain->Cycle();
 
         this->toolchain->SendStatus();
 
-        while(debuggingSession->HasMessages())
+        while (debuggingSession->HasMessages())
         {
             DebuggingMessage m = debuggingSession->GetMessage();
-            switch(m.type)
+            switch (m.type)
             {
                 case StatusType:
                     StatusMessage status = (StatusMessage&) m.value;
@@ -64,7 +64,7 @@ void DTIDE::addCodeTab(const QString& fileName)
     QFont font;
     font.setFamily("Monospace");
     font.setFixedPitch(true);
-    
+
     CodeEditor* editor = new CodeEditor(toolchain, fileName, this);
     connect(editor, SIGNAL(fileNameChanged(QString)), tabs, SLOT(updateTitle(QString)));
     editor->setFont(font);
@@ -115,7 +115,7 @@ void DTIDE::setupDockWidgets()
 
     QDockWidget* registersDockWidget = new QDockWidget(tr("Registers"), this);
     registersDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea |
-        Qt::RightDockWidgetArea);
+                                         Qt::RightDockWidgetArea);
 
     registersDockWidget->setWidget(registers);
     registersDockWidget->setMinimumWidth(100);
@@ -151,7 +151,7 @@ void DTIDE::pause()
 
 void DTIDE::newFile()
 {
-//    addCodeTab(DTIDEBackends::getUntitledProperties(type));
+    //    addCodeTab(DTIDEBackends::getUntitledProperties(type));
 }
 
 void DTIDE::openFile()
@@ -174,19 +174,19 @@ void DTIDE::compileAndRunProject()
     debuggingSession = new DTIDEDebuggingSession();
     compileProject();
 
-    for(int i = 0; i < tabs->count(); i++)
+    for (int i = 0; i < tabs->count(); i++)
     {
-    	CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
-    	w->run(debuggingSession);
+        CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        w->run(debuggingSession);
     }
 }
 
 void DTIDE::compileProject()
 {
-    for(int i = 0; i < tabs->count(); i++)
+    for (int i = 0; i < tabs->count(); i++)
     {
-    	CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
-    	w->build();
+        CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        w->build();
     }
 }
 
@@ -197,10 +197,10 @@ void DTIDE::closeEvent(QCloseEvent* event)
 
 void DTIDE::killDockWidget(QGLWidget* w)
 {
-    for(int i = 0; i < dockWidgets.size(); i++)
+    for (int i = 0; i < dockWidgets.size(); i++)
     {
         QDockWidget* dW = dockWidgets[i];
-        if(dW->widget() == w)
+        if (dW->widget() == w)
         {
             removeDockWidget(dW);
             dockWidgets.removeAt(i);
