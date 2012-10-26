@@ -15,7 +15,7 @@
 SETTING_INDENT_USED=false
 SETTING_INDENT="-i8 -bad -bap -bl -bli0 -cli4 -ut -cbi0 -ss -npcs -npsl -ncs -di0 -nbc -bls -blf -ts8 -lp -ip2 -ppi0 -il0 -l1000"
 SETTING_ASTYLE_USED=true
-SETTING_ASTYLE="--style=allman -s4 -C -S -N -Y -M40 -p -U -H --align-pointer=type --lineend=linux -q -n --exclude=stdlib-c "
+SETTING_ASTYLE="--style=allman -s4 -S -N -Y -M40 -p -U -H --align-pointer=type --lineend=linux -q -n "
 SETTING_EXPAND_USED=true
 SETTING_EXPAND_TABS=false
 SETTING_EXPAND_COUNT=4
@@ -39,13 +39,13 @@ if [ "$(basename $0)" == "pre-commit" ]; then
     # Get a list of files from Git.
     TFILES="$(git diff --cached --name-only)"
     for i in $TFILES; do
-        if [ "$(find $i \( -name '*.h' -or -name '*.c' -or -name '*.cpp' \) -and -not -path './third-party/*')" != "" ]; then
+        if [ "$(find $i \( -name '*.h' -or -name '*.c' -or -name '*.cpp' \) -and -not -path './third-party/*' -and -not -path './stdlib-c/*')" != "" ]; then
             FILES="$FILES$i "
         fi
     done
 else
     # Search through the whole tree for relevant files.
-    FILES=$(find ./ \( -name "*.h" -or -name "*.c" -or -name "*.cpp" \) -and -not -path "./third-party/*")
+    FILES=$(find ./ \( -name "*.h" -or -name "*.c" -or -name "*.cpp" \) -and -not -path "./third-party/*" -and -not -path './stdlib-c/*')
 fi
 
 # Sanitize all files.
