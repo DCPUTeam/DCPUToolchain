@@ -65,7 +65,7 @@ set pc, main
     set [b], a
 
     add [scroff], 1
-    ife [scroff], 0x17f
+    ifg [scroff], 0x17f
         set [scroff], 0x0
 
     set a, pop
