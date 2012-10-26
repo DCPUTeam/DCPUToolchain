@@ -1,14 +1,14 @@
 /**
 
-	File:		btell-01.c
+    File:       btell-01.c
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU Test Suite
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU Test Suite
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Tests retrieval of the current position in
-			the file.
+    Description:    Tests retrieval of the current position in
+            the file.
 
 **/
 
@@ -17,21 +17,21 @@
 
 int btell_01()
 {
-	BFILE* f;
-	int i = 0;
+    BFILE* f;
+    int i = 0;
 
-	f = bfopen("test.txt", "rb");
-	TEST_EXPECT(f != NULL);
-	TEST_EXPECT(bftell(f) == 0);
+    f = bfopen("test.txt", "rb");
+    TEST_EXPECT(f != NULL);
+    TEST_EXPECT(bftell(f) == 0);
 
-	while (!bfeof(f))
-	{
-		bfgetc(f);
-		i++;
-		TEST_EXPECT(bftell(f) == i);
-	}
+    while (!bfeof(f))
+    {
+        bfgetc(f);
+        i++;
+        TEST_EXPECT(bftell(f) == i);
+    }
 
-	bfclose(f);
+    bfclose(f);
 
-	TEST_SUCCESS;
+    TEST_SUCCESS;
 }

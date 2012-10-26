@@ -1,13 +1,13 @@
 /**
 
-	File:		NUnaryOperator.h
+    File:       NUnaryOperator.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	Patrick Flick
+    Authors:    Patrick Flick
 
-	Description:	Declares the NUnaryOperator AST class.
+    Description:    Declares the NUnaryOperator AST class.
 
 **/
 
@@ -18,14 +18,14 @@
 
 class NUnaryOperator : public NExpression
 {
-	public:
-		NExpression& rhs;
-		int op;
-		NUnaryOperator(int op, NExpression& rhs) :
-			op(op), rhs(rhs), NExpression("unaryop") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType* getExpressionType(AsmGenerator& context);
+public:
+    NExpression& rhs;
+    int op;
+    NUnaryOperator(int op, NExpression& rhs) :
+        op(op), rhs(rhs), NExpression("unaryop") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
+    virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

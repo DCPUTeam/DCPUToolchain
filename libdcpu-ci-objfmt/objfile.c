@@ -1,14 +1,14 @@
 /**
 
-	File:		objfile.c
+    File:       objfile.c
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-objfmt
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-objfmt
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Defines functions used for reading and writing
-			to object files.
+    Description:    Defines functions used for reading and writing
+            to object files.
 
 **/
 
@@ -22,250 +22,250 @@
 
 struct lprov_entry* objfile_get_last(struct lprov_entry* first)
 {
-	if (first == NULL) return first;
-	while (first->next != NULL)
-		first = first->next;
-	return first;
+    if (first == NULL) return first;
+    while (first->next != NULL)
+        first = first->next;
+    return first;
 }
 
 void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov_entry** provided,
-	struct lprov_entry** required, struct lprov_entry** adjustment, struct lprov_entry** section,
-	struct lprov_entry** output, struct lprov_entry** jump, struct lprov_entry** optional)
+                  struct lprov_entry** required, struct lprov_entry** adjustment, struct lprov_entry** section,
+                  struct lprov_entry** output, struct lprov_entry** jump, struct lprov_entry** optional)
 {
-	struct ldata_entry* entry = NULL;
-	struct lprov_entry* prov_last = provided == NULL ? NULL : objfile_get_last(*provided);
-	struct lprov_entry* prov_current = NULL;
-	struct lprov_entry* req_last = required == NULL ? NULL : objfile_get_last(*required);
-	struct lprov_entry* req_current = NULL;
-	struct lprov_entry* adjust_last = adjustment == NULL ? NULL : objfile_get_last(*adjustment);
-	struct lprov_entry* adjust_current = NULL;
-	struct lprov_entry* section_last = section == NULL ? NULL : objfile_get_last(*section);
-	struct lprov_entry* section_current = NULL;
-	struct lprov_entry* output_last = output == NULL ? NULL : objfile_get_last(*output);
-	struct lprov_entry* output_current = NULL;
-	struct lprov_entry* jump_last = jump == NULL ? NULL : objfile_get_last(*jump);
-	struct lprov_entry* jump_current = NULL;
-	struct lprov_entry* opt_last = optional == NULL ? NULL : objfile_get_last(*optional);
-	struct lprov_entry* opt_current = NULL;
-	uint16_t section_last_address = 0;
-	size_t sz;
+    struct ldata_entry* entry = NULL;
+    struct lprov_entry* prov_last = provided == NULL ? NULL : objfile_get_last(*provided);
+    struct lprov_entry* prov_current = NULL;
+    struct lprov_entry* req_last = required == NULL ? NULL : objfile_get_last(*required);
+    struct lprov_entry* req_current = NULL;
+    struct lprov_entry* adjust_last = adjustment == NULL ? NULL : objfile_get_last(*adjustment);
+    struct lprov_entry* adjust_current = NULL;
+    struct lprov_entry* section_last = section == NULL ? NULL : objfile_get_last(*section);
+    struct lprov_entry* section_current = NULL;
+    struct lprov_entry* output_last = output == NULL ? NULL : objfile_get_last(*output);
+    struct lprov_entry* output_current = NULL;
+    struct lprov_entry* jump_last = jump == NULL ? NULL : objfile_get_last(*jump);
+    struct lprov_entry* jump_current = NULL;
+    struct lprov_entry* opt_last = optional == NULL ? NULL : objfile_get_last(*optional);
+    struct lprov_entry* opt_current = NULL;
+    uint16_t section_last_address = 0;
+    size_t sz;
 
-	// Read <256 byte label content> <mode> <address>
-	// until mode is LABEL_END.
-	//
-	// If address is LABEL_REQUIRED, then it's a label that
-	// needs resolving, otherwise it's a label that is
-	// provided to other object files.
-	entry = ldata_read(in);
+    // Read <256 byte label content> <mode> <address>
+    // until mode is LABEL_END.
+    //
+    // If address is LABEL_REQUIRED, then it's a label that
+    // needs resolving, otherwise it's a label that is
+    // provided to other object files.
+    entry = ldata_read(in);
 
-	while (entry->mode != LABEL_END)
-	{
-		if (entry->mode == LABEL_PROVIDED && provided != NULL)
-		{
-			prov_current = lprov_create(strdup(entry->label), entry->address + *offset);
+    while (entry->mode != LABEL_END)
+    {
+        if (entry->mode == LABEL_PROVIDED && provided != NULL)
+        {
+            prov_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
-			if (prov_last == NULL)
-				*provided = prov_current;
-			else
-				prov_last->next = prov_current;
+            if (prov_last == NULL)
+                *provided = prov_current;
+            else
+                prov_last->next = prov_current;
 
-			prov_last = prov_current;
-		}
-		else if (entry->mode == LABEL_REQUIRED && required != NULL)
-		{
-			req_current = lprov_create(strdup(entry->label), entry->address + *offset);
+            prov_last = prov_current;
+        }
+        else if (entry->mode == LABEL_REQUIRED && required != NULL)
+        {
+            req_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
-			if (req_last == NULL)
-				*required = req_current;
-			else
-				req_last->next = req_current;
+            if (req_last == NULL)
+                *required = req_current;
+            else
+                req_last->next = req_current;
 
-			req_last = req_current;
-		}
-		else if (entry->mode == LABEL_ADJUSTMENT && adjustment != NULL)
-		{
-			adjust_current = lprov_create(NULL, entry->address + *offset);
+            req_last = req_current;
+        }
+        else if (entry->mode == LABEL_ADJUSTMENT && adjustment != NULL)
+        {
+            adjust_current = lprov_create(NULL, entry->address + *offset);
 
-			if (adjust_last == NULL)
-				*adjustment = adjust_current;
-			else
-				adjust_last->next = adjust_current;
+            if (adjust_last == NULL)
+                *adjustment = adjust_current;
+            else
+                adjust_last->next = adjust_current;
 
-			adjust_last = adjust_current;
-		}
-		else if (entry->mode == LABEL_SECTION && adjustment != NULL)
-		{
-			if (section_current != NULL && entry->address + *offset == section_last_address)
-			{
-				printd(LEVEL_WARNING, "warning: skipped empty section %s on load.\n", entry->label);
-				ldata_free(entry);
-				entry = ldata_read(in);
-				continue;
-			}
-			section_last_address = entry->address + *offset;
-			
-			section_current = lprov_create(strdup(entry->label), entry->address + *offset);
+            adjust_last = adjust_current;
+        }
+        else if (entry->mode == LABEL_SECTION && adjustment != NULL)
+        {
+            if (section_current != NULL && entry->address + *offset == section_last_address)
+            {
+                printd(LEVEL_WARNING, "warning: skipped empty section %s on load.\n", entry->label);
+                ldata_free(entry);
+                entry = ldata_read(in);
+                continue;
+            }
+            section_last_address = entry->address + *offset;
 
-			if (section_last == NULL)
-				*section = section_current;
-			else
-				section_last->next = section_current;
+            section_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
-			section_last = section_current;
-		}
-		else if (entry->mode == LABEL_OUTPUT && adjustment != NULL)
-		{
-			output_current = lprov_create(strdup(entry->label), entry->address + *offset);
+            if (section_last == NULL)
+                *section = section_current;
+            else
+                section_last->next = section_current;
 
-			if (output_last == NULL)
-				*output = output_current;
-			else
-				output_last->next = output_current;
+            section_last = section_current;
+        }
+        else if (entry->mode == LABEL_OUTPUT && adjustment != NULL)
+        {
+            output_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
-			output_last = output_current;
-		}
-	else if (entry->mode == LABEL_JUMP && adjustment != NULL)
-		{
-			jump_current = lprov_create(strdup(entry->label), entry->address + *offset);
+            if (output_last == NULL)
+                *output = output_current;
+            else
+                output_last->next = output_current;
 
-			if (jump_last == NULL)
-				*jump = jump_current;
-			else
-				jump_last->next = jump_current;
+            output_last = output_current;
+        }
+        else if (entry->mode == LABEL_JUMP && adjustment != NULL)
+        {
+            jump_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
-			jump_last = jump_current;
-		}
-		else if (entry->mode == LABEL_OPTIONAL && required != NULL)
-		{
-		    opt_current = lprov_create(strdup(entry->label), entry->address + *offset);
+            if (jump_last == NULL)
+                *jump = jump_current;
+            else
+                jump_last->next = jump_current;
 
-			if (opt_last == NULL)
-				*optional = opt_current;
-			else
-				opt_last->next = opt_current;
+            jump_last = jump_current;
+        }
+        else if (entry->mode == LABEL_OPTIONAL && required != NULL)
+        {
+            opt_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
-			opt_last = opt_current;
-		}
+            if (opt_last == NULL)
+                *optional = opt_current;
+            else
+                opt_last->next = opt_current;
 
-		ldata_free(entry);
-		entry = ldata_read(in);
-	}
-	ldata_free(entry);
+            opt_last = opt_current;
+        }
 
-	// Now read the rest of the file to determine it's total
-	// length so that we can adjust what will be the offset.
-	sz = ftell(in);
-	fseek(in, 0, SEEK_END);
-	*offset += (uint16_t)((ftell(in) - sz) / 2); // Divide by two since these values are in bytes and we need the offset in words.
-	fseek(in, sz, SEEK_SET);
+        ldata_free(entry);
+        entry = ldata_read(in);
+    }
+    ldata_free(entry);
+
+    // Now read the rest of the file to determine it's total
+    // length so that we can adjust what will be the offset.
+    sz = ftell(in);
+    fseek(in, 0, SEEK_END);
+    *offset += (uint16_t)((ftell(in) - sz) / 2); // Divide by two since these values are in bytes and we need the offset in words.
+    fseek(in, sz, SEEK_SET);
 }
 
 void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* required,
-	struct lprov_entry* adjustment, struct lprov_entry* section,
-	struct lprov_entry* output, struct lprov_entry* jump, 
-	struct lprov_entry* optional)
+                  struct lprov_entry* adjustment, struct lprov_entry* section,
+                  struct lprov_entry* output, struct lprov_entry* jump,
+                  struct lprov_entry* optional)
 {
-	struct ldata_entry* entry = NULL;
+    struct ldata_entry* entry = NULL;
 
-	// First write out the provided table.
-	while (provided != NULL)
-	{
-		entry = malloc(sizeof(struct ldata_entry));
-		entry->mode = LABEL_PROVIDED;
-		entry->address = provided->address;
-		strcpy(entry->label, provided->label);
-		ldata_write(out, entry);
-		free(entry);
+    // First write out the provided table.
+    while (provided != NULL)
+    {
+        entry = malloc(sizeof(struct ldata_entry));
+        entry->mode = LABEL_PROVIDED;
+        entry->address = provided->address;
+        strcpy(entry->label, provided->label);
+        ldata_write(out, entry);
+        free(entry);
 
-		provided = provided->next;
-	}
+        provided = provided->next;
+    }
 
-	// Now write out the required table.
-	while (required != NULL)
-	{
-		entry = malloc(sizeof(struct ldata_entry));
-		entry->mode = LABEL_REQUIRED;
-		entry->address = required->address;
-		strcpy(entry->label, required->label);
-		ldata_write(out, entry);
-		free(entry);
+    // Now write out the required table.
+    while (required != NULL)
+    {
+        entry = malloc(sizeof(struct ldata_entry));
+        entry->mode = LABEL_REQUIRED;
+        entry->address = required->address;
+        strcpy(entry->label, required->label);
+        ldata_write(out, entry);
+        free(entry);
 
-		required = required->next;
-	}
+        required = required->next;
+    }
 
-	// Now write out the adjustment table.
-	while (adjustment != NULL)
-	{
-		entry = malloc(sizeof(struct ldata_entry));
-		entry->mode = LABEL_ADJUSTMENT;
-		entry->address = adjustment->address;
-		memset(entry->label, 0, 256);
-		ldata_write(out, entry);
-		free(entry);
+    // Now write out the adjustment table.
+    while (adjustment != NULL)
+    {
+        entry = malloc(sizeof(struct ldata_entry));
+        entry->mode = LABEL_ADJUSTMENT;
+        entry->address = adjustment->address;
+        memset(entry->label, 0, 256);
+        ldata_write(out, entry);
+        free(entry);
 
-		adjustment = adjustment->next;
-	}
+        adjustment = adjustment->next;
+    }
 
-	// Now write out the section table.
-	while (section != NULL)
-	{
-		entry = malloc(sizeof(struct ldata_entry));
-		entry->mode = LABEL_SECTION;
-		entry->address = section->address;
-		strcpy(entry->label, section->label);
-		ldata_write(out, entry);
-		free(entry);
+    // Now write out the section table.
+    while (section != NULL)
+    {
+        entry = malloc(sizeof(struct ldata_entry));
+        entry->mode = LABEL_SECTION;
+        entry->address = section->address;
+        strcpy(entry->label, section->label);
+        ldata_write(out, entry);
+        free(entry);
 
-		section = section->next;
-	}
+        section = section->next;
+    }
 
-	// Now write out the output table.
-	while (output != NULL)
-	{
-		entry = malloc(sizeof(struct ldata_entry));
-		entry->mode = LABEL_OUTPUT;
-		entry->address = output->address;
-		strcpy(entry->label, output->label);
-		ldata_write(out, entry);
-		free(entry);
+    // Now write out the output table.
+    while (output != NULL)
+    {
+        entry = malloc(sizeof(struct ldata_entry));
+        entry->mode = LABEL_OUTPUT;
+        entry->address = output->address;
+        strcpy(entry->label, output->label);
+        ldata_write(out, entry);
+        free(entry);
 
-		output = output->next;
-	}
+        output = output->next;
+    }
 
     // Now write out the jump table.
-	while (jump != NULL)
-	{
-		entry = malloc(sizeof(struct ldata_entry));
-		entry->mode = LABEL_JUMP;
-		entry->address = jump->address;
-	if (jump->label == NULL)
-		memset(entry->label, 0, 256);
-	else
-		strcpy(entry->label, jump->label);
-		ldata_write(out, entry);
-		free(entry);
+    while (jump != NULL)
+    {
+        entry = malloc(sizeof(struct ldata_entry));
+        entry->mode = LABEL_JUMP;
+        entry->address = jump->address;
+        if (jump->label == NULL)
+            memset(entry->label, 0, 256);
+        else
+            strcpy(entry->label, jump->label);
+        ldata_write(out, entry);
+        free(entry);
 
-		jump = jump->next;
-	}
+        jump = jump->next;
+    }
 
     // Now write out the optional table.
-	while (optional != NULL)
-	{
-		entry = malloc(sizeof(struct ldata_entry));
-		entry->mode = LABEL_OPTIONAL;
-		entry->address = optional->address;
-		strcpy(entry->label, optional->label);
-		ldata_write(out, entry);
-		free(entry);
+    while (optional != NULL)
+    {
+        entry = malloc(sizeof(struct ldata_entry));
+        entry->mode = LABEL_OPTIONAL;
+        entry->address = optional->address;
+        strcpy(entry->label, optional->label);
+        ldata_write(out, entry);
+        free(entry);
 
-		optional = optional->next;
-	}
+        optional = optional->next;
+    }
 
-	// Now write out the NULL entry.
-	entry = malloc(sizeof(struct ldata_entry));
-	entry->mode = LABEL_END;
-	entry->address = 0;
-	memset(entry->label, 0, 256);
-	ldata_write(out, entry);
-	free(entry);
+    // Now write out the NULL entry.
+    entry = malloc(sizeof(struct ldata_entry));
+    entry->mode = LABEL_END;
+    entry->address = 0;
+    memset(entry->label, 0, 256);
+    ldata_write(out, entry);
+    free(entry);
 }

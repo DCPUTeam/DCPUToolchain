@@ -7,10 +7,10 @@ extern "C" {
 
 #include <dcpu.h>
 #include <stdio.h>
-    
-bool perform_assemble(const char* input_filename,
-        const char* output_binary_filename,
-        const char* output_symbols_filename);
+
+    bool perform_assemble(const char* input_filename,
+                          const char* output_binary_filename,
+                          const char* output_symbols_filename);
 
 #ifdef __cplusplus
 }

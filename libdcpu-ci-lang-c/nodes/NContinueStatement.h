@@ -1,13 +1,13 @@
 /**
 
-	File:		NContinueStatement.h
+    File:       NContinueStatement.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	Patrick Flick
+    Authors:    Patrick Flick
 
-	Description:	Declares the NContinueStatement AST class.
+    Description:    Declares the NContinueStatement AST class.
 
 **/
 
@@ -19,11 +19,11 @@
 
 class NContinueStatement : public NStatement
 {
-	public:
-		NContinueStatement() :
-			NStatement("continue") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
+public:
+    NContinueStatement() :
+        NStatement("continue") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
 };
 
 #endif

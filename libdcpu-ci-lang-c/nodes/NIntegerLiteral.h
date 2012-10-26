@@ -1,13 +1,13 @@
 /**
 
-	File:		NIntegerLiteral.h
+    File:       NIntegerLiteral.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the NIntegerLiteral AST class.
+    Description:    Declares the NIntegerLiteral AST class.
 
 **/
 
@@ -19,14 +19,14 @@
 
 class NIntegerLiteral : public NExpression
 {
-	protected:
-		NIntegerLiteral(std::string name) : value(0), NExpression(name) { } // for NGetSizeFunction.
-	public:
-		long long value;
-		NIntegerLiteral(long long value) : value(value), NExpression("integer") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType* getExpressionType(AsmGenerator& context);
+protected:
+    NIntegerLiteral(std::string name) : value(0), NExpression(name) { } // for NGetSizeFunction.
+public:
+    long long value;
+    NIntegerLiteral(long long value) : value(value), NExpression("integer") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
+    virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

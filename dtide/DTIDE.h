@@ -38,20 +38,20 @@ signals:
     void setRegisters(StatusMessage);
 
 private slots:
-   void newFile();
-   void openFile(); 
-   void saveFile();
+    void newFile();
+    void openFile();
+    void saveFile();
 
-   void cycleUpdate();
-   void step();
-   void stop();
-   void pause();
+    void cycleUpdate();
+    void step();
+    void stop();
+    void pause();
 
-   void compileProject();
-   void compileAndRunProject();
+    void compileProject();
+    void compileAndRunProject();
 
-   void addGLWidget(QGLWidget*, QString, int, int);
-   void killDockWidget(QGLWidget*);
+    void addGLWidget(QGLWidget*, QString, int, int);
+    void killDockWidget(QGLWidget*);
 
 private:
     DTIDETabWidget* tabs;

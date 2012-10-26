@@ -29,7 +29,7 @@ private slots:
 
 private:
     QProcess* process;
-    void processVMUpdate(QStringList args); 
+    void processVMUpdate(QStringList args);
 };
 
 #endif

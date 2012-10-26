@@ -1,13 +1,13 @@
 /**
 
-	File:		NArrayAccessOperator.h
+    File:       NArrayAccessOperator.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the NArrayAccessOperator AST class.
+    Description:    Declares the NArrayAccessOperator AST class.
 
 **/
 
@@ -18,13 +18,13 @@
 
 class NArrayAccessOperator : public NExpression
 {
-	public:
-		NExpression& exprA;
-		NExpression& exprB;
-		NArrayAccessOperator(NExpression& exprA, NExpression& exprB) : exprA(exprA), exprB(exprB), NExpression("arrayaccess") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType* getExpressionType(AsmGenerator& context);
+public:
+    NExpression& exprA;
+    NExpression& exprB;
+    NArrayAccessOperator(NExpression& exprA, NExpression& exprB) : exprA(exprA), exprB(exprB), NExpression("arrayaccess") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
+    virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

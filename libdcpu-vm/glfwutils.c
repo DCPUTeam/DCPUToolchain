@@ -1,11 +1,11 @@
 /**
 
-    File:	    GLFWutils.c
+    File:       GLFWutils.c
 
-    Project:	    DCPU-16 Toolchain
-    Component:	    LibDCPU-VM
+    Project:        DCPU-16 Toolchain
+    Component:      LibDCPU-VM
 
-    Authors:	    Patrick Flick
+    Authors:        Patrick Flick
 
     Description:    Defines utility functions for glfw.
 
@@ -19,7 +19,7 @@
 int vm_hw_glfw_close_window_callback(GLFWwindow w)
 {
     void* ud;
-    hw_t * device;
+    hw_t* device;
     uint32_t device_id;
     ud = glfwGetWindowUserPointer(w);
     device = (hw_t*) ud;
@@ -27,11 +27,11 @@ int vm_hw_glfw_close_window_callback(GLFWwindow w)
 
     if (device_id == LEM1802_ID)
     {
-    	vm_hw_lem1802_close(ud);
+        vm_hw_lem1802_close(ud);
     }
     else if (device_id == SPED3_ID)
     {
-    	vm_hw_sped3_close(ud);
+        vm_hw_sped3_close(ud);
     }
     return 0;
 }
@@ -39,7 +39,7 @@ int vm_hw_glfw_close_window_callback(GLFWwindow w)
 void vm_hw_glfw_resize_window_callback(GLFWwindow window, int w, int h)
 {
     void* ud;
-    hw_t * device;
+    hw_t* device;
     uint32_t device_id;
     ud = glfwGetWindowUserPointer(window);
     device = (hw_t*) ud;
@@ -47,10 +47,10 @@ void vm_hw_glfw_resize_window_callback(GLFWwindow window, int w, int h)
 
     if (device_id == LEM1802_ID)
     {
-    	vm_hw_lem1802_glfw_resize_handler(window, w, h);
+        vm_hw_lem1802_glfw_resize_handler(window, w, h);
     }
     else if (device_id == SPED3_ID)
     {
-    	// no resize handler is implemented for the SPED3 yet
+        // no resize handler is implemented for the SPED3 yet
     }
 }

@@ -1,14 +1,14 @@
 /**
  *
- *	File:		ppexprlua.h
+ *  File:       ppexprlua.h
  *
- *	Project:	DCPU-16 Toolchain
- *	Component:	LibDCPU-PP-Expr
+ *  Project:    DCPU-16 Toolchain
+ *  Component:  LibDCPU-PP-Expr
  *
- *	Authors:	James Rhodes
+ *  Authors:    James Rhodes
  *
- *	Description:	Declares the public API for exposing expression trees
- *			as Lua tables.
+ *  Description:    Declares the public API for exposing expression trees
+ *          as Lua tables.
  *
  **/
 

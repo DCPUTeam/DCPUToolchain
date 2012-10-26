@@ -30,7 +30,7 @@ void DCPUToolchain_SwapBuffers(void* context)
 {
     QGLWidget* w = static_cast<QGLWidget*>(context);
     w->swapBuffers();
-} 
+}
 
 void DCPUToolchain_DestroyContext(void* context)
 {
@@ -80,7 +80,7 @@ void DCPUToolchain_60HZHook(vm_t* vm, uint16_t pos, void* ud)
 
 
 
-DCPUToolchainASM::DCPUToolchainASM() 
+DCPUToolchainASM::DCPUToolchainASM()
 {
 }
 
@@ -109,7 +109,7 @@ std::string DCPUToolchainASM::GetDefaultFileName()
     return "untitled.dasm16";
 }
 
-void DCPUToolchainASM::Build(std::string filename, std::string outputDir, BuildAPI &api)
+void DCPUToolchainASM::Build(std::string filename, std::string outputDir, BuildAPI& api)
 {
     const char* cf = filename.c_str();
     const char* t_ob = "dtcpu.XXXXXX";
@@ -190,11 +190,11 @@ void DCPUToolchain::Start(std::string path, DebuggingSession* session)
     paused = false;
     start_emulation(
         /* Binary path */
-        path.c_str(), 
+        path.c_str(),
 
         /* VM Hooks */
-        &DCPUToolchain_CycleHook, 
-        &DCPUToolchain_WriteHook, 
+        &DCPUToolchain_CycleHook,
+        &DCPUToolchain_WriteHook,
         &DCPUToolchain_InterruptHook,
         &DCPUToolchain_HardwareHook,
         &DCPUToolchain_60HZHook,
@@ -214,10 +214,10 @@ void DCPUToolchain::AddStatusMessage(vm_t* vm)
     DebuggingMessage m;
     StatusMessage payload;
 
-    if(vm == 0)
+    if (vm == 0)
         return;
 
-    for(int i = 0; i < 8; i++)
+    for (int i = 0; i < 8; i++)
         payload.registers[i] = vm->registers[i];
 
     payload.pc = vm->pc;
@@ -240,7 +240,7 @@ void DCPUToolchain::SendStatus()
 
 void DCPUToolchain::Cycle()
 {
-    if(!paused)
+    if (!paused)
     {
         cycle_emulation();
     }

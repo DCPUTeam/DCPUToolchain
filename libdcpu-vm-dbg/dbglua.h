@@ -1,14 +1,14 @@
 /**
 
-	File:		pplua.h
+    File:       pplua.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU-PP
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU-PP
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the public API for the preprocessor to load
-			custom Lua modules.
+    Description:    Declares the public API for the preprocessor to load
+            custom Lua modules.
 
 **/
 
@@ -21,10 +21,10 @@
 
 struct dbg_state
 {
-	vm_t* (*get_vm)();
-	void (*dbg_lua_break)();
-	void (*dbg_lua_run)();
-	list_t* (*dbg_lua_get_symbols)();
+    vm_t* (*get_vm)();
+    void (*dbg_lua_break)();
+    void (*dbg_lua_run)();
+    list_t* (*dbg_lua_get_symbols)();
 };
 
 #define DBG_CUSTOMARG_TYPE_PATH 0
@@ -34,11 +34,11 @@ struct dbg_state
 
 struct customarg_entry
 {
-	int type;
-	bstring path;
-	bstring param;
-	bstring string;
-	int number;
+    int type;
+    bstring path;
+    bstring param;
+    bstring string;
+    int number;
 };
 
 extern struct dbg_state lstate;

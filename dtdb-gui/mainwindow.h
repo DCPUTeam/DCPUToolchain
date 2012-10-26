@@ -11,7 +11,7 @@ class MainWindow: public QMainWindow, private Ui::DTDB
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0);
+    MainWindow(QWidget* parent = 0);
 
 private slots:
     void updateVM(QList<QString>);
@@ -28,4 +28,4 @@ private:
     DTDBRunner* runner;
 };
 
-#endif	
+#endif

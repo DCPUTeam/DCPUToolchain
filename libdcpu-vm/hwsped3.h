@@ -1,13 +1,13 @@
 /**
 
-    File:	    hwsped3.h
+    File:       hwsped3.h
 
-    Project:	    DCPU-16 Tools
-    Component:	    LibDCPU-vm
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-vm
 
-    Authors:	    Jose Manuel Diez
-		    David Herberth
-		    Patrick Flick
+    Authors:        Jose Manuel Diez
+            David Herberth
+            Patrick Flick
 
     Description:    Function signatures and sped-3 modes.
 **/
@@ -18,8 +18,8 @@
 #include <GL/glfw3.h>
 #include "dcpu.h"
 
-#define SPED3_ID	    0x42babf3c
-#define SPED3_VERSION	    0x0003
+#define SPED3_ID        0x42babf3c
+#define SPED3_VERSION       0x0003
 #define SPED3_MANUFACTURER  0x1eb37e91
 
 #define SPED3_INTERRUPT_POLL   0
@@ -56,7 +56,7 @@ struct sped3_hardware
 
     uint16_t state;
     vm_t* vm;
-    
+
     int window_closed;
 };
 

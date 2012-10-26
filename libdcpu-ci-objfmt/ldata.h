@@ -1,14 +1,14 @@
 /**
 
-	File:		ldata.h
+    File:       ldata.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-objfmt
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-objfmt
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares structures and functions used to
-			retrieve the linker table from an object file.
+    Description:    Declares structures and functions used to
+            retrieve the linker table from an object file.
 
 **/
 
@@ -29,9 +29,9 @@
 
 struct ldata_entry
 {
-	char label[256];
-	uint8_t mode;
-	uint16_t address;
+    char label[256];
+    uint8_t mode;
+    uint16_t address;
 };
 
 static const char ldata_objfmt[] = "OBJECT-FORMAT-1.1";

@@ -1,16 +1,16 @@
 /**
 
-    File:	    dcpu.c
+    File:       dcpu.c
 
-    Project:	    DCPU-16 Tools
-    Component:	    LibDCPU-vm
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-vm
 
-    Authors:	    James Rhodes
-		    Patrick Flick
-		    Jose Manuel Diez
+    Authors:        James Rhodes
+            Patrick Flick
+            Jose Manuel Diez
 
     Description:    Handles high-level operations performed
-		    on the virtual machine (such as creation).
+            on the virtual machine (such as creation).
 
 **/
 
@@ -32,7 +32,7 @@ void vm_init(vm_t* vm, bool init_memory)
     unsigned int i;
 
     for (i = 0; i < 0x8; i++)
-    	vm->registers[i] = 0x0;
+        vm->registers[i] = 0x0;
 
     vm->pc = 0x0;
     vm->sp = 0x0;
@@ -41,8 +41,8 @@ void vm_init(vm_t* vm, bool init_memory)
 
     if (init_memory)
     {
-    	for (i = 0; i < 0x10000; i++)
-    	    vm->ram[i] = 0x0;
+        for (i = 0; i < 0x10000; i++)
+            vm->ram[i] = 0x0;
     }
 
     vm->host = NULL;
@@ -68,7 +68,7 @@ void vm_init(vm_t* vm, bool init_memory)
     vm->irq_count = 0;
     vm->dump = NULL;
     for (i = 0; i < 256; i++)
-    	vm->irq[i] = 0x0;
+        vm->irq[i] = 0x0;
 
     return;
 }
@@ -102,7 +102,7 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
     vm_init(vm, false);
 
     for (i = 0; i < 0x10000; i++)
-	vm->ram[i] = memory[i];
+        vm->ram[i] = memory[i];
 }
 
 void vm_execute(vm_t* vm, const char* execution_dump)
@@ -112,49 +112,49 @@ void vm_execute(vm_t* vm, const char* execution_dump)
     int cycle_count = 0;
     long long freq_cycle_count = 0;
     int sleep_mics = 0;
-    
-    
-    
+
+
+
     if (execution_dump != NULL)
-	vm->dump = fopen(execution_dump, "w");
+        vm->dump = fopen(execution_dump, "w");
 
     // Execute the memory using DCPU-16 specifications.
     vm_timing_start_timer(&freq_timer);
     vm_timing_start_timer(&cycle_timer);
     while ((!vm->halted) && (!vm->exit))
     {
-	if (vm_timing_has_reached_mics(&freq_timer, 1000000))
-	{
-	    printf("current speed:    %lld kHz\n", freq_cycle_count/1000);
-	    vm_timing_reset_timer(&freq_timer);
-	    freq_cycle_count = 0;
-	}
+        if (vm_timing_has_reached_mics(&freq_timer, 1000000))
+        {
+            printf("current speed:    %lld kHz\n", freq_cycle_count / 1000);
+            vm_timing_reset_timer(&freq_timer);
+            freq_cycle_count = 0;
+        }
 
-	vm_cycle(vm);
-	freq_cycle_count++;
-	cycle_count++;
-	
-	if (cycle_count == DCPU_NUM_TIMING_TICKS)
-	{
-	    // setting to 950 instead of 1000 to account for the timing overhead
-	    // of approx 50 mics
-	    sleep_mics += (int)(DCPU_NUM_TIMING_TICKS*DCPU_MICS_PER_CYCLE - 50 - vm_timing_get_cur_elapsed_mics(&cycle_timer));
-	    cycle_count = 0;
-	    if (sleep_mics > 0)
-	    {
-			vm_timing_sleep_microseconds(sleep_mics);
-			// set sleep counter to negative value
-			// (because of sleeping too long with usleep)
-			sleep_mics = (int)(DCPU_NUM_TIMING_TICKS*DCPU_MICS_PER_CYCLE - vm_timing_get_cur_elapsed_mics(&cycle_timer));
-	    }
-	    vm_timing_reset_timer(&cycle_timer);
-	}
+        vm_cycle(vm);
+        freq_cycle_count++;
+        cycle_count++;
+
+        if (cycle_count == DCPU_NUM_TIMING_TICKS)
+        {
+            // setting to 950 instead of 1000 to account for the timing overhead
+            // of approx 50 mics
+            sleep_mics += (int)(DCPU_NUM_TIMING_TICKS * DCPU_MICS_PER_CYCLE - 50 - vm_timing_get_cur_elapsed_mics(&cycle_timer));
+            cycle_count = 0;
+            if (sleep_mics > 0)
+            {
+                vm_timing_sleep_microseconds(sleep_mics);
+                // set sleep counter to negative value
+                // (because of sleeping too long with usleep)
+                sleep_mics = (int)(DCPU_NUM_TIMING_TICKS * DCPU_MICS_PER_CYCLE - vm_timing_get_cur_elapsed_mics(&cycle_timer));
+            }
+            vm_timing_reset_timer(&cycle_timer);
+        }
     }
-    
+
 
     if (vm->dump != NULL)
     {
-	fclose(vm->dump);
-	vm->dump = NULL;
+        fclose(vm->dump);
+        vm->dump = NULL;
     }
 }

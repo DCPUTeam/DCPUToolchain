@@ -1,14 +1,14 @@
 /**
 
-	File:		debug.c
+    File:       debug.c
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares functions for logging and determining
-			the level of logging appropriate.
+    Description:    Declares functions for logging and determining
+            the level of logging appropriate.
 
 **/
 
@@ -29,11 +29,11 @@ int _current = LEVEL_DEFAULT;
 ///
 void printd(int level, const char* message, ...)
 {
-	va_list argptr;
-	va_start(argptr, message);
-	if (_current >= level && _current != LEVEL_SILENT)
-		vfprintf(stderr, message, argptr);
-	va_end(argptr);
+    va_list argptr;
+    va_start(argptr, message);
+    if (_current >= level && _current != LEVEL_SILENT)
+        vfprintf(stderr, message, argptr);
+    va_end(argptr);
 }
 
 ///
@@ -48,8 +48,8 @@ void printd(int level, const char* message, ...)
 ///
 void vprintd(int level, const char* message, va_list args)
 {
-	if (_current >= level && _current != LEVEL_SILENT)
-		vfprintf(stderr, message, args);
+    if (_current >= level && _current != LEVEL_SILENT)
+        vfprintf(stderr, message, args);
 }
 
 ///
@@ -59,7 +59,7 @@ void vprintd(int level, const char* message, va_list args)
 ///
 void debug_setlevel(int level)
 {
-	_current = level;
+    _current = level;
 }
 
 ///
@@ -67,5 +67,5 @@ void debug_setlevel(int level)
 ///
 int debug_getlevel()
 {
-	return _current;
+    return _current;
 }

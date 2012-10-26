@@ -1,15 +1,15 @@
 /**
 
-	File:		osutil.h
+    File:       osutil.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares functions for interacting with the
-			local operating system (such as getting
-			directory names, etc.)
+    Description:    Declares functions for interacting with the
+            local operating system (such as getting
+            directory names, etc.)
 
 **/
 
@@ -20,9 +20,10 @@
 #include <stdint.h>
 #include "bstring.h"
 
-struct ostimeval {
-	int32_t tv_sec;
-	int32_t tv_usec;
+struct ostimeval
+{
+    int32_t tv_sec;
+    int32_t tv_usec;
 };
 
 bstring osutil_dirname(bstring path);

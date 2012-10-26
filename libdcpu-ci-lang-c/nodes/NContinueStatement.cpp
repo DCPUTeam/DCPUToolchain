@@ -1,13 +1,13 @@
 /**
 
-	File:		NContinueStatement.cpp
+    File:       NContinueStatement.cpp
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	Patrick Flick
+    Authors:    Patrick Flick
 
-	Description:	Defines the NContinueStatement AST class.
+    Description:    Defines the NContinueStatement AST class.
 
 **/
 
@@ -17,23 +17,23 @@
 
 AsmBlock* NContinueStatement::compile(AsmGenerator& context)
 {
-	AsmBlock* block = new AsmBlock();
+    AsmBlock* block = new AsmBlock();
 
-	// Add file and line information.
-	*block << this->getFileAndLineState();
+    // Add file and line information.
+    *block << this->getFileAndLineState();
 
-	std::string contlabel = context.getContinueLabel();
-	if (contlabel == std::string(""))
-	{
-		throw new CompilerException(this->line, this->file, "Invalid continue statement outside of loop.");
-	}
+    std::string contlabel = context.getContinueLabel();
+    if (contlabel == std::string(""))
+    {
+        throw new CompilerException(this->line, this->file, "Invalid continue statement outside of loop.");
+    }
 
-	*block <<  "	SET PC, " << contlabel << std::endl;
+    *block <<  "    SET PC, " << contlabel << std::endl;
 
-	return block;
+    return block;
 }
 
 AsmBlock* NContinueStatement::reference(AsmGenerator& context)
 {
-	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an return statement.");
+    throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an return statement.");
 }

@@ -1,13 +1,13 @@
 /**
 
-	File:		NDefaultStatement.h
+    File:       NDefaultStatement.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	Patrick Flick
+    Authors:    Patrick Flick
 
-	Description:	Declares the NDefaultStatement AST class.
+    Description:    Declares the NDefaultStatement AST class.
 
 **/
 
@@ -19,15 +19,15 @@
 
 class NDefaultStatement : public NStatement
 {
-	private:
-		std::string m_label;
-	
-	public:
-		NDefaultStatement() : NStatement("default") {};
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
-		
-		void setLabelPrefix(std::string prefix);
+private:
+    std::string m_label;
+
+public:
+    NDefaultStatement() : NStatement("default") {};
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
+
+    void setLabelPrefix(std::string prefix);
 };
 
 #endif

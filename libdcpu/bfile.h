@@ -1,13 +1,13 @@
 /**
 
-	File:		bfile.h
+    File:       bfile.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Provides buffered file access.
+    Description:    Provides buffered file access.
 
 **/
 
@@ -19,11 +19,11 @@
 
 typedef struct
 {
-	FILE* file;
-	bool readable;
-	bool wrapped;
-	int last;
-	int eof;
+    FILE* file;
+    bool readable;
+    bool wrapped;
+    int last;
+    int eof;
 } BFILE;
 
 BFILE* bfopen(const char* path, const char* mode);

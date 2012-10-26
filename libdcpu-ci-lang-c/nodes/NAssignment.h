@@ -1,13 +1,13 @@
 /**
 
-	File:		NAssignment.h
+    File:       NAssignment.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the NAssignment AST class.
+    Description:    Declares the NAssignment AST class.
 
 **/
 
@@ -18,15 +18,15 @@
 
 class NAssignment : public NExpression
 {
-	public:
-		NExpression& lhs;
-		NExpression& rhs;
-		int op;
-		NAssignment(NExpression& lhs, int op, NExpression& rhs) :
-			lhs(lhs), op(op), rhs(rhs), NExpression("assignment") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType* getExpressionType(AsmGenerator& context);
+public:
+    NExpression& lhs;
+    NExpression& rhs;
+    int op;
+    NAssignment(NExpression& lhs, int op, NExpression& rhs) :
+        lhs(lhs), op(op), rhs(rhs), NExpression("assignment") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
+    virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

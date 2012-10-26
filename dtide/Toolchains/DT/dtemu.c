@@ -32,18 +32,18 @@ vm_t* get_vm(void)
 bool start_emulation(
     const char* filename,
 
-    vm_hook cyclehook, 
-    vm_hook writehook, 
-    vm_hook interrupthook, 
-    vm_hook hardwarehook, 
-    vm_hook sixtyhz, 
+    vm_hook cyclehook,
+    vm_hook writehook,
+    vm_hook interrupthook,
+    vm_hook hardwarehook,
+    vm_hook sixtyhz,
 
     create_context_t create_context,
     destroy_context_t destroy_context,
     activate_context_t activate_context,
     swap_buffers_t swap_buffers,
     get_ud_t get_ud,
-    
+
     void* toolchain)
 {
     FILE* load;
@@ -57,7 +57,7 @@ bool start_emulation(
     // Stop any existing emulation.
     if (vm != NULL)
         stop_emulation();
-    
+
     // Zero out the flash space.
     for (i = 0; i < 0x10000; i++)
         flash[i] = 0x0;
@@ -70,7 +70,7 @@ bool start_emulation(
     load = fopen(filename, "rb");
     if (load == NULL)
     {
-	    fprintf(stderr, "emulator: unable to load %s from disk.\n", filename);
+        fprintf(stderr, "emulator: unable to load %s from disk.\n", filename);
         return false;
     }
 
@@ -88,7 +88,7 @@ bool start_emulation(
     if (biseq(ss, st))
     {
         fprintf(stderr, "emulator: it appears you passed intermediate code for execution.  link\n");
-        fprintf(stderr, "	the input code with the toolchain linker to execute it.\n");
+        fprintf(stderr, "   the input code with the toolchain linker to execute it.\n");
         return false;
     }
 
@@ -133,7 +133,7 @@ void cycle_emulation()
 
     if (vm != NULL)
     {
-	    vm_cycle(vm);
+        vm_cycle(vm);
 
         if (vm->halted)
         {
