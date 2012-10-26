@@ -20,7 +20,7 @@ public:
     std::list<std::string> GetExtensions();
 
     DCPUToolchainASM();
-    
+
     void Build(std::string filename, std::string outputDir, BuildAPI& api);
     std::string GetDefaultFileName();
 

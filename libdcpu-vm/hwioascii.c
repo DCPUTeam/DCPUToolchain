@@ -1,15 +1,15 @@
 /**
 
-	File:		hwioascii.c
+    File:       hwioascii.c
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-vm
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-vm
 
-	Authors:	James Rhodes
-			Jose Manuel Diez
+    Authors:    James Rhodes
+            Jose Manuel Diez
 
-	Description:	Defines the vm_hw_io_ascii_get_map function which
-			maps glfw values to the ASCII equivalents.
+    Description:    Defines the vm_hw_io_ascii_get_map function which
+            maps glfw values to the ASCII equivalents.
 
 **/
 
@@ -17,6 +17,6 @@
 
 uint16_t vm_hw_io_ascii_get_map(int key)
 {
-	uint16_t ascii = key;
-	return ascii;
+    uint16_t ascii = key;
+    return ascii;
 }

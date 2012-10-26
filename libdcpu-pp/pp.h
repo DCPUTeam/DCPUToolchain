@@ -1,7 +1,7 @@
 /**
 
     File:       pp.h
-    
+
     Project:    DCPU-16 Tools
     Component:  LibDCPU-pp
 

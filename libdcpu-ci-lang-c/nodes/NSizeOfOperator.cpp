@@ -1,13 +1,13 @@
 /**
 
-	File:		NSizeOfOperator.cpp
+    File:       NSizeOfOperator.cpp
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Defines the NSizeOfOperator AST class.
+    Description:    Defines the NSizeOfOperator AST class.
 
 **/
 
@@ -17,18 +17,18 @@
 
 AsmBlock* NSizeOfOperator::compile(AsmGenerator& context)
 {
-	AsmBlock* block = new AsmBlock();
+    AsmBlock* block = new AsmBlock();
 
-	// Add file and line information.
-	*block << this->getFileAndLineState();
+    // Add file and line information.
+    *block << this->getFileAndLineState();
 
-	// Load the size of the type into register A.
-	*block <<	"	SET A, " << (uint16_t)(this->value->getWordSize(context)) << std::endl;
+    // Load the size of the type into register A.
+    *block <<   "   SET A, " << (uint16_t)(this->value->getWordSize(context)) << std::endl;
 
-	return block;
+    return block;
 }
 
 AsmBlock* NSizeOfOperator::reference(AsmGenerator& context)
 {
-	throw new CompilerException(this->line, this->file, "Unable to get reference to the result of the sizeof() operator.");
+    throw new CompilerException(this->line, this->file, "Unable to get reference to the result of the sizeof() operator.");
 }

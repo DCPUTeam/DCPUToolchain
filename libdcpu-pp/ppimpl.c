@@ -1,7 +1,7 @@
 /**
 
     File:       ppimpl.c
-    
+
     Project:    DCPU-16 Toolchain
     Component:  LibDCPU-PP
 
@@ -114,9 +114,9 @@ void ppimpl_printf(state_t* state, const char* fmt, ...)
 bool ppimpl_isolates(char c, bool at_start)
 {
     if ((c >= 'a' && c <= 'z') ||
-        (c >= 'A' && c <= 'Z') ||
-        (!at_start && c >= '0' && c <= '9') ||
-        c == '_')
+            (c >= 'A' && c <= 'Z') ||
+            (!at_start && c >= '0' && c <= '9') ||
+            c == '_')
         return false;
     else
         return true;
@@ -135,14 +135,14 @@ bool ppimpl_match_test(state_t* state, match_t* match)
     // the match.
     if (list_size(&state->cached_output) < (size_t)blength(match->text.ref))
         return false;
-    
+
     // Check each character until we find one that doesn't
     // match, going backwards through the list (remember that
     // we're matching against the end of the list).
     for (i = 0; i < (size_t)blength(match->text.ref); i++)
     {
         if ((char)list_get_at(&state->cached_output, list_size(&state->cached_output) - i - 1) !=
-            (char)match->text.ref->data[blength(match->text.ref) - i - 1])
+                (char)match->text.ref->data[blength(match->text.ref) - i - 1])
             return false;
     }
 
@@ -157,16 +157,16 @@ bool ppimpl_match_test(state_t* state, match_t* match)
         {
             switch ((char)list_get_at(&state->cached_output, j))
             {
-            case ' ':
-            case '\t':
-                // Permitted; continue.
-                break;
-            case '\n':
-                // This means that it is at the start of a line.
-                return true;
-            default:
-                // Anything else means that it's not at the start.
-                return false;
+                case ' ':
+                case '\t':
+                    // Permitted; continue.
+                    break;
+                case '\n':
+                    // This means that it is at the start of a line.
+                    return true;
+                default:
+                    // Anything else means that it's not at the start.
+                    return false;
             }
             j--;
         }
@@ -241,17 +241,17 @@ void ppimpl_track_strings(state_t* state)
         // We are not currently in either string.
         switch (current)
         {
-        case '\'':
-            // Now entering a single string.
-            state->in_single_string = true;
-            return;
-        case '"':
-            // Now entering a double string.
-            state->in_double_string = true;
-            return;
-        default:
-            // Some other character was processed, ignore.
-            return;
+            case '\'':
+                // Now entering a single string.
+                state->in_single_string = true;
+                return;
+            case '"':
+                // Now entering a double string.
+                state->in_double_string = true;
+                return;
+            default:
+                // Some other character was processed, ignore.
+                return;
         }
     }
     else if (state->in_single_string)
@@ -259,19 +259,19 @@ void ppimpl_track_strings(state_t* state)
         // We are in a single string.
         switch (current)
         {
-        case '\'':
-            // Potentially exiting a single string; check the previous
-            // character.
-            if (!has_previous || (has_previous && previous != '\\'))
+            case '\'':
+                // Potentially exiting a single string; check the previous
+                // character.
+                if (!has_previous || (has_previous && previous != '\\'))
+                    state->in_single_string = false;
+                return;
+            case '\n':
+                // A dangling string.
                 state->in_single_string = false;
-            return;
-        case '\n':
-            // A dangling string.
-            state->in_single_string = false;
-            return;
-        default:
-            // Some other character was processed, ignore.
-            return;
+                return;
+            default:
+                // Some other character was processed, ignore.
+                return;
         }
     }
     else if (state->in_double_string)
@@ -279,19 +279,19 @@ void ppimpl_track_strings(state_t* state)
         // We are in a double string.
         switch (current)
         {
-        case '"':
-            // Potentially exiting a single string; check the previous
-            // character.
-            if (!has_previous || (has_previous && previous != '\\'))
+            case '"':
+                // Potentially exiting a single string; check the previous
+                // character.
+                if (!has_previous || (has_previous && previous != '\\'))
+                    state->in_double_string = false;
+                return;
+            case '\n':
+                // A dangling string.
                 state->in_double_string = false;
-            return;
-        case '\n':
-            // A dangling string.
-            state->in_double_string = false;
-            return;
-        default:
-            // Some other character was processed, ignore.
-            return;
+                return;
+            default:
+                // Some other character was processed, ignore.
+                return;
         }
     }
 }
@@ -335,15 +335,15 @@ void ppimpl_process(state_t* state)
             for (i = 0; i < list_size(&state->handlers); i++)
             {
                 m = (match_t*)list_get_at(&state->handlers, i);
-            
+
                 // Test for a match and if so, handle it.
                 if (ppimpl_match_test(state, m))
                 {
                     // Remove the characters from the cached input
                     // depending on the match text length.
                     list_delete_range(&state->cached_output,
-                        list_size(&state->cached_output) - blength(m->text.ref),
-                        list_size(&state->cached_output) - 1);
+                                      list_size(&state->cached_output) - blength(m->text.ref),
+                                      list_size(&state->cached_output) - 1);
 
                     // Call the match handler.
                     m->handler(state, m, &reprocess);
@@ -351,7 +351,8 @@ void ppimpl_process(state_t* state)
                         break;
                 }
             }
-        } while (reprocess);
+        }
+        while (reprocess);
     }
 
     // We have finished processing; everything is stored in the cached output,

@@ -1,13 +1,13 @@
 /**
 
-	File:		NFunctionPointerType.h
+    File:       NFunctionPointerType.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the NFunctionPointerType AST class.
+    Description:    Declares the NFunctionPointerType AST class.
 
 **/
 
@@ -22,9 +22,9 @@
 
 class NFunctionPointerType : public NType, public NFunctionSignature
 {
-	public:
-		NFunctionPointerType(const IType* returnType, const VariableList& arguments) :
-			NType("function", NFunctionSignature::calculateSignature(returnType, arguments), 1, false, false, false), NFunctionSignature(returnType, arguments) { }
+public:
+    NFunctionPointerType(const IType* returnType, const VariableList& arguments) :
+        NType("function", NFunctionSignature::calculateSignature(returnType, arguments), 1, false, false, false), NFunctionSignature(returnType, arguments) { }
 };
 
 #endif

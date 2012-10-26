@@ -1,13 +1,13 @@
 /**
 
-	File:		NMethodCall.h
+    File:       NMethodCall.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the NMethodCall AST class.
+    Description:    Declares the NMethodCall AST class.
 
 **/
 
@@ -22,16 +22,16 @@ class AsmBlock;
 
 class NMethodCall : public NExpression
 {
-	public:
-		const NIdentifier& id;
-		ExpressionList arguments;
-		NMethodCall(const NIdentifier& id, ExpressionList& arguments) :
-			id(id), arguments(arguments), NExpression("methodcall") { }
-		NMethodCall(const NIdentifier& id) : id(id), NExpression("methodcall") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType* getExpressionType(AsmGenerator& context);
-		virtual std::string calculateSignature(AsmGenerator& context);
+public:
+    const NIdentifier& id;
+    ExpressionList arguments;
+    NMethodCall(const NIdentifier& id, ExpressionList& arguments) :
+        id(id), arguments(arguments), NExpression("methodcall") { }
+    NMethodCall(const NIdentifier& id) : id(id), NExpression("methodcall") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
+    virtual IType* getExpressionType(AsmGenerator& context);
+    virtual std::string calculateSignature(AsmGenerator& context);
 };
 
 #endif

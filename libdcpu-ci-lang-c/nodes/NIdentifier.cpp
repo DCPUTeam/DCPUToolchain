@@ -1,13 +1,13 @@
 /**
 
-	File:		NIdentifier.cpp
+    File:       NIdentifier.cpp
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Defines the NIdentifier AST class.
+    Description:    Defines the NIdentifier AST class.
 
 **/
 
@@ -18,59 +18,59 @@
 
 AsmBlock* NIdentifier::compile(AsmGenerator& context)
 {
-	AsmBlock* block = new AsmBlock();
+    AsmBlock* block = new AsmBlock();
 
-	// Add file and line information.
-	*block << this->getFileAndLineState();
+    // Add file and line information.
+    *block << this->getFileAndLineState();
 
-	// Get the position and type of the variable.
-	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
-	IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
+    // Get the position and type of the variable.
+    TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
+    IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
 
-	if (!result.isFound())
-		throw new CompilerException(this->line, this->file, "The variable '" + this->name + "' was not found in the scope.");
+    if (!result.isFound())
+        throw new CompilerException(this->line, this->file, "The variable '" + this->name + "' was not found in the scope.");
 
-	if (result.isFunction())
-		throw new CompilerException(this->line, this->file, "Can not get value representation of function '" + this->name + "'; did you want a reference instead?");
+    if (result.isFunction())
+        throw new CompilerException(this->line, this->file, "Can not get value representation of function '" + this->name + "'; did you want a reference instead?");
 
-	// Load the value of the variable into register A.
-	*block << result.pushAddress('I');
-	*block << *(type->loadFromRef(context, 'I', 'A'));
-	//*block <<	"	SET A, [I]" << std::endl;
+    // Load the value of the variable into register A.
+    *block << result.pushAddress('I');
+    *block << *(type->loadFromRef(context, 'I', 'A'));
+    //*block << "   SET A, [I]" << std::endl;
 
-	return block;
+    return block;
 }
 
 AsmBlock* NIdentifier::reference(AsmGenerator& context)
 {
-	AsmBlock* block = new AsmBlock();
+    AsmBlock* block = new AsmBlock();
 
-	// Add file and line information.
-	*block << this->getFileAndLineState();
+    // Add file and line information.
+    *block << this->getFileAndLineState();
 
-	// Get the position of the variable.
-	TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
+    // Get the position of the variable.
+    TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
 
-	if (!result.isFound())
-		throw new CompilerException(this->line, this->file, "The variable '" + this->name + "' was not found in the scope.");
+    if (!result.isFound())
+        throw new CompilerException(this->line, this->file, "The variable '" + this->name + "' was not found in the scope.");
 
-	// Load the position of the variable into register A.
-	*block << result.pushAddress('A');
+    // Load the position of the variable into register A.
+    *block << result.pushAddress('A');
 
-	return block;
+    return block;
 }
 
 IType* NIdentifier::getExpressionType(AsmGenerator& context)
 {
-	// Search the current context for the variable with
-	// this name and return it's type.
-	IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
+    // Search the current context for the variable with
+    // this name and return it's type.
+    IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
 
-	if (type == NULL)
-		throw new CompilerException(this->line, this->file, "Unable to resolve variable '" + this->name + "' when determining type information (does the variable exist?).");
-	else
-	{
-		// Return type
-		return type;
-	}
+    if (type == NULL)
+        throw new CompilerException(this->line, this->file, "Unable to resolve variable '" + this->name + "' when determining type information (does the variable exist?).");
+    else
+    {
+        // Return type
+        return type;
+    }
 }

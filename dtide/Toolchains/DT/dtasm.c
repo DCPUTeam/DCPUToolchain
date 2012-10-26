@@ -24,79 +24,79 @@ extern FILE* yyin, *yyout;
 char* fileloc = NULL;
 
 bool perform_assemble(const char* input_filename,
-        const char* output_binary_filename,
-        const char* output_symbols_filename)
+                      const char* output_binary_filename,
+                      const char* output_symbols_filename)
 {
-	bstring pp_result_name;
-	list_t symbols;
-	uint16_t final;
+    bstring pp_result_name;
+    list_t symbols;
+    uint16_t final;
     FILE* output_binary;
     FILE* output_symbols;
 
-	// Run the preprocessor.
-	ppfind_add_autopath(bautofree(bfromcstr(input_filename)));
-	//for (i = 0; i < include_dirs->count; ++i)
-	//	ppfind_add_path(bautofree(bfromcstr(include_dirs->filename[i])));
+    // Run the preprocessor.
+    ppfind_add_autopath(bautofree(bfromcstr(input_filename)));
+    //for (i = 0; i < include_dirs->count; ++i)
+    //  ppfind_add_path(bautofree(bfromcstr(include_dirs->filename[i])));
     // FIXME: Read from input rather than file.
-	pp_result_name = pp_do(bautofree(bfromcstr(input_filename)));
+    pp_result_name = pp_do(bautofree(bfromcstr(input_filename)));
 
-	if (pp_result_name == NULL)
-	{
-		printd(LEVEL_ERROR, "assembler: invalid result returned from preprocessor.\n");
-		pp_cleanup(bautofree(pp_result_name));
+    if (pp_result_name == NULL)
+    {
+        printd(LEVEL_ERROR, "assembler: invalid result returned from preprocessor.\n");
+        pp_cleanup(bautofree(pp_result_name));
         return false;
-	}
+    }
 
-	yyout = stderr;
-	yyin = fopen((const char*)(pp_result_name->data), "r");
+    yyout = stderr;
+    yyin = fopen((const char*)(pp_result_name->data), "r");
 
-	if (yyin == NULL)
-	{
-		pp_cleanup(bautofree(pp_result_name));
+    if (yyin == NULL)
+    {
+        pp_cleanup(bautofree(pp_result_name));
         return false;
-	}
+    }
 
-	// Parse assembly.
-	yyparse();
+    // Parse assembly.
+    yyparse();
 
-	if (yyin != stdin)
-		fclose(yyin);
+    if (yyin != stdin)
+        fclose(yyin);
 
-	pp_cleanup(bautofree(pp_result_name));
+    pp_cleanup(bautofree(pp_result_name));
 
-	if (&ast_root == NULL || ast_root.values == NULL)
-	{
-		printd(LEVEL_ERROR, "assembler: syntax error, see above.\n");
+    if (&ast_root == NULL || ast_root.values == NULL)
+    {
+        printd(LEVEL_ERROR, "assembler: syntax error, see above.\n");
         return false;
-	}
+    }
 
-	// Initialize storage for debugging symbols.
-	list_init(&symbols);
+    // Initialize storage for debugging symbols.
+    list_init(&symbols);
 
-	// Process AST.
-	process_root(&ast_root, &symbols);
+    // Process AST.
+    process_root(&ast_root, &symbols);
 
-	// Open up output files.
-	output_binary = fopen(output_binary_filename, "wb+");
-	if (output_binary == NULL)
-	{
-		printd(LEVEL_ERROR, "assembler: binary file not writable.\n");
+    // Open up output files.
+    output_binary = fopen(output_binary_filename, "wb+");
+    if (output_binary == NULL)
+    {
+        printd(LEVEL_ERROR, "assembler: binary file not writable.\n");
         return false;
-	}
-	output_symbols = fopen(output_symbols_filename, "wb+");
-	if (output_symbols == NULL)
-	{
-		printd(LEVEL_ERROR, "assembler: binary file not writable.\n");
+    }
+    output_symbols = fopen(output_symbols_filename, "wb+");
+    if (output_symbols == NULL)
+    {
+        printd(LEVEL_ERROR, "assembler: binary file not writable.\n");
         fclose(output_binary);
         output_binary = NULL;
         return false;
-	}
+    }
 
-	// Write content.
+    // Write content.
     // FIXME: Second argument to aout_write is whether to generate intermediate code.
     //        When the linker is part of the build process, change this parameter.
-	final = aout_write(output_binary, false, false);
-	printd(LEVEL_VERBOSE, "assembler: completed successfully.\n");
+    final = aout_write(output_binary, false, false);
+    printd(LEVEL_VERBOSE, "assembler: completed successfully.\n");
 
     // Set the address of any debugging symbols that don't have an address
     // yet to the address at the end of the file.
@@ -108,10 +108,10 @@ bool perform_assemble(const char* input_filename,
     // Write symbols.
     dbgfmt_write(bfromcstr(output_symbols_filename), &symbols);
     printd(LEVEL_VERBOSE, "assembler: wrote debugging symbols.\n");
-   
+
     // Reset the aout state.
     aout_reset();
-    
+
     // Close files.
     fclose(output_binary);
     fclose(output_symbols);

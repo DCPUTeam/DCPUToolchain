@@ -10,14 +10,14 @@ static void line_handle(state_t* state, match_t* match, bool* reprocess)
 
     // Ensure the parameter format is correct.
     if (list_size(result) == 2 &&
-        ((parameter_t*)list_get_at(result, 0))->type == NUMBER &&
-        (((parameter_t*)list_get_at(result, 1))->type == STRING ||
-         ((parameter_t*)list_get_at(result, 1))->type == WORD))
+            ((parameter_t*)list_get_at(result, 0))->type == NUMBER &&
+            (((parameter_t*)list_get_at(result, 1))->type == STRING ||
+             ((parameter_t*)list_get_at(result, 1))->type == WORD))
     {
         // Correct format.
         ppimpl_printf(state, "# %i %s\n",
-            ((parameter_t*)list_get_at(result, 0))->number,
-            ((parameter_t*)list_get_at(result, 1))->string->data);
+                      ((parameter_t*)list_get_at(result, 0))->number,
+                      ((parameter_t*)list_get_at(result, 1))->string->data);
 
         // Also update the current input line and filename.
         state->current_line = ((parameter_t*)list_get_at(result, 0))->number;
@@ -37,14 +37,14 @@ static void uline_handle(state_t* state, match_t* match, bool* reprocess)
 
     // Ensure the parameter format is correct.
     if (list_size(result) == 2 &&
-        ((parameter_t*)list_get_at(result, 0))->type == NUMBER &&
-        (((parameter_t*)list_get_at(result, 1))->type == STRING ||
-         ((parameter_t*)list_get_at(result, 1))->type == WORD))
+            ((parameter_t*)list_get_at(result, 0))->type == NUMBER &&
+            (((parameter_t*)list_get_at(result, 1))->type == STRING ||
+             ((parameter_t*)list_get_at(result, 1))->type == WORD))
     {
         // Correct format.
         ppimpl_printf(state, "#U %i %s\n",
-            ((parameter_t*)list_get_at(result, 0))->number,
-            ((parameter_t*)list_get_at(result, 1))->string->data);
+                      ((parameter_t*)list_get_at(result, 0))->number,
+                      ((parameter_t*)list_get_at(result, 1))->string->data);
     }
     else
         dhalt(ERR_PP_ULINE_PARAMETERS_INCORRECT, ppimpl_get_location(state));

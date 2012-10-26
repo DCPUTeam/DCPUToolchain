@@ -1,14 +1,14 @@
 /**
 
-	File:		bstring.h
+    File:       bstring.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the freed_bstring type and
-			imports the rest of the bstring library.
+    Description:    Declares the freed_bstring type and
+            imports the rest of the bstring library.
 
 **/
 
@@ -24,8 +24,8 @@
 // the string before passing it in.
 typedef struct
 {
-	bstring ref;
-	short dummy; // Prevents automatic casting.
+    bstring ref;
+    short dummy; // Prevents automatic casting.
 } freed_bstring;
 
 freed_bstring bautofree(bstring str);

@@ -1,15 +1,15 @@
 /**
 
-	File:		osutil.c
+    File:       osutil.c
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Defines functions for interacting with the
-			local operating system (such as getting
-			directory names, etc.)
+    Description:    Defines functions for interacting with the
+            local operating system (such as getting
+            directory names, etc.)
 
 **/
 
@@ -22,7 +22,7 @@
 #else
 #include <libgen.h>
 #include <unistd.h>
-// #include <sys/time.h> is correct for Linux.	If #include <time.h> is
+// #include <sys/time.h> is correct for Linux.  If #include <time.h> is
 // required for Mac, please add the appropriate #ifdef APPLE instead of
 // changing this include.
 #include <sys/time.h>
@@ -37,15 +37,15 @@ bstring osutil_arg0 = NULL;
 #ifdef _WIN32
 char* dirname(char* path)
 {
-	// FIXME: This assumes the resulting path will always
-	// be shorter than the original (which it should be
-	// given that we're only returning a component of it, right?)
-	char drive[_MAX_DRIVE];
-	char dir[_MAX_DIR];
-	_splitpath(path, drive, dir, NULL, NULL);
-	strcpy(path, drive);
-	strcpy(path + strlen(path), dir);
-	return path;
+    // FIXME: This assumes the resulting path will always
+    // be shorter than the original (which it should be
+    // given that we're only returning a component of it, right?)
+    char drive[_MAX_DRIVE];
+    char dir[_MAX_DIR];
+    _splitpath(path, drive, dir, NULL, NULL);
+    strcpy(path, drive);
+    strcpy(path + strlen(path), dir);
+    return path;
 }
 #endif
 
@@ -60,18 +60,18 @@ char* dirname(char* path)
 ///
 bstring osutil_dirname(bstring path)
 {
-	bstring bpath;
-	char* cpath;
-	char* opath;
+    bstring bpath;
+    char* cpath;
+    char* opath;
 
-	cpath = bstr2cstr(path, '0');
-	// needs to return in case of dirname implementation not changing parameter
-	// in particular this doesn't work on OS X check $ man 3 dirname
-	opath = dirname(cpath);
-	bpath = bfromcstr(opath);
-	bcstrfree(cpath);
+    cpath = bstr2cstr(path, '0');
+    // needs to return in case of dirname implementation not changing parameter
+    // in particular this doesn't work on OS X check $ man 3 dirname
+    opath = dirname(cpath);
+    bpath = bfromcstr(opath);
+    bcstrfree(cpath);
 
-	return bpath;
+    return bpath;
 }
 
 ///
@@ -89,7 +89,7 @@ bstring osutil_dirname(bstring path)
 void osutil_makebinary(FILE* fd)
 {
 #ifdef _WIN32
-	_setmode(_fileno(stdout), _O_BINARY);
+    _setmode(_fileno(stdout), _O_BINARY);
 #endif
 }
 
@@ -106,10 +106,10 @@ void osutil_makebinary(FILE* fd)
 ///
 void osutil_setarg0(freed_bstring arg0)
 {
-	if (osutil_arg0 != NULL)
-		bdestroy(osutil_arg0);
-	osutil_arg0 = bstrcpy(arg0.ref);
-	bautodestroy(arg0);
+    if (osutil_arg0 != NULL)
+        bdestroy(osutil_arg0);
+    osutil_arg0 = bstrcpy(arg0.ref);
+    bautodestroy(arg0);
 }
 
 ///
@@ -119,13 +119,13 @@ void osutil_setarg0(freed_bstring arg0)
 /// returns a copy of the internal string.
 ///
 /// @return A copy of the current path to the application.  The result
-///	    must be freed manually.
+///     must be freed manually.
 ///
 bstring osutil_getarg0()
 {
-	assert(osutil_arg0 != NULL);
+    assert(osutil_arg0 != NULL);
 
-	return bstrcpy(osutil_arg0);
+    return bstrcpy(osutil_arg0);
 }
 
 ///
@@ -138,23 +138,23 @@ bstring osutil_getarg0()
 ///
 bstring osutil_getarg0path()
 {
-	bstring arg0 = osutil_getarg0();
-	bstring path = osutil_dirname(arg0);
+    bstring arg0 = osutil_getarg0();
+    bstring path = osutil_dirname(arg0);
 #ifdef WIN32
-	// Special handling for Windows where the path
-	// can be blank if argument 0 is just the executable
-	// name.
-	if (biseqcstr(path, ""))
-	{
-		bdestroy(path);
-		bdestroy(arg0);
-		arg0 = bfromcstr(".\\");
-		bconcat(arg0, osutil_getarg0());
-		path = osutil_dirname(arg0);
-	}
+    // Special handling for Windows where the path
+    // can be blank if argument 0 is just the executable
+    // name.
+    if (biseqcstr(path, ""))
+    {
+        bdestroy(path);
+        bdestroy(arg0);
+        arg0 = bfromcstr(".\\");
+        bconcat(arg0, osutil_getarg0());
+        path = osutil_dirname(arg0);
+    }
 #endif
-	bdestroy(arg0);
-	return path;
+    bdestroy(arg0);
+    return path;
 }
 
 ///
@@ -162,41 +162,41 @@ bstring osutil_getarg0path()
 ///
 /// Retrieves the directory that contains toolchain modules based on the existance of the
 /// TOOLCHAIN_MODULES environment variable or defaulting to the modules/ folder in the
-/// same directory as the current application.	This requires osutil_setarg0 to have been
+/// same directory as the current application.  This requires osutil_setarg0 to have been
 /// previously called.
 ///
 /// @return The path of the directory holding toolchain modules.  The result must be freed manually.
 ///
 bstring osutil_getmodulepath()
 {
-	// FIXME: This function should return NULL
-	//	  if the path does not exist or is
-	//	  not a directory.
-	bstring tmp;
-	int result;
-	struct stat buffer;
-	char* env = getenv("TOOLCHAIN_MODULES");
-	if (env == NULL)
-	{
-		tmp = osutil_getarg0path();
+    // FIXME: This function should return NULL
+    //    if the path does not exist or is
+    //    not a directory.
+    bstring tmp;
+    int result;
+    struct stat buffer;
+    char* env = getenv("TOOLCHAIN_MODULES");
+    if (env == NULL)
+    {
+        tmp = osutil_getarg0path();
 #ifdef _WIN32
-		bcatcstr(tmp, "\\modules");
+        bcatcstr(tmp, "\\modules");
 #else
-		bcatcstr(tmp, "/modules");
+        bcatcstr(tmp, "/modules");
 #endif
-	}
-	else
-		tmp = bfromcstr(env);
+    }
+    else
+        tmp = bfromcstr(env);
 
-	// Check if path exists.
-	result = stat((const char*)tmp->data, &buffer);
-	if (result != 0 || (buffer.st_mode & S_IFDIR) == 0)
-	{
-		bdestroy(tmp);
-		return NULL;
-	}
-	else
-		return tmp;
+    // Check if path exists.
+    result = stat((const char*)tmp->data, &buffer);
+    if (result != 0 || (buffer.st_mode & S_IFDIR) == 0)
+    {
+        bdestroy(tmp);
+        return NULL;
+    }
+    else
+        return tmp;
 }
 
 ///
@@ -210,27 +210,27 @@ bstring osutil_getmodulepath()
 int osutil_gettimeofday(struct ostimeval* tv, void* unused)
 {
 #ifdef WIN32
-	// Sourced from http://stackoverflow.com/questions/2494356/how-to-use-gettimeofday-or-something-equivalent-with-visual-studio-c-2008.
-	FILETIME ft;
-	int64_t tmpres = 0;
-	GetSystemTimeAsFileTime(&ft);
+    // Sourced from http://stackoverflow.com/questions/2494356/how-to-use-gettimeofday-or-something-equivalent-with-visual-studio-c-2008.
+    FILETIME ft;
+    int64_t tmpres = 0;
+    GetSystemTimeAsFileTime(&ft);
 
-	tmpres = ft.dwHighDateTime;
-	tmpres <<= 32;
-	tmpres |= ft.dwLowDateTime;
+    tmpres = ft.dwHighDateTime;
+    tmpres <<= 32;
+    tmpres |= ft.dwLowDateTime;
 
-	/*converting file time to unix epoch*/
-	tmpres /= 10;  /*convert into microseconds*/
-	tmpres -= 11644473600000000; 
-	tv->tv_sec = (__int32)(tmpres*0.000001);
-	tv->tv_usec =(tmpres%1000000);
-	return 0;
+    /*converting file time to unix epoch*/
+    tmpres /= 10;  /*convert into microseconds*/
+    tmpres -= 11644473600000000;
+    tv->tv_sec = (__int32)(tmpres * 0.000001);
+    tv->tv_usec = (tmpres % 1000000);
+    return 0;
 #else
-	struct timeval t;
-	int res = gettimeofday(&t, NULL);
-	tv->tv_sec = t.tv_sec;
-	tv->tv_usec = t.tv_usec;
-	return res;
+    struct timeval t;
+    int res = gettimeofday(&t, NULL);
+    tv->tv_sec = t.tv_sec;
+    tv->tv_usec = t.tv_usec;
+    return res;
 #endif
 }
 
@@ -242,8 +242,8 @@ int osutil_gettimeofday(struct ostimeval* tv, void* unused)
 void osutil_usleep(int milliseconds)
 {
 #ifdef WIN32
-	Sleep(milliseconds);
+    Sleep(milliseconds);
 #else
-	usleep(milliseconds);
+    usleep(milliseconds);
 #endif
 }

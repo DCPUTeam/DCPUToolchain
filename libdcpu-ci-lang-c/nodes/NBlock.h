@@ -1,13 +1,13 @@
 /**
 
-	File:		NBlock.h
+    File:       NBlock.h
 
-	Project:	DCPU-16 Tools
-	Component:	LibDCPU-ci-lang-c
+    Project:    DCPU-16 Tools
+    Component:  LibDCPU-ci-lang-c
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares the NBlock AST class.
+    Description:    Declares the NBlock AST class.
 
 **/
 
@@ -19,12 +19,12 @@
 
 class NBlock : public NExpression
 {
-	public:
-		StatementList statements;
-		NBlock() : NExpression("block") { }
-		virtual AsmBlock* compile(AsmGenerator& context);
-		virtual AsmBlock* reference(AsmGenerator& context);
-		virtual IType* getExpressionType(AsmGenerator& context);
+public:
+    StatementList statements;
+    NBlock() : NExpression("block") { }
+    virtual AsmBlock* compile(AsmGenerator& context);
+    virtual AsmBlock* reference(AsmGenerator& context);
+    virtual IType* getExpressionType(AsmGenerator& context);
 };
 
 #endif

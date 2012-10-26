@@ -1,13 +1,13 @@
 /**
 
-	File:		breakpoint.h
+    File:       breakpoint.h
 
-	Project:	DCPU-16 Toolchain
-	Component:	LibDCPU-VM-DBG
+    Project:    DCPU-16 Toolchain
+    Component:  LibDCPU-VM-DBG
 
-	Authors:	James Rhodes
+    Authors:    James Rhodes
 
-	Description:	Declares breakpoint structures.
+    Description:    Declares breakpoint structures.
 
 **/
 
@@ -19,9 +19,9 @@
 
 struct breakpoint
 {
-	uint16_t addr;
-	bool silent;
-	bool temporary;
+    uint16_t addr;
+    bool silent;
+    bool temporary;
 };
 
 struct breakpoint* breakpoint_create(uint16_t addr, bool silent, bool temporary);

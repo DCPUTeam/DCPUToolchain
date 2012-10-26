@@ -53,4 +53,4 @@ DebuggingMessage DTIDEDebuggingSession::GetMessage()
     m_Queue.pop_front();
 
     return result;
-} 
+}
