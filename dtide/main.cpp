@@ -12,6 +12,7 @@ extern "C"
 #include <bstring.h>
 #include <debug.h>
 #include <iio.h>
+#include <GL/glfw3.h>
 }
 
 int main(int argc, char** argv)
@@ -20,6 +21,9 @@ int main(int argc, char** argv)
 	debug_setlevel(LEVEL_VERBOSE);
 	osutil_setarg0(bautofree(bfromcstr(argv[0])));
 	isetmode(IMODE_BIG);
+
+    // Start glfw.
+    glfwInit();
 
     // Now start the IDE.
     QApplication app(argc, argv);
@@ -36,8 +40,8 @@ int main(int argc, char** argv)
     DTIDE mainWindow(new DCPUToolchain(), "test.dasm16");
     mainWindow.show();
 
-    return app.exec();
-
-    return 0;
+    int returncode = app.exec();
+    glfwTerminate();
+    return returncode;
 }
 

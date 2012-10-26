@@ -26,6 +26,15 @@
 int vm_hw_connected[HW_MAX];
 hw_t vm_hw_list[HW_MAX];
 
+void vm_hw_initialize(void)
+{
+    int i;
+    for(i = 0; i < HW_MAX; i++)
+    {
+        vm_hw_connected[i] = 0;
+    }
+}
+
 uint16_t vm_hw_register(vm_t* vm, hw_t hardware)
 {
     uint16_t id = 0;

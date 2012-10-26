@@ -20,3 +20,7 @@ Language* Toolchain::GetLanguageByExtension(std::string ext)
     return NULL;
 }
 
+void Toolchain::SetWidgetFactory(DTIDEGLWidgets* w)
+{
+    gl = w;
+}

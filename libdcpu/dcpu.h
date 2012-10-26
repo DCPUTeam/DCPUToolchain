@@ -143,6 +143,22 @@ typedef uint8_t bool;
 #define DCPU_NUM_TIMING_TICKS	    1000
 #define DCPU_MICS_PER_CYCLE	    (1000/DCPU_TICKS_KHZ)
 
+// Host context structure
+typedef void* (*create_context_t)(const char*, int, int, bool, void*);
+typedef void (*destroy_context_t)(void* context);
+typedef void (*activate_context_t)(void* context);
+typedef void (*swap_buffers_t)(void* context);
+typedef void* (*get_ud_t)(void* ud);
+
+typedef struct
+{
+    create_context_t create_context;
+    destroy_context_t destroy_context;
+    activate_context_t activate_context;
+    swap_buffers_t swap_buffers;
+    get_ud_t get_ud;
+} host_context_t;
+
 ///
 /// Represents a DCPU-16 virtual machine.
 ///
@@ -177,6 +193,8 @@ typedef struct
     int radiation_cycles;
     int radiation_cycles_target;
     FILE* dump;		   ///< An open file descriptor where instruction execution information should be sent, or NULL.
+
+    host_context_t* host; // The hardware emulation host
 } vm_t;
 
 ///

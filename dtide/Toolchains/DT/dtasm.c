@@ -108,6 +108,9 @@ bool perform_assemble(const char* input_filename,
     // Write symbols.
     dbgfmt_write(bfromcstr(output_symbols_filename), &symbols);
     printd(LEVEL_VERBOSE, "assembler: wrote debugging symbols.\n");
+   
+    // Reset the aout state.
+    aout_reset();
     
     // Close files.
     fclose(output_binary);

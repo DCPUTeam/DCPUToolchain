@@ -6,8 +6,11 @@
 #include "../../Backends.h"
 
 #include <QDebug>
-#include <QProcess>
-#include <QStringList>
+#include <QGLWidget>
+
+extern "C" {
+#include <dcpu.h>
+}
 
 class DCPUToolchainASM: public Language
 {
@@ -32,12 +35,21 @@ public:
     virtual std::list<std::string> GetAuthors();
     virtual std::string GetLicense();
     virtual void Cycle();
+    virtual void Step();
 
     virtual std::list<Language*> GetLanguages();
 
-    virtual void Start(std::string path, DebuggingSession& session);
-    virtual void Stop(DebuggingSession& session);
+    virtual void Start(std::string path, DebuggingSession* session);
+    virtual void Stop(DebuggingSession* session);
+    virtual void Pause(DebuggingSession* session);
 
+    virtual void SendStatus();
+
+    DebuggingSession* debuggingSession;
+
+private:
+    void AddStatusMessage(vm_t* vm);
+    bool paused;
 };
 
 #endif

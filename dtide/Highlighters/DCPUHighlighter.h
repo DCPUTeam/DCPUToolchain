@@ -16,14 +16,15 @@ protected:
 private:
     struct HighlightingRule
     {
-	QRegExp pattern;
-	QTextCharFormat format;
+    	QRegExp pattern;
+    	QTextCharFormat format;
     };
     QVector<HighlightingRule> highlightingRules;
 
     QTextCharFormat instructionFormat;
     QTextCharFormat commentFormat;
     QTextCharFormat labelFormat;
+    QTextCharFormat registerFormat;
 
 };
 

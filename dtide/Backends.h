@@ -3,7 +3,52 @@
 
 #include <list>
 #include <string>
+#include <deque>
 #include <stdint.h>
+#include "DTIDEGLWidgets.h"
+
+enum MessageType
+{
+    StatusType,
+    HardwareType,
+    MemoryType
+};
+
+class StatusMessage
+{
+public:
+    uint16_t registers[8];
+    uint16_t pc;
+    uint16_t sp;
+    uint16_t ia;
+    uint16_t ex;
+};
+
+class HardwareMessage 
+{
+
+};
+
+class MemoryMessage
+{
+public:
+    uint16_t pos;
+    uint16_t value;
+};
+
+union MessageValue
+{
+    StatusMessage status;
+    HardwareMessage hardware;
+    MemoryMessage memory;
+};
+
+class DebuggingMessage
+{
+public:
+    MessageType type;
+    MessageValue value;
+};
 
 enum CodeSyntax
 {
@@ -111,6 +156,8 @@ public:
     void Show(int devid); // Indicates the emulator should show this device again.
 };
 
+; 
+
 class DebuggingSession
 {
 public:
@@ -130,6 +177,12 @@ public:
 						                             // any LEM1802 screens, etc. which the IDE can then draw inline.
 						                             // Device IDs are used to differentiate between two devices of the 
 						                             // same type (e.g. two LEM1802 screens).
+    bool HasMessages(); 
+    virtual void AddMessage(DebuggingMessage m) = 0;
+    DebuggingMessage GetMessage();
+
+private:
+    std::deque<DebuggingMessage> m_Queue; 
 };
 
 enum ModuleType
@@ -184,21 +237,26 @@ public:
     virtual std::list<std::string> GetAuthors() = 0;
     virtual std::string GetLicense() = 0;
     virtual void Cycle() = 0;
+    virtual void Step() = 0;
+    virtual void SendStatus() = 0;
 
     // Configuration interface.
     //virtual std::list<ConfigurationOption> GetOptions() = 0;
     //virtual ConfigurationOption GetOption() = 0;
     //virtual void SetOption(std::string Name, ConfigurationType Type, ConfigurationValue Value) = 0;
+ 
+    // Host context stuff
+    virtual void SetWidgetFactory(DTIDEGLWidgets* gl);
   
     // Language interface.
     virtual std::list<Language*> GetLanguages() = 0;
     Language* GetLanguageByExtension(std::string ext);
   
     // Debugging / execution interface.
-    virtual void Start(std::string path, DebuggingSession& session) = 0;
-    //virtual void Pause(DebuggingSession& session) = 0;
+    virtual void Start(std::string path, DebuggingSession* session) = 0;
+    virtual void Pause(DebuggingSession* session) = 0;
     //virtual void Continue(DebuggingSession& session) = 0;
-    virtual void Stop(DebuggingSession& session) = 0;
+    virtual void Stop(DebuggingSession* session) = 0;
     //virtual void AddBreakpoint(DebuggingSession& session, std::string path, int line) = 0;
     //virtual void AddBreakpoint(DebuggingSession& session, uint16_t memory) = 0;
     //virtual void AttachDevice(DebuggingSession& session, Device& device) = 0;
@@ -209,6 +267,8 @@ public:
     // Modules and extensions.
     //virtual std::list<Module&> GetModules() = 0;
     //virtual std::list<Device&> GetCustomDevices() = 0;
+    DTIDEGLWidgets* gl;
+
 };
 
 #include "Toolchains/Toolchains.h"

@@ -52,6 +52,7 @@ struct aout_byte
 extern struct aout_byte* start;
 extern struct aout_byte* end;
 
+void aout_reset(void);
 struct aout_byte* aout_create_raw(uint16_t raw);
 struct aout_byte* aout_create_opcode(uint16_t opcode, uint16_t a, uint16_t b);
 struct aout_byte* aout_create_label(char* name);

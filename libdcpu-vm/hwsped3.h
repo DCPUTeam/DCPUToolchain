@@ -46,7 +46,7 @@ struct sped3_hardware
     uint16_t cycle_hook;
     uint16_t hw_id;
 
-    GLFWwindow window;
+    void* context;
     int width, height;
 
     uint16_t mem;

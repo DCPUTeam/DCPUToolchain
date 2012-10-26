@@ -46,18 +46,18 @@ void vm_hw_lem1802_write(vm_t* vm, uint16_t pos, void* ud)
     // Are we updating a general cell?
     if (location_screen != HW_LEM1802_DISCONNECTED && pos >= location_screen && pos <= location_screen + 0x17F)
     {
-	hw->screen_was_updated = 1;
+    	hw->screen_was_updated = 1;
     }
     // Are we updating a font character?
     else if (location_font != HW_LEM1802_DEFAULT_FONT_LOC && pos >= location_font && pos < location_font + 0x100)
     {
     //printf("updatefont at pos %x\n", location_font);
-	hw->screen_was_updated = 1;
+    	hw->screen_was_updated = 1;
     }
     else if (location_palette != HW_LEM1802_DEFAULT_PALETTE_LOC && pos >= location_palette && pos < location_palette + 0x10)
     {
-	hw->screen_was_updated = 1;
-	hw->border_was_updated = 1;
+    	hw->screen_was_updated = 1;
+    	hw->border_was_updated = 1;
     }
 }
 
@@ -74,26 +74,24 @@ void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos, void* ud)
 
     if (hw->window_closed)
     {
-	//vm_hw_lem1802_free(ud);
-	vm->exit = 1;
-	return;
+    	vm->exit = 1;
+    	return;
     }
     
     // blink every 60 frames (i.e. at 1 Hz)
     if (hw->blink_tick < 60)
     {
-	hw->blink_tick++;
+    	hw->blink_tick++;
     }
     else
     {
-	hw->blink_tick = 0;
-	hw->blink_status = 1 - hw->blink_status;
+    	hw->blink_tick = 0;
+    	hw->blink_status = 1 - hw->blink_status;
     }
 
     // update the texture from the screen and font memory
     vm_hw_lem1802_update_texture(hw);
     vm_hw_lem1802_glfw_draw(hw);
-    glfwPollEvents();
 }
 
 void vm_hw_lem1802_break(vm_t* vm, uint16_t pos, void* ud)
@@ -111,47 +109,47 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 
     switch (requested_action)
     {
-	case LEM1802_MEM_MAP_SCREEN:
-	    printd(LEVEL_DEBUG, "LEM1802 SCREEN MAPPED: %u.\n", val_b);
-	    vm_hw_lem1802_mem_set_screen(hw, val_b);
-	    vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
-	    hw->screen_was_updated = 1;
-	    break;
-
-	case LEM1802_MEM_MAP_FONT:
-	    printd(LEVEL_DEBUG, "LEM1802 FONT MAPPED.\n");
-	    vm_hw_lem1802_mem_set_font(hw, val_b);
-	    hw->screen_was_updated = 1;
-	    break;
-
-	case LEM1802_MEM_MAP_PALETTE:
-	    printd(LEVEL_DEBUG, "LEM1802 PALETTE MAPPED.\n");
-	    vm_hw_lem1802_mem_set_palette(hw, val_b);
-	    hw->screen_was_updated = 1;
-	    hw->border_was_updated = 1;
-	    break;
-
-	case LEM1802_SET_BORDER_COLOR:
-	    printd(LEVEL_DEBUG, "LEM1802 BORDER SET.\n");
-	    vm_hw_lem1802_set_border(hw, val_b);
-	    break;
-
-	case LEM1802_MEM_DUMP_FONT:
-	    printd(LEVEL_DEBUG, "LEM1802 DUMP FONT.\n");
-	    vm->sleep_cycles += 256;
-	    for (idx = 0; idx < 128; idx++)
-	    {
-		store = vm_hw_lem1802_mem_get_font_default_representation(idx);
-		vm->ram[val_b + idx * 2] = (uint16_t)(store >> 16);
-		vm->ram[val_b + idx * 2 + 1] = (uint16_t)((store << 16) >> 16);
-	    }
-	    break;
-
-	case LEM1802_MEM_DUMP_PALETTE:
-		printd(LEVEL_DEBUG, "LEM1802 DUMP PALETTE.\n");
-		vm->sleep_cycles += 16;
-		vm_hw_lem1802_mem_dump_default_palette(vm, val_b);
-		break;
+    	case LEM1802_MEM_MAP_SCREEN:
+    	    printd(LEVEL_DEBUG, "LEM1802 SCREEN MAPPED: %u.\n", val_b);
+    	    vm_hw_lem1802_mem_set_screen(hw, val_b);
+    	    vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
+    	    hw->screen_was_updated = 1;
+    	    break;
+    
+    	case LEM1802_MEM_MAP_FONT:
+    	    printd(LEVEL_DEBUG, "LEM1802 FONT MAPPED.\n");
+    	    vm_hw_lem1802_mem_set_font(hw, val_b);
+    	    hw->screen_was_updated = 1;
+    	    break;
+    
+    	case LEM1802_MEM_MAP_PALETTE:
+    	    printd(LEVEL_DEBUG, "LEM1802 PALETTE MAPPED.\n");
+    	    vm_hw_lem1802_mem_set_palette(hw, val_b);
+    	    hw->screen_was_updated = 1;
+    	    hw->border_was_updated = 1;
+    	    break;
+    
+    	case LEM1802_SET_BORDER_COLOR:
+    	    printd(LEVEL_DEBUG, "LEM1802 BORDER SET.\n");
+    	    vm_hw_lem1802_set_border(hw, val_b);
+    	    break;
+    
+    	case LEM1802_MEM_DUMP_FONT:
+    	    printd(LEVEL_DEBUG, "LEM1802 DUMP FONT.\n");
+    	    vm->sleep_cycles += 256;
+    	    for (idx = 0; idx < 128; idx++)
+    	    {
+    		store = vm_hw_lem1802_mem_get_font_default_representation(idx);
+    		vm->ram[val_b + idx * 2] = (uint16_t)(store >> 16);
+    		vm->ram[val_b + idx * 2 + 1] = (uint16_t)((store << 16) >> 16);
+    	    }
+    	    break;
+    
+    	case LEM1802_MEM_DUMP_PALETTE:
+    		printd(LEVEL_DEBUG, "LEM1802 DUMP PALETTE.\n");
+    		vm->sleep_cycles += 16;
+    		vm_hw_lem1802_mem_dump_default_palette(vm, val_b);
+    		break;
     }
 }
 
@@ -165,7 +163,7 @@ void vm_hw_lem1802_glfw_resize_handler(GLFWwindow window, int w, int h)
     original_aspect_ratio = (double)HW_LEM1802_SCREEN_TEXTURE_WIDTH/(double)HW_LEM1802_SCREEN_TEXTURE_HEIGHT;
     new_aspect_ratio = (double)w/(double)h;
     
-    glfwMakeContextCurrent(hw->window);
+    hw->vm->host->activate_context(hw->context);
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -173,24 +171,23 @@ void vm_hw_lem1802_glfw_resize_handler(GLFWwindow window, int w, int h)
     if (new_aspect_ratio > original_aspect_ratio)
     {
 	// black areas on the sides
-	x_frust = (double)w/(h * original_aspect_ratio);
-	glOrtho(-x_frust, x_frust, -1.0, 1.0, -1.0, 2.0);
+    	x_frust = (double)w/(h * original_aspect_ratio);
+    	glOrtho(-x_frust, x_frust, -1.0, 1.0, -1.0, 2.0);
     }
     else
     {
 	// black areas top and bottom
-	y_frust = (h * original_aspect_ratio)/((double) w);
-	glOrtho(-1.0, 1.0, -y_frust, y_frust, -1.0, 2.0);
+    	y_frust = (h * original_aspect_ratio)/((double) w);
+    	glOrtho(-1.0, 1.0, -y_frust, y_frust, -1.0, 2.0);
     }
     
     // redraw
     vm_hw_lem1802_glfw_draw(hw);
 }
 
-int vm_hw_lem1802_close(GLFWwindow w)
+int vm_hw_lem1802_close(void* ud)
 {
     struct lem1802_hardware* hw;
-    void* ud = glfwGetWindowUserPointer(w);
     hw = (struct lem1802_hardware*)ud;
     hw->window_closed = 1;
     return 0;
@@ -199,73 +196,72 @@ int vm_hw_lem1802_close(GLFWwindow w)
 
 void vm_hw_lem1802_init_glfw(struct lem1802_hardware* hw)
 {
-    // Initialize GLFW
-    if (!glfwInit())
+    int width, height;
+
+    if(hw->vm->host != NULL)
     {
-	printf("Error: Couldn't initialize GLFW.");
-	return;
+        width = 4*HW_LEM1802_SCREEN_TEXTURE_WIDTH;
+        height = 4*HW_LEM1802_SCREEN_TEXTURE_HEIGHT;
+        hw->context = hw->vm->host->create_context("LEM 1802", width, height, true, hw);
+
+        glfwSetWindowCloseCallback(&vm_hw_glfw_close_window_callback);
+        glfwSwapInterval(0);
+        
+        glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+        
+        hw->texture_id = next_texture_id;
+        next_texture_id++;
+        glBindTexture (GL_TEXTURE_2D, hw->texture_id);
+        
+        glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
+        glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 2.0);
     }
-    
-    // Open an OpenGL window  GLFW_WINDOWED
-    hw->window = glfwCreateWindow(4*HW_LEM1802_SCREEN_TEXTURE_WIDTH, 4*HW_LEM1802_SCREEN_TEXTURE_HEIGHT, GLFW_WINDOWED, "LEM1802", NULL);
-    
-    glfwSetWindowUserPointer(hw->window, hw);
-    glfwMakeContextCurrent(hw->window);
-    glfwSetWindowSizeCallback(&vm_hw_glfw_resize_window_callback);
-    glfwSetWindowCloseCallback(&vm_hw_glfw_close_window_callback);
-    glfwSwapInterval(0);
-    
-    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-    
-    hw->texture_id = next_texture_id;
-    next_texture_id++;
-    glBindTexture (GL_TEXTURE_2D, hw->texture_id);
-    
-    glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
-    glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 2.0);
 }
 
 void vm_hw_lem1802_glfw_draw(struct lem1802_hardware* hw)
 {
-    glfwMakeContextCurrent(hw->window);
-    if (hw->texture_has_changed)
+    if(hw->vm->host != NULL)
     {
-	glBindTexture (GL_TEXTURE_2D, hw->texture_id);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, HW_LEM1802_SCREEN_TEXTURE_WIDTH, HW_LEM1802_SCREEN_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, hw->glfw_texture);
-	hw->texture_has_changed = 0;
+        hw->vm->host->activate_context(hw->context);
+        if (hw->texture_has_changed)
+        {
+	        glBindTexture (GL_TEXTURE_2D, hw->texture_id);
+	        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	        glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, HW_LEM1802_SCREEN_TEXTURE_WIDTH, HW_LEM1802_SCREEN_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, hw->glfw_texture);
+	        hw->texture_has_changed = 0;
+        }
+
+        // OpenGL rendering goes here...
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glEnable (GL_TEXTURE_2D); /* enable texture mapping */
+        glBindTexture (GL_TEXTURE_2D, hw->texture_id); /* bind to our texture, has id of 13 */
+
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f,0.0f); /* lower left corner of image */
+        glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner
+        
+        glTexCoord2f(0.0f, 1.0f); /* upper left corner of image */
+        glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
+        
+        glTexCoord2f(1.0f, 1.0f); /* upper right corner of image */
+        glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner
+        
+        glTexCoord2f(1.0f, 0.0f); /* lower right corner of image */
+        glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner
+
+        glEnd();
+
+        glDisable (GL_TEXTURE_2D); /* disable texture mapping */
+
+        // Swap front and back rendering buffers
+        hw->vm->host->swap_buffers(hw->context);
     }
-
-    // OpenGL rendering goes here...
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glEnable (GL_TEXTURE_2D); /* enable texture mapping */
-    glBindTexture (GL_TEXTURE_2D, hw->texture_id); /* bind to our texture, has id of 13 */
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f,0.0f); /* lower left corner of image */
-    glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner
-    
-    glTexCoord2f(0.0f, 1.0f); /* upper left corner of image */
-    glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
-    
-    glTexCoord2f(1.0f, 1.0f); /* upper right corner of image */
-    glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner
-    
-    glTexCoord2f(1.0f, 0.0f); /* lower right corner of image */
-    glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner
-
-    glEnd();
-
-    glDisable (GL_TEXTURE_2D); /* disable texture mapping */
-
-    // Swap front and back rendering buffers
-    glfwSwapBuffers(hw->window);
 }
 
 void vm_hw_lem1802_update_texture(struct lem1802_hardware* hw)
@@ -277,32 +273,32 @@ void vm_hw_lem1802_update_texture(struct lem1802_hardware* hw)
     
     if (location_screen != HW_LEM1802_DISCONNECTED)
     {
-	i = 0;
-	if (hw->screen_was_updated)
-	{
-	    for (pos = location_screen; pos <= location_screen + 0x17F; pos++)
-	    {
-		val = hw->vm->ram[pos];
-		x = i % HW_LEM1802_SCREEN_WIDTH;
-		y = i / HW_LEM1802_SCREEN_WIDTH;
-		vm_hw_lem1802_mem_put_char_to_screen(hw, val, x, y);
-		i++;
-	    }
-	    hw->screen_was_updated = 0;
-	    hw->texture_has_changed = 1;
-	}
-    
-	// update border
-	if (hw->border_was_updated)
-	{
-	    vm_hw_lem1802_mem_draw_border(hw);
-	    hw->border_was_updated = 0;
-	    hw->texture_has_changed = 1;
-	}
+    	i = 0;
+    	if (hw->screen_was_updated)
+    	{
+    	    for (pos = location_screen; pos <= location_screen + 0x17F; pos++)
+    	    {
+        		val = hw->vm->ram[pos];
+        		x = i % HW_LEM1802_SCREEN_WIDTH;
+        		y = i / HW_LEM1802_SCREEN_WIDTH;
+        		vm_hw_lem1802_mem_put_char_to_screen(hw, val, x, y);
+        		i++;
+    	    }
+    	    hw->screen_was_updated = 0;
+    	    hw->texture_has_changed = 1;
+    	}
+        
+    	// update border
+    	if (hw->border_was_updated)
+    	{
+    	    vm_hw_lem1802_mem_draw_border(hw);
+    	    hw->border_was_updated = 0;
+    	    hw->texture_has_changed = 1;
+    	}
     }
     else
     {
-	// TODO blank/disconnected screen !?
+	    // TODO blank/disconnected screen !?
     }
 }
 
@@ -367,7 +363,8 @@ void vm_hw_lem1802_free(void *ud)
     vm_hook_unregister(hw->vm, hw->break_hook);
     vm_hw_unregister(hw->vm, hw->hw_id);
     
-    glfwDestroyWindow(hw->window);
+    if(hw->vm->host != NULL) 
+        hw->vm->host->destroy_context(hw->context); 
     free(hw->glfw_texture);
     free(hw);
 }

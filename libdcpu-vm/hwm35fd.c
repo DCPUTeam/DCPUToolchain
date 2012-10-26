@@ -26,7 +26,7 @@ void vm_hw_m35fd_set_state(struct m35fd_hardware* hw, uint16_t state)
     hw->state = state;
     if(hw->interrupt_msg)
     {
-	vm_interrupt(hw->vm, hw->interrupt_msg);
+    	vm_interrupt(hw->vm, hw->interrupt_msg);
     }
 }
 
@@ -35,7 +35,7 @@ void vm_hw_m35fd_set_error(struct m35fd_hardware* hw, uint16_t error)
     hw->last_error = error;
     if(hw->interrupt_msg)
     {
-	vm_interrupt(hw->vm, hw->interrupt_msg);
+        vm_interrupt(hw->vm, hw->interrupt_msg);
     }
 }
 
@@ -45,48 +45,48 @@ void vm_hw_m35fd_interrupt(vm_t* vm, void* ud)
 
     switch (vm->registers[REG_A])
     {
-	case M35FD_INTERRUPT_POLL:
-	    vm->registers[REG_B] = hw->state;
-	    vm->registers[REG_C] = hw->last_error;
-
-	    hw->last_error = M35FD_ERROR_NONE;
-	case M35FD_INTERRUPT_MSG:
-	    hw->interrupt_msg = vm->registers[REG_X];
-	    break;
-	case M35FD_INTERRUPT_READ:
-	    if((hw->state == M35FD_STATE_READY || hw->state == M35FD_STATE_READY_WP) 
-		&& hw->reading == false && hw->writing == false)
-	    {
-		hw->reading = true;
-		hw->sector = vm->registers[REG_X];
-		hw->position = vm->registers[REG_Y];
-
-		vm_hw_m35fd_set_state(hw, M35FD_STATE_READING);
-		vm->registers[REG_B] = 1;
-	    }
-	    else
-	    {
-		vm->registers[REG_B] = 0;
-		vm_hw_m35fd_set_error(hw, M35FD_ERROR_BUSY);
-	    }
-	    break;
-	case M35FD_INTERRUPT_WRITE:
-	    if((hw->state == M35FD_STATE_READY) 
-		&& hw->reading == false && hw->writing == false)
-	    {
-		hw->writing = true;
-		hw->sector = vm->registers[REG_X];
-		hw->position = vm->registers[REG_Y];
-
-		vm_hw_m35fd_set_state(hw, M35FD_STATE_WRITING);
-		vm->registers[REG_B] = 1;
-	    }
-	    else
-	    {
-		vm->registers[REG_B] = 0;
-		vm_hw_m35fd_set_error(hw, M35FD_ERROR_BUSY);
-	    }
-	    break;
+      	case M35FD_INTERRUPT_POLL:
+      	    vm->registers[REG_B] = hw->state;
+      	    vm->registers[REG_C] = hw->last_error;
+      
+      	    hw->last_error = M35FD_ERROR_NONE;
+      	case M35FD_INTERRUPT_MSG:
+      	    hw->interrupt_msg = vm->registers[REG_X];
+      	    break;
+      	case M35FD_INTERRUPT_READ:
+      	    if((hw->state == M35FD_STATE_READY || hw->state == M35FD_STATE_READY_WP) 
+      		&& hw->reading == false && hw->writing == false)
+      	    {
+          		hw->reading = true;
+          		hw->sector = vm->registers[REG_X];
+          		hw->position = vm->registers[REG_Y];
+          
+          		vm_hw_m35fd_set_state(hw, M35FD_STATE_READING);
+          		vm->registers[REG_B] = 1;
+      	    }
+      	    else
+      	    {
+          		vm->registers[REG_B] = 0;
+        		vm_hw_m35fd_set_error(hw, M35FD_ERROR_BUSY);
+      	    }
+      	    break;
+      	case M35FD_INTERRUPT_WRITE:
+      	    if((hw->state == M35FD_STATE_READY) 
+      		&& hw->reading == false && hw->writing == false)
+      	    {
+           		hw->writing = true;
+           		hw->sector = vm->registers[REG_X];
+           		hw->position = vm->registers[REG_Y];
+           
+           		vm_hw_m35fd_set_state(hw, M35FD_STATE_WRITING);
+           		vm->registers[REG_B] = 1;
+      	    }
+      	    else
+      	    {
+           		vm->registers[REG_B] = 0;
+         		vm_hw_m35fd_set_error(hw, M35FD_ERROR_BUSY);
+      	    }
+      	    break;
     }
 }
 
@@ -107,45 +107,42 @@ void vm_hw_m35fd_cycle(vm_t* vm, uint16_t pos, void* ud)
 
     if(hw->state == M35FD_STATE_NO_MEDIA && (hw->reading || hw->writing))
     {
-	vm_hw_m35fd_set_error(hw, M35FD_ERROR_NO_MEDIA);
-	vm_hw_m35fd_reset_state(hw);
-	return;
+    	vm_hw_m35fd_set_error(hw, M35FD_ERROR_NO_MEDIA);
+    	vm_hw_m35fd_reset_state(hw);
+    	return;
     }
 
     if(hw->disk == NULL)
     {
-	vm_hw_m35fd_set_error(hw, M35FD_ERROR_EJECT);
-	vm_hw_m35fd_reset_state(hw);
+    	vm_hw_m35fd_set_error(hw, M35FD_ERROR_EJECT);
+    	vm_hw_m35fd_reset_state(hw);
     }
 
     if(hw->sector > 1440)
     {
-	// There is no error for "The requested sector does not exist."
-
-	vm_hw_m35fd_reset_state(hw);
+    	// There is no error for "The requested sector does not exist."
+    	vm_hw_m35fd_reset_state(hw);
     }
 
     if(hw->reading) 
     {
-	fseek(hw->disk, hw->sector * 512, SEEK_SET);
-	for(i = 0; i < 512; i++) {
-	    iread(&word, hw->disk);
-	    vm->ram[hw->position + i] = word;
-
-	}
-	vm_hw_m35fd_reset_state(hw);
+    	fseek(hw->disk, hw->sector * 1024, SEEK_SET);
+    	for(i = 0; i < 512; i++) {
+    	    iread(&word, hw->disk);
+    	    vm->ram[hw->position + i] = word;
+    	}
+    	vm_hw_m35fd_reset_state(hw);
     }
 
     if(hw->writing)
     {
-	printf("write: here we go\n");
-	fseek(hw->disk, hw->sector * 512, SEEK_SET);
-	for(i = 0; i < 512; i++) {
-	    word = vm->ram[hw->position + i];
-	    iwrite(&word, hw->disk);
-	    fflush(hw->disk);
-	}
-	vm_hw_m35fd_reset_state(hw);
+    	fseek(hw->disk, hw->sector * 1024, SEEK_SET);
+    	for(i = 0; i < 512; i++) {
+    	    word = vm->ram[hw->position + i];
+    	    iwrite(&word, hw->disk);
+    	    fflush(hw->disk);
+    	}
+    	vm_hw_m35fd_reset_state(hw);
     }
 }
 
@@ -154,7 +151,7 @@ void vm_hw_m35fd_load_disk(struct m35fd_hardware* hw, const char* path)
     hw->disk = fopen(path, "rb+");
     if(hw->disk != NULL)
     {
-	vm_hw_m35fd_set_state(hw, (hw->write_protected) ? M35FD_STATE_READY_WP : M35FD_STATE_READY);
+    	vm_hw_m35fd_set_state(hw, (hw->write_protected) ? M35FD_STATE_READY_WP : M35FD_STATE_READY);
     }
 }
 

@@ -173,8 +173,8 @@ line:
 		} |
 		KEYWORD IMPORT_OPTIONAL WORD NEWLINE
 		{
-            if ((long)$1 != IMPORT)
-                dhalt(ERR_ONLY_IMPORT_OPTIONAL, NULL);
+            /*if ((long)$1 != IMPORT)
+                dhalt(ERR_ONLY_IMPORT_OPTIONAL, NULL);*/
 			$$ = malloc(sizeof(struct ast_node_line));
 			$$->type = type_keyword;
 			$$->keyword = (long)IMPORT_OPTIONAL;

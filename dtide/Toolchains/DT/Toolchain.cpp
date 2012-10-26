@@ -7,7 +7,78 @@
 #ifdef WIN32
 #include <io.h>
 #define mktemp _mktemp
+#else
+#include <unistd.h>
 #endif
+
+DCPUToolchain* g_this;
+
+void* DCPUToolchain_CreateContext(const char* title, int width, int height, bool resizeable, void* ud)
+{
+    QString qtitle = QString::fromLocal8Bit(title);
+    QGLWidget* context = g_this->gl->requestWidget(qtitle, width, height);
+    return context;
+}
+
+void DCPUToolchain_ActivateContext(void* context)
+{
+    QGLWidget* w = static_cast<QGLWidget*>(context);
+    w->makeCurrent();
+}
+
+void DCPUToolchain_SwapBuffers(void* context)
+{
+    QGLWidget* w = static_cast<QGLWidget*>(context);
+    w->swapBuffers();
+} 
+
+void DCPUToolchain_DestroyContext(void* context)
+{
+    // FIXME
+}
+
+void* DCPUToolchain_GetUD(void* context)
+{
+    return NULL;
+}
+
+void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
+{
+}
+
+void DCPUToolchain_WriteHook(vm_t* vm, uint16_t pos, void* ud)
+{
+    DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
+    DebuggingMessage m;
+    MemoryMessage payload;
+
+    payload.pos = pos;
+    payload.value = vm->ram[pos];
+
+    m.type = MemoryType;
+    m.value = (MessageValue&) payload;
+
+    t->debuggingSession->AddMessage(m);
+}
+
+void DCPUToolchain_InterruptHook(vm_t* vm, uint16_t pos, void* ud)
+{
+    DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
+
+}
+
+void DCPUToolchain_HardwareHook(vm_t* vm, uint16_t pos, void* ud)
+{
+    DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
+
+}
+
+void DCPUToolchain_60HZHook(vm_t* vm, uint16_t pos, void* ud)
+{
+
+}
+
+
 
 DCPUToolchainASM::DCPUToolchainASM() 
 {
@@ -71,6 +142,7 @@ void DCPUToolchainASM::Build(std::string filename, std::string outputDir, BuildA
     free(os);
 }
 
+
 CodeSyntax DCPUToolchainASM::GetCodeSyntax()
 {
     return DCPUAssembly;
@@ -108,18 +180,85 @@ std::list<Language*> DCPUToolchain::GetLanguages()
     return list;
 }
 
-void DCPUToolchain::Start(std::string path, DebuggingSession& session)
+void DCPUToolchain::Start(std::string path, DebuggingSession* session)
 {
+    // For the lack of a proper solution...
+    g_this = this;
+
     // Tell the emulator to start.
-    start_emulation(path.c_str());
+    debuggingSession = session;
+    paused = false;
+    start_emulation(
+        /* Binary path */
+        path.c_str(), 
+
+        /* VM Hooks */
+        &DCPUToolchain_CycleHook, 
+        &DCPUToolchain_WriteHook, 
+        &DCPUToolchain_InterruptHook,
+        &DCPUToolchain_HardwareHook,
+        &DCPUToolchain_60HZHook,
+
+        /* Host context */
+        &DCPUToolchain_CreateContext,
+        &DCPUToolchain_DestroyContext,
+        &DCPUToolchain_ActivateContext,
+        &DCPUToolchain_SwapBuffers,
+        &DCPUToolchain_GetUD,
+
+        static_cast<void*>(this));
+}
+
+void DCPUToolchain::AddStatusMessage(vm_t* vm)
+{
+    DebuggingMessage m;
+    StatusMessage payload;
+
+    if(vm == 0)
+        return;
+
+    for(int i = 0; i < 8; i++)
+        payload.registers[i] = vm->registers[i];
+
+    payload.pc = vm->pc;
+    payload.sp = vm->sp;
+    payload.ia = vm->ia;
+    payload.ex = vm->ex;
+
+    m.type = StatusType;
+    m.value = (MessageValue&) payload;
+
+    debuggingSession->AddMessage(m);
+}
+
+void DCPUToolchain::SendStatus()
+{
+    vm_t* vm = get_vm();
+
+    AddStatusMessage(vm);
 }
 
 void DCPUToolchain::Cycle()
 {
+    if(!paused)
+    {
+        cycle_emulation();
+    }
+}
+
+void DCPUToolchain::Step()
+{
     cycle_emulation();
 }
 
-void DCPUToolchain::Stop(DebuggingSession& session)
+void DCPUToolchain::Stop(DebuggingSession* session)
 {
+    gl->killWidgets();
     stop_emulation();
 }
+
+void DCPUToolchain::Pause(DebuggingSession* session)
+{
+    paused = true;
+}
+

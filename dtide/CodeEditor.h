@@ -29,7 +29,7 @@ public:
 
     QString getPath();
     bool build();
-    void run();
+    void run(DebuggingSession* s);
 
 signals:
     void fileNameChanged(QString);

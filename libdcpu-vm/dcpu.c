@@ -32,7 +32,7 @@ void vm_init(vm_t* vm, bool init_memory)
     unsigned int i;
 
     for (i = 0; i < 0x8; i++)
-	vm->registers[i] = 0x0;
+    	vm->registers[i] = 0x0;
 
     vm->pc = 0x0;
     vm->sp = 0x0;
@@ -41,9 +41,11 @@ void vm_init(vm_t* vm, bool init_memory)
 
     if (init_memory)
     {
-	for (i = 0; i < 0x10000; i++)
-	    vm->ram[i] = 0x0;
+    	for (i = 0; i < 0x10000; i++)
+    	    vm->ram[i] = 0x0;
     }
+
+    vm->host = NULL;
 
     vm->sleep_cycles = 0;
     vm->dummy = 0x0;
@@ -66,7 +68,7 @@ void vm_init(vm_t* vm, bool init_memory)
     vm->irq_count = 0;
     vm->dump = NULL;
     for (i = 0; i < 256; i++)
-	vm->irq[i] = 0x0;
+    	vm->irq[i] = 0x0;
 
     return;
 }
