@@ -19,10 +19,10 @@ set pc, main
 :end set pc, end
 
 :getscreen	
-    hwn a
+    hwn z
     set i, 0x0
     :getscreen_loop
-    	ifg i, a
+    	ifg i, z
     		set pc, getscreen_notfound
 
    	:getscreen_check
