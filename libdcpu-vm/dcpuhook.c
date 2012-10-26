@@ -44,7 +44,7 @@ void vm_hook_break(vm_t* vm)
     vm_hook_fire(vm, 0, HOOK_ON_BREAK, NULL);
 }
 
-void vm_hook_initialize(void)
+void vm_hook_initialize()
 {
     int i;
     for (i = 0; i < HOOK_MAX; i++)
