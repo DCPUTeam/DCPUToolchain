@@ -1,3 +1,4 @@
+#include <cassert>
 #include "DTIDE.h"
 
 DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(parent)
@@ -50,8 +51,13 @@ void DTIDE::runCycles(int count)
             switch (m.type)
             {
                 case StatusType:
+                {
                     StatusMessage status = (StatusMessage&) m.value;
                     emit setRegisters(status);
+                    break;
+                }
+                default:
+                    assert(false);
                     break;
             }
         }
