@@ -16,6 +16,9 @@ SETTING_INDENT_USED=false
 SETTING_INDENT="-i8 -bad -bap -bl -bli0 -cli4 -ut -cbi0 -ss -npcs -npsl -ncs -di0 -nbc -bls -blf -ts8 -lp -ip2 -ppi0 -il0 -l1000"
 SETTING_ASTYLE_USED=true
 SETTING_ASTYLE="--style=allman -s4 -C -S -N -Y -M40 -p -U -H --align-pointer=type --lineend=linux -q -n --exclude=stdlib-c "
+SETTING_EXPAND_USED=true
+SETTING_EXPAND_TABS=false
+SETTING_EXPAND_COUNT=4
 ##########  SETTINGS END  ############
 
 if [ "$(which indent 2>/dev/null)" == "" ] && $SETTING_INDENT_USED; then
@@ -63,15 +66,21 @@ for i in $FILES; do
 
         # Format our file.
         dos2unix $STORE 2>/dev/null
-        unexpand --tabs=8 $STORE > $OUTPUT
+        if $SETTING_EXPAND_USED; then
+            if $SETTING_EXPAND_TABS; then
+                unexpand --tabs=$SETTING_EXPAND_COUNT $STORE > $OUTPUT
+            else
+                expand --tabs=$SETTING_EXPAND_COUNT $STORE > $OUTPUT
+            fi
+        fi
         cat $OUTPUT > $STORE
         if $SETTING_INDENT_USED; then
             indent $SETTING_INDENT $STORE -o $OUTPUT
             cat $OUTPUT > $STORE
         fi
-	if $SETTING_ASTYLE_USED; then
-	        astyle $SETTING_ASTYLE $STORE
-	fi
+        if $SETTING_ASTYLE_USED; then
+            astyle $SETTING_ASTYLE $STORE
+        fi
 
         # Add our current temporary storage file
         # back into the index under the original file
@@ -86,15 +95,21 @@ for i in $FILES; do
     else
         # Format our file.
         dos2unix $i 2>/dev/null
-        unexpand --tabs=8 $i > $i.fmtd
+        if $SETTING_EXPAND_USED; then
+            if $SETTING_EXPAND_TABS; then
+                unexpand --tabs=$SETTING_EXPAND_COUNT $i > $i.fmtd
+            else
+                expand --tabs=$SETTING_EXPAND_COUNT $i > $i.fmtd
+            fi
+        fi
         mv $i.fmtd $i
         if $SETTING_INDENT_USED; then
             indent $SETTING_INDENT $i -o $i.fmtd
             mv $i.fmtd $i
         fi
-	if $SETTING_ASTYLE_USED; then
-	        astyle $SETTING_ASTYLE $i
-	fi
+        if $SETTING_ASTYLE_USED; then
+            astyle $SETTING_ASTYLE $i
+        fi
     fi 
 done
 
