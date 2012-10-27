@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(dtide)
 
+find_package(QScintilla REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Qt4)
 if(${QT4_FOUND})
@@ -16,7 +17,7 @@ if(${QT4_FOUND})
         DTIDERegisters.cpp
         DTIDEGLWidgets.cpp
         CodeEditor.cpp
-        Highlighters/DCPUHighlighter.cpp
+        Highlighters/QsciLexerDASM16.cpp
         Toolchains/DT/Toolchain.cpp
         Toolchains/DT/dtasm.c
         Toolchains/DT/dtemu.c
@@ -33,7 +34,7 @@ if(${QT4_FOUND})
         DTIDEGLWidgets.h
         CodeEditor.h
         Highlighters/Highlighters.h
-        Highlighters/DCPUHighlighter.h
+        Highlighters/QsciLexerDASM16.h
         Toolchains/Toolchains.h
         Toolchains/DT/Toolchain.h
         Toolchains/DT/dtasm.h
@@ -67,6 +68,7 @@ if(${QT4_FOUND})
         ${CMAKE_CURRENT_BINARY_DIR}
         ${GLFW_SOURCE_DIR}/include
         ${png_SOURCE_DIR}
+        ${QSCINTILLA_INCLUDE_DIR} 
     )
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
@@ -87,6 +89,7 @@ if(${QT4_FOUND})
         glfw
         ${GLFW_LIBRARIES}
         ${OPENGL_LIBRARIES}
+        ${QSCINTILLA_LIBRARY}
     )
 else()
     message("Not building IDE due to lack of Qt 4 libraries.")
