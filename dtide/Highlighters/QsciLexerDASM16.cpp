@@ -31,35 +31,6 @@ QStringList QsciLexerDASM16::autoCompletionWordSeparators() const
     return list;
 }
 
-const char* QsciLexerDASM16::blockStartKeyword(int *style) const
-{
-    if(style)
-        *style = DASM_Directive;
-
-    return ".if .else .elseif .macro macro .define .equ";
-}
-
-const char* QsciLexerDASM16::blockEndKeyword(int *style) const
-{
-    if(style)
-        *style = DASM_Directive;
-
-    return ".endif";
-}
-
-const char* QsciLexerDASM16::blockEnd(int *style) const
-{
-    if(style)
-        *style = DCPU_Instruction;
-
-    return "set pc, pop";
-}
-
-const char* QsciLexerDASM16::blockStart(int *style) const
-{
-    return ":"; // Label
-}
-
 const char* QsciLexerDASM16::wordCharacters() const
 {
     return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_#";
@@ -134,7 +105,7 @@ const char *QsciLexerDASM16::keywords(int set) const
         return  "set add sub mul mli div dvi mod mdi and bor xor shr asr shl"
                 "ifb ifc ife ife ifn ifg ifa ifl ifu adx sbx sti std jsr int"
                 "iag ias rfi iaq hwn hwq hwi";
-    else if(set == 2) //Registers..
+    else if(set == 3) 
         return  "a b c x y z i j pc sp ex ia";
     return 0;
 }

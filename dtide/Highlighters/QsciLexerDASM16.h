@@ -35,12 +35,6 @@ public:
     
     QStringList autoCompletionWordSeparators() const;
 
-    /* Block Keyword methods are mostly used for MASM style syntaxing. */
-    const char *blockStartKeyword(int *style) const;
-    const char *blockEndKeyword(int *style) const;
-
-    const char *blockEnd(int *style=0) const;
-    const char *blockStart(int *style=0) const;
     const char *wordCharacters() const;
     QColor defaultColor(int style) const;
     bool defaultEolFill(int style) const;
