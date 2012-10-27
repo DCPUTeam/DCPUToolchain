@@ -9,8 +9,7 @@ QGLWidget* DTIDEGLWidgets::requestWidget(QString title, int width, int height)
 {
     QGLFormat glFormat(QGL::SampleBuffers);
     glFormat.setSwapInterval(0);
-    QGLWidget* res = new QGLWidget();
-    res->setFormat(glFormat);
+    QGLWidget* res = new QGLWidget(glFormat);
 
     activeWidgets.append(res);
 
