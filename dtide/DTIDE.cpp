@@ -57,7 +57,7 @@ void DTIDE::runCycles(int count)
                     break;
                 }
                 default:
-                    assert(false);
+                    // Not implemented.
                     break;
             }
         }
