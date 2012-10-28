@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 project(dtide)
 
-find_package(QScintilla REQUIRED)
+find_package(QScintilla)
 find_package(OpenGL REQUIRED)
 find_package(Qt4)
-if(${QT4_FOUND})
+if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
     set(dtide_SOURCES 
         main.cpp 
         Backends.cpp
