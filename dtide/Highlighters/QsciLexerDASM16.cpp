@@ -43,19 +43,19 @@ QColor QsciLexerDASM16::defaultColor(int style) const
         case Default:
             return QColor("#000000");
          case Comment:
-            return QColor(0x00,0x7f,0x00);
+            return QColor("#778899");
          case Number:
-            return QColor("#ff0000");
+            return QColor("#5f9ea0");
          case DoubleQuotedString:
          case SingleQuoteString:
-            return QColor("#800000");
+            return QColor("#f08080");
          case DCPU_Instruction:
             return QColor("#0000FF");
          case Register:
-            return QColor("#8000FF");
+            return QColor("#9932cc");
          case DASM_Directive:
          case DASM_Directive_Operand:
-            return QColor("#DF4000");
+            return QColor("#2e8b57");
          case UnclosedString:
             return QColor("#E0C0E0");
     }
@@ -65,6 +65,8 @@ QColor QsciLexerDASM16::defaultColor(int style) const
 QFont QsciLexerDASM16::defaultFont(int style) const
 {
     QFont f;
+    f.setFamily("Monospace");
+    f.setFixedPitch(true);
 
     switch(style)
     {
@@ -73,7 +75,6 @@ QFont QsciLexerDASM16::defaultFont(int style) const
             break;
         case DCPU_Instruction:
         case Register:
-            f = QsciLexer::defaultFont(style);
             break;
         case DoubleQuotedString:
         case SingleQuoteString:
@@ -84,6 +85,8 @@ QFont QsciLexerDASM16::defaultFont(int style) const
                 f = QFont("Bitstream Vera Sans Mono",8);
             #endif
             break;
+        case DASM_Directive:
+            f.setWeight(QFont::Bold);
         default:
             f = QsciLexer::defaultFont(style);
     }

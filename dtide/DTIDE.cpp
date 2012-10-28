@@ -67,13 +67,9 @@ void DTIDE::runCycles(int count)
 
 void DTIDE::addCodeTab(const QString& fileName)
 {
-    QFont font;
-    font.setFamily("Monospace");
-    font.setFixedPitch(true);
 
     CodeEditor* editor = new CodeEditor(toolchain, fileName, this);
     connect(editor, SIGNAL(fileNameChanged(QString)), tabs, SLOT(updateTitle(QString)));
-    editor->setFont(font);
 
     tabs->addTab(editor, fileName);
 }

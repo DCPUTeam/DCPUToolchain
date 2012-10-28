@@ -13,6 +13,8 @@
 #include "DTIDEBuildAPI.h"
 #include "Backends.h"
 
+#define MARKER 2
+
 class CodeEditor: public QsciScintilla 
 {
     Q_OBJECT
@@ -38,6 +40,7 @@ private slots:
     void highlightCurrentLine();
     void updateFileName();
     void updateLineNumberMarginWidth();
+    void handleMarginClick(int, int, Qt::KeyboardModifiers);
 
 private:
     QsciLexer* highlighter;
@@ -48,7 +51,12 @@ private:
 
     DTIDEBuildAPI buildAPI;
 
+    int marginPadding;
     bool dirty;
+
+    void setupEditor();
+    void setupMargins();
+    void setupSignals();
 };
 
 #endif

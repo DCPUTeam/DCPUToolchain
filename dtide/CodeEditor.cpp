@@ -14,11 +14,46 @@ CodeEditor::CodeEditor(Toolchain* t, QString filename, QWidget* parent): QsciSci
     dirty = false;
 
     setHighlighter();
-    setMarginType(1, NumberMargin);
+    setupEditor();
+    setupMargins();
+    setupSignals();
+}
+
+void CodeEditor::setupEditor()
+{
+
     setIndentationsUseTabs(false);
     setIndentationWidth(4);
     setWrapIndentMode(WrapIndentSame);
     setAutoIndent(true);
+}
+
+void CodeEditor::setupMargins()
+{
+    updateLineNumberMarginWidth();
+
+    setMarginSensitivity(0, true);
+    setMarginSensitivity(1, true);
+
+    markerDefine(QsciScintilla::RightArrow, MARKER);
+    setMarkerBackgroundColor(QColor("#ee1111"), MARKER);
+}
+
+void CodeEditor::setupSignals()
+{
+    connect(this, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)), this, SLOT(handleMarginClick(int, int, Qt::KeyboardModifiers)));
+}
+
+void CodeEditor::handleMarginClick(int margin, int line, Qt::KeyboardModifiers kb)
+{
+    if(markersAtLine(line) != 0)
+    {
+        markerDelete(line, MARKER);
+    }
+    else
+    {
+        markerAdd(line, MARKER);
+    }
 }
 
 void CodeEditor::updateFileName()
@@ -96,9 +131,9 @@ void CodeEditor::updateLineNumberMarginWidth()
         digits++;
     }
 
-    int width = fontMetrics().width(QLatin1Char('0')) * digits + 6;
+    int width = 6 + fontMetrics().width(QLatin1Char('0')) * digits;
 
-    setMarginWidth(1, width);
+    setMarginWidth(0, width);
 }
 
 QString CodeEditor::getPath()
