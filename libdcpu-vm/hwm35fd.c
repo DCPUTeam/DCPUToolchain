@@ -179,7 +179,7 @@ void vm_hw_m35fd_init(vm_t* vm)
 
     hw->vm = vm;
 
-    hw->device.id = 0x12345678;
+    hw->device.id = 0x4fd524c5;
     hw->device.version = 0x000b;
     hw->device.manufacturer = 0x1eb37e91;
     hw->device.handler = &vm_hw_m35fd_interrupt;
