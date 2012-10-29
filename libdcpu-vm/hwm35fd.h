@@ -18,8 +18,7 @@
 #define M35FD_STATE_NO_MEDIA     0
 #define M35FD_STATE_READY     1
 #define M35FD_STATE_READY_WP     2
-#define M35FD_STATE_READING 3
-#define M35FD_STATE_WRITING 4
+#define M35FD_STATE_BUSY 3
 
 #define M35FD_ERROR_NONE     0
 #define M35FD_ERROR_BUSY     1
