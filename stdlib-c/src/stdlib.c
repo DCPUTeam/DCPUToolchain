@@ -16,8 +16,18 @@
 // String conversion:
 int atoi(const char* str)
 {
-	// TODO
-	return 0;
+    int i = 0;
+    int out = 0;
+    while(str[i]++ != 0) {
+        // check if its outside the ascii numeric range, if it is break
+        if (str[i] < 0x30 || str[i] > 0x39)
+            break;
+        // potiental vulnerability with integer overflow but 
+        // glibc's doesnt check either, they use a cast of the output from atol
+        out*=10;
+        out+=(str[i]-0x30);
+    }
+    return out;
 }
 
 // Pseudo-random sequence generation:
