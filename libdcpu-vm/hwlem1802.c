@@ -363,8 +363,11 @@ void vm_hw_lem1802_free(void* ud)
     vm_hook_unregister(hw->vm, hw->break_hook);
     vm_hw_unregister(hw->vm, hw->hw_id);
 
-    if (hw->vm->host != NULL)
-        hw->vm->host->destroy_context(hw->context);
+    if(hw->vm) 
+    {
+        if (hw->vm->host != NULL)
+            hw->vm->host->destroy_context(hw->context);
+    }
     free(hw->glfw_texture);
     free(hw);
 }
