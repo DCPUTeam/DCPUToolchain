@@ -368,6 +368,9 @@ void vm_hw_lem1802_free(void* ud)
         if (hw->vm->host != NULL)
             hw->vm->host->destroy_context(hw->context);
     }
-    free(hw->glfw_texture);
+    if(hw->glfw_texture)
+    {
+        free(hw->glfw_texture);
+    }
     free(hw);
 }
