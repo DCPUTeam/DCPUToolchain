@@ -118,17 +118,20 @@ int strncmp(const char* first, const char* second, size_t num)
 // Searching:
 void* memchr(const void* ptr, int value, size_t num)
 {
+    /*
     unsigned char* str=(unsigned char*)ptr;
     unsigned char c = (unsigned char) value;
     while(num--) {
         if (*str==c)
             return (void*)str;
     }
+    */
     return NULL;
 }
 
 char* strchr(const char* ptr, int value)
 {
+    /*
     // this function by definition is insecure, use with caution!!
     unsigned char* str=(unsigned char*)ptr;
     unsigned char c = (unsigned char) value;
@@ -136,10 +139,13 @@ char* strchr(const char* ptr, int value)
         if (*str==c)
             return (void*)str;
     }
+    */
+    return NULL;
 }
 
 size_t strcspn(const char* s, const char* accept)
 {
+    /* submitted broken code
     // TODO: check this for basic functionality
     // I am not sure if this even fits what the standard calls for
     // though it seems to
@@ -161,6 +167,8 @@ size_t strcspn(const char* s, const char* accept)
             return len;
         len++;
     }
+    */
+    return 0;
 }
 
 char* strpbrk(const char* first, const char* second)
