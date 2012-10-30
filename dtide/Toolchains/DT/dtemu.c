@@ -23,8 +23,8 @@
 #include <hwlua.h>
 #include <hw.h>
 
-static bool has_initialized_glfw3 = false;
-static vm_t* vm = NULL;
+bool has_initialized_glfw3 = false;
+vm_t* vm = NULL;
 
 vm_t* get_vm(void)
 {
