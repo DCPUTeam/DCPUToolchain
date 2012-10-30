@@ -118,20 +118,49 @@ int strncmp(const char* first, const char* second, size_t num)
 // Searching:
 void* memchr(const void* ptr, int value, size_t num)
 {
-	// TODO
-	return NULL;
+    unsigned char* str=(unsigned char*)ptr;
+    unsigned char c = (unsigned char) value;
+    while(num--) {
+        if (*str==c)
+            return (void*)str;
+    }
+    return NULL;
 }
 
 char* strchr(const char* ptr, int value)
 {
-	// TODO
-	return NULL;
+    // this function by definition is insecure, use with caution!!
+    unsigned char* str=(unsigned char*)ptr;
+    unsigned char c = (unsigned char) value;
+    while(1) {
+        if (*str==c)
+            return (void*)str;
+    }
 }
 
-size_t strcspn(const char* first, const char* second)
+size_t strcspn(const char* s, const char* accept)
 {
-	// TODO
-	return 0;
+    // TODO: check this for basic functionality
+    // I am not sure if this even fits what the standard calls for
+    // though it seems to
+    size_t len = 0;
+    size_t alen = strlen(accept);
+    unsigned char* str=(unsigned char*)s;
+    // loop over string
+    while(*(str++)!=0) {
+        const char cur = *str;
+        size_t i;
+        size_t count = 0;
+        for (i=0;i<alen;i++) {
+            if(cur == accept[i]) {
+                count++;
+                break;
+            }
+        }
+        if (!count)
+            return len;
+        len++;
+    }
 }
 
 char* strpbrk(const char* first, const char* second)
