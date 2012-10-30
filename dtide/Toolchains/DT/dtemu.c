@@ -147,9 +147,12 @@ void cycle_emulation()
 
 void stop_emulation()
 {
-    vm_hw_lua_free(vm);
-    vm_hw_free_all(vm);
-    vm_free(vm);
-    vm = NULL;
-    has_initialized_glfw3 = false;
+    if(vm)
+    {
+        vm_hw_lua_free(vm);
+        vm_hw_free_all(vm);
+        vm_free(vm);
+        vm = NULL;
+        has_initialized_glfw3 = false;
+    }
 }

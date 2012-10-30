@@ -89,8 +89,6 @@ vm_t* vm_create()
 
 void vm_free(vm_t* vm)
 {
-    // TODO: Add a `free` field to hw_t with a free function. Then loop through hardware to dealloc them here.
-
     // Free the memory.
     free(vm);
 }

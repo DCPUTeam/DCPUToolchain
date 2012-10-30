@@ -14,7 +14,7 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         DTIDEBuildAPI.cpp
         DTIDEHighlighting.cpp
         DTIDEDebuggingSession.cpp
-        DTIDERegisters.cpp
+        DTIDEDebuggingWindow.cpp
         DTIDEGLWidgets.cpp
         CodeEditor.cpp
         Highlighters/QsciLexerDASM16.cpp
@@ -30,7 +30,7 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         DTIDEBuildAPI.h
         DTIDEHighlighting.h
         DTIDEDebuggingSession.h
-        DTIDERegisters.h
+        DTIDEDebuggingWindow.h
         DTIDEGLWidgets.h
         CodeEditor.h
         Highlighters/Highlighters.h

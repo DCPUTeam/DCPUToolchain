@@ -1,19 +1,20 @@
-#include "DTIDERegisters.h"
+#include "DTIDEDebuggingWindow.h"
 
-DTIDERegisters::DTIDERegisters(QWidget* parent): QWidget(parent)
+DTIDEDebuggingWindow::DTIDEDebuggingWindow(QWidget* parent): QDialog(parent)
 {
     setupUi(this);
     connect(btn_step, SIGNAL(clicked()), this, SIGNAL(step()));
     connect(btn_run, SIGNAL(clicked()), this, SIGNAL(start()));
-    connect(btn_stop, SIGNAL(clicked()), this, SIGNAL(pause()));
+    connect(btn_stop, SIGNAL(clicked()), this, SIGNAL(stop()));
+    connect(btn_pause, SIGNAL(clicked()), this, SIGNAL(pause()));
 }
 
-QSize DTIDERegisters::sizeHint()
+QSize DTIDEDebuggingWindow::sizeHint()
 {
     return QSize(400, 400);
 }
 
-void DTIDERegisters::setRegisters(StatusMessage m)
+void DTIDEDebuggingWindow::setRegisters(StatusMessage m)
 {
     QStringList registers;
     for (int i = 0; i < 8; i++)

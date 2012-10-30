@@ -3,6 +3,7 @@
 
 DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(parent)
 {
+    debuggingWindow = 0;
     menu = menuBar();
 
     tabs = new DTIDETabWidget(this);
@@ -107,21 +108,27 @@ void DTIDE::setupMenuBar()
     project->addAction("Compile and &run", this, SLOT(compileAndRunProject()), tr("Ctrl+R"));
 }
 
+void DTIDE::showDebuggerWindow()
+{
+    debuggingWindow = new DTIDEDebuggingWindow(this);
+    connect(this, SIGNAL(setRegisters(StatusMessage)), debuggingWindow, SLOT(setRegisters(StatusMessage)));
+    connect(debuggingWindow, SIGNAL(step()), this, SLOT(step()));
+    connect(debuggingWindow, SIGNAL(start()), this, SLOT(compileAndRunProject()));
+    connect(debuggingWindow, SIGNAL(pause()), this, SLOT(pause()));
+    connect(debuggingWindow, SIGNAL(stop()), this, SLOT(stop()));
+
+    debuggingWindow->show();
+}
+
 void DTIDE::setupDockWidgets()
 {
-    registers = new DTIDERegisters(this);
-    connect(this, SIGNAL(setRegisters(StatusMessage)), registers, SLOT(setRegisters(StatusMessage)));
-    connect(registers, SIGNAL(step()), this, SLOT(step()));
-    connect(registers, SIGNAL(start()), this, SLOT(compileAndRunProject()));
-    connect(registers, SIGNAL(pause()), this, SLOT(pause()));
-
-    QDockWidget* registersDockWidget = new QDockWidget(tr("Registers"), this);
+/*    QDockWidget* registersDockWidget = new QDockWidget(tr("Registers"), this);
     registersDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea |
                                          Qt::RightDockWidgetArea);
 
     registersDockWidget->setWidget(registers);
     registersDockWidget->setMinimumWidth(100);
-    addDockWidget(Qt::RightDockWidgetArea, registersDockWidget);
+    addDockWidget(Qt::RightDockWidgetArea, registersDockWidget);*/
 }
 
 void DTIDE::addGLWidget(QGLWidget* w, QString title, int width, int height)
@@ -143,6 +150,11 @@ void DTIDE::step()
 
 void DTIDE::stop()
 {
+    if(debuggingWindow)
+    {
+        delete debuggingWindow;
+        debuggingWindow = 0;
+    }
     toolchain->Stop(debuggingSession);
 }
 
@@ -175,6 +187,8 @@ void DTIDE::compileAndRunProject()
     stop();
     debuggingSession = new DTIDEDebuggingSession();
     compileProject();
+
+    showDebuggerWindow();
 
     for (int i = 0; i < tabs->count(); i++)
     {
