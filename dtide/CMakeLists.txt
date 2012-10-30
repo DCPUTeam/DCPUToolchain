@@ -92,6 +92,10 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         ${QSCINTILLA_LIBRARY}
     )
 else()
-    message("Not building IDE due to lack of Qt 4 libraries.")
+    if(NOT ${QT_FOUND})
+        message("Not building IDE due to lack of Qt 4 libraries.")
+    else()
+        message("Not building IDE due to lack of Qscintilla libraries.")
+    endif()
 endif()
 
