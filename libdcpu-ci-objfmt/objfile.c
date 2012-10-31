@@ -93,7 +93,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 
             adjust_last = adjust_current;
         }
-        else if (entry->mode == LABEL_SECTION && adjustment != NULL)
+        else if (entry->mode == LABEL_SECTION && section != NULL)
         {
             if (section_current != NULL && entry->address + *offset == section_last_address)
             {
@@ -113,7 +113,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 
             section_last = section_current;
         }
-        else if (entry->mode == LABEL_OUTPUT && adjustment != NULL)
+        else if (entry->mode == LABEL_OUTPUT && output != NULL)
         {
             output_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
@@ -124,7 +124,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 
             output_last = output_current;
         }
-        else if (entry->mode == LABEL_JUMP && adjustment != NULL)
+        else if (entry->mode == LABEL_JUMP && jump != NULL)
         {
             jump_current = lprov_create(strdup(entry->label), entry->address + *offset);
 
@@ -135,7 +135,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 
             jump_last = jump_current;
         }
-        else if (entry->mode == LABEL_OPTIONAL && required != NULL)
+        else if (entry->mode == LABEL_OPTIONAL && optional != NULL)
         {
             opt_current = lprov_create(strdup(entry->label), entry->address + *offset);
 

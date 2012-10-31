@@ -35,6 +35,8 @@ ERR_OBJECT_VERSION_MISMATCH                          object-version-mismatch    
 ERR_OPTIMIZER_LOAD_FAILED                            optimizer-load-failed                  "failed to load optimizer module from '%s'."
 ERR_INVALID_TARGET_NAME                              invalid-target-name                    "invalid target type, must be 'image', 'static' or 'kernel'."
 ERR_BIN_LOAD_FAILED                                  bin-load-failed                        "failed to load bins from the object file '%s'."
+ERR_KERNEL_ARGUMENT_NOT_ALLOWED                      kernel-argument-not-allowed            "the -k argument can not be used when building a kernel."
+ERR_JUMPLIST_FILE_REQUIRED                           jump-list-required                     "a jumplist is required when linking against a kernel."
 
 WARN_SKIPPING_SHORT_LITERALS_TYPE                    short-literals-skipped-type            "skipping short literal compression due to target type."
 WARN_SKIPPING_SHORT_LITERALS_REQUEST                 short-literals-skipped-request         "skipping short literal compression on request."

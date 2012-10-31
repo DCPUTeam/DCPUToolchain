@@ -127,9 +127,24 @@ int main(int argc, char* argv[])
         }
     }
 
+    // If the user wants to link against a kernel, they also need to
+    // provide a jumplist.
+    if (kernel_file->count > 0 && target == IMAGE_KERNEL)
+        dhalt(ERR_KERNEL_ARGUMENT_NOT_ALLOWED, NULL);
+    if (kernel_file->count > 0 && jumplist_file == 0)
+        dhalt(ERR_JUMPLIST_FILE_REQUIRED, NULL);
+
     // Load all passed objects and use linker bin system to
     // produce result.
     bins_init();
+    if ((kernel_file->count > 0 || jumplist_file->count > 0) && target != IMAGE_KERNEL)
+    {
+        // Import the jumplist.
+        if (kernel_file->count == 0)
+            bins_load_jumplist(bautofree(bfromcstr(jumplist_file->filename[0])));
+        else
+            bins_load_kernel(bautofree(bfromcstr(jumplist_file->filename[0])), bautofree(bfromcstr(kernel_file->filename[0])));
+    }
     for (i = 0; i < input_files->count; i++)
         if (!bins_load(bautofree(bfromcstr(input_files->filename[i])), symbol_file->count > 0, (symbol_file->count > 0 && symbol_ext->count > 0) ? symbol_ext->sval[0] : "dsym16"))
             // Failed to load one of the input files.
@@ -150,14 +165,15 @@ int main(int argc, char* argv[])
         dwarn(WARN_SKIPPING_SHORT_LITERALS_REQUEST, NULL);
     bins_resolve(
         target == IMAGE_STATIC_LIBRARY,
-        target == IMAGE_STATIC_LIBRARY);
+        target == IMAGE_STATIC_LIBRARY,
+        target == IMAGE_STATIC_LIBRARY || target == IMAGE_KERNEL);
     bins_save(
         bautofree(bfromcstr("output")),
         bautofree(bfromcstr(output_file->filename[0])),
         target,
         keep_output_arg->count > 0,
         symbol_file->count > 0 ? symbol_file->filename[0] : NULL,
-        jumplist_file->count > 0 ? jumplist_file->filename[0] : NULL);
+        (jumplist_file->count > 0 && target == IMAGE_KERNEL) ? jumplist_file->filename[0] : NULL);
     bins_free();
     if (saved > 0)
         printd(LEVEL_DEFAULT, "linker: saved %i words during optimization.\n", saved);
