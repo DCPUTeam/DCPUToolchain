@@ -211,11 +211,10 @@ bstring yyfilename = NULL;
 0b[0-1]+            yylval.number = strtoul(yytext, NULL, 2); return ADDRESS;
 0x[0-9A-Fa-f]+          yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
 [0-9]+              yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
-,               return COMMA;
-\[              return BRACKET_OPEN;
-\]              return BRACKET_CLOSE;
-\:              return COLON;
-\$              return DOT;
+,                    return COMMA;
+\[                   return BRACKET_OPEN;
+\]                   return BRACKET_CLOSE;
+\:                   return COLON;
 
 (\r\n|\r|\n)            return NEWLINE;
 <<EOF>>             { static int once = 0; return (once = !once) ? NEWLINE : 0; }
