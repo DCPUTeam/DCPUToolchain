@@ -43,6 +43,8 @@ void yyerror(const char *str)
 	printd(LEVEL_ERROR, "error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
 }
 
+bstring curr_label; // Used for local labels.
+
 // Filename tracking for language producing assembly.
 extern int	yyulineno;
 extern bstring	yyufilename;
@@ -79,7 +81,7 @@ extern bstring	yyufilename;
 }
 
 // Define our lexical token names.
-%token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT
+%token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT DOT
 %token <token> ADD SUBTRACT MULTIPLY DIVIDE MODULUS EQUALS NOT_EQUALS LESS_THAN LESS_EQUALS GREATER_THAN GREATER_EQUALS
 %token <token> PAREN_OPEN PAREN_CLOSE BITWISE_AND BITWISE_BOR BITWISE_XOR BITWISE_NOT BOOLEAN_OR BOOLEAN_AND BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
 %token <token> LEX_PICK KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL SECTION OUTPUT SYMBOL SEEK JUMP IMPORT_OPTIONAL
@@ -97,6 +99,7 @@ extern bstring	yyufilename;
 %type <parameters> parameters
 %type <instruction> instruction
 %type <label> label
+%type <label> local_label
 %type <line> line
 %type <lines> lines
 %type <expr> expr
@@ -264,6 +267,19 @@ line:
 			$$->keyword_data_expr_2 = NULL;
 			NODE_SET_GLOBALS($$);
 		} |
+        local_label NEWLINE
+        {
+            $$ = malloc(sizeof(struct ast_node_line));
+            $$->type = type_label;          
+            $$->keyword = 0;                
+            $$->instruction = NULL;         
+            $$->label = $1;                 
+            $$->prev = NULL;                
+            $$->keyword_data_string = NULL; 
+            $$->keyword_data_expr_1 = NULL; 
+            $$->keyword_data_expr_2 = NULL; 
+            NODE_SET_GLOBALS($$);           
+        } | 
 		label instruction NEWLINE
 		{
 			struct ast_node_line* lnode = malloc(sizeof(struct ast_node_line));
@@ -393,12 +409,27 @@ label:
 		{
 			$$ = malloc(sizeof(struct ast_node_label));
 			$$->name = $2;
+
+            curr_label = bfromcstr($2);
 		} |
 		WORD COLON
 		{
 			$$ = malloc(sizeof(struct ast_node_label));
 			$$->name = $1;
+
+            curr_label = bfromcstr($1);
 		} ;
+
+local_label:
+    DOT WORD COLON
+    {
+        bstring full_name = bstrcpy(curr_label);
+        bconcat(full_name, bfromcstr("_"));
+        bconcat(full_name, bfromcstr($2));
+
+        $$ = malloc(sizeof(struct ast_node_label));
+        $$->name = bstr2cstr(full_name, '\0');       
+    } ;
 
 instruction:
 		WORD parameters
@@ -574,6 +605,14 @@ expr:
 			$$ = expr_new_number((uint16_t)$1->data[0]);
 			bdestroy($1);
 		} |
+        DOT WORD
+        {
+            // Local label.
+            bstring full = bstrcpy(curr_label);
+            bconcat(full, bfromcstr("_"));
+            bconcat(full, bfromcstr($2));
+            $$ = expr_new_label(bautofree(full));
+        } |
 		WORD
 		{
 			$$ = expr_new_label(bautofree(bfromcstr($1)));

@@ -215,6 +215,7 @@ bstring yyfilename = NULL;
 \[				return BRACKET_OPEN;
 \]				return BRACKET_CLOSE;
 \:				return COLON;
+\$              return DOT;
 
 (\r\n|\r|\n)			return NEWLINE;
 <<EOF>>				{ static int once = 0; return (once = !once) ? NEWLINE : 0; }
