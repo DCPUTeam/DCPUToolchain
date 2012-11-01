@@ -152,7 +152,6 @@ void DTIDE::stop()
 {
     if(debuggingWindow)
     {
-        delete debuggingWindow;
         debuggingWindow = 0;
     }
     toolchain->Stop(debuggingSession);

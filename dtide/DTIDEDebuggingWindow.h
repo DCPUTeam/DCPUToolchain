@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QWidget>
 #include <QDebug>
+#include <QCloseEvent>
 
 #include "Backends.h"
 #include "ui_registers.h"
@@ -24,6 +25,9 @@ signals:
     void pause();
     void step();
     void stop();
+
+protected:
+    virtual void closeEvent(QCloseEvent* e);
 };
 
 #endif
