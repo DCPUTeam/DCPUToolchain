@@ -26,7 +26,7 @@ SET PC, _kern_start
 		SET PC, _hw_searchloop_continue
 	:_hw_searchloop_continue
 		ADD I, 1
-		SET PC, _hw_searchloop
+		SET PC, _locate_enum
 	:_locate_none_found
 		SET A, 0
 		SET PC, POP
