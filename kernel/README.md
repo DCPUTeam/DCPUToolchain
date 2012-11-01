@@ -72,6 +72,7 @@ Hardware Interface
 ===================
 
 uint16\_t locate\_device(uint16\_t low, uint16\_t high);
+---------------------------------------------------------
 **Description:** Locates a device whose ID is `(high << 8) | low & 0xf`;
 
 File Management
