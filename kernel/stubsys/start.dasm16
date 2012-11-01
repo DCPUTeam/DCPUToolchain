@@ -26,6 +26,7 @@ SET PC, _kern_start
 			SET PC, _locate_found
 		SET PC, _locate_enum
 	:_locate_none_found
+        ADD SP, 2
 		SET A, 0
 		SET PC, POP
 	:_locate_found
