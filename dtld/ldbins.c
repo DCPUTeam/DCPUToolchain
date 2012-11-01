@@ -1146,6 +1146,19 @@ uint16_t bins_compress()
                         }
                     }
                 }
+                if (bin->optional != NULL && apply)
+                {
+                    entry = NULL;
+                    for (j = 0; j < list_size(bin->optional); j++)
+                    {
+                        entry = list_get_at(bin->optional, j);
+                        if (i + 1 == entry->address)
+                        {
+                            apply = false;
+                            break;
+                        }
+                    }
+                }
                 if (bin->adjustment != NULL && apply)
                 {
                     entry = NULL;

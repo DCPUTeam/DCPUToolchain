@@ -157,12 +157,15 @@ int main(int argc, char* argv[])
     saved = bins_optimize(
                 opt_mode->count == 0 ? OPTIMIZE_SIZE : OPTIMIZE_SPEED,
                 opt_level->count == 0 ? OPTIMIZE_NONE : opt_level->ival[0]);
-    if (no_short_literals_arg->count == 0 && target != IMAGE_STATIC_LIBRARY)
-        saved += bins_compress();
-    else if (no_short_literals_arg->count == 0)
-        dwarn(WARN_SKIPPING_SHORT_LITERALS_TYPE, NULL);
-    else
-        dwarn(WARN_SKIPPING_SHORT_LITERALS_REQUEST, NULL);
+    if (false /* disabled due to bugs */)
+    {
+        if (no_short_literals_arg->count == 0 && target != IMAGE_STATIC_LIBRARY)
+            saved += bins_compress();
+        else if (no_short_literals_arg->count == 0)
+            dwarn(WARN_SKIPPING_SHORT_LITERALS_TYPE, NULL);
+        else
+            dwarn(WARN_SKIPPING_SHORT_LITERALS_REQUEST, NULL);
+    }
     bins_resolve(
         target == IMAGE_STATIC_LIBRARY,
         target == IMAGE_STATIC_LIBRARY,
