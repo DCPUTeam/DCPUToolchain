@@ -22,7 +22,9 @@
 
 :_stubapi_locate_device
     .IMPORT locate_device
+    SET PUSH, Y ; !!! IMPORTANT !!! Preserve stack pointer.
     JSR locate_device
+    SET Y, POP
     SET PC, POP
 
 ; -- Inputs --
