@@ -75,7 +75,7 @@ extern state_t* ppparam_current;
 [1-9]+[0-9]*                    ppparamlval.number = strtoul(yytext, NULL, 10); return NUMBER;
 0[0-7]*                         ppparamlval.number = strtoul(yytext, NULL, 8); return NUMBER;
 L?\"(\\.|[^\\"])*\"             ppparamlval.string = bfromcstr(pp_trim_and_unescape((char*)strdup(yytext))); assert(ppparamlval.string != NULL); return STRING;
-L?\<(\\.|[^\\"])*\>             ppparamlval.string = bfromcstr(pp_angle_trim_and_unescape((char*)strdup(yytext))); assert(ppparamlval.string != NULL); return ANGLED_STRING;
+L?\<(\\.|[^\\\>])*\>             ppparamlval.string = bfromcstr(pp_angle_trim_and_unescape((char*)strdup(yytext))); assert(ppparamlval.string != NULL); return ANGLED_STRING;
 
     /* Expression operators */
 	

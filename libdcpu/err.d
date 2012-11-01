@@ -44,3 +44,5 @@ WARN_KERNEL_JUMP_LIST_NOT_EXPORTED                   jump-list-not-exported     
 ERR_PP_LINE_PARAMETERS_INCORRECT                     pp-line-parameters-incorrect           "incorrect parameters for .LINE near %s."
 ERR_PP_ULINE_PARAMETERS_INCORRECT                    pp-uline-parameters-incorrect          "incorrect parameters for .ULINE near %s."
 ERR_PP_DEFINE_PARAMETERS_INCORRECT                   pp-define-parameters-incorrect         "incorrect parameters for .DEFINE near %s."
+ERR_PP_INCLUDE_PARAMETERS_INCORRECT                  pp-include-parameters-incorrect        "incorrect parameters for .INCLUDE near %s."
+ERR_PP_INCLUDE_FILE_NOT_FOUND                        pp-include-file-not-found              "file not found for .INCLUDE parameter near %s."
