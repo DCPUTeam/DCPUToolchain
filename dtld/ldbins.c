@@ -261,6 +261,7 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
 bool bins_load_kernel(freed_bstring jumplist, freed_bstring kernel)
 {
     uint16_t offset = 0, store;
+    struct lprov_entry* adjustment = NULL;
     struct lprov_entry* jump = NULL;
     struct lprov_entry* optional = NULL;
     struct ldbin* bin;
@@ -286,10 +287,10 @@ bool bins_load_kernel(freed_bstring jumplist, freed_bstring kernel)
     free(test);
 
     // Load only the provided label entries into memory.
-    objfile_load("<kernel>", jin, &offset, NULL, NULL, NULL, NULL, NULL, &jump, &optional);
+    objfile_load("<kernel>", jin, &offset, NULL, NULL, &adjustment, NULL, NULL, &jump, &optional);
 
     // Add the new bin.
-    bin = bins_add(bautofree(bfromcstr("<kernel>")), NULL, NULL, NULL, NULL, NULL, jump, optional);
+    bin = bins_add(bautofree(bfromcstr("<kernel>")), NULL, NULL, adjustment, NULL, NULL, jump, optional);
 
     // Copy all of the input file's data into the output
     // file, word by word.
@@ -327,7 +328,6 @@ bool bins_load_jumplist(freed_bstring path)
 {
     uint16_t offset = 0;
     struct lprov_entry* jump = NULL;
-    struct lprov_entry* optional = NULL;
     struct ldbin* bin;
     FILE* in;
     char* test;
@@ -348,10 +348,10 @@ bool bins_load_jumplist(freed_bstring path)
     free(test);
 
     // Load only the provided label entries into memory.
-    objfile_load(path.ref->data, in, &offset, NULL, NULL, NULL, NULL, NULL, &jump, &optional);
+    objfile_load(path.ref->data, in, &offset, NULL, NULL, NULL, NULL, NULL, &jump, NULL);
 
     // Add the new bin.
-    bin = bins_add(bautofree(bfromcstr("<jumplist>")), NULL, NULL, NULL, NULL, NULL, jump, optional);
+    bin = bins_add(bautofree(bfromcstr("<jumplist>")), NULL, NULL, NULL, NULL, NULL, jump, NULL);
 
     // Close the file.
     fclose(in);
@@ -433,11 +433,13 @@ void bins_save(freed_bstring name, freed_bstring path, int target, bool keepOutp
             dhalt(ERR_CAN_NOT_WRITE_FILE, jumplistFilename);
         }
         fwrite(ldata_objfmt, 1, strlen(ldata_objfmt) + 1, jumplist);
+        adjustment = list_revert(bin->adjustment);
         jump = list_revert(bin->jump);
         optional = list_revert(bin->optional);
-        objfile_save(jumplist, NULL, NULL, NULL, NULL, NULL, jump, optional);
+        objfile_save(jumplist, NULL, NULL, adjustment, NULL, NULL, jump, optional);
         lprov_free(jump);
         lprov_free(optional);
+        lprov_free(adjustment);
         fclose(jumplist);
     }
     else if (target == IMAGE_KERNEL)
