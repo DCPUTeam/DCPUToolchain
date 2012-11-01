@@ -369,7 +369,7 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
                 // the old bin.
                 if (*word >= offset && *word < offset + count && biseq(entry->bin, from->name))
                 {
-                    printd(LEVEL_DEBUG, "repointing internal adjustment to from[offset,offset+count) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+                    printd(LEVEL_EVERYTHING, "repointing internal adjustment to from[offset,offset+count) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
                            entry->address, abin->name->data,
                            *word, entry->bin->data,
                            *word - offset + at, to->name->data);
@@ -380,7 +380,7 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
                 // adjustment was pointing into the new bin
                 else if (*word >= at && biseq(entry->bin, to->name))
                 {
-                    printd(LEVEL_DEBUG, "repointing (to) internal adjustment in to[at+count) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+                    printd(LEVEL_EVERYTHING, "repointing (to) internal adjustment in to[at+count) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
                            entry->address, abin->name->data,
                            *word, entry->bin->data,
                            *word - offset + count, to->name->data);
@@ -405,7 +405,7 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
             // the old bin.
             if (*word >= offset && *word < offset + count && biseq(entry->bin, from->name))
             {
-                printd(LEVEL_DEBUG, "repointing internal adjustment to from[offset,offset+count) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+                printd(LEVEL_EVERYTHING, "repointing internal adjustment to from[offset,offset+count) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
                        entry->address, to->name->data,
                        *word, entry->bin->data,
                        *word - offset + at, to->name->data);
@@ -416,7 +416,7 @@ void bin_info_insert(list_t* all, struct ldbin* to, list_t* tolist, struct ldbin
             // internal adjustments (internal to 'to')
             else if (*word >= at && biseq(entry->bin, to->name))
             {
-                printd(LEVEL_DEBUG, "repointing internal adjustment to to[at,...) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+                printd(LEVEL_EVERYTHING, "repointing internal adjustment to to[at,...) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
                        entry->address, to->name->data,
                        *word, entry->bin->data,
                        *word + count, to->name->data);
@@ -527,7 +527,7 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, bool isAdjust
                 // the old bin.
                 if (*word >= offset + count && biseq(entry->bin, bin->name))
                 {
-                    printd(LEVEL_DEBUG, "repointing (to) internal adjustment to from[offset+count,...) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
+                    printd(LEVEL_EVERYTHING, "repointing (to) internal adjustment to from[offset+count,...) at (0x%04X, %s) from (0x%04X, %s) to (0x%04X, %s)\n",
                            entry->address, abin->name->data,
                            *word, entry->bin->data,
                            *word - count, bin->name->data);

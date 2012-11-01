@@ -52,7 +52,31 @@ void bin_print(const char* context, struct ldbin* bin)
     while (list_iterator_hasnext(&bin->words))
         printd(LEVEL_EVERYTHING,            "    0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
     list_iterator_stop(&bin->words);
-    if (bin->adjustment != NULL)
+    if (bin->provided != NULL && list_size(bin->provided) != 0)
+    {
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    PROVIDED\n");
+        list_iterator_start(bin->provided);
+        while (list_iterator_hasnext(bin->provided))
+        {
+            entry = list_iterator_next(bin->provided);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+        }
+        list_iterator_stop(bin->provided);
+    }
+    if (bin->required != NULL && list_size(bin->required) != 0)
+    {
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    REQUIRED\n");
+        list_iterator_start(bin->required);
+        while (list_iterator_hasnext(bin->required))
+        {
+            entry = list_iterator_next(bin->required);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+        }
+        list_iterator_stop(bin->required);
+    }
+    if (bin->adjustment != NULL && list_size(bin->adjustment) != 0)
     {
         printd(LEVEL_EVERYTHING,            "    ------: ------\n");
         printd(LEVEL_EVERYTHING,            "    ADJUSTMENTS\n");
@@ -65,19 +89,55 @@ void bin_print(const char* context, struct ldbin* bin)
         }
         list_iterator_stop(bin->adjustment);
     }
-    if (bin->jump != NULL)
+    if (bin->section != NULL && list_size(bin->section) != 0)
     {
-        printd(LEVEL_EVERYTHING,            "    ------: ------\n");
-        printd(LEVEL_EVERYTHING,            "    JUMP TABLE\n");
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    SECTIONS\n");
+        list_iterator_start(bin->section);
+        while (list_iterator_hasnext(bin->section))
+        {
+            entry = list_iterator_next(bin->section);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+        }
+        list_iterator_stop(bin->section);
+    }
+    if (bin->output != NULL && list_size(bin->output) != 0)
+    {
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    OUTPUTS\n");
+        list_iterator_start(bin->output);
+        while (list_iterator_hasnext(bin->output))
+        {
+            entry = list_iterator_next(bin->output);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+        }
+        list_iterator_stop(bin->output);
+    }
+    if (bin->jump != NULL && list_size(bin->jump) != 0)
+    {
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    JUMP TABLE\n");
         list_iterator_start(bin->jump);
         while (list_iterator_hasnext(bin->jump))
         {
             entry = list_iterator_next(bin->jump);
-            printd(LEVEL_EVERYTHING,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
         }
         list_iterator_stop(bin->jump);
     }
-    printd(LEVEL_EVERYTHING,                "    ------: ------\n");
+    if (bin->optional != NULL && list_size(bin->optional) != 0)
+    {
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    OPTIONALS\n");
+        list_iterator_start(bin->optional);
+        while (list_iterator_hasnext(bin->optional))
+        {
+            entry = list_iterator_next(bin->optional);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+        }
+        list_iterator_stop(bin->optional);
+    }
+    printd(LEVEL_DEBUG,                "    ------: ------\n");
     if (bin->symbols != NULL)
     {
         list_iterator_start(bin->symbols);
@@ -916,6 +976,8 @@ void bins_resolve(bool keepProvided, bool allowMissing, bool keepOptional)
         {
             if (!allowMissing)
                 dhalt(ERR_LABEL_NOT_FOUND, required->label->data);
+            else
+                continue;
         }
         else if (provided != NULL && jump != NULL)
             dhalt(ERR_LABEL_AMBIGIOUS_PROVIDED_JUMP, required->label->data);
@@ -945,14 +1007,17 @@ void bins_resolve(bool keepProvided, bool allowMissing, bool keepOptional)
             // since it's an absolute reference.
         }
 
-        adjustment->bin = bfromcstr("");
-        bassign(adjustment->bin, bin->name);
-        adjustment->address = required->address;
-        if (bin->adjustment == NULL)
+        if (adjustment != NULL)
         {
-            list_init(bin->adjustment);
+            adjustment->bin = bfromcstr("");
+            bassign(adjustment->bin, bin->name);
+            adjustment->address = required->address;
+            if (bin->adjustment == NULL)
+            {
+                list_init(bin->adjustment);
+            }
+            list_append(bin->adjustment, adjustment);
         }
-        list_append(bin->adjustment, adjustment);
 
         if (provided != NULL)
             printd(LEVEL_DEBUG, "resolve: %s (0x%4X) -> 0x%4X\n", required->label->data, required->address, provided->address);
@@ -964,13 +1029,13 @@ void bins_resolve(bool keepProvided, bool allowMissing, bool keepOptional)
     // Delete all of the required entries.
     for (i = 0; i < list_size(bin->required); i++)
     {
-        required = list_extract_at(bin->required, i);
+        required = list_get_at(bin->required, i);
         provided = bin->provided == NULL ? NULL : list_seek(bin->provided, required->label);
         jump = bin->jump == NULL ? NULL : list_seek(bin->jump, required->label);
         if (provided == NULL && jump == NULL && allowMissing)
             continue;
         bdestroy(required->label);
-        free(required);
+        list_delete_at(bin->required, i);
         i--;
     }
 
@@ -993,9 +1058,14 @@ void bins_resolve(bool keepProvided, bool allowMissing, bool keepOptional)
         assert(optional != NULL);
         if (provided == NULL && jump == NULL)
         {
-            // Insert the optional code.
-            word = list_get_at(&bin->words, optional->address);
-            *word = 0x0000;
+            if (!allowMissing)
+            {
+                // Insert the optional code.
+                word = list_get_at(&bin->words, optional->address);
+                *word = 0x0000;
+            }
+            else
+                continue;
         }
         else if (provided != NULL && jump != NULL)
             dhalt(ERR_LABEL_AMBIGIOUS_PROVIDED_JUMP, optional->label->data);
@@ -1025,14 +1095,17 @@ void bins_resolve(bool keepProvided, bool allowMissing, bool keepOptional)
             // since it's an absolute reference.
         }
 
-        adjustment->bin = bfromcstr("");
-        bassign(adjustment->bin, bin->name);
-        adjustment->address = optional->address;
-        if (bin->adjustment == NULL)
+        if (adjustment != NULL)
         {
-            list_init(bin->adjustment);
+            adjustment->bin = bfromcstr("");
+            bassign(adjustment->bin, bin->name);
+            adjustment->address = optional->address;
+            if (bin->adjustment == NULL)
+            {
+                list_init(bin->adjustment);
+            }
+            list_append(bin->adjustment, adjustment);
         }
-        list_append(bin->adjustment, adjustment);
 
         if (provided != NULL)
             printd(LEVEL_DEBUG, "resolve: %s (0x%4X) -> 0x%4X\n", optional->label->data, optional->address, provided->address);
@@ -1048,13 +1121,13 @@ void bins_resolve(bool keepProvided, bool allowMissing, bool keepOptional)
         // Delete all of the optional entries.
         for (i = 0; i < list_size(bin->optional); i++)
         {
-            optional = list_extract_at(bin->optional, i);
+            optional = list_get_at(bin->optional, i);
             provided = bin->provided == NULL ? NULL : list_seek(bin->provided, optional->label);
             jump = bin->jump == NULL ? NULL : list_seek(bin->jump, optional->label);
             if (provided == NULL && jump == NULL && allowMissing)
                 continue;
             bdestroy(optional->label);
-            free(optional);
+            list_delete_at(bin->optional, i);
             i--;
         }
     }

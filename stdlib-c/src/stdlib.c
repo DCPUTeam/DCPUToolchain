@@ -81,9 +81,9 @@ void abort()
 {
     __asm
     {
-	.IMPORT _stubapi_exit
-	SET A, -1
-	JSR [_stubapi_exit]
+        .IMPORT _stubapi_exit
+        SET A, -1
+        JSR [_stubapi_exit]
     }
     // Process is terminated by kernel after this
     // point.  No further code is executed.
