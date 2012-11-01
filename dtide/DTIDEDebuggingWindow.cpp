@@ -5,7 +5,7 @@ DTIDEDebuggingWindow::DTIDEDebuggingWindow(QWidget* parent): QDialog(parent)
     setupUi(this);
     connect(btn_step, SIGNAL(clicked()), this, SIGNAL(step()));
     connect(btn_run, SIGNAL(clicked()), this, SIGNAL(start()));
-    connect(btn_stop, SIGNAL(clicked()), this, SIGNAL(stop()));
+    connect(btn_stop, SIGNAL(clicked()), this, SLOT(close()));
     connect(btn_pause, SIGNAL(clicked()), this, SIGNAL(pause()));
 }
 
@@ -38,4 +38,10 @@ void DTIDEDebuggingWindow::setRegisters(StatusMessage m)
     reg_SP->setText(QString("0x%1").arg(m.sp, 4, 16, QChar('0')));
     reg_EX->setText(QString("0x%1").arg(m.ex, 4, 16, QChar('0')));
     reg_IA->setText(QString("0x%1").arg(m.ia, 4, 16, QChar('0')));
+}
+
+void DTIDEDebuggingWindow::closeEvent(QCloseEvent* e)
+{
+    e->accept();
+    emit stop();
 }

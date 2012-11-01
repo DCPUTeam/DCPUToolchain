@@ -152,7 +152,6 @@ void DTIDE::stop()
 {
     if(debuggingWindow)
     {
-        delete debuggingWindow;
         debuggingWindow = 0;
     }
     toolchain->Stop(debuggingSession);
@@ -184,6 +183,8 @@ QSize DTIDE::sizeHint()
 
 void DTIDE::compileAndRunProject()
 {
+    if(debuggingWindow)
+        debuggingWindow->close();
     stop();
     debuggingSession = new DTIDEDebuggingSession();
     compileProject();
