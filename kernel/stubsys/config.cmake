@@ -1,6 +1,6 @@
 set(name StubSys)
 set(description "Micro-kernel for running a single program.")
-set(supported "malloc" "free" "errno" "exit")
+set(supported "malloc" "free" "locate_device" "errno" "exit")
 set(files
     start.dasm16
     memory.dasm16

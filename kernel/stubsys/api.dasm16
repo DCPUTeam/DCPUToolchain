@@ -1,4 +1,5 @@
 .JUMP _stubapi_free
+.JUMP _stubapi_locate_device
 .JUMP _stubapi_malloc
 .JUMP _stubapi_errno
 .JUMP _stubapi_exit
@@ -11,6 +12,17 @@
 :_stubapi_free
     .IMPORT free
     JSR free
+    SET PC, POP
+
+; -- Inputs --
+;       A: low bits
+;       B: high bits 
+; -- Outputs --
+;       A: hardware index
+
+:_stubapi_locate_device
+    .IMPORT _locate_device
+    JSR _locate_device
     SET PC, POP
 
 ; -- Inputs --
