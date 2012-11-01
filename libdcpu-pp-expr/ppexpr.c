@@ -17,6 +17,8 @@
 #include <stdint.h>
 #include <assert.h>
 #include <derr.h>
+#include <parser.h>
+#include <lexer.h>
 #include "ppexpr.h"
 
 struct expr* expr_new(struct expr* a, int op, struct expr* b)
@@ -228,6 +230,36 @@ void expr_delete(struct expr* e)
 
     // Free the expression itself.
     free(e);
+}
+
+int ppexpr_yyparse(struct expr** expr, void* scanner);
+
+struct expr* expr_parse(bstring input)
+{
+    struct expr* ex = NULL;
+    yyscan_t scanner;
+    YY_BUFFER_STATE state;
+
+    // Initialize lexer.
+    if (ppexpr_yylex_init(&scanner))
+        return NULL;
+
+    // Lex string expression.
+    state = ppexpr_yy_scan_string(input->data, scanner);
+
+    // Parse string expression.
+    if (ppexpr_yyparse(&ex, scanner))
+        return NULL;
+
+    // Clean up.
+    ppexpr_yy_delete_buffer(state, scanner);
+    ppexpr_yylex_destroy(scanner);
+
+    // Return the result.
+    if (ex == NULL)
+        return NULL;
+    else
+        return ex;
 }
 
 // Functions for helping with halting things.

@@ -346,6 +346,7 @@ void ppimpl_process(state_t* state)
     match_t* m;
     bool reprocess = false;
     size_t i;
+    scope_t* current;
 
     while (state->has_input())
     {
@@ -402,6 +403,45 @@ void ppimpl_process(state_t* state)
 }
 
 ///
+/// Pushes a new scope onto the stack.
+///
+void ppimpl_push_scope(state_t* state, bool active)
+{
+    scope_t* scope = malloc(sizeof(scope_t));
+    scope->active = active;
+    scope->start_index = list_size(&state->cached_output);
+    list_append(&state->scopes, scope);
+}
+
+///
+/// Flips the current scope on the stack.
+///
+void ppimpl_flip_scope(state_t* state)
+{
+    scope_t* scope = list_get_at(&state->scopes, list_size(&state->scopes) - 1);
+    bool active = scope->active;
+    ppimpl_pop_scope(state);
+    ppimpl_push_scope(state, !active);
+}
+
+///
+/// Pops a scope from the stack.
+///
+void ppimpl_pop_scope(state_t* state)
+{
+    if (list_size(&state->scopes) == 0)
+        return;
+    scope_t* scope = list_extract_at(&state->scopes, list_size(&state->scopes) - 1);
+    if (!scope->active)
+    {
+        list_delete_range(&state->cached_output,
+                scope->start_index,
+                list_size(&state->cached_output) - 1);
+    }
+    free(scope);
+}
+
+///
 /// Maps the list_*_int8_t definitions as character definitions.
 ///
 #define list_comparator_char_t list_comparator_int8_t
@@ -417,6 +457,7 @@ void ppimpl(has_t has_input, pop_t input, push_t output)
     list_init(&state.cached_input);
     list_init(&state.cached_output);
     list_init(&state.handlers);
+    list_init(&state.scopes);
     list_attributes_comparator(&state.cached_input, list_comparator_char_t);
     list_attributes_comparator(&state.cached_output, list_comparator_char_t);
     list_attributes_copy(&state.cached_input, list_meter_char_t, false);
@@ -432,6 +473,7 @@ void ppimpl(has_t has_input, pop_t input, push_t output)
     state.in_single_string = false;
     state.in_double_string = false;
     ppimpl_asm_line_register(&state);
+    ppimpl_asm_expr_register(&state);
     ppimpl_asm_define_register(&state);
     ppimpl_asm_include_register(&state);
     ppimpl_process(&state);

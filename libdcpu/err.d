@@ -46,3 +46,6 @@ ERR_PP_ULINE_PARAMETERS_INCORRECT                    pp-uline-parameters-incorre
 ERR_PP_DEFINE_PARAMETERS_INCORRECT                   pp-define-parameters-incorrect         "incorrect parameters for .DEFINE near %s."
 ERR_PP_INCLUDE_PARAMETERS_INCORRECT                  pp-include-parameters-incorrect        "incorrect parameters for .INCLUDE near %s."
 ERR_PP_INCLUDE_FILE_NOT_FOUND                        pp-include-file-not-found              "file not found for .INCLUDE parameter near %s."
+ERR_PP_IF_PARAMETERS_INCORRECT                       pp-if-parameters-incorrect             "incorrect parameters for .IF near %s."
+ERR_PP_DEFINE_NOT_FOUND                              pp-define-not-found                    "definition referenced in .IF expression not found near %s."
+ERR_PP_DEFINE_NOT_EXPRESSION                         pp-define-not-expression               "definition referenced in .IF expression not well formed expression near %s."

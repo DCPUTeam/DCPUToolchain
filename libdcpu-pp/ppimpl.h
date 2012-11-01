@@ -21,6 +21,15 @@
 #include <ppexpr.h>
 
 ///
+/// Defines a preprocessor scope.
+///
+typedef struct
+{
+    bool active;
+    size_t start_index;
+} scope_t;
+
+///
 /// Defines the preprocessor state.
 ///
 typedef struct
@@ -36,6 +45,7 @@ typedef struct
     bstring default_filename;
     bool in_single_string;
     bool in_double_string;
+    list_t scopes;
 } state_t;
 
 ///
@@ -72,5 +82,9 @@ char* ppimpl_get_location(state_t* state);
 void ppimpl_printf(state_t* state, const char* msg, ...);
 void ppimpl_pprintf(state_t* state, size_t index, const char* msg, ...);
 bool ppimpl_isolates(char c, bool at_start);
+void ppimpl_push_scope(state_t* state, bool active);
+void ppimpl_flip_scope(state_t* state);
+void ppimpl_pop_scope(state_t* state);
+
 
 #endif

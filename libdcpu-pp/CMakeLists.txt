@@ -23,6 +23,7 @@ add_library(libdcpu-pp STATIC
     directives/asm/include.c
     directives/asm/define.c
     directives/asm/macro.c
+    directives/asm/expr.c
 )
 auto_group(libdcpu-pp)
 include_directories(

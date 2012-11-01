@@ -65,5 +65,6 @@ struct expr* expr_new_label(freed_bstring label);
 uint16_t expr_evaluate(struct expr* e, uint16_t(*labelreplace)(bstring label), void(*errexit)(int code, void* data));
 bstring expr_representation(struct expr* e);
 void expr_delete(struct expr* e);
+struct expr* expr_parse(bstring input);
 
 #endif
