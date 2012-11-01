@@ -92,6 +92,7 @@
 ; Handles initially jumping into the main function
 ; that the user has provided.
 .EXPORT _start
-:_start	
+:_start
+    SET A, A
 	.OUTPUT INIT
 	.OUTPUT CODE

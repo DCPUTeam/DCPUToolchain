@@ -123,7 +123,7 @@ void vm_execute(vm_t* vm, const char* execution_dump)
     {
         if (vm_timing_has_reached_mics(&freq_timer, 1000000))
         {
-            printf("current speed:    %lld kHz\n", freq_cycle_count / 1000);
+            printd(LEVEL_DEBUG, "current speed:    %lld kHz\n", freq_cycle_count / 1000);
             vm_timing_reset_timer(&freq_timer);
             freq_cycle_count = 0;
         }
