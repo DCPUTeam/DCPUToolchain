@@ -21,8 +21,8 @@
 ;       A: hardware index
 
 :_stubapi_locate_device
-    .IMPORT _locate_device
-    JSR _locate_device
+    .IMPORT locate_device
+    JSR locate_device
     SET PC, POP
 
 ; -- Inputs --

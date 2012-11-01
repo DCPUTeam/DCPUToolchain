@@ -2,13 +2,13 @@
 :m35fd_sector .dat 0
 .DEFINE m35fd_message 0x1234
 .DEFINE load_point 0x1000
-.IMPORT _locate_device
+.IMPORT locate_device
 
 .EXPORT _disk_start
 :_disk_start
     SET A, 0x1234
     SET B, 0x4567
-    JSR _locate_device
+    JSR locate_device
     SET [m35fd], A
     SET A, 0x1
     SET B, m35fd_message ; Set the interrupt message

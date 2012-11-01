@@ -4,35 +4,6 @@ SET PC, _kern_start
 ; Jump table position.
 .JUMP
 
-; Locates a hardware device based on the specified
-; ID loaded into registers A and B.  The resulting
-; message ID is loaded into register A.
-.EXPORT _locate_device
-:_locate_device
-	SET PUSH, A
-	SET PUSH, B
-	HWN I ; I is the hardware number being checke
-	:_locate_enum
-		SUB I, 1
-		IFE I, 0xffff
-			SET PC, _locate_none_found
-		SET J, SP
-	:_hw_searchloop ; Compare the hwq'd information to the requested device
-		HWQ I ; Get hardware info for this device
-		IFN A, [J] ; compare it to the current driver's ID
-			SET PC, _locate_enum
-	:_hw_searchloop_a_e
-		IFE B, [J + 1]
-			SET PC, _locate_found
-		SET PC, _locate_enum
-	:_locate_none_found
-        ADD SP, 2
-		SET A, 0
-		SET PC, POP
-	:_locate_found
-		ADD SP, 2
-		SET A, I
-		SET PC, POP
 
 ; Initialize the system and then start the program at it's entry point.
 :_kern_start
@@ -44,7 +15,8 @@ SET PC, _kern_start
 	; Initialize the screen.
 	SET A, 0x7349
 	SET B, 0xf615
-	JSR _locate_device
+    .IMPORT locate_device
+	JSR locate_device
 	SET PUSH, A
 	SET A, 0x0
 	SET B, 0x8000
