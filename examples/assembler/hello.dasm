@@ -19,10 +19,10 @@ set pc, main
 :end set pc, end
 
 :getscreen	
-    hwn a
+    hwn z
     set i, 0x0
     :getscreen_loop
-    	ifg i, a
+    	ife i, z
     		set pc, getscreen_notfound
 
    	:getscreen_check
@@ -61,7 +61,7 @@ set pc, main
   set [b], a
 
   add [scroff], 1
-  ife [scroff], 0x17f
+  ifg [scroff], 0x17f
     set [scroff], 0x0
 
   set a, pop
