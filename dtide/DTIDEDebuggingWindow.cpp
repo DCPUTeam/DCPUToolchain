@@ -3,9 +3,8 @@
 DTIDEDebuggingWindow::DTIDEDebuggingWindow(QWidget* parent): QDialog(parent)
 {
     setupUi(this);
-    connect(btn_step, SIGNAL(clicked()), this, SIGNAL(step()));
-    connect(btn_run, SIGNAL(clicked()), this, SIGNAL(start()));
-    connect(btn_stop, SIGNAL(clicked()), this, SLOT(close()));
+    connect(btn_step_into, SIGNAL(clicked()), this, SIGNAL(step()));
+    connect(btn_resume, SIGNAL(clicked()), this, SIGNAL(start()));
     connect(btn_pause, SIGNAL(clicked()), this, SIGNAL(pause()));
 }
 
