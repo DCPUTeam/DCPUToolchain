@@ -183,6 +183,8 @@ QSize DTIDE::sizeHint()
 
 void DTIDE::compileAndRunProject()
 {
+    if(debuggingWindow)
+        debuggingWindow->close();
     stop();
     debuggingSession = new DTIDEDebuggingSession();
     compileProject();
