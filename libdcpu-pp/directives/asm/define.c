@@ -168,12 +168,10 @@ static void define_handle(state_t* state, match_t* match, bool* reprocess)
     // We need to parse this manually because we're interested in getting
     // the first word and then all of the content until a line that doesn't end
     // with "\".
-    bstring name = bfromcstr("");
     bstring word = bfromcstr("");
     bstring definition = bfromcstr("");
     bool getting_word = true;
     bool getting_definition = true;
-    bool is_macro = false;
     match_t* new_match;
     struct replace_info* info;
 
@@ -182,37 +180,23 @@ static void define_handle(state_t* state, match_t* match, bool* reprocess)
     {
         char c = ppimpl_get_input(state);
         bconchar(word, c);
-        if (!is_macro && c != '(')
-            bconchar(name, c);
         bltrimws(word);
 
         // Handle termination.
-        if (blength(word) > 0 && c == ' ' && !is_macro)
+        if (blength(word) > 0 && c == ' ')
         {
             // End of word.
             btrimws(word);
-            btrimws(name);
             getting_word = false;
         }
-        else if (blength(word) > 0 && c == '(' && !is_macro)
+        else if (blength(word) > 0 && c == '(')
         {
-            // Start of macro.
-            is_macro = true;
-        }
-        else if (blength(word) > 0 && c == '(' && is_macro)
-        {
-            // Second ( in a macro; error.
-            dhalt(ERR_PP_DEFINE_MACRO_MALFORMED, ppimpl_get_location(state));
-        }
-        else if (blength(word) > 0 && c == ')' && is_macro)
-        {
-            // End of macro name.
-            btrimws(word);
-            btrimws(name);
-            getting_word = false;
+            // This form of macro definition is not permitted
+            // in assembly.
+            dhalt(ERR_PP_LONG_FORM_MACRO_ONLY, ppimpl_get_location(state));
         }
         else if (blength(word) == 0 && c == '\n')
-            dhalt(ERR_PP_DEFINE_PARAMETERS_INCORRECT, ppimpl_get_location(state));
+            dhalt(ERR_PP_ASM_DEFINE_PARAMETERS_INCORRECT, ppimpl_get_location(state));
     }
 
     // Get the definition.
@@ -249,11 +233,128 @@ static void define_handle(state_t* state, match_t* match, bool* reprocess)
         return;
     }
     new_match = malloc(sizeof(match_t));
+    new_match->text = bautofree(word);
+    new_match->handler = replace_handle;
+    new_match->line_start_only = false;
+    new_match->identifier_only = true;
+    new_match->userdata = info;
+    ppimpl_register(state, new_match);
+    *reprocess = true;
+}
+
+static void macro_def_handle(state_t* state, match_t* match, bool* reprocess)
+{
+    // We need to parse this manually because we're interested in getting
+    // the first word and then all of the content until a line that has
+    // .ENDMACRO on it.
+    bstring name = bfromcstr("");
+    bstring word = bfromcstr("");
+    bstring definition = bfromcstr("");
+    bool getting_word = true;
+    bool getting_definition = true;
+    bool is_macro = false;
+    match_t* new_match;
+    struct replace_info* info;
+    const char* term_match = ".ENDMACRO";
+    int term_match_count = 0;
+
+    // Get the first word.
+    while (getting_word)
+    {
+        char c = ppimpl_get_input(state);
+        bconchar(word, c);
+        if (!is_macro && c != '(')
+            bconchar(name, c);
+        bltrimws(word);
+
+        // Handle termination.
+        if (blength(word) > 0 && c == ' ' && !is_macro)
+        {
+            // End of word.
+            btrimws(word);
+            btrimws(name);
+            getting_word = false;
+        }
+        else if (blength(word) > 0 && c == '(' && !is_macro)
+        {
+            // Start of macro.
+            is_macro = true;
+        }
+        else if (blength(word) > 0 && c == '(' && is_macro)
+        {
+            // Second ( in a macro; error.
+            dhalt(ERR_PP_MACRO_MALFORMED, ppimpl_get_location(state));
+        }
+        else if (blength(word) > 0 && c == ')' && is_macro)
+        {
+            // End of macro name.
+            btrimws(word);
+            btrimws(name);
+            getting_word = false;
+        }
+        else if (blength(word) == 0 && c == '\n')
+            dhalt(ERR_PP_ASM_MACRO_PARAMETERS_INCORRECT, ppimpl_get_location(state));
+    }
+
+    // Check to make sure this is a macro.
+    if (!is_macro)
+        dhalt(ERR_PP_ASM_MACRO_PARAMETERS_EXPECTED, ppimpl_get_location(state));
+
+    // Get the definition.
+    while (getting_definition && ppimpl_has_input(state))
+    {
+        char c = ppimpl_get_input(state);
+        bconchar(definition, c);
+        bltrimws(definition);
+
+        if (c == term_match[term_match_count])
+        {
+            bool okay = true;
+            if (term_match_count == 0 && blength(definition) >= 2)
+            {
+                int ip = blength(definition) - 2;
+                while (ip > 0)
+                {
+                    char p = definition->data[ip];
+                    if (p != ' ' && p != '\n')
+                    {
+                        okay = false;
+                        break;
+                    }
+                    else if (p == '\n')
+                        break;
+                    ip--;
+                }
+            }
+            if (okay)
+            {
+                term_match_count++;
+                if (term_match_count >= strlen(term_match))
+                {
+                    btrimws(definition);
+                    bdelete(definition, blength(definition) - strlen(term_match), strlen(term_match));
+                    getting_definition = false;
+                }
+            }
+        }
+        else
+            term_match_count = 0;
+    }
+    if (getting_definition)
+        dhalt(ERR_PP_ASM_MACRO_TERMINATION_NOT_FOUND, ppimpl_get_location(state));
+
+    // Create the new replacement handler.
+    info = malloc(sizeof(struct replace_info));
+    info->full = word;
+    info->replacement = definition;
+    if (biseq(info->full, info->replacement))
+    {
+        free(info);
+        return;
+    }
+    new_match = malloc(sizeof(match_t));
     new_match->text = bautofree(name);
-    if (is_macro)
-        new_match->handler = macro_handle;
-    else
-        new_match->handler = replace_handle;
+    new_match->handler = macro_handle;
     new_match->line_start_only = false;
     new_match->identifier_only = true;
     new_match->userdata = info;
@@ -267,6 +368,15 @@ void ppimpl_asm_define_register(state_t* state)
     match_t* match = malloc(sizeof(match_t));
     match->text = bautofree(bfromcstr(".DEFINE "));
     match->handler = define_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    ppimpl_register(state, match);
+
+    // Register .MACRO directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr(".MACRO "));
+    match->handler = macro_def_handle;
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;

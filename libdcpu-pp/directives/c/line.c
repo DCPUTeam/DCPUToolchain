@@ -26,7 +26,7 @@ static void line_handle(state_t* state, match_t* match, bool* reprocess)
         state->current_filename = bstrcpy(((parameter_t*)list_get_at(result, 1))->string);
     }
     else
-        dhalt(ERR_PP_LINE_PARAMETERS_INCORRECT, ppimpl_get_location(state));
+        dhalt(ERR_PP_C_LINE_PARAMETERS_INCORRECT, ppimpl_get_location(state));
 
     ppparam_free(result);
 }

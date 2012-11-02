@@ -31,7 +31,7 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
         // Open the specified file.
         file = bfopen(path->data, "r");
         if (file == NULL)
-            dhalt(ERR_PP_INCLUDE_FILE_NOT_FOUND, ppimpl_get_location(state));
+            dhalt(ERR_PP_ASM_INCLUDE_FILE_NOT_FOUND, ppimpl_get_location(state));
 
         // Copy the data from the file, byte by byte.
         while (!bfeof(file))
@@ -44,7 +44,7 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
         bfclose(file);
     }
     else
-        dhalt(ERR_PP_INCLUDE_PARAMETERS_INCORRECT, ppimpl_get_location(state));
+        dhalt(ERR_PP_ASM_INCLUDE_PARAMETERS_INCORRECT, ppimpl_get_location(state));
     
     free(store);
     ppparam_free(result);

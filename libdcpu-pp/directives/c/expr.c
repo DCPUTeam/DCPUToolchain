@@ -54,7 +54,7 @@ static void if_handle(state_t* state, match_t* match, bool* reprocess)
             ppimpl_push_scope(state, false);
     }
     else
-        dhalt(ERR_PP_IF_PARAMETERS_INCORRECT, ppimpl_get_location(state));
+        dhalt(ERR_PP_C_IF_PARAMETERS_INCORRECT, ppimpl_get_location(state));
     
     ppparam_free(result);
 }

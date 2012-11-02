@@ -31,6 +31,7 @@ bool ppimpl_has_input(state_t* state)
 ///
 char ppimpl_get_input(state_t* state)
 {
+    assert(ppimpl_has_input(state));
     if (list_size(&state->cached_input) > 0)
         return (char)list_extract_at(&state->cached_input, 0);
     else
