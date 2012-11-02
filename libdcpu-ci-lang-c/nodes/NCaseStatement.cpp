@@ -20,7 +20,7 @@ NCaseStatement::NCaseStatement(std::string value) :
     NStatement("case")
 {
     std::stringstream str;
-    str << (uint8_t)((char)value[0]);
+    str << (int)((uint8_t)((char)value[0]));
     this->m_constantLiteral = str.str();
     this->m_label = std::string("");
 }

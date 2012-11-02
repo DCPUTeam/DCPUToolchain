@@ -124,6 +124,7 @@ add_dcpu_image(stdlib-c
     src/bootstrap.dasm16
     src/stdlib.c
     src/string.c
+    src/stdio.c
     src/math.c
     src/stubapi.c
     src/ext/screen.c
