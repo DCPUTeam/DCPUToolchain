@@ -42,6 +42,8 @@ add_library(libdcpu-ci-lang-c STATIC
     nodes/NDereferenceOperator.h
     nodes/NEmptyStatement.cpp
     nodes/NEmptyStatement.h
+    nodes/NExplicitCastOperator.cpp
+    nodes/NExplicitCastOperator.h
     nodes/NExpression.h
     nodes/NExpressionStatement.cpp
     nodes/NExpressionStatement.h

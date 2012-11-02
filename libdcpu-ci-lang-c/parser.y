@@ -58,6 +58,7 @@ class NInteger;
 #include "nodes/TPointer16.h"
 #include "nodes/TStruct.h"
 #include "nodes/NBuiltInVaStart.h"
+#include "nodes/NExplicitCastOperator.h"
 
 
 // Turn on verbose error messages.
@@ -809,6 +810,12 @@ expr:
         BITWISE_NEGATE expr
         {
             $$ = new NUnaryOperator($1,*$2);
+        } |
+
+        /* ( expr ) */
+        CURVED_OPEN type CURVED_CLOSE expr
+        {
+            $$ = new NExplicitCastOperator($2, *$4);
         } |
 
         /* ( expr ) */
