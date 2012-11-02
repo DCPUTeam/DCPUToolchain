@@ -23,7 +23,7 @@ void uitodec(unsigned int value, char * str)
     {
         *(str++) = '0';
         *str = '\0';
-        return 0;
+        return;
     }
 
     tmp = value;
@@ -67,7 +67,7 @@ void itohex(unsigned int value, char * str, int uppercase)
     {
         *(str++) = '0';
         *str = '\0';
-        return 0;
+        return;
     }
 
     tmp = value;
@@ -106,7 +106,7 @@ void itooct(unsigned int value, char * str)
     {
         *(str++) = '0';
         *str = '\0';
-        return 0;
+        return;
     }
 
     tmp = value;

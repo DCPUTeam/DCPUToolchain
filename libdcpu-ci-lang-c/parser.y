@@ -533,8 +533,12 @@ stmt_if:
 stmt_return:
         RETURN expr SEMICOLON
         {
-            $$ = new NReturnStatement(*$2);
-        } ;
+            $$ = new NReturnStatement($2);
+        } | 
+        RETURN SEMICOLON
+        {
+            $$ = new NReturnStatement(NULL);
+        };
         
 stmt_break:
         BREAK SEMICOLON
