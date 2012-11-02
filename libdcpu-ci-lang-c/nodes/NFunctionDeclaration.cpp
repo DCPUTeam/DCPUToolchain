@@ -17,8 +17,8 @@
 #include "NFunctionSignature.h"
 #include "NArrayDeclaration.h"
 
-NFunctionDeclaration::NFunctionDeclaration(const IType* type, const NIdentifier& id, const VariableList& arguments, NBlock* block)
-    : id(id), block(block), pointerType(NULL), NDeclaration("function"), NFunctionSignature(type, arguments)
+NFunctionDeclaration::NFunctionDeclaration(const IType* type, const NIdentifier& id, const VariableList& arguments, NBlock* block, bool varArgs)
+    : id(id), block(block), pointerType(NULL), NDeclaration("function"), NFunctionSignature(type, arguments, varArgs)
 {
     // We need to generate an NFunctionPointerType for when we are resolved
     // as a pointer (for storing a reference to us into a variable).

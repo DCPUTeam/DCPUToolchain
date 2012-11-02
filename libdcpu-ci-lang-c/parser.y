@@ -2,15 +2,15 @@
 
 /**
 
-	File:           parser.y
+    File:           parser.y
 
-	Project:        DCPU-16 Tools
-	Component:      LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-	Authors:        James Rhodes
-	                Michael Gerhaeuser
+    Authors:        James Rhodes
+                    Michael Gerhaeuser
 
-	Description:    Defines parser for the compiler.
+    Description:    Defines parser for the compiler.
 
 **/
 
@@ -57,6 +57,7 @@ class NInteger;
 #include "nodes/TInt16.h"
 #include "nodes/TPointer16.h"
 #include "nodes/TStruct.h"
+#include "nodes/NBuiltInVaStart.h"
 
 
 // Turn on verbose error messages.
@@ -74,25 +75,25 @@ void yyerror(const char *str);
 %}
 
 %union {
-	NBlock* block;
-	NExpression* expr;
-	NStatement* stmt;
-	NIdentifier* ident;
-	NIntegerLiteral* numeric;
-	IType* type;
-	NDeclarations* decls;
-	NFunctionDeclaration* function;
-	NStructureDeclaration* structure;
-	NVariableDeclaration *variable;
-	NArrayDeclaration *array;
-	std::vector<NExpression*> *exprvec;
-	std::vector<NDeclaration*> *declvec;
-	std::vector<NVariableDeclaration*> *varvec;
-	std::vector<uint16_t> *dimvec;
-	std::string* string;
-	const char* data;
-	long number;
-	int token;
+    NBlock* block;
+    NExpression* expr;
+    NStatement* stmt;
+    NIdentifier* ident;
+    NIntegerLiteral* numeric;
+    IType* type;
+    NDeclarations* decls;
+    NFunctionDeclaration* function;
+    NStructureDeclaration* structure;
+    NVariableDeclaration *variable;
+    NArrayDeclaration *array;
+    std::vector<NExpression*> *exprvec;
+    std::vector<NDeclaration*> *declvec;
+    std::vector<NVariableDeclaration*> *varvec;
+    std::vector<uint16_t> *dimvec;
+    std::string* string;
+    const char* data;
+    long number;
+    int token;
 }
 
 /* TOKENS: File and line information */
@@ -103,7 +104,7 @@ void yyerror(const char *str);
 
 /* TOKENS: Identifiers, numbers and basic lexical components */
 %token <token> CURVED_OPEN CURVED_CLOSE BRACE_OPEN BRACE_CLOSE SQUARE_OPEN SQUARE_CLOSE COMMA
-%token <token> STAR SEMICOLON DOT STRUCT COLON
+%token <token> STAR SEMICOLON DOT STRUCT COLON TRIPLE_DOTS
 %token <number> NUMBER
 %token <string> IDENTIFIER CHARACTER STRING ASSEMBLY
 
@@ -122,6 +123,9 @@ void yyerror(const char *str);
 
 /* TOKENS: Statement keywords */
 %token <token> RETURN IF ELSE WHILE FOR DEBUG SIZEOF BREAK CONTINUE CASE SWITCH DEFAULT
+
+/* TOKENS: Built-in functions */
+%token <token> BUILDIN_VA_START
 
 /* TOKENS: Type keywords */
 %token <token> TYPE_VOID TYPE_CHAR TYPE_SHORT TYPE_INT TYPE_LONG TYPE_FLOAT TYPE_DOUBLE CONST UNSIGNED SIGNED
@@ -166,732 +170,773 @@ void yyerror(const char *str);
 %%
 
 program:
-		/* No code */
-		{
-			$$ = new NDeclarations();
-			program = $$;
-		} |
-		prog_decl
-		{
-			$$ = $1;
-			program = $1;
-		} ;
+        /* No code */
+        {
+            $$ = new NDeclarations();
+            program = $$;
+        } |
+        prog_decl
+        {
+            $$ = $1;
+            program = $1;
+        } ;
 
 prog_decl:
-		func_decl
-		{
-			$$ = new NDeclarations();
-			$$->definitions.push_back($<function>1);
-		} |
-		struct_decl
-		{
-			$$ = new NDeclarations();
-			$$->definitions.push_back($<structure>1);
-		} |
-		var_decl SEMICOLON
-		{
-			$$ = new NDeclarations();
-			$$->definitions.push_back($<variable>1);
-		} |
-		array_decl SEMICOLON
-		{
-			$$ = new NDeclarations();
-			$$->definitions.push_back($<array>1);
-		} |
-		prog_decl func_decl
-		{
-			$1->definitions.push_back($<function>2);
-		} |
-		prog_decl struct_decl
-		{
-			$1->definitions.push_back($<structure>2);
-		} |
-		prog_decl var_decl SEMICOLON
-		{
-			$1->definitions.push_back($<variable>2);
-		} |
-		prog_decl array_decl SEMICOLON
-		{
-			$1->definitions.push_back($<array>2);
-		};
+        func_decl
+        {
+            $$ = new NDeclarations();
+            $$->definitions.push_back($<function>1);
+        } |
+        struct_decl
+        {
+            $$ = new NDeclarations();
+            $$->definitions.push_back($<structure>1);
+        } |
+        var_decl SEMICOLON
+        {
+            $$ = new NDeclarations();
+            $$->definitions.push_back($<variable>1);
+        } |
+        array_decl SEMICOLON
+        {
+            $$ = new NDeclarations();
+            $$->definitions.push_back($<array>1);
+        } |
+        prog_decl func_decl
+        {
+            $1->definitions.push_back($<function>2);
+        } |
+        prog_decl struct_decl
+        {
+            $1->definitions.push_back($<structure>2);
+        } |
+        prog_decl var_decl SEMICOLON
+        {
+            $1->definitions.push_back($<variable>2);
+        } |
+        prog_decl array_decl SEMICOLON
+        {
+            $1->definitions.push_back($<array>2);
+        };
 
 func_decl:
-		type ident CURVED_OPEN func_decl_args CURVED_CLOSE block
-		{
-			$$ = new NFunctionDeclaration($1, *$2, *$4, $6);
-			//delete $4;
-		} |
-		type ident CURVED_OPEN func_decl_args CURVED_CLOSE SEMICOLON
-		{
-			$$ = new NFunctionDeclaration($1, *$2, *$4, NULL);
-			//delete $4;
-		} ;
+        /* functions with no arguments */
+        type ident CURVED_OPEN CURVED_CLOSE SEMICOLON
+        {
+            $$ = new NFunctionDeclaration($1, *$2, VariableList(), NULL, false);
+            //delete $4;
+        } |
+        type ident CURVED_OPEN CURVED_CLOSE block
+        {
+            $$ = new NFunctionDeclaration($1, *$2, VariableList(), $5, false);
+            //delete $4;
+        } |
+        /* functions with arguments */
+        type ident CURVED_OPEN func_decl_args CURVED_CLOSE block
+        {
+            $$ = new NFunctionDeclaration($1, *$2, *$4, $6, false);
+            //delete $4;
+        } |
+        type ident CURVED_OPEN func_decl_args CURVED_CLOSE SEMICOLON
+        {
+            $$ = new NFunctionDeclaration($1, *$2, *$4, NULL, false);
+            //delete $4;
+        } |
+        
+        /*
+         * now the same thing for functions with variable amount of parameters
+         * i.e. the ... operator
+         */
+        type ident CURVED_OPEN TRIPLE_DOTS CURVED_CLOSE SEMICOLON
+        {
+            $$ = new NFunctionDeclaration($1, *$2, VariableList(), NULL, true);
+            //delete $4;
+        } |
+        type ident CURVED_OPEN TRIPLE_DOTS CURVED_CLOSE block
+        {
+            $$ = new NFunctionDeclaration($1, *$2, VariableList(), $6, true);
+            //delete $4;
+        } |
+        /* functions with arguments */
+        type ident CURVED_OPEN func_decl_args COMMA TRIPLE_DOTS CURVED_CLOSE block
+        {
+            $$ = new NFunctionDeclaration($1, *$2, *$4, $8, true);
+            //delete $4;
+        } |
+        type ident CURVED_OPEN func_decl_args COMMA TRIPLE_DOTS CURVED_CLOSE SEMICOLON
+        {
+            $$ = new NFunctionDeclaration($1, *$2, *$4, NULL, true);
+            //delete $4;
+        }
+        ;
 
 func_decl_args:
-		/* empty */
-		{
-			$$ = new VariableList();
-		} |
-		var_decl
-		{
-			$$ = new VariableList();
-			$$->push_back($<variable>1);
-		} |
-		func_decl_args COMMA var_decl
-		{
-			$1->push_back($<variable>3);
-		} ;
+        var_decl
+        {
+            $$ = new VariableList();
+            $$->push_back($<variable>1);
+        } |
+        func_decl_args COMMA var_decl
+        {
+            $1->push_back($<variable>3);
+        } ;
 
 struct_decl:
-		/* TODO arrays (and function pointers) within structs */
-		STRUCT ident BRACE_OPEN struct_decl_args SEMICOLON BRACE_CLOSE SEMICOLON
-		{
-			$$ = new NStructureDeclaration(*$2, *$4);
-			//delete $4;
-		} |
-		STRUCT ident BRACE_OPEN BRACE_CLOSE SEMICOLON
-		{
-			$$ = new NStructureDeclaration(*$2, *(new DeclarationList()));
-			//delete $4;
-		} ;
+        /* TODO arrays (and function pointers) within structs */
+        STRUCT ident BRACE_OPEN struct_decl_args SEMICOLON BRACE_CLOSE SEMICOLON
+        {
+            $$ = new NStructureDeclaration(*$2, *$4);
+            //delete $4;
+        } |
+        STRUCT ident BRACE_OPEN BRACE_CLOSE SEMICOLON
+        {
+            $$ = new NStructureDeclaration(*$2, *(new DeclarationList()));
+            //delete $4;
+        } ;
 
 struct_decl_args:
-		/* empty */
-		{
-			$$ = new DeclarationList();
-		} |
-		var_decl_no_init
-		{
-			$$ = new DeclarationList();
-			$$->push_back($<variable>1);
-		} |
-		array_decl_no_init
-		{
-			$$ = new DeclarationList();
-			$$->push_back($<array>1);
-		} |
-		struct_decl_args SEMICOLON var_decl_no_init
-		{
-			$1->push_back($<variable>3);
-		} |
-		struct_decl_args SEMICOLON array_decl_no_init
-		{
-			$1->push_back($<array>3);
-		} ;
+        /* empty */
+        {
+            $$ = new DeclarationList();
+        } |
+        var_decl_no_init
+        {
+            $$ = new DeclarationList();
+            $$->push_back($<variable>1);
+        } |
+        array_decl_no_init
+        {
+            $$ = new DeclarationList();
+            $$->push_back($<array>1);
+        } |
+        struct_decl_args SEMICOLON var_decl_no_init
+        {
+            $1->push_back($<variable>3);
+        } |
+        struct_decl_args SEMICOLON array_decl_no_init
+        {
+            $1->push_back($<array>3);
+        } ;
 
 var_decl_no_init:
-		type ident
-		{
-			$$ = new NVariableDeclaration($1, *$2);
-		} |
-		type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE
-		{
-			$$ = new NVariableDeclaration((new NFunctionPointerType($1, *$7)) /* TODO: free this memory */, *$4);
-		} ;
+        type ident
+        {
+            $$ = new NVariableDeclaration($1, *$2);
+        } |
+        type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE
+        {
+            $$ = new NVariableDeclaration((new NFunctionPointerType($1, *$7)) /* TODO: free this memory */, *$4);
+        } ;
 var_decl:
-		var_decl_no_init
-		{
-			$$ = $1;
-		} |
-		type ident ASSIGN_EQUAL expr
-		{
-			$$ = new NVariableDeclaration($1, *$2, $4);
-		} |
-		type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE ASSIGN_EQUAL expr
-		{
-			$$ = new NVariableDeclaration((new NFunctionPointerType($1, *$7)) /* TODO: free this memory */, *$4, $10);
-		} ;
+        var_decl_no_init
+        {
+            $$ = $1;
+        } |
+        type ident ASSIGN_EQUAL expr
+        {
+            $$ = new NVariableDeclaration($1, *$2, $4);
+        } |
+        type CURVED_OPEN STAR ident CURVED_CLOSE CURVED_OPEN func_decl_args CURVED_CLOSE ASSIGN_EQUAL expr
+        {
+            $$ = new NVariableDeclaration((new NFunctionPointerType($1, *$7)) /* TODO: free this memory */, *$4, $10);
+        } ;
 
 array_decl_no_init:
-		/* array declarations */
-		type ident array_dims
-		{
-			$$ = new NArrayDeclaration($1, *$2, $3, NULL);
-		} ;
+        /* array declarations */
+        type ident array_dims
+        {
+            $$ = new NArrayDeclaration($1, *$2, $3, NULL);
+        } ;
 array_decl:
-		array_decl_no_init
-		{
-			$$ = $1;
-		} |
-		type ident array_dims ASSIGN_EQUAL BRACE_OPEN array_init_list BRACE_CLOSE
-		{
-			$$ = new NArrayDeclaration($1, *$2, $3, $6);
-		} ;
+        array_decl_no_init
+        {
+            $$ = $1;
+        } |
+        type ident array_dims ASSIGN_EQUAL BRACE_OPEN array_init_list BRACE_CLOSE
+        {
+            $$ = new NArrayDeclaration($1, *$2, $3, $6);
+        } ;
 
 array_dims:
-		SQUARE_OPEN NUMBER SQUARE_CLOSE
-		{
-			$$ = new DimensionsList();
-			$$->push_back((uint16_t)$2);
-		} |
-		array_dims SQUARE_OPEN NUMBER SQUARE_CLOSE
-		{
-			$$ = $1;
-			$$->push_back((uint16_t)$3);
-		} ;
+        SQUARE_OPEN NUMBER SQUARE_CLOSE
+        {
+            $$ = new DimensionsList();
+            $$->push_back((uint16_t)$2);
+        } |
+        array_dims SQUARE_OPEN NUMBER SQUARE_CLOSE
+        {
+            $$ = $1;
+            $$->push_back((uint16_t)$3);
+        } ;
 
 array_init_list:
-			/* empty */
-		{
-			$$ = new ExpressionList();
-		} |
-		expr
-		{
-			$$ = new ExpressionList();
-			$$->push_back($1);
-		} |
-		/* ignore further Braces */
-		BRACE_OPEN array_init_list BRACE_CLOSE
-		{
-			$$ = $2;
-		} |
-		array_init_list COMMA array_init_list
-		{
-			$1->insert( $1->end(), $3->begin(), $3->end() );
-			$$ = $1;
-		} ;
+            /* empty */
+        {
+            $$ = new ExpressionList();
+        } |
+        expr
+        {
+            $$ = new ExpressionList();
+            $$->push_back($1);
+        } |
+        /* ignore further Braces */
+        BRACE_OPEN array_init_list BRACE_CLOSE
+        {
+            $$ = $2;
+        } |
+        array_init_list COMMA array_init_list
+        {
+            $1->insert( $1->end(), $3->begin(), $3->end() );
+            $$ = $1;
+        } ;
 
 ident:
-		IDENTIFIER
-		{
-			$$ = new NIdentifier(*$1);
-			delete $1;
-		} ;
+        IDENTIFIER
+        {
+            $$ = new NIdentifier(*$1);
+            delete $1;
+        } ;
 
 type:
-		type_base
-		{
-			$$ = $<type>1;
-		} |
-		CONST type
-		{
-			$$ = $2;
-			$$->setConst();
-		} |
-		type CONST
-		{
-			$$ = $1;
-			$$->setConst();
-		} |
-		SIGNED type
-		{
-			$$ = $2;
-			$$->setSigned(true);
-		} |
-		type SIGNED
-		{
-			$$ = $1;
-			$$->setSigned(true);
-		} |
-		UNSIGNED type
-		{
-			$$ = $2;
-			$$->setSigned(false);
-		} |
-		type UNSIGNED
-		{
-			$$ = $1;
-			$$->setSigned(false);
-		} |
-		STRUCT ident
-		{
-			$$ = new TStruct($<ident>2->name);
-			delete $2;
-		} |
-		/*
-		type_base STAR %prec IREF
-		{
-			$$ = new TPointer16($<type>1);
-		} |
-		STRUCT ident STAR %prec IREF
-		{
-			$$ = new TPointer16(new TStruct($<ident>2->name));
-			delete $2;
-		} |
-		*/
-		// pointer to type
-		type STAR %prec IREF
-		{
-			$$ = new TPointer16($<type>1);
-		} |
-		// const pointer to type
-		type STAR CONST %prec IREF
-		{
-			$$ = new TPointer16($<type>1);
-			$$->setConst();
-		};
+        type_base
+        {
+            $$ = $<type>1;
+        } |
+        CONST type
+        {
+            $$ = $2;
+            $$->setConst();
+        } |
+        type CONST
+        {
+            $$ = $1;
+            $$->setConst();
+        } |
+        SIGNED type
+        {
+            $$ = $2;
+            $$->setSigned(true);
+        } |
+        type SIGNED
+        {
+            $$ = $1;
+            $$->setSigned(true);
+        } |
+        UNSIGNED type
+        {
+            $$ = $2;
+            $$->setSigned(false);
+        } |
+        type UNSIGNED
+        {
+            $$ = $1;
+            $$->setSigned(false);
+        } |
+        STRUCT ident
+        {
+            $$ = new TStruct($<ident>2->name);
+            delete $2;
+        } |
+        /*
+        type_base STAR %prec IREF
+        {
+            $$ = new TPointer16($<type>1);
+        } |
+        STRUCT ident STAR %prec IREF
+        {
+            $$ = new TPointer16(new TStruct($<ident>2->name));
+            delete $2;
+        } |
+        */
+        // pointer to type
+        type STAR %prec IREF
+        {
+            $$ = new TPointer16($<type>1);
+        } |
+        // const pointer to type
+        type STAR CONST %prec IREF
+        {
+            $$ = new TPointer16($<type>1);
+            $$->setConst();
+        };
 
 block:
-		BRACE_OPEN stmts BRACE_CLOSE
-		{
-			$$ = $2;
-		} |
-		BRACE_OPEN BRACE_CLOSE
-		{
-			$$ = new NBlock();
-		} ;
+        BRACE_OPEN stmts BRACE_CLOSE
+        {
+            $$ = $2;
+        } |
+        BRACE_OPEN BRACE_CLOSE
+        {
+            $$ = new NBlock();
+        } ;
 
 stmts:
-		stmt
-		{
-			$$ = new NBlock();
-			$$->statements.push_back($<stmt>1);
-		} |
-		stmts stmt
-		{
-			$1->statements.push_back($<stmt>2);
-		} ;
+        stmt
+        {
+            $$ = new NBlock();
+            $$->statements.push_back($<stmt>1);
+        } |
+        stmts stmt
+        {
+            $1->statements.push_back($<stmt>2);
+        } ;
 
 stmt:
-		SEMICOLON
-		{
-			$$ = new NEmptyStatement();
-		} |
-		var_decl SEMICOLON
-		{
-			$$ = $1;
-		} |
-		array_decl SEMICOLON
-		{
-			$$ = $1;
-		} |
-		stmt_if |
-		stmt_while |
-		stmt_for |
-		stmt_return |
-		stmt_break |
-		stmt_continue |
-		stmt_case |
-		stmt_default |
-		stmt_switch |
-		stmt_asm |
-		expr SEMICOLON
-		{
-			$$ = new NExpressionStatement(*$1);
-		} ;
+        SEMICOLON
+        {
+            $$ = new NEmptyStatement();
+        } |
+        var_decl SEMICOLON
+        {
+            $$ = $1;
+        } |
+        array_decl SEMICOLON
+        {
+            $$ = $1;
+        } |
+        stmt_if |
+        stmt_while |
+        stmt_for |
+        stmt_return |
+        stmt_break |
+        stmt_continue |
+        stmt_case |
+        stmt_default |
+        stmt_switch |
+        stmt_asm |
+        expr SEMICOLON
+        {
+            $$ = new NExpressionStatement(*$1);
+        } ;
 
 block_or_stmt:
-		stmt
-		{
-			$$ = new NBlock();
-			$$->statements.push_back($<stmt>1);
-		} |
-		block
-		{
-			$$ = $1;
-		} ;
+        stmt
+        {
+            $$ = new NBlock();
+            $$->statements.push_back($<stmt>1);
+        } |
+        block
+        {
+            $$ = $1;
+        } ;
 
 stmt_if:
-		IF CURVED_OPEN expr CURVED_CLOSE block_or_stmt ELSE block_or_stmt
-		{
-			$$ = new NIfStatement(*$3, *$5, $7);
-		} |
-		IF CURVED_OPEN expr CURVED_CLOSE block_or_stmt
-		{
-			$$ = new NIfStatement(*$3, *$5);
-		} ;
+        IF CURVED_OPEN expr CURVED_CLOSE block_or_stmt ELSE block_or_stmt
+        {
+            $$ = new NIfStatement(*$3, *$5, $7);
+        } |
+        IF CURVED_OPEN expr CURVED_CLOSE block_or_stmt
+        {
+            $$ = new NIfStatement(*$3, *$5);
+        } ;
 
 stmt_return:
-		RETURN expr SEMICOLON
-		{
-			$$ = new NReturnStatement(*$2);
-		} ;
-		
+        RETURN expr SEMICOLON
+        {
+            $$ = new NReturnStatement(*$2);
+        } ;
+        
 stmt_break:
-		BREAK SEMICOLON
-		{
-			$$ = new NBreakStatement();
-		} ;
-		
+        BREAK SEMICOLON
+        {
+            $$ = new NBreakStatement();
+        } ;
+        
 stmt_continue:
-		CONTINUE SEMICOLON
-		{
-			$$ = new NContinueStatement();
-		} ;
-		
+        CONTINUE SEMICOLON
+        {
+            $$ = new NContinueStatement();
+        } ;
+        
 stmt_case:
-		CASE NUMBER COLON
-		{
-			$$ = new NCaseStatement($2);
-		} |
-		CASE CHARACTER COLON
-		{
-			$$ = new NCaseStatement(*$2);
-		} ;
-		
+        CASE NUMBER COLON
+        {
+            $$ = new NCaseStatement($2);
+        } |
+        CASE CHARACTER COLON
+        {
+            $$ = new NCaseStatement(*$2);
+        } ;
+        
 stmt_default:
-		DEFAULT COLON
-		{
-			$$ = new NDefaultStatement();
-		} ;
-		
+        DEFAULT COLON
+        {
+            $$ = new NDefaultStatement();
+        } ;
+        
 stmt_switch:
-		SWITCH CURVED_OPEN expr CURVED_CLOSE block
-		{
-			$$ = new NSwitchStatement(*$3, *$5);
-		} ;
+        SWITCH CURVED_OPEN expr CURVED_CLOSE block
+        {
+            $$ = new NSwitchStatement(*$3, *$5);
+        } ;
 
 stmt_while:
-		WHILE CURVED_OPEN expr CURVED_CLOSE block_or_stmt
-		{
-			$$ = new NWhileStatement(*$3, *$5);
-		} ;
+        WHILE CURVED_OPEN expr CURVED_CLOSE block_or_stmt
+        {
+            $$ = new NWhileStatement(*$3, *$5);
+        } ;
 
 stmt_for:
-		FOR CURVED_OPEN expr SEMICOLON expr SEMICOLON expr CURVED_CLOSE block_or_stmt
-		{
-			$$ = new NForStatement(*$3, *$5, *$7, *$9);
-		} ;
+        FOR CURVED_OPEN expr SEMICOLON expr SEMICOLON expr CURVED_CLOSE block_or_stmt
+        {
+            $$ = new NForStatement(*$3, *$5, *$7, *$9);
+        } ;
 
 stmt_asm:
-		ASSEMBLY
-		{
-			$$ = new NAssemblyStatement(*$1);
-			delete $1;
-		} ;
+        ASSEMBLY
+        {
+            $$ = new NAssemblyStatement(*$1);
+            delete $1;
+        } ;
 
 fldref:
-		expr DOT ident
-		{
-			$$ = new NStructureResolutionOperator(*$1, *$3, false);
-		} |
-		fldref assignop expr
-		{
-			if ($1->cType == "expression-field") // We can't accept NAssignments as the fldref in this case.
-				$$ = new NAssignment(*$1, $2, *$3);
-			else
-				throw new CompilerException(yylineno, (const char*)yyfilename->data, "Unable to apply field referencing assignment operation to non-field operator based LHS.");
-		} ;
+        expr DOT ident
+        {
+            $$ = new NStructureResolutionOperator(*$1, *$3, false);
+        } |
+        fldref assignop expr
+        {
+            if ($1->cType == "expression-field") // We can't accept NAssignments as the fldref in this case.
+                $$ = new NAssignment(*$1, $2, *$3);
+            else
+                throw new CompilerException(yylineno, (const char*)yyfilename->data, "Unable to apply field referencing assignment operation to non-field operator based LHS.");
+        } ;
 
 arrayref:
-		expr SQUARE_OPEN expr SQUARE_CLOSE
-		{
-			$$ = new NArrayAccessOperator(*$1, *$3);
-		} |
-		arrayref assignop expr
-		{
-			if ($1->cType == "expression-arrayaccess") // We can't accept NAssignments as the arrayref in this case.
-				$$ = new NAssignment(*$1, $2, *$3);
-			else
-				throw new CompilerException(yylineno, (const char*)yyfilename->data, "Unable to apply array access assignment operation to non-array access operator based LHS.");
-		} ;
+        expr SQUARE_OPEN expr SQUARE_CLOSE
+        {
+            $$ = new NArrayAccessOperator(*$1, *$3);
+        } |
+        arrayref assignop expr
+        {
+            if ($1->cType == "expression-arrayaccess") // We can't accept NAssignments as the arrayref in this case.
+                $$ = new NAssignment(*$1, $2, *$3);
+            else
+                throw new CompilerException(yylineno, (const char*)yyfilename->data, "Unable to apply array access assignment operation to non-array access operator based LHS.");
+        } ;
 
 deref:
-		STAR ident
-		{
-			$$ = new NDereferenceOperator(*$<ident>2);
-		} |
-		STAR numeric
-		{
-			$$ = new NDereferenceOperator(*$2);
-		} |
-		STAR CURVED_OPEN expr CURVED_CLOSE
-		{
-			$$ = new NDereferenceOperator(*$3);
-		} |
-		deref assignop expr
-		{
-			if ($1->cType == "expression-dereference") // We can't accept NAssignments as the deref in this case.
-				$$ = new NAssignment(*$1, $2, *$3);
-			else
-				throw new CompilerException(yylineno, (const char*)yyfilename->data, "Unable to apply dereferencing assignment operation to non-dereference operator based LHS.");
-		} ;
+        STAR ident
+        {
+            $$ = new NDereferenceOperator(*$<ident>2);
+        } |
+        STAR numeric
+        {
+            $$ = new NDereferenceOperator(*$2);
+        } |
+        STAR CURVED_OPEN expr CURVED_CLOSE
+        {
+            $$ = new NDereferenceOperator(*$3);
+        } |
+        deref assignop expr
+        {
+            if ($1->cType == "expression-dereference") // We can't accept NAssignments as the deref in this case.
+                $$ = new NAssignment(*$1, $2, *$3);
+            else
+                throw new CompilerException(yylineno, (const char*)yyfilename->data, "Unable to apply dereferencing assignment operation to non-dereference operator based LHS.");
+        } ;
 
 expr:
-		ident assignop expr
-		{
-			$$ = new NAssignment(*$1, $2, *$3);
-		} |
-		arrayref
-		{
-			$$ = $1;
-		} |
-		deref
-		{
-			$$ = $1;
-		} |
-		fldref
-		{
-			$$ = $1;
-		} |
-		ident CURVED_OPEN call_args CURVED_CLOSE
-		{
-			$$ = new NMethodCall(*$1, *$3);
-			delete $3;
-		} |
-		ident
-		{
-			$<ident>$ = $1;
-		} |
-		numeric
-		{
-			$$ = $1;
-		} |
-		character
-		{
-			$$ = $1;
-		} |
-		string
-		{
-			$$ = $1;
-		} |
-		/*expr DEREFDOT ident
-		{
-			$$ = new NStructureResolutionOperator(*$1, *$3, true);
-		} |*/
-		
-		/* Increment and Decrement */
-		INCREMENT expr %prec IPREINC
-		{
-			$$ = new NPreIncDec($1, *$2);
-		} |
-		DECREMENT expr %prec IPREDEC
-		{
-			$$ = new NPreIncDec($1, *$2);
-		} |
-		
-		expr INCREMENT %prec IPOSTINC
-		{
-			$$ = new NPostIncDec(*$1, $2);
-		} |
-		expr DECREMENT %prec IPOSTDEC
-		{
-			$$ = new NPostIncDec(*$1, $2);
-		} |
-		
-				
-		/* Boolean Binary Operators */	
-		
-		expr BOOLEAN_AND expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr BOOLEAN_OR expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-				
-		/* Binary Binary Operators */	
-		
-		expr BINARY_AND expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr BINARY_OR expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr BINARY_XOR expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr BINARY_LEFT_SHIFT expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr BINARY_RIGHT_SHIFT expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		
-		/* Arithmetic Binary Operators */		
-		
-		expr SUBTRACT expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr ADD expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr STAR expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr SLASH expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr PERCENT expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		
-		/* Comparing Binary Operators */		
-		
-		expr COMPARE_EQUAL expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr COMPARE_NOT_EQUAL expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr COMPARE_LESS_THAN expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr COMPARE_LESS_THAN_EQUAL expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr COMPARE_GREATER_THAN expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		expr COMPARE_GREATER_THAN_EQUAL expr
-		{
-			$$ = new NBinaryOperator(*$1, $2, *$3);
-		} |
-		
-		BINARY_AND addressable %prec IADDROF
-		{
-			$$ = new NAddressOfOperator(*$2);
-		} |
-		
-		
-		/* unary operators TODO IPOSTINC IPOSTDEC IPREINC IPREDEC  */
-		SUBTRACT expr %prec IUNARYMINUS
-		{
-			$$ = new NUnaryOperator($1,*$2);
-		} |
-		ADD expr %prec IUNARYPLUS
-		{
-			$$ = new NUnaryOperator($1,*$2);
-		} |
-		NEGATE expr
-		{
-			$$ = new NUnaryOperator($1,*$2);
-		} |
-		BITWISE_NEGATE expr
-		{
-			$$ = new NUnaryOperator($1,*$2);
-		} |
+        ident assignop expr
+        {
+            $$ = new NAssignment(*$1, $2, *$3);
+        } |
+        arrayref
+        {
+            $$ = $1;
+        } |
+        deref
+        {
+            $$ = $1;
+        } |
+        fldref
+        {
+            $$ = $1;
+        } |
+        ident CURVED_OPEN call_args CURVED_CLOSE
+        {
+            $$ = new NMethodCall(*$1, *$3);
+            delete $3;
+        } |
+        ident
+        {
+            $<ident>$ = $1;
+        } |
+        numeric
+        {
+            $$ = $1;
+        } |
+        character
+        {
+            $$ = $1;
+        } |
+        string
+        {
+            $$ = $1;
+        } |
+        /*expr DEREFDOT ident
+        {
+            $$ = new NStructureResolutionOperator(*$1, *$3, true);
+        } |*/
+        
+        /* Increment and Decrement */
+        INCREMENT expr %prec IPREINC
+        {
+            $$ = new NPreIncDec($1, *$2);
+        } |
+        DECREMENT expr %prec IPREDEC
+        {
+            $$ = new NPreIncDec($1, *$2);
+        } |
+        
+        expr INCREMENT %prec IPOSTINC
+        {
+            $$ = new NPostIncDec(*$1, $2);
+        } |
+        expr DECREMENT %prec IPOSTDEC
+        {
+            $$ = new NPostIncDec(*$1, $2);
+        } |
+        
+                
+        /* Boolean Binary Operators */    
+        
+        expr BOOLEAN_AND expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr BOOLEAN_OR expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+                
+        /* Binary Binary Operators */    
+        
+        expr BINARY_AND expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr BINARY_OR expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr BINARY_XOR expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr BINARY_LEFT_SHIFT expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr BINARY_RIGHT_SHIFT expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        
+        /* Arithmetic Binary Operators */        
+        
+        expr SUBTRACT expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr ADD expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr STAR expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr SLASH expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr PERCENT expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        
+        /* Comparing Binary Operators */        
+        
+        expr COMPARE_EQUAL expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr COMPARE_NOT_EQUAL expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr COMPARE_LESS_THAN expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr COMPARE_LESS_THAN_EQUAL expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr COMPARE_GREATER_THAN expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        expr COMPARE_GREATER_THAN_EQUAL expr
+        {
+            $$ = new NBinaryOperator(*$1, $2, *$3);
+        } |
+        
+        BINARY_AND addressable %prec IADDROF
+        {
+            $$ = new NAddressOfOperator(*$2);
+        } |
+        
+        
+        /* unary operators TODO IPOSTINC IPOSTDEC IPREINC IPREDEC  */
+        SUBTRACT expr %prec IUNARYMINUS
+        {
+            $$ = new NUnaryOperator($1,*$2);
+        } |
+        ADD expr %prec IUNARYPLUS
+        {
+            $$ = new NUnaryOperator($1,*$2);
+        } |
+        NEGATE expr
+        {
+            $$ = new NUnaryOperator($1,*$2);
+        } |
+        BITWISE_NEGATE expr
+        {
+            $$ = new NUnaryOperator($1,*$2);
+        } |
 
-		/* ( expr ) */
-		CURVED_OPEN expr CURVED_CLOSE
-		{
-			$$ = $2;
-		} ;
+        /* ( expr ) */
+        CURVED_OPEN expr CURVED_CLOSE
+        {
+            $$ = $2;
+        } |
+        
+        /* Builtin expressions */
+        BUILDIN_VA_START CURVED_OPEN ident COMMA ident CURVED_CLOSE
+        {
+            $$ = new NBuiltInVaStart(*$3, *$5);
+        };
 
 addressable:
-		ident
-		{
-			$$ = $1;
-		} |
-		expr DOT ident
-		{
-			$$ = new NStructureResolutionOperator(*$1, *$3, false);
-		} |
-		STAR expr %prec IDEREF
-		{
-			$$ = new NDereferenceOperator(*$2);
-		} ;
+        ident
+        {
+            $$ = $1;
+        } |
+        expr DOT ident
+        {
+            $$ = new NStructureResolutionOperator(*$1, *$3, false);
+        } |
+        STAR expr %prec IDEREF
+        {
+            $$ = new NDereferenceOperator(*$2);
+        } ;
 
 numeric:
-		NUMBER
-		{
-			/* TODO implement other unsigned, long,     */
-			/*      and unsigned long (u,l,ul) literals */
-			$$ = new NIntegerLiteral($1);
-		} |
-		TRUE
-		{
-			$$ = new NIntegerLiteral(1);
-		} |
-		FALSE
-		{
-			$$ = new NIntegerLiteral(0);
-		} |
-		SIZEOF CURVED_OPEN type CURVED_CLOSE
-		{
-			$$ = new NSizeOfOperator($3);
-		} ;
+        NUMBER
+        {
+            /* TODO implement other unsigned, long,     */
+            /*      and unsigned long (u,l,ul) literals */
+            $$ = new NIntegerLiteral($1);
+        } |
+        TRUE
+        {
+            $$ = new NIntegerLiteral(1);
+        } |
+        FALSE
+        {
+            $$ = new NIntegerLiteral(0);
+        } |
+        SIZEOF CURVED_OPEN type CURVED_CLOSE
+        {
+            $$ = new NSizeOfOperator($3);
+        } ;
 
 character:
-		CHARACTER
-		{
-			$$ = new NCharacter(*$1);
-			delete $1;
-		} ;
+        CHARACTER
+        {
+            $$ = new NCharacter(*$1);
+            delete $1;
+        } ;
 
 string:
-		STRING
-		{
-			$$ = new NString(*$1);
-			delete $1;
-		} ;
+        STRING
+        {
+            $$ = new NString(*$1);
+            delete $1;
+        } ;
 
 call_args:
-		/* empty */
-		{
-			$$ = new ExpressionList();
-		} |
-		expr
-		{
-			$$ = new ExpressionList();
-			$$->push_back($1);
-		} |
-		call_args COMMA expr
-		{
-			$1->push_back($3);
-		} ;
+        /* empty */
+        {
+            $$ = new ExpressionList();
+        } |
+        expr
+        {
+            $$ = new ExpressionList();
+            $$->push_back($1);
+        } |
+        call_args COMMA expr
+        {
+            $1->push_back($3);
+        } ;
 
 assignop:
-		ASSIGN_EQUAL |
-		ASSIGN_ADD |
-		ASSIGN_SUBTRACT |
-		ASSIGN_MULTIPLY |
-		ASSIGN_DIVIDE |
-		ASSIGN_MOD |
-		ASSIGN_BAND |
-		ASSIGN_BOR |
-		ASSIGN_BXOR |
-		ASSIGN_SHL |
-		ASSIGN_SHR;
+        ASSIGN_EQUAL |
+        ASSIGN_ADD |
+        ASSIGN_SUBTRACT |
+        ASSIGN_MULTIPLY |
+        ASSIGN_DIVIDE |
+        ASSIGN_MOD |
+        ASSIGN_BAND |
+        ASSIGN_BOR |
+        ASSIGN_BXOR |
+        ASSIGN_SHL |
+        ASSIGN_SHR;
 
 type_base:
-		TYPE_VOID
-		{
-			//$$ = new NType("void", 0, false);
-			// TODO Void Type
-			$$ = new TInt16("void");
-		} |
-		TYPE_CHAR
-		{
-			//$$ = new NType("char", 0, false);
-			$$ = new TInt16("char");
-		} |
-		TYPE_SHORT
-		{
-			//$$ = new NType("byte", 0, false);
-			$$ = new TInt16("byte");
-		} |
-		TYPE_INT
-		{
-			//$$ = new NType("int", 0, false);
-			$$ = new TInt16("int");
-		} |
-		TYPE_LONG
-		{
-			//$$ = new NType("long", 0, false);
-			$$ = new TInt16("long");
-		}  |
-		TYPE_FLOAT
-		{
-			//$$ = new NIdentifier("float");
-			throw new CompilerException(yylineno, (const char*)yyfilename->data, "Data type 'float' not yet supported.");
-		}  |
-		TYPE_DOUBLE
-		{
-			//$$ = new NIdentifier("double");
-			throw new CompilerException(yylineno, (const char*)yyfilename->data, "Data type 'double' not yet supported.");
-		}  |
-		TYPE_LONG TYPE_DOUBLE
-		{
-			// $$ = new NIdentifier("long double");
-			throw new CompilerException(yylineno, (const char*)yyfilename->data, "Data type 'long double' not yet supported.");
-		};
+        TYPE_VOID
+        {
+            //$$ = new NType("void", 0, false);
+            // TODO Void Type
+            $$ = new TInt16("void");
+        } |
+        TYPE_CHAR
+        {
+            //$$ = new NType("char", 0, false);
+            $$ = new TInt16("char");
+        } |
+        TYPE_SHORT
+        {
+            //$$ = new NType("byte", 0, false);
+            $$ = new TInt16("byte");
+        } |
+        TYPE_INT
+        {
+            //$$ = new NType("int", 0, false);
+            $$ = new TInt16("int");
+        } |
+        TYPE_LONG
+        {
+            //$$ = new NType("long", 0, false);
+            $$ = new TInt16("long");
+        }  |
+        TYPE_FLOAT
+        {
+            //$$ = new NIdentifier("float");
+            throw new CompilerException(yylineno, (const char*)yyfilename->data, "Data type 'float' not yet supported.");
+        }  |
+        TYPE_DOUBLE
+        {
+            //$$ = new NIdentifier("double");
+            throw new CompilerException(yylineno, (const char*)yyfilename->data, "Data type 'double' not yet supported.");
+        }  |
+        TYPE_LONG TYPE_DOUBLE
+        {
+            // $$ = new NIdentifier("long double");
+            throw new CompilerException(yylineno, (const char*)yyfilename->data, "Data type 'long double' not yet supported.");
+        };
 
 %%
 
@@ -901,7 +946,7 @@ type_base:
 void yyerror(const char *str)
 {
 	if (yyfilename == NULL)
-	    fprintf(stderr,"error at line %i of '%s': %s\n", yylineno, "<unknown>", str);
+	    fprintf(stderr, "error at line %i of '%s': %s\n", yylineno, "<unknown>", str);
     else
-        fprintf(stderr,"error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
+        fprintf(stderr, "error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
 }

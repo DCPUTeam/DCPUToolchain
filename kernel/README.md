@@ -68,6 +68,13 @@ void exit(uint16\_t code)
 kernels must ensure control never returns to the process again and should perform
 clean up as soon as it is viable.
 
+Hardware Interface
+===================
+
+uint16\_t locate\_device(uint16\_t low, uint16\_t high);
+---------------------------------------------------------
+**Description:** Locates a device whose ID is `(high << 8) | low & 0xf`;
+
 File Management
 ==================
 **Notice:** If the kernel does not provide these functions, at the very least, the C system

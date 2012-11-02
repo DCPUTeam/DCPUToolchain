@@ -15,7 +15,7 @@
 #include "NFunctionSignature.h"
 #include "Lists.h"
 
-std::string NFunctionSignature::calculateSignature(const VariableList& arguments)
+std::string NFunctionSignature::calculateSignature(const VariableList& arguments, bool varArgs)
 {
     std::string sig = "(";
     for (VariableList::const_iterator i = arguments.begin(); i != arguments.end(); i++)
@@ -26,8 +26,20 @@ std::string NFunctionSignature::calculateSignature(const VariableList& arguments
         }
         sig = sig + (*i)->type->getName();
     }
+    if (varArgs)
+        sig = sig + ",...";
     sig = sig + ")";
     return sig;
+}
+
+bool NFunctionSignature::callerSignatureMatching(const ExpressionList& callerArguments)
+{
+    // FIXME check the argument types correctly
+    // FIXME this^ is kind of important! :D
+    if (this->varArgs)
+        return (callerArguments.size() >= this->arguments.size());
+    else
+        return (callerArguments.size() == this->arguments.size());
 }
 
 
@@ -36,7 +48,7 @@ std::string NFunctionSignature::calculateSignature(const IType* returnType, cons
 {
     IType* returnTypePtr = (IType*) returnType;
     std::string name = returnTypePtr->getName();
-    std::string argumentsSig = NFunctionSignature::calculateSignature(arguments);
+    std::string argumentsSig = NFunctionSignature::calculateSignature(arguments, false);
     name = name + "-" + argumentsSig;
     return std::string(name);
 }
@@ -44,7 +56,7 @@ std::string NFunctionSignature::calculateSignature(const IType* returnType, cons
 
 std::string NFunctionSignature::getSignature()
 {
-    return NFunctionSignature::calculateSignature(this->arguments);
+    return NFunctionSignature::calculateSignature(this->arguments, this->varArgs);
 }
 
 StackMap NFunctionSignature::generateStackMap()

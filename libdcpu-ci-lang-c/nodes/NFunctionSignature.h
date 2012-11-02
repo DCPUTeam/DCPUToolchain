@@ -24,11 +24,13 @@ class NFunctionSignature : public IFunctionSignature
 public:
     const IType* type;
     const VariableList arguments;
-    NFunctionSignature(const IType* type, const VariableList& arguments)
-        : type(type), arguments(arguments) { };
+    const bool varArgs;
+    NFunctionSignature(const IType* type, const VariableList& arguments, bool varArgs)
+        : type(type), arguments(arguments), varArgs(varArgs) { };
     std::string getSignature();
+    bool callerSignatureMatching(const ExpressionList& arguments);
     static std::string calculateSignature(const IType* returnType, const VariableList& arguments);
-    static std::string calculateSignature(const VariableList& arguments);
+    static std::string calculateSignature(const VariableList& arguments, bool varArgs);
     virtual StackMap generateStackMap();
 };
 

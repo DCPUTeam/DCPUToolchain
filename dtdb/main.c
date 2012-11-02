@@ -37,6 +37,9 @@
 #include <dcpuhook.h>
 #include <version.h>
 #include <debug.h>
+#include <derr.h>
+#include <hw.h>
+#include <glfwutils.h>
 #include "sdp.h"
 #include "osutil.h"
 
@@ -51,6 +54,54 @@ pthread_t sdp_thread;
 struct dbg_state lstate;
 
 extern int dbg_yyparse(void* scanner);
+
+
+void* dtemu_create_context(const char* title, int width, int height, bool resizeable, void* ud)
+{
+    GLFWwindow* context = malloc(sizeof(GLFWwindow));
+
+    if (!resizeable)
+        glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    *context = (GLFWwindow) glfwCreateWindow(width, height, GLFW_WINDOWED, title, NULL);
+    
+    if (*context == NULL)
+        dhalt(ERR_COULD_NOT_CREATE_OPENGL_CONTEXT, "glfwCreateWindow returned NULL.");
+
+    glfwSetWindowUserPointer(*context, ud);
+    glfwMakeContextCurrent(*context);
+    glfwSetWindowCloseCallback(&vm_hw_glfw_close_window_callback);
+    glfwSetWindowSizeCallback(&vm_hw_glfw_resize_window_callback);
+    glfwSwapInterval(0);
+
+    glfwSetTime(0.0);
+
+    return context;
+}
+
+void dtemu_activate_context(void* context)
+{
+    GLFWwindow* w = context;
+    glfwMakeContextCurrent(*w);
+}
+
+void dtemu_swap_buffers(void* context)
+{
+    GLFWwindow* w = context;
+    glfwSwapBuffers(*w);
+    glfwPollEvents();
+}
+
+void dtemu_destroy_context(void* context)
+{
+    GLFWwindow* w = context;
+    glfwDestroyWindow(*w);
+}
+
+void* dtemu_get_ud(void* context)
+{
+    GLFWwindow* w = context;
+    return glfwGetWindowUserPointer(context);
+}
 
 void ddbg_sigint(int sig)
 {
@@ -72,6 +123,8 @@ int main(int argc, char** argv)
     char* buf;
     yyscan_t scanner;
     int nerrors;
+
+    host_context_t* dtemu = malloc(sizeof(host_context_t));
 
     // Define arguments.
     struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
@@ -115,8 +168,16 @@ int main(int argc, char** argv)
     signal(SIGINT, ddbg_sigint);
     signal(SIGTERM, ddbg_sigint);
 
+    // Set up the host context.
+    glfwInit();
+    dtemu->create_context = &dtemu_create_context;
+    dtemu->activate_context = &dtemu_activate_context;
+    dtemu->swap_buffers = &dtemu_swap_buffers;
+    dtemu->destroy_context = &dtemu_destroy_context;
+    dtemu->get_ud = &dtemu_get_ud;
+
     // Initialize debugger.
-    ddbg_init();
+    ddbg_init(dtemu);
 
     // Initialize devices unless not requested.
     if (no_attach_mode->count == 0)

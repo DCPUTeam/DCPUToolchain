@@ -400,7 +400,7 @@ list_t* _dbg_lua_get_symbols()
     return symbols;
 }
 
-void ddbg_init()
+void ddbg_init(host_context_t* context)
 {
     // Initialize Lua.
     lstate.get_vm = _dbg_lua_get_vm;
@@ -414,6 +414,8 @@ void ddbg_init()
 
     // Create VM.
     ddbg_create_vm();
+    printf("%p\n", context);
+    vm->host = context;
 }
 
 void ddbg_create_vm()

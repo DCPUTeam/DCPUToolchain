@@ -27,7 +27,7 @@ public:
     const NIdentifier& id;
     NBlock* block;
     NFunctionPointerType* pointerType;
-    NFunctionDeclaration(const IType* type, const NIdentifier& id, const VariableList& arguments, NBlock* block);
+    NFunctionDeclaration(const IType* type, const NIdentifier& id, const VariableList& arguments, NBlock* block, bool varArgs);
     ~NFunctionDeclaration();
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
