@@ -215,6 +215,8 @@ bstring yyfilename = NULL;
 \[                   return BRACKET_OPEN;
 \]                   return BRACKET_CLOSE;
 \:                   return COLON;
+[\.][A-Za-z0-9_]+\:  yylval.word = strdup(yytext); return LOCAL_LABEL;
+,\ ?[\.][A-Za-z0-9_]+  yylval.word = strdup(yytext); return LOCAL_LABEL_PARAM;
 
 (\r\n|\r|\n)            return NEWLINE;
 <<EOF>>             { static int once = 0; return (once = !once) ? NEWLINE : 0; }
