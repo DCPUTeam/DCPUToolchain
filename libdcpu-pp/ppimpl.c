@@ -183,9 +183,18 @@ bool ppimpl_match_test(state_t* state, match_t* match)
     // we're matching against the end of the list).
     for (i = 0; i < (size_t)blength(match->text.ref); i++)
     {
-        if ((char)list_get_at(&state->cached_output, list_size(&state->cached_output) - i - 1) !=
-                (char)match->text.ref->data[blength(match->text.ref) - i - 1])
-            return false;
+        if (!match->case_insensitive)
+        {
+            if ((char)list_get_at(&state->cached_output, list_size(&state->cached_output) - i - 1) !=
+                    (char)match->text.ref->data[blength(match->text.ref) - i - 1])
+                return false;
+        }
+        else
+        {
+            if (tolower((char)list_get_at(&state->cached_output, list_size(&state->cached_output) - i - 1)) !=
+                    tolower((char)match->text.ref->data[blength(match->text.ref) - i - 1]))
+                return false;
+        }
     }
 
     // We have a match, ensure that it is at the start of the line

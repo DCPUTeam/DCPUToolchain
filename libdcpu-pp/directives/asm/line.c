@@ -61,6 +61,7 @@ void ppimpl_asm_line_register(state_t* state)
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;
+    match->case_insensitive = true;
     ppimpl_register(state, match);
 
     // Register .ULINE directive.
@@ -70,6 +71,27 @@ void ppimpl_asm_line_register(state_t* state)
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;
+    match->case_insensitive = true;
+    ppimpl_register(state, match);
+
+    // Register #LINE directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr("#LINE "));
+    match->handler = line_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    match->case_insensitive = true;
+    ppimpl_register(state, match);
+
+    // Register #ULINE directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr("#ULINE "));
+    match->handler = uline_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    match->case_insensitive = true;
     ppimpl_register(state, match);
 }
 

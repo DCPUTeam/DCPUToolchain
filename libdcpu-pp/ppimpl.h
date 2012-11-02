@@ -60,6 +60,7 @@ struct __match
     void* userdata;
     bool line_start_only; //< Whether this match can only be made at the start of a line (ignoring whitespace).
     bool identifier_only; //< Whether this match is treated as an identifier.
+    bool case_insensitive; //< Whether this match should be made case insensitively.
 };
 typedef void(*match_handler_t)(state_t* state, struct __match* match, bool* reprocess);
 typedef struct __match match_t;

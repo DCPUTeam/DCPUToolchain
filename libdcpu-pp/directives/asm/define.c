@@ -256,6 +256,7 @@ static void macro_def_handle(state_t* state, match_t* match, bool* reprocess)
     match_t* new_match;
     struct replace_info* info;
     const char* term_match = ".ENDMACRO";
+    const char* term_match_alt = "#ENDMACRO";
     int term_match_count = 0;
 
     // Get the first word.
@@ -307,7 +308,8 @@ static void macro_def_handle(state_t* state, match_t* match, bool* reprocess)
         bconchar(definition, c);
         bltrimws(definition);
 
-        if (c == term_match[term_match_count])
+        if (tolower(c) == tolower(term_match[term_match_count]) ||
+                tolower(c) == tolower(term_match_alt[term_match_count]))
         {
             bool okay = true;
             if (term_match_count == 0 && blength(definition) >= 2)
@@ -371,6 +373,7 @@ void ppimpl_asm_define_register(state_t* state)
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;
+    match->case_insensitive = true;
     ppimpl_register(state, match);
 
     // Register .MACRO directive.
@@ -380,6 +383,27 @@ void ppimpl_asm_define_register(state_t* state)
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;
+    match->case_insensitive = true;
+    ppimpl_register(state, match);
+
+    // Register #DEFINE directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr("#DEFINE "));
+    match->handler = define_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    match->case_insensitive = true;
+    ppimpl_register(state, match);
+
+    // Register #MACRO directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr("#MACRO "));
+    match->handler = macro_def_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    match->case_insensitive = true;
     ppimpl_register(state, match);
 
     // Register macro terminator.
@@ -389,5 +413,6 @@ void ppimpl_asm_define_register(state_t* state)
     match->userdata = NULL;
     match->line_start_only = false;
     match->identifier_only = false;
+    match->case_insensitive = false;
     ppimpl_register(state, match);
 }

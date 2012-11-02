@@ -78,6 +78,7 @@ void ppimpl_asm_expr_register(state_t* state)
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;
+    match->case_insensitive = true;
     ppimpl_register(state, match);
 
     // Register .ELSE directive.
@@ -87,6 +88,7 @@ void ppimpl_asm_expr_register(state_t* state)
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;
+    match->case_insensitive = true;
     ppimpl_register(state, match);
 
     // Register .ENDIF directive.
@@ -96,5 +98,36 @@ void ppimpl_asm_expr_register(state_t* state)
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;
+    match->case_insensitive = true;
+    ppimpl_register(state, match);
+
+    // Register #IF directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr("#IF "));
+    match->handler = if_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    match->case_insensitive = true;
+    ppimpl_register(state, match);
+
+    // Register #ELSE directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr("#ELSE"));
+    match->handler = else_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    match->case_insensitive = true;
+    ppimpl_register(state, match);
+
+    // Register #ENDIF directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr("#ENDIF"));
+    match->handler = endif_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    match->case_insensitive = true;
     ppimpl_register(state, match);
 }
