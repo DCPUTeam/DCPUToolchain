@@ -12,6 +12,7 @@
  **/
 
 #include "stdio.h"
+#include <stdarg.h>
 
 void uitodec(unsigned int value, char * str)
 {
@@ -148,16 +149,24 @@ char * itoa(int value, char * str, int base)
     return str;
 }
 
-// FIXME use macros from stdarg
-#define va_list void*
 
-/*
- * %[flags][width][.precision][length]specifier
+/**
+ * @brief Write formatted data to string
+ * @param str Pointer to a buffer where the resulting C-string is stored. The buffer should be large enough to contain the resulting string.
+ * @param format C string that contains a format string that follows the same specifications as format in printf
+ * @param ... Depending on the format string, the function may expect a sequence of additional arguments, each containing a value to be used to replace a format specifier in the format string (or a pointer to a storage location, for n). There should be at least as many of these arguments as the number of values specified in the format specifiers. Additional arguments are ignored by the function.
+ * @returns On success, the total number of characters written is returned. This count does not include the additional null-character automatically appended at the end of the string.
+            On failure, a negative number is returned.
  * 
- * Right now no optional arguments are supported yet (i.e. specifier only)
+ * Composes a string with the same text that would be printed if format was used on printf, but instead of being printed, the content is stored as a C string in the buffer pointed by s. The size of the buffer should be large enough to contain the entire resulting string. A terminating null character is automatically appended after the content. After the format parameter, the function expects at least as many additional arguments as needed for format.
  */
 int sprintf ( char * str, const char * format, ... )
 {
+    /*
+     * %[flags][width][.precision][length]specifier
+     * 
+     * Right now no optional arguments are supported yet (i.e. specifier only)
+     */
     char strbufmem[17];
     int int_val;
     unsigned int uint_val;
@@ -168,10 +177,7 @@ int sprintf ( char * str, const char * format, ... )
     char * str_start = str;
     char* strbuf = strbufmem;
     
-    
-    // FIXME: use macros
-    // va_start(vl, format);
-    __builtin_va_start(vl,format);
+    va_start(vl, format);
     
     while (*format != '\0')
     {
@@ -183,38 +189,28 @@ int sprintf ( char * str, const char * format, ... )
             {
                 case 'd':
                 case 'i':
-                    // FIXME: use macros
-                    // va_arg(vl,int);
-                    int_val = *vl; vl+=sizeof(int);
+                    int_val = va_arg(vl,int);
                     itodec(int_val, str);
                     while (*str != '\0') { str++;}
                     break;
                 case 'u':
-                    // FIXME: use macros
-                    // va_arg(vl,unsigned int);
-                    uint_val = *vl; vl+=sizeof(unsigned int);
+                    uint_val = va_arg(vl,unsigned int);
                     uitodec(uint_val, str);
                     while (*str != '\0') { str++;}
                     break;
                 case 'o':
-                    // FIXME: use macros
-                    // va_arg(vl,unsigned int);
-                    uint_val = *vl; vl+=sizeof(unsigned int);
+                    uint_val = va_arg(vl,unsigned int);
                     itooct(uint_val, str);
                     while (*str != '\0') { str++;}
                     break;
                 case 'x':
-                    // FIXME: use macros
-                    // va_arg(vl,unsigned int);
-                    uint_val = *vl; vl+=sizeof(unsigned int);
+                    uint_val = va_arg(vl,unsigned int);
                     itohex(uint_val, str, 0);
                     while (*str != '\0') { str++;}
                     break;
                 case 'X':
                 case 'p': // treat the pointer '%p' as an uint (which is legal on the DCPU)
-                    // FIXME: use macros
-                    // va_arg(vl,unsigned int);
-                    uint_val = *vl; vl+=sizeof(unsigned int);
+                    uint_val = va_arg(vl,unsigned int);
                     itohex(uint_val, str, 1);
                     while (*str != '\0') { str++;}
                     break;
@@ -228,25 +224,19 @@ int sprintf ( char * str, const char * format, ... )
                 case 'A':
                     // TODO when floats are implemented
                     // for now just ignore
-                    uint_val = *vl; vl+=sizeof(unsigned int);
+                    uint_val = va_arg(vl,unsigned int);
                     break;
                 case 'c':
-                    // FIXME: use macros
-                    // va_arg(vl,char);
-                    char_val = *vl; vl+=sizeof(char);
+                    char_val = va_arg(vl,char);
                     *(str++) = char_val;
                     break;
                 case 's':
-                    // FIXME: use macros
-                    // va_arg(vl,char*);
-                    str_val = *vl; vl+=sizeof(char*);
+                    str_val = va_arg(vl,char*);
                     while(*str_val != '\0')
                         *(str++) = *(str_val++);
                     break;
                 case 'n':
-                    // FIXME: use macros
-                    // va_arg(vl,int*);
-                    intp_val = *vl; vl+=sizeof(int*);
+                    intp_val = va_arg(vl,int*);
                     // TODO needs casting :)
                     //*intp_val = str - str_start;
                     break;
@@ -264,6 +254,5 @@ int sprintf ( char * str, const char * format, ... )
         }
     }
     
-    // FIXME use macros
-    // va_end(vl);
+    va_end(vl);
 }
