@@ -25,6 +25,8 @@ add_library(libdcpu-ci-lang-c STATIC
     nodes/NBlock.h
     nodes/NBreakStatement.cpp
     nodes/NBreakStatement.h
+    nodes/NBuiltInVaStart.cpp
+    nodes/NBuiltInVaStart.h
     nodes/NCaseStatement.cpp
     nodes/NCaseStatement.h
     nodes/NCharacter.cpp

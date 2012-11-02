@@ -51,7 +51,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
     // check if the called function matches the signature size of this
     // method call
-    if (this->arguments.size() != funcsig->arguments.size())
+    if (!(funcsig->callerSignatureMatching(this->arguments)))
     {
         throw new CompilerException(this->line, this->file,
                                     "Unable to find function\n"
@@ -72,6 +72,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
     // TODO make it depend on the typePosition somehow
     //  this here has to be exactly reverse to the order in the
     //  parameter stack frame and thus the TypePosition
+    uint16_t callerVarArgsStackSize = 0;
     for (int i = this->arguments.size() - 1; i >= 0; --i)
     {
         // Compile the expression.
@@ -82,28 +83,39 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
         IType* instType = this->arguments[i]->getExpressionType(context);
 
         // check types and cast implicitly
-        IType* parameterType = funcsig->arguments[i]->type;
-        if (instType->implicitCastable(context, parameterType))
+        if ((!funcsig->varArgs) || i < funcsig->arguments.size())
         {
-            // do cast
-            *block << *(instType->implicitCast(context, parameterType, 'A'));
+            IType* parameterType = funcsig->arguments[i]->type;
+            if (instType->implicitCastable(context, parameterType))
+            {
+                // do cast
+                *block << *(instType->implicitCast(context, parameterType, 'A'));
+            }
+            else
+            {
+                throw new CompilerException(this->line, this->file,
+                                            "Unable to find function\n"
+                                            "with singature:                 "
+                                            + this->id.name + this->calculateSignature(context)
+                                            + "\n"
+                                            + "Candidates are:               "
+                                            + this->id.name + funcsig->getSignature());
+            }
+            // Push the result onto the stack.
+            *block << *(parameterType->pushStack(context, 'A'));
         }
         else
         {
-            throw new CompilerException(this->line, this->file,
-                                        "Unable to find function\n"
-                                        "with singature:                 "
-                                        + this->id.name + this->calculateSignature(context)
-                                        + "\n"
-                                        + "Candidates are:               "
-                                        + this->id.name + funcsig->getSignature());
+            *block << *(instType->pushStack(context, 'A'));
+            // count the words if this is a var-arg argument
+            callerVarArgsStackSize += instType->getWordSize(context);
         }
-
-        // Push the result onto the stack.
-        *block << *(parameterType->pushStack(context, 'A'));
     }
 
     // Initialize the stack for this method.
+    
+    // * FIXME do we really still need this??
+    /*
     if (isDirect)
     {
         *block <<  "    SET X, cfunc_" << this->id.name << std::endl;
@@ -116,8 +128,11 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
         *block <<  "    SET X, [X]" << std::endl;
         *block <<  "    ADD X, 2" << std::endl;
     }
-
     *block <<  "    SET X, [X]" << std::endl;
+    */
+    
+    
+    
     *block <<  "    SET Z, " << jmpback << std::endl;
     *block <<  "    JSR _stack_caller_init_overlap" << std::endl;
 
@@ -142,7 +157,22 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
     }
 
     *block <<  ":" << jmpback << std::endl;
-
+    
+    if (funcsig->varArgs && callerVarArgsStackSize > 0)
+    {
+        // in case of variable arguments:
+        // pop the additional stack elements from the stack
+        if (context.isAssemblerDebug())
+        {
+            // TODO set all poped stack elements to 0
+            *block <<  "    ADD SP, " << callerVarArgsStackSize << std::endl;
+        }
+        else
+        {
+            *block <<  "    ADD SP, " << callerVarArgsStackSize << std::endl;
+        }
+    }
+    
     // Clean up frame.
     context.finishStackFrame(frame);
 
