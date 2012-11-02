@@ -57,6 +57,8 @@ ERR_PP_C_LINE_PARAMETERS_INCORRECT                   pp-c-line-parameters-incorr
 ERR_PP_C_DEFINE_PARAMETERS_INCORRECT                 pp-c-define-parameters-incorrect       "incorrect parameters for #define near %s."
 ERR_PP_C_INCLUDE_PARAMETERS_INCORRECT                pp-c-include-parameters-incorrect      "incorrect parameters for #include near %s."
 ERR_PP_C_IF_PARAMETERS_INCORRECT                     pp-c-if-parameters-incorrect           "incorrect parameters for #if near %s."
+ERR_PP_C_IFDEF_PARAMETERS_INCORRECT                  pp-c-ifdef-parameters-incorrect        "incorrect parameters for #ifdef near %s."
+ERR_PP_C_IFNDEF_PARAMETERS_INCORRECT                 pp-c-ifndef-parameters-incorrect       "incorrect parameters for #ifndef near %s."
 ERR_PP_C_INCLUDE_FILE_NOT_FOUND                      pp-c-include-file-not-found            "file not found for #include parameter near %s."
 
 ERR_PP_DEFINE_NOT_FOUND                              pp-define-not-found                    "definition referenced in expression not found near %s."

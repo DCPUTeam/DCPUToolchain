@@ -59,6 +59,59 @@ static void if_handle(state_t* state, match_t* match, bool* reprocess)
     ppparam_free(result);
 }
 
+static void ifdef_general_handle(bool exists, state_t* state, match_t* match, bool* reprocess)
+{
+    list_t* result = ppparam_get(state);
+    bstring word;
+    match_t* other;
+    bool success;
+    int i;
+
+    // Ensure the parameter format is correct.
+    if (list_size(result) == 1 &&
+            ((parameter_t*)list_get_at(result, 0))->type == WORD)
+    {
+        // Get the word.
+        word = ((parameter_t*)list_get_at(result, 0))->string;
+
+        // Attempt to find in the matches.
+        success = !exists;
+        for (i = 0; i < list_size(&state->handlers); i++)
+        {
+            other = list_get_at(&state->handlers, 0);
+            if (biseq(other->text.ref, word))
+            {
+                success = exists;
+                break;
+            }
+        }
+
+        if (success)
+            ppimpl_push_scope(state, true);
+        else
+            ppimpl_push_scope(state, false);
+    }
+    else
+    {
+        if (exists)
+            dhalt(ERR_PP_C_IFDEF_PARAMETERS_INCORRECT, ppimpl_get_location(state));
+        else
+            dhalt(ERR_PP_C_IFNDEF_PARAMETERS_INCORRECT, ppimpl_get_location(state));
+    }
+    
+    ppparam_free(result);
+}
+
+static void ifdef_handle(state_t* state, match_t* match, bool* reprocess)
+{
+    ifdef_general_handle(true, state, match, reprocess);
+}
+
+static void ifndef_handle(state_t* state, match_t* match, bool* reprocess)
+{
+    ifdef_general_handle(false, state, match, reprocess);
+}
+
 static void else_handle(state_t* state, match_t* match, bool* reprocess)
 {
     ppimpl_flip_scope(state);
@@ -75,6 +128,24 @@ void ppimpl_c_expr_register(state_t* state)
     match_t* match = malloc(sizeof(match_t));
     match->text = bautofree(bfromcstr("#if "));
     match->handler = if_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    ppimpl_register(state, match);
+
+    // Register #ifdef directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr("#ifdef "));
+    match->handler = ifdef_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    ppimpl_register(state, match);
+    
+    // Register #ifndef directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr("#ifndef "));
+    match->handler = ifndef_handle;
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;
