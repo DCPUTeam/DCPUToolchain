@@ -31,19 +31,26 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
             endif("${fext}" STREQUAL "${e}")
         endforeach(e ${ARGN})
         if(${extension_matches} STREQUAL "true")
+            set(asmwarningsilence -Wno-expression-not-adjusted)
+            set(cwarningsilence "")
+            if(${tool} STREQUAL "dtasm")
+                set(toolwarningsilence ${asmwarningsilence})
+            else(${tool} STREQUAL "dtcc")
+                set(toolwarningsilence ${cwarningsilence})
+            endif()
             if(${runasm} STREQUAL "true")
                 calculate_tool_path(${tool} main_path)
                 calculate_tool_path(dtasm asm_path)
                 add_custom_command(
                     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa
                     COMMAND ${main_path}
-                        ARGS ${toolargs} -I "${CMAKE_CURRENT_SOURCE_DIR}/include" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
+                        ARGS ${toolargs} ${toolwarningsilence} -I "${CMAKE_CURRENT_SOURCE_DIR}/include" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
                 add_custom_command(
                     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
                     COMMAND ${asm_path}
-                        ARGS -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
+                        ARGS ${asmwarningsilence} -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
                     DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
                     COMMENT "Assembling ${fpth}/${fbse}.oa with DCPU-Toolchain...")
                 if("${tout}" STREQUAL "")
@@ -57,7 +64,7 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
                 add_custom_command(
                     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
                     COMMAND ${main_path}
-                        ARGS ${toolargs} -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
+                        ARGS ${toolargs} ${toolwarningsilence} -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     DEPENDS ${tool} "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
                 if("${tout}" STREQUAL "")
