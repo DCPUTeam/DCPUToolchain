@@ -16,6 +16,7 @@
 #include <stdarg.h>
 #include "ppimpl.h"
 #include "directives/asm.h"
+#include "directives/c.h"
 
 ///
 /// Returns whether there is cached or provided input available.
@@ -411,6 +412,8 @@ void ppimpl_push_scope(state_t* state, bool active)
     scope->active = active;
     scope->start_index = list_size(&state->cached_output);
     list_append(&state->scopes, scope);
+    list_init(&scope->old_handlers);
+    list_init(&scope->new_handlers);
 }
 
 ///
@@ -425,19 +428,102 @@ void ppimpl_flip_scope(state_t* state)
 }
 
 ///
+/// Adds a handler inside a scope, dealing with overridding
+/// existing handlers.
+///
+void ppimpl_register(state_t* state, match_t* match)
+{
+    scope_t* scope;
+    match_t* other;
+    size_t a;
+
+    if (list_size(&state->scopes) == 0)
+    {
+        // Global registration.
+        list_append(&state->handlers, match);
+        return;
+    }
+    scope = list_extract_at(&state->scopes, list_size(&state->scopes) - 1);
+
+    // Check to see if this is already defined.
+    for (a = 0; a < list_size(&state->handlers); a++)
+    {
+        other = list_get_at(&state->handlers, a);
+        if (biseq(other->text.ref, match->text.ref))
+        {
+            // Collision; move the existing handler into
+            // the scope's "old_handlers" list.
+            list_append(&scope->old_handlers, other);
+            list_extract_at(&state->handlers, a);
+            a--;
+        }
+    }
+
+    // Append to handlers and add the name to the scope's
+    // new_handles so it can be cleared when the scope is
+    // popped.
+    list_append(&state->handlers, match);
+    list_append(&scope->new_handlers, bstrcpy(match->text.ref));
+}
+
+///
 /// Pops a scope from the stack.
 ///
 void ppimpl_pop_scope(state_t* state)
 {
+    scope_t* scope;
+    match_t* match;
+    match_t* old;
+    bstring name;
+    size_t a, i;
     if (list_size(&state->scopes) == 0)
         return;
-    scope_t* scope = list_extract_at(&state->scopes, list_size(&state->scopes) - 1);
+    scope = list_extract_at(&state->scopes, list_size(&state->scopes) - 1);
+
+    // Delete text if this scope was silenced.
     if (!scope->active)
     {
         list_delete_range(&state->cached_output,
                 scope->start_index,
                 list_size(&state->cached_output) - 1);
     }
+
+    // Delete handlers that were defined this scope.
+    list_iterator_start(&scope->new_handlers);
+    while (list_iterator_hasnext(&scope->new_handlers))
+    {
+        name = list_iterator_next(&scope->new_handlers);
+
+        for (i = 0; i < list_size(&state->handlers); i++)
+        {
+            old = list_get_at(&state->handlers, i);
+            if (biseq(name, old->text.ref))
+            {
+                // We need remove the old handler.
+                // FIXME: Free the old handler.
+                list_delete_at(&state->handlers, i);
+                i--;
+            }
+        }
+
+        bdestroy(name);
+    }
+    list_iterator_stop(&scope->new_handlers);
+    list_destroy(&scope->new_handlers);
+
+    // Restore handlers.
+    for (a = 0; a < list_size(&scope->old_handlers); a++)
+    {
+        match = list_get_at(&scope->old_handlers, a);
+
+        // Restore the old handler.
+        list_append(&state->handlers, match);
+        list_extract_at(&scope->old_handlers, a);
+        a--;
+    }
+    list_destroy(&scope->old_handlers);
+
+    // Free memory.
     free(scope);
 }
 
@@ -451,7 +537,7 @@ void ppimpl_pop_scope(state_t* state)
 ///
 /// Performs preprocessing.
 ///
-void ppimpl(has_t has_input, pop_t input, push_t output)
+void ppimpl(freed_bstring lang, has_t has_input, pop_t input, push_t output)
 {
     state_t state;
     list_init(&state.cached_input);
@@ -472,9 +558,20 @@ void ppimpl(has_t has_input, pop_t input, push_t output)
     state.default_filename = bfromcstr("<unknown>");
     state.in_single_string = false;
     state.in_double_string = false;
-    ppimpl_asm_line_register(&state);
-    ppimpl_asm_expr_register(&state);
-    ppimpl_asm_define_register(&state);
-    ppimpl_asm_include_register(&state);
+    if (biseqcstrcaseless(lang.ref, "asm"))
+    {
+        ppimpl_asm_line_register(&state);
+        ppimpl_asm_expr_register(&state);
+        ppimpl_asm_define_register(&state);
+        ppimpl_asm_include_register(&state);
+    }
+    else if (biseqcstrcaseless(lang.ref, "c"))
+    {
+        ppimpl_c_line_register(&state);
+        ppimpl_c_expr_register(&state);
+        ppimpl_c_define_register(&state);
+        ppimpl_c_include_register(&state);
+    }
     ppimpl_process(&state);
+    bautodestroy(lang);
 }

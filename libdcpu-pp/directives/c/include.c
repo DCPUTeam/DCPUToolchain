@@ -4,7 +4,7 @@
 #include <bstring.h>
 #include <bfile.h>
 #include <derr.h>
-#include "../asm.h"
+#include "../c.h"
 #include "../../ppfind.h"
 
 static void include_handle(state_t* state, match_t* match, bool* reprocess)
@@ -50,11 +50,11 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
     ppparam_free(result);
 }
 
-void ppimpl_asm_include_register(state_t* state)
+void ppimpl_c_include_register(state_t* state)
 {
     // Register .INCLUDE directive.
     match_t* match = malloc(sizeof(match_t));
-    match->text = bautofree(bfromcstr(".INCLUDE "));
+    match->text = bautofree(bfromcstr("#include "));
     match->handler = include_handle;
     match->userdata = NULL;
     match->line_start_only = true;

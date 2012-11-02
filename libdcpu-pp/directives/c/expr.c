@@ -4,7 +4,7 @@
 #include <bstring.h>
 #include <bfile.h>
 #include <derr.h>
-#include "../asm.h"
+#include "../c.h"
 
 static state_t* replace_state = NULL;
 
@@ -69,29 +69,29 @@ static void endif_handle(state_t* state, match_t* match, bool* reprocess)
     ppimpl_pop_scope(state);
 }
 
-void ppimpl_asm_expr_register(state_t* state)
+void ppimpl_c_expr_register(state_t* state)
 {
-    // Register .IF directive.
+    // Register #if directive.
     match_t* match = malloc(sizeof(match_t));
-    match->text = bautofree(bfromcstr(".IF"));
+    match->text = bautofree(bfromcstr("#if"));
     match->handler = if_handle;
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;
     ppimpl_register(state, match);
 
-    // Register .ELSE directive.
+    // Register #else directive.
     match = malloc(sizeof(match_t));
-    match->text = bautofree(bfromcstr(".ELSE"));
+    match->text = bautofree(bfromcstr("#else"));
     match->handler = else_handle;
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;
     ppimpl_register(state, match);
 
-    // Register .ENDIF directive.
+    // Register #endif directive.
     match = malloc(sizeof(match_t));
-    match->text = bautofree(bfromcstr(".ENDIF"));
+    match->text = bautofree(bfromcstr("#endif"));
     match->handler = endif_handle;
     match->userdata = NULL;
     match->line_start_only = true;

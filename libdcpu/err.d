@@ -49,3 +49,8 @@ ERR_PP_INCLUDE_FILE_NOT_FOUND                        pp-include-file-not-found  
 ERR_PP_IF_PARAMETERS_INCORRECT                       pp-if-parameters-incorrect             "incorrect parameters for .IF near %s."
 ERR_PP_DEFINE_NOT_FOUND                              pp-define-not-found                    "definition referenced in .IF expression not found near %s."
 ERR_PP_DEFINE_NOT_EXPRESSION                         pp-define-not-expression               "definition referenced in .IF expression not well formed expression near %s."
+ERR_PP_DEFINE_MACRO_MALFORMED                        pp-define-macro-malformed              "macro definition malformed near %s."
+ERR_PP_EXPECTED_OPEN_BRACKET                         pp-expected-open-bracket               "expected open bracket in usage of macro near %s."
+ERR_PP_NO_TERMINATING_BRACKET                        pp-no-terminating-bracket              "terminating bracket not found for macro usage near %s."
+ERR_PP_TOO_MANY_PARAMETERS                           pp-too-many-parameters                 "too many parameters for macro usage near %s."
+ERR_PP_NOT_ENOUGH_PARAMETERS                         pp-not-enough-parameters               "not enough parameters for macro usage near %s."

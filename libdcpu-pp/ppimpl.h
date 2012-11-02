@@ -27,6 +27,8 @@ typedef struct
 {
     bool active;
     size_t start_index;
+    list_t old_handlers;
+    list_t new_handlers;
 } scope_t;
 
 ///
@@ -85,6 +87,6 @@ bool ppimpl_isolates(char c, bool at_start);
 void ppimpl_push_scope(state_t* state, bool active);
 void ppimpl_flip_scope(state_t* state);
 void ppimpl_pop_scope(state_t* state);
-
+void ppimpl_register(state_t* state, match_t* match);
 
 #endif

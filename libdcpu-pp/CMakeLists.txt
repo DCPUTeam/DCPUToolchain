@@ -22,8 +22,12 @@ add_library(libdcpu-pp STATIC
     directives/asm/line.c
     directives/asm/include.c
     directives/asm/define.c
-    directives/asm/macro.c
     directives/asm/expr.c
+    directives/c.h
+    directives/c/line.c
+    directives/c/include.c
+    directives/c/define.c
+    directives/c/expr.c
 )
 auto_group(libdcpu-pp)
 include_directories(

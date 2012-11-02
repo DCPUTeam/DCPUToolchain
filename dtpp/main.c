@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     }
 
     printf("! terminates input.\n\n");
-    ppimpl(has_input, input, output);
+    ppimpl(bautofree(bfromcstr("asm")), has_input, input, output);
     getc(stdin);
     getc(stdin);
     return 0;
