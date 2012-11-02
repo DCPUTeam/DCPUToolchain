@@ -25,7 +25,7 @@ void eputs(const char* string, int x, int y)
 
 void eputxc(char chr, int x, int y, int modifier)
 {
-	int mem = 0x8000 + x + y * 32;
+	void* mem = 0x8000 + x + y * 32;
 	*mem = chr + modifier;
 }
 
