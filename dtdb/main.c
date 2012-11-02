@@ -112,6 +112,7 @@ int main(int argc, char** argv)
     isetmode(little_endian_mode->count == 0 ? IMODE_BIG : IMODE_LITTLE);
 
     // Register signal handler.
+    signal(SIGINT, ddbg_sigint);
     signal(SIGTERM, ddbg_sigint);
 
     // Initialize debugger.

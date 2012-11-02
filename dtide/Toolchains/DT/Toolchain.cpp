@@ -254,6 +254,7 @@ void DCPUToolchain::Step()
 void DCPUToolchain::Stop(DebuggingSession* session)
 {
     gl->killWidgets();
+    paused = true;
     stop_emulation();
 }
 

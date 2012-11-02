@@ -61,7 +61,7 @@ void vm_hw_m35fd_interrupt(vm_t* vm, void* ud)
                 hw->sector = vm->registers[REG_X];
                 hw->position = vm->registers[REG_Y];
 
-                vm_hw_m35fd_set_state(hw, M35FD_STATE_READING);
+                vm_hw_m35fd_set_state(hw, M35FD_STATE_BUSY);
                 vm->registers[REG_B] = 1;
             }
             else
@@ -78,7 +78,7 @@ void vm_hw_m35fd_interrupt(vm_t* vm, void* ud)
                 hw->sector = vm->registers[REG_X];
                 hw->position = vm->registers[REG_Y];
 
-                vm_hw_m35fd_set_state(hw, M35FD_STATE_WRITING);
+                vm_hw_m35fd_set_state(hw, M35FD_STATE_BUSY);
                 vm->registers[REG_B] = 1;
             }
             else
@@ -179,7 +179,7 @@ void vm_hw_m35fd_init(vm_t* vm)
 
     hw->vm = vm;
 
-    hw->device.id = 0x12345678;
+    hw->device.id = 0x4fd524c5;
     hw->device.version = 0x000b;
     hw->device.manufacturer = 0x1eb37e91;
     hw->device.handler = &vm_hw_m35fd_interrupt;

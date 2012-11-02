@@ -11,23 +11,22 @@ SET PC, _kern_start
 :_locate_device
 	SET PUSH, A
 	SET PUSH, B
-	SET I, 0 ; I is the hardware number being checke
+	HWN I ; I is the hardware number being checke
 	:_locate_enum
-		IFE I, 0xFFFF
+		SUB I, 1
+		IFE I, 0xffff
 			SET PC, _locate_none_found
 		SET J, SP
 	:_hw_searchloop ; Compare the hwq'd information to the requested device
 		HWQ I ; Get hardware info for this device
 		IFN A, [J] ; compare it to the current driver's ID
-			SET PC, _hw_searchloop_continue
+			SET PC, _locate_enum
 	:_hw_searchloop_a_e
 		IFE B, [J + 1]
 			SET PC, _locate_found
-		SET PC, _hw_searchloop_continue
-	:_hw_searchloop_continue
-		ADD I, 1
-		SET PC, _hw_searchloop
+		SET PC, _locate_enum
 	:_locate_none_found
+        ADD SP, 2
 		SET A, 0
 		SET PC, POP
 	:_locate_found

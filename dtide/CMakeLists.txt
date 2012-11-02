@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 project(dtide)
 
+find_package(QScintilla)
 find_package(OpenGL REQUIRED)
 find_package(Qt4)
-if(${QT4_FOUND})
+if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
     set(dtide_SOURCES 
         main.cpp 
         Backends.cpp
@@ -13,10 +14,10 @@ if(${QT4_FOUND})
         DTIDEBuildAPI.cpp
         DTIDEHighlighting.cpp
         DTIDEDebuggingSession.cpp
-        DTIDERegisters.cpp
+        DTIDEDebuggingWindow.cpp
         DTIDEGLWidgets.cpp
         CodeEditor.cpp
-        Highlighters/DCPUHighlighter.cpp
+        Highlighters/QsciLexerDASM16.cpp
         Toolchains/DT/Toolchain.cpp
         Toolchains/DT/dtasm.c
         Toolchains/DT/dtemu.c
@@ -29,11 +30,11 @@ if(${QT4_FOUND})
         DTIDEBuildAPI.h
         DTIDEHighlighting.h
         DTIDEDebuggingSession.h
-        DTIDERegisters.h
+        DTIDEDebuggingWindow.h
         DTIDEGLWidgets.h
         CodeEditor.h
         Highlighters/Highlighters.h
-        Highlighters/DCPUHighlighter.h
+        Highlighters/QsciLexerDASM16.h
         Toolchains/Toolchains.h
         Toolchains/DT/Toolchain.h
         Toolchains/DT/dtasm.h
@@ -67,6 +68,7 @@ if(${QT4_FOUND})
         ${CMAKE_CURRENT_BINARY_DIR}
         ${GLFW_SOURCE_DIR}/include
         ${png_SOURCE_DIR}
+        ${QSCINTILLA_INCLUDE_DIR} 
     )
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
@@ -87,8 +89,13 @@ if(${QT4_FOUND})
         glfw
         ${GLFW_LIBRARIES}
         ${OPENGL_LIBRARIES}
+        ${QSCINTILLA_LIBRARY}
     )
 else()
-    message("Not building IDE due to lack of Qt 4 libraries.")
+    if(NOT ${QT_FOUND})
+        message("Not building IDE due to lack of Qt 4 libraries.")
+    else()
+        message("Not building IDE due to lack of Qscintilla libraries.")
+    endif()
 endif()
 

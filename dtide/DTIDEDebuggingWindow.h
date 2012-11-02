@@ -1,18 +1,20 @@
 #ifndef DTIDEREGISTERS_H
 #define DTIDEREGISTERS_H
 
+#include <QDialog>
 #include <QWidget>
 #include <QDebug>
+#include <QCloseEvent>
 
 #include "Backends.h"
 #include "ui_registers.h"
 
-class DTIDERegisters: public QWidget, private Ui::registers
+class DTIDEDebuggingWindow: public QDialog, private Ui::registers
 {
     Q_OBJECT
 
 public:
-    DTIDERegisters(QWidget* parent = 0);
+    DTIDEDebuggingWindow(QWidget* parent = 0);
     QSize sizeHint();
 
 public slots:
@@ -22,6 +24,10 @@ signals:
     void start();
     void pause();
     void step();
+    void stop();
+
+protected:
+    virtual void closeEvent(QCloseEvent* e);
 };
 
 #endif

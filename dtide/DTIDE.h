@@ -15,7 +15,7 @@
 #include "Backends.h"
 #include "CodeEditor.h"
 #include "DTIDETabWidget.h"
-#include "DTIDERegisters.h"
+#include "DTIDEDebuggingWindow.h"
 #include "DTIDEDebuggingSession.h"
 #include "DTIDEGLWidgets.h"
 
@@ -55,7 +55,7 @@ private slots:
 
 private:
     DTIDETabWidget* tabs;
-    DTIDERegisters* registers;
+    DTIDEDebuggingWindow* debuggingWindow;
     DTIDEDebuggingSession* debuggingSession;
     DTIDEGLWidgets* glWidgets;
     QMenuBar* menu;
@@ -68,6 +68,8 @@ private:
     void setupActions();
     void setupSignals();
     void setupDockWidgets();
+
+    void showDebuggerWindow();
 };
 
 #endif

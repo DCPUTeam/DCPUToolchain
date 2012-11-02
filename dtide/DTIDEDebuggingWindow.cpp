@@ -1,19 +1,19 @@
-#include "DTIDERegisters.h"
+#include "DTIDEDebuggingWindow.h"
 
-DTIDERegisters::DTIDERegisters(QWidget* parent): QWidget(parent)
+DTIDEDebuggingWindow::DTIDEDebuggingWindow(QWidget* parent): QDialog(parent)
 {
     setupUi(this);
-    connect(btn_step, SIGNAL(clicked()), this, SIGNAL(step()));
-    connect(btn_run, SIGNAL(clicked()), this, SIGNAL(start()));
-    connect(btn_stop, SIGNAL(clicked()), this, SIGNAL(pause()));
+    connect(btn_step_into, SIGNAL(clicked()), this, SIGNAL(step()));
+    connect(btn_resume, SIGNAL(clicked()), this, SIGNAL(start()));
+    connect(btn_pause, SIGNAL(clicked()), this, SIGNAL(pause()));
 }
 
-QSize DTIDERegisters::sizeHint()
+QSize DTIDEDebuggingWindow::sizeHint()
 {
     return QSize(400, 400);
 }
 
-void DTIDERegisters::setRegisters(StatusMessage m)
+void DTIDEDebuggingWindow::setRegisters(StatusMessage m)
 {
     QStringList registers;
     for (int i = 0; i < 8; i++)
@@ -37,4 +37,10 @@ void DTIDERegisters::setRegisters(StatusMessage m)
     reg_SP->setText(QString("0x%1").arg(m.sp, 4, 16, QChar('0')));
     reg_EX->setText(QString("0x%1").arg(m.ex, 4, 16, QChar('0')));
     reg_IA->setText(QString("0x%1").arg(m.ia, 4, 16, QChar('0')));
+}
+
+void DTIDEDebuggingWindow::closeEvent(QCloseEvent* e)
+{
+    e->accept();
+    emit stop();
 }

@@ -23,8 +23,8 @@
 #include <hwlua.h>
 #include <hw.h>
 
-static bool has_initialized_glfw3 = false;
-static vm_t* vm = NULL;
+bool has_initialized_glfw3 = false;
+vm_t* vm = NULL;
 
 vm_t* get_vm(void)
 {
@@ -147,9 +147,12 @@ void cycle_emulation()
 
 void stop_emulation()
 {
-    vm_hw_lua_free(vm);
-    vm_hw_free_all(vm);
-    vm_free(vm);
-    vm = NULL;
-    has_initialized_glfw3 = false;
+    if(vm)
+    {
+        vm_hw_lua_free(vm);
+        vm_hw_free_all(vm);
+        vm_free(vm);
+        vm = NULL;
+        has_initialized_glfw3 = false;
+    }
 }

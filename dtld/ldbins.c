@@ -52,7 +52,31 @@ void bin_print(const char* context, struct ldbin* bin)
     while (list_iterator_hasnext(&bin->words))
         printd(LEVEL_EVERYTHING,            "    0x%04X: 0x%04X\n", dk++, *(uint16_t*)list_iterator_next(&bin->words));
     list_iterator_stop(&bin->words);
-    if (bin->adjustment != NULL)
+    if (bin->provided != NULL && list_size(bin->provided) != 0)
+    {
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    PROVIDED\n");
+        list_iterator_start(bin->provided);
+        while (list_iterator_hasnext(bin->provided))
+        {
+            entry = list_iterator_next(bin->provided);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+        }
+        list_iterator_stop(bin->provided);
+    }
+    if (bin->required != NULL && list_size(bin->required) != 0)
+    {
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    REQUIRED\n");
+        list_iterator_start(bin->required);
+        while (list_iterator_hasnext(bin->required))
+        {
+            entry = list_iterator_next(bin->required);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+        }
+        list_iterator_stop(bin->required);
+    }
+    if (bin->adjustment != NULL && list_size(bin->adjustment) != 0)
     {
         printd(LEVEL_EVERYTHING,            "    ------: ------\n");
         printd(LEVEL_EVERYTHING,            "    ADJUSTMENTS\n");
@@ -65,20 +89,55 @@ void bin_print(const char* context, struct ldbin* bin)
         }
         list_iterator_stop(bin->adjustment);
     }
-    if (bin->jump != NULL)
+    if (bin->section != NULL && list_size(bin->section) != 0)
     {
-        printd(LEVEL_EVERYTHING,            "    ------: ------\n");
-        printd(LEVEL_EVERYTHING,            "    JUMP TABLE\n");
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    SECTIONS\n");
+        list_iterator_start(bin->section);
+        while (list_iterator_hasnext(bin->section))
+        {
+            entry = list_iterator_next(bin->section);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+        }
+        list_iterator_stop(bin->section);
+    }
+    if (bin->output != NULL && list_size(bin->output) != 0)
+    {
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    OUTPUTS\n");
+        list_iterator_start(bin->output);
+        while (list_iterator_hasnext(bin->output))
+        {
+            entry = list_iterator_next(bin->output);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+        }
+        list_iterator_stop(bin->output);
+    }
+    if (bin->jump != NULL && list_size(bin->jump) != 0)
+    {
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    JUMP TABLE\n");
         list_iterator_start(bin->jump);
         while (list_iterator_hasnext(bin->jump))
         {
             entry = list_iterator_next(bin->jump);
-            assert(list_get_at(&bin->words, entry->address) != NULL);
-            printd(LEVEL_EVERYTHING,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
         }
         list_iterator_stop(bin->jump);
     }
-    printd(LEVEL_EVERYTHING,                "    ------: ------\n");
+    if (bin->optional != NULL && list_size(bin->optional) != 0)
+    {
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    OPTIONALS\n");
+        list_iterator_start(bin->optional);
+        while (list_iterator_hasnext(bin->optional))
+        {
+            entry = list_iterator_next(bin->optional);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+        }
+        list_iterator_stop(bin->optional);
+    }
+    printd(LEVEL_DEBUG,                "    ------: ------\n");
     if (bin->symbols != NULL)
     {
         list_iterator_start(bin->symbols);
@@ -106,7 +165,6 @@ int bin_seeker(const void* el, const void* indicator)
 ///
 void bins_init()
 {
-    ldbins.kernel = NULL;
     list_init(&ldbins.bins);
     list_attributes_seeker(&ldbins.bins, &bin_seeker);
 }
@@ -142,13 +200,6 @@ struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct 
     bin->symbols = dbgfmt_create_list();
     list_append(&ldbins.bins, bin);
     return bin;
-}
-
-void bins_set_kernel(struct lprov_entry* jump)
-{
-    if (ldbins.kernel != NULL)
-        lprov_free(ldbins.kernel);
-    ldbins.kernel = jump;
 }
 
 ///
@@ -256,19 +307,88 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
 }
 
 ///
-/// Loads a kernel bin from file.
+/// Loads a kernel from file.
 ///
-/// Adds a "<kernel>" bin by reading in a kernel object stored on disk and
-/// automatically handling loading bytes and linker information into
-/// the bin.
+/// Adds a "<kernel>" bin by reading in a kernel stored on disk.  The kernel
+/// file should *not* be an object file, but instead the raw data of the kernel.
+/// This function must be called before loading any other bins as it does not
+/// specially arrange the kernel bin to appear first in the list.
 ///
+/// @param jumplist The path to the jumplist.
 /// @param path The path to load the kernel from.
 /// @return Whether the kernel bin was loaded successfully.
 ///
-bool bins_load_kernel(freed_bstring path)
+bool bins_load_kernel(freed_bstring jumplist, freed_bstring kernel)
+{
+    uint16_t offset = 0, store;
+    struct lprov_entry* adjustment = NULL;
+    struct lprov_entry* jump = NULL;
+    struct lprov_entry* optional = NULL;
+    struct ldbin* bin;
+    FILE* jin;
+    FILE* kin;
+    char* test;
+
+    // Open the input file.
+    jin = fopen(jumplist.ref->data, "rb");
+    if (jin == NULL)
+        dhalt(ERR_CAN_NOT_OPEN_FILE, jumplist.ref->data);
+    kin = fopen(kernel.ref->data, "rb");
+    if (kin == NULL)
+        dhalt(ERR_CAN_NOT_OPEN_FILE, kernel.ref->data);
+
+    // Is the jumplist in the object format?
+    test = malloc(strlen(ldata_objfmt) + 1);
+    memset(test, 0, strlen(ldata_objfmt) + 1);
+    fread(test, 1, strlen(ldata_objfmt), jin);
+    fseek(jin, 1, SEEK_CUR);
+    if (strcmp(test, ldata_objfmt) != 0)
+        dhalt(ERR_OBJECT_VERSION_MISMATCH, jumplist.ref->data);
+    free(test);
+
+    // Load only the provided label entries into memory.
+    objfile_load("<kernel>", jin, &offset, NULL, NULL, &adjustment, NULL, NULL, &jump, &optional);
+
+    // Add the new bin.
+    bin = bins_add(bautofree(bfromcstr("<kernel>")), NULL, NULL, adjustment, NULL, NULL, jump, optional);
+
+    // Copy all of the input file's data into the output
+    // file, word by word.
+    while (true)
+    {
+        // Read a word into the bin.  The reason that
+        // we break inside the loop is that we are reading
+        // two bytes at a time and thus the EOF flag doesn't
+        // get set until we actually attempt to read past
+        // the end-of-file.  If we don't do this, we get a
+        // double read of the same data.
+        iread(&store, kin);
+        if (feof(kin))
+            break;
+        bin_write(bin, store);
+    }
+
+    // Close the files.
+    fclose(kin);
+    fclose(jin);
+
+    return true;
+}
+
+///
+/// Loads a jump list from file.
+///
+/// Loads the jumplist references from the specified object file and uses
+/// them for resolving labels not provided as part of the input objects.
+///
+/// @param path The path to the jumplist.
+/// @result Whether the jumplist was loaded successfully.
+///
+bool bins_load_jumplist(freed_bstring path)
 {
     uint16_t offset = 0;
     struct lprov_entry* jump = NULL;
+    struct ldbin* bin;
     FILE* in;
     char* test;
 
@@ -290,8 +410,8 @@ bool bins_load_kernel(freed_bstring path)
     // Load only the provided label entries into memory.
     objfile_load(path.ref->data, in, &offset, NULL, NULL, NULL, NULL, NULL, &jump, NULL);
 
-    // Set the new kernel jump list.
-    bins_set_kernel(jump);
+    // Add the new bin.
+    bin = bins_add(bautofree(bfromcstr("<jumplist>")), NULL, NULL, NULL, NULL, NULL, jump, NULL);
 
     // Close the file.
     fclose(in);
@@ -373,9 +493,13 @@ void bins_save(freed_bstring name, freed_bstring path, int target, bool keepOutp
             dhalt(ERR_CAN_NOT_WRITE_FILE, jumplistFilename);
         }
         fwrite(ldata_objfmt, 1, strlen(ldata_objfmt) + 1, jumplist);
+        adjustment = list_revert(bin->adjustment);
         jump = list_revert(bin->jump);
-        objfile_save(jumplist, NULL, NULL, NULL, NULL, NULL, jump, NULL);
+        optional = list_revert(bin->optional);
+        objfile_save(jumplist, NULL, NULL, adjustment, NULL, NULL, jump, optional);
         lprov_free(jump);
+        lprov_free(optional);
+        lprov_free(adjustment);
         fclose(jumplist);
     }
     else if (target == IMAGE_KERNEL)
@@ -819,8 +943,10 @@ int32_t bins_optimize(int target, int level)
 ///
 /// @param keepProvided Whether the provided label entries should be kept in the flattened
 ///         bin for re-exporting (for example in static libraries).
+/// @param allowMissing Allow required labels to not be resolved.
+/// @param keepOptional Do not resolve optional requirements and keep the linker entries.
 ///
-void bins_resolve(bool keepProvided, bool allowMissing)
+void bins_resolve(bool keepProvided, bool allowMissing, bool keepOptional)
 {
     struct lconv_entry* required;
     struct lconv_entry* provided;
@@ -850,6 +976,8 @@ void bins_resolve(bool keepProvided, bool allowMissing)
         {
             if (!allowMissing)
                 dhalt(ERR_LABEL_NOT_FOUND, required->label->data);
+            else
+                continue;
         }
         else if (provided != NULL && jump != NULL)
             dhalt(ERR_LABEL_AMBIGIOUS_PROVIDED_JUMP, required->label->data);
@@ -879,14 +1007,17 @@ void bins_resolve(bool keepProvided, bool allowMissing)
             // since it's an absolute reference.
         }
 
-        adjustment->bin = bfromcstr("");
-        bassign(adjustment->bin, bin->name);
-        adjustment->address = required->address;
-        if (bin->adjustment == NULL)
+        if (adjustment != NULL)
         {
-            list_init(bin->adjustment);
+            adjustment->bin = bfromcstr("");
+            bassign(adjustment->bin, bin->name);
+            adjustment->address = required->address;
+            if (bin->adjustment == NULL)
+            {
+                list_init(bin->adjustment);
+            }
+            list_append(bin->adjustment, adjustment);
         }
-        list_append(bin->adjustment, adjustment);
 
         if (provided != NULL)
             printd(LEVEL_DEBUG, "resolve: %s (0x%4X) -> 0x%4X\n", required->label->data, required->address, provided->address);
@@ -898,13 +1029,13 @@ void bins_resolve(bool keepProvided, bool allowMissing)
     // Delete all of the required entries.
     for (i = 0; i < list_size(bin->required); i++)
     {
-        required = list_extract_at(bin->required, i);
+        required = list_get_at(bin->required, i);
         provided = bin->provided == NULL ? NULL : list_seek(bin->provided, required->label);
         jump = bin->jump == NULL ? NULL : list_seek(bin->jump, required->label);
         if (provided == NULL && jump == NULL && allowMissing)
             continue;
         bdestroy(required->label);
-        free(required);
+        list_delete_at(bin->required, i);
         i--;
     }
 
@@ -917,13 +1048,24 @@ void bins_resolve(bool keepProvided, bool allowMissing)
         provided = bin->provided == NULL ? NULL : list_seek(bin->provided, optional->label);
         jump = bin->jump == NULL ? NULL : list_seek(bin->jump, optional->label);
 
+        // This optional entry could refer to an address that is
+        // not specified (for example in the case of a jumplist and
+        // kernel).
+        if (optional->address > list_size(&bin->words))
+            continue;
+
         // Handle the entry.
-        assert(required != NULL);
+        assert(optional != NULL);
         if (provided == NULL && jump == NULL)
         {
-            // Insert the optional code.
-            word = list_get_at(&bin->words, optional->address);
-            *word = 0x0000;
+            if (!allowMissing)
+            {
+                // Insert the optional code.
+                word = list_get_at(&bin->words, optional->address);
+                *word = 0x0000;
+            }
+            else
+                continue;
         }
         else if (provided != NULL && jump != NULL)
             dhalt(ERR_LABEL_AMBIGIOUS_PROVIDED_JUMP, optional->label->data);
@@ -953,14 +1095,17 @@ void bins_resolve(bool keepProvided, bool allowMissing)
             // since it's an absolute reference.
         }
 
-        adjustment->bin = bfromcstr("");
-        bassign(adjustment->bin, bin->name);
-        adjustment->address = optional->address;
-        if (bin->adjustment == NULL)
+        if (adjustment != NULL)
         {
-            list_init(bin->adjustment);
+            adjustment->bin = bfromcstr("");
+            bassign(adjustment->bin, bin->name);
+            adjustment->address = optional->address;
+            if (bin->adjustment == NULL)
+            {
+                list_init(bin->adjustment);
+            }
+            list_append(bin->adjustment, adjustment);
         }
-        list_append(bin->adjustment, adjustment);
 
         if (provided != NULL)
             printd(LEVEL_DEBUG, "resolve: %s (0x%4X) -> 0x%4X\n", optional->label->data, optional->address, provided->address);
@@ -971,17 +1116,20 @@ void bins_resolve(bool keepProvided, bool allowMissing)
     }
     list_iterator_stop(bin->optional);
 
-    // Delete all of the optional entries.
-    for (i = 0; i < list_size(bin->optional); i++)
+    if (!keepOptional)
     {
-        optional = list_extract_at(bin->optional, i);
-        provided = bin->provided == NULL ? NULL : list_seek(bin->provided, optional->label);
-        jump = bin->jump == NULL ? NULL : list_seek(bin->jump, optional->label);
-        if (provided == NULL && jump == NULL && allowMissing)
-            continue;
-        bdestroy(optional->label);
-        free(optional);
-        i--;
+        // Delete all of the optional entries.
+        for (i = 0; i < list_size(bin->optional); i++)
+        {
+            optional = list_get_at(bin->optional, i);
+            provided = bin->provided == NULL ? NULL : list_seek(bin->provided, optional->label);
+            jump = bin->jump == NULL ? NULL : list_seek(bin->jump, optional->label);
+            if (provided == NULL && jump == NULL && allowMissing)
+                continue;
+            bdestroy(optional->label);
+            list_delete_at(bin->optional, i);
+            i--;
+        }
     }
 
     if (!keepProvided)
@@ -1066,6 +1214,19 @@ uint16_t bins_compress()
                     for (j = 0; j < list_size(bin->required); j++)
                     {
                         entry = list_get_at(bin->required, j);
+                        if (i + 1 == entry->address)
+                        {
+                            apply = false;
+                            break;
+                        }
+                    }
+                }
+                if (bin->optional != NULL && apply)
+                {
+                    entry = NULL;
+                    for (j = 0; j < list_size(bin->optional); j++)
+                    {
+                        entry = list_get_at(bin->optional, j);
                         if (i + 1 == entry->address)
                         {
                             apply = false;

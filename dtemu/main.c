@@ -43,6 +43,9 @@
 #include <hwlua.h>
 #include <hw.h>
 
+// error handleing
+#include <derr.h>
+
 #include <glfwutils.h>
 
 void* dtemu_create_context(const char* title, int width, int height, bool resizeable, void* ud)
@@ -52,6 +55,9 @@ void* dtemu_create_context(const char* title, int width, int height, bool resize
     if (!resizeable)
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     *context = (GLFWwindow) glfwCreateWindow(width, height, GLFW_WINDOWED, title, NULL);
+    
+    if (*context == NULL)
+        dhalt(ERR_COULD_NOT_CREATE_OPENGL_CONTEXT, "glfwCreateWindow returned NULL.");
 
     glfwSetWindowUserPointer(*context, ud);
     glfwMakeContextCurrent(*context);

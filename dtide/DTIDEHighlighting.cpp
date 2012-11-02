@@ -1,11 +1,11 @@
 #include "DTIDEHighlighting.h"
 
-QSyntaxHighlighter* DTIDEHighlighting::getHighlighter(CodeSyntax syntax, QTextDocument* p)
+QsciLexer* DTIDEHighlighting::getHighlighter(CodeSyntax syntax, QObject* p)
 {
     switch (syntax)
     {
         case DCPUAssembly:
-            return new DCPUHighlighter(p);
+            return new QsciLexerDASM16(p);
         case Brainfuck:
             return NULL;
         case C:

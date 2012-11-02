@@ -283,6 +283,7 @@ void ddbg_interrupt_hook(vm_t* vm, uint16_t pos, void* ud)
 
 void ddbg_send_vm_state(vm_t* vm, uint16_t pos, void* ud)
 {
+#ifdef JDIEZ_IS_THIS_NEEDED
     FILE* output = (w == NULL) ? stderr : w;
 
     fprintf(output, "vm:%u:%u:%u:%u:%u:%u:%u:%u:%u:%u:%u:%u",
@@ -300,11 +301,13 @@ void ddbg_send_vm_state(vm_t* vm, uint16_t pos, void* ud)
             vm->ex);
 
     fflush(output);
+#endif
 }
 
 
 void ddbg_hardware_change_hook(vm_t* vm, uint16_t id, void* ud)
 {
+#ifdef JDIEZ_IS_THIS_NEEDED
     FILE* output = (w == NULL) ? stderr : w;
     hw_t device = vm_hw_get_device(vm, id);
 
@@ -338,6 +341,7 @@ void ddbg_hardware_change_hook(vm_t* vm, uint16_t id, void* ud)
 
 
     fflush(output);
+#endif
 }
 
 void ddbg_set(bstring object, bstring value)
