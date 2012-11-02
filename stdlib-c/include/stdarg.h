@@ -14,18 +14,21 @@
 #ifndef __STDLIB_STDARG_H
 #define __STDLIB_STDARG_H
 
-#define va_list unsigned int
+//#define va_list     void
+#define va_list void*
 
 
-// FIXME we need preprocessor macros for this to work :D
 
-//#define va_start(list,nparam)   __builtin_va_start(list)
+// use built-in va_start, needs access to function parameter stack
+#define va_start(list,nparam)   __builtin_va_start(list,nparam)
+
 
 // FIXME uncomment as soon as explicit casting is implemented
 //#define va_arg(list,type)       *((type)*) &(list); list+=sizeof(type)
-//#define va_arg(list,type)       list; list+=sizeof(type)
+#define va_arg(list,type)       *list; list+=sizeof(type)
+
 // va_end doesn't do anything at all
-//#define va_end(list)            
+#define va_end(list)            
 
 
 #endif

@@ -1,11 +1,12 @@
 /**
 
-    File:       NReturnStatement.h
+    File:           NReturnStatement.h
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes
+                    Patrick Flick
 
     Description:    Declares the NReturnStatement AST class.
 
@@ -20,8 +21,8 @@
 class NReturnStatement : public NStatement
 {
 public:
-    const NExpression& result;
-    NReturnStatement(const NExpression& result) :
+    NExpression* result;
+    NReturnStatement(NExpression* result) :
         result(result), NStatement("return") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
