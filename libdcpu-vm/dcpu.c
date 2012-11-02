@@ -1,18 +1,15 @@
-/**
-
-    File:       dcpu.c
-
-    Project:        DCPU-16 Tools
-    Component:      LibDCPU-vm
-
-    Authors:        James Rhodes
-            Patrick Flick
-            Jose Manuel Diez
-
-    Description:    Handles high-level operations performed
-            on the virtual machine (such as creation).
-
-**/
+///
+/// @addtogroup LibDCPU
+/// @{
+///
+/// @file
+/// @brief General functions and definitions used through-out the toolchain.
+/// @author James Rhodes
+/// @author Patrick Flick
+/// @author Jose Manuel Diez
+/// 
+/// This implements the supporting functions found in dcpu.h.
+///
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -27,6 +24,12 @@
 #include "hw.h"
 #include "timing.h"
 
+///
+/// @brief Initializes a new virtual machine structure.
+///
+/// @param vm The virtual machine structure to initialize.
+/// @param init_memory Whether to wipe the virtual machine's memory.
+///
 void vm_init(vm_t* vm, bool init_memory)
 {
     unsigned int i;
@@ -73,6 +76,12 @@ void vm_init(vm_t* vm, bool init_memory)
     return;
 }
 
+///
+/// @brief Allocates a new virtual machine in memory and initializes it.
+///
+/// @return The new virtual machine structure.  It must be later freed
+///         with vm_free().
+///
 vm_t* vm_create()
 {
     // Define variables.
@@ -87,12 +96,26 @@ vm_t* vm_create()
     return new_vm;
 }
 
+///
+/// @brief Frees a virtual machine structure from memory.
+///
+/// @param vm The virtual machine structure previously allocated with vm_create().
+///
 void vm_free(vm_t* vm)
 {
     // Free the memory.
     free(vm);
 }
 
+///
+/// @brief Flashes the virtual machine's memory.
+///
+/// Flashes the virtual machine's memory from the array of unsigned 16-bit
+/// integers.
+///
+/// @param vm The virtual machine whose memory should be flashed.
+/// @param memory The unsigned 16-bit integers to flash the memory with.
+///
 void vm_flash(vm_t* vm, uint16_t memory[0x10000])
 {
     // Flash the VM's memory from the specified array.
@@ -103,6 +126,21 @@ void vm_flash(vm_t* vm, uint16_t memory[0x10000])
         vm->ram[i] = memory[i];
 }
 
+///
+/// @brief Actively executes a virtual machine.
+///
+/// This high-level function actively executes a virtual machine, optionally
+/// dumping the virtual machine execution to file.  This function blocks until
+/// the virtual machine is halted or exited (caused by either an invalid opcode
+/// or debugger hooks).
+///
+/// This function does not return until that case, so be sure that you have set
+/// up an appropriate hook using the functions in dcpuhook.h if you wish to be
+/// able to stop or pause the virtual machine whenever desired.
+///
+/// @param vm The virtual machine to execute.
+/// @param execution_dump The filename to dump execution to, or NULL.
+///
 void vm_execute(vm_t* vm, const char* execution_dump)
 {
     struct vm_tod_timer freq_timer;
@@ -110,8 +148,6 @@ void vm_execute(vm_t* vm, const char* execution_dump)
     int cycle_count = 0;
     long long freq_cycle_count = 0;
     int sleep_mics = 0;
-
-
 
     if (execution_dump != NULL)
         vm->dump = fopen(execution_dump, "w");
@@ -149,10 +185,13 @@ void vm_execute(vm_t* vm, const char* execution_dump)
         }
     }
 
-
     if (vm->dump != NULL)
     {
         fclose(vm->dump);
         vm->dump = NULL;
     }
 }
+
+///
+/// @}
+///

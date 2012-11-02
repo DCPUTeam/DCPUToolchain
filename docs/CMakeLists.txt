@@ -35,30 +35,31 @@ if(SPHINX_EXECUTABLE)
     
     file(GLOB_RECURSE doc_sources ${CMAKE_CURRENT_SOURCE_DIR}/sources/*.rst)
 
-    if(TOOLCHAIN_ON_CYGWIN) 
-        add_custom_target(docs ALL
-            ${SPHINX_EXECUTABLE}
-            -q -b html
-            -c "_build"
-            -d "_doctrees"
-            "sources"
-            "html"
-            COMMENT "Building HTML documentation with Sphinx (in Cygwin, update shutil.py if errors)"
-            SOURCES ${doc_sources})
-    else(TOOLCHAIN_ON_CYGWIN)
-        add_custom_target(docs ALL
-            ${SPHINX_EXECUTABLE}
-            -q -b html
-            -c "${BINARY_BUILD_DIR}"
-            -d "${SPHINX_CACHE_DIR}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/sources"
-            "${SPHINX_HTML_DIR}"
-            COMMENT "Building HTML documentation with Sphinx"
-            SOURCES ${doc_sources})
-    endif(TOOLCHAIN_ON_CYGWIN)
+    add_custom_target(user-docs ALL
+        ${SPHINX_EXECUTABLE}
+        -q -b html
+        -c "${BINARY_BUILD_DIR}"
+        -d "${SPHINX_CACHE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/sources"
+        "${SPHINX_HTML_DIR}"
+        COMMENT "Generating HTML user documentation with Sphinx"
+        SOURCES ${doc_sources})
 
     source_group("Documentation" FILES ${doc_sources})
 
-else(SPHINX_EXECUTABLE)
-    message("Unable to find Sphinx, so documentation won't be created.")
-endif(SPHINX_EXECUTABLE)
+else()
+    message("Unable to find Sphinx, so user documentation won't be created.")
+endif()
+
+find_package(Doxygen)
+
+if(DOXYGEN_FOUND)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" @ONLY)
+    add_custom_target(api-docs ALL
+        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM
+    )
+endif()
+
