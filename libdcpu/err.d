@@ -64,3 +64,5 @@ ERR_PP_NO_TERMINATING_BRACKET                        pp-no-terminating-bracket  
 ERR_PP_TOO_MANY_PARAMETERS                           pp-too-many-parameters                 "too many parameters for macro usage near %s."
 ERR_PP_NOT_ENOUGH_PARAMETERS                         pp-not-enough-parameters               "not enough parameters for macro usage near %s."
 ERR_PP_LONG_FORM_MACRO_ONLY                          pp-long-form-macro-only                "short form macro not permitted in this language near %s."
+ERR_PP_COMPAT_OPEN_INPUT_FAILED                      pp-compat-open-input-failed            "opening the input file failed in the preprocessor."
+ERR_PP_COMPAT_OPEN_TEMP_FAILED                       pp-compat-open-temp-failed             "opening temporary output file failed in the preprocessor."

@@ -23,7 +23,7 @@
 #include <bfile.h>
 #include <iio.h>
 #include <osutil.h>
-#include <pp.h>
+#include <ppcompat.h>
 #include <ppfind.h>
 #include <version.h>
 #include <simclist.h>
@@ -138,7 +138,8 @@ int main(int argc, char* argv[])
     ppfind_add_autopath(bautofree(bfromcstr(input_file->filename[0])));
     for (i = 0; i < include_dirs->count; ++i)
         ppfind_add_path(bautofree(bfromcstr(include_dirs->filename[i])));
-    pp_result_name = pp_do(bautofree(bfromcstr(input_file->filename[0])));
+    pp_result_name = pp_do(bautofree(bfromcstr("asm")),
+            bautofree(bfromcstr(input_file->filename[0])));
 
     if (pp_result_name == NULL)
     {

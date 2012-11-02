@@ -73,7 +73,7 @@ void ppimpl_c_expr_register(state_t* state)
 {
     // Register #if directive.
     match_t* match = malloc(sizeof(match_t));
-    match->text = bautofree(bfromcstr("#if"));
+    match->text = bautofree(bfromcstr("#if "));
     match->handler = if_handle;
     match->userdata = NULL;
     match->line_start_only = true;

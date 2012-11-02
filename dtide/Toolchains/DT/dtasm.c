@@ -8,7 +8,7 @@
 #include <bfile.h>
 #include <iio.h>
 #include <osutil.h>
-#include <pp.h>
+#include <ppcompat.h>
 #include <ppfind.h>
 #include <version.h>
 #include <simclist.h>
@@ -38,7 +38,8 @@ bool perform_assemble(const char* input_filename,
     //for (i = 0; i < include_dirs->count; ++i)
     //  ppfind_add_path(bautofree(bfromcstr(include_dirs->filename[i])));
     // FIXME: Read from input rather than file.
-    pp_result_name = pp_do(bautofree(bfromcstr(input_filename)));
+    pp_result_name = pp_do(bautofree(bfromcstr("asm")),
+            bautofree(bfromcstr(input_filename)));
 
     if (pp_result_name == NULL)
     {

@@ -16,7 +16,6 @@
 #define __DCPU_LIBDCPUPP_H
 
 #include <dcpu.h>
-#include <simclist.h>
 #include <bstring.h>
 
 typedef bool(*has_t)();

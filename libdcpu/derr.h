@@ -34,8 +34,11 @@ struct warnpolicy
 
 // Variables
 extern jmp_buf __derrjmp;
+extern bool __derrset;
+#ifndef INTERNAL_DERR_REFERENCING
 extern const char* err_strings[];
 extern struct warnpolicy warnpolicies[];
+#endif
 
 // Structure for holding error information
 struct errinfo
@@ -45,7 +48,7 @@ struct errinfo
 };
 
 // Utility method for throwing errors.
-#define dsethalt() (setjmp(__derrjmp))
+#define dsethalt() ((__derrset = true), setjmp(__derrjmp))
 struct errinfo* derrinfo();
 void dhalt(int errid, const char* errdata);
 void dwarn(int errid, const char* errdata);

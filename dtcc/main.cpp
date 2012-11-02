@@ -27,10 +27,12 @@ extern "C"
 {
 #include <unistd.h>
 #include <version.h>
-#include <pp.h>
+#include <ppcompat.h>
 #include <ppfind.h>
 #include <debug.h>
 #include <osutil.h>
+#include <derr.h>
+#include <stdlib.h>
 }
 
 extern int yyparse();
@@ -39,6 +41,11 @@ extern NDeclarations* program;
 
 int main(int argc, char* argv[])
 {
+    const char* prepend = "error: ";
+    struct errinfo* errval;
+    int msglen;
+    char* msg;
+
     // Define arguments.
     struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
     struct arg_str* type_assembler = arg_str0("t", NULL, "<type>", "The type of assembler to output for.");
@@ -74,13 +81,34 @@ int main(int argc, char* argv[])
     // Set global path variable.
     osutil_setarg0(bautofree(bfromcstr(argv[0])));
 
+    // Set up error handling.
+    if (dsethalt())
+    {
+        errval = derrinfo();
+
+        // FIXME: Use bstrings here.
+        msglen = strlen(derrstr[errval->errid]) + strlen(prepend) + 1;
+        msg = (char*)malloc(msglen);
+        memset(msg, '\0', msglen);
+        strcat(msg, prepend);
+        strcat(msg, derrstr[errval->errid]);
+        printd(LEVEL_ERROR, msg, errval->errdata);
+
+        // Handle the error.
+        printd(LEVEL_ERROR, "compiler: error occurred.\n");
+
+        arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+        return 1;
+    }
+
     // Run the preprocessor.
     ppfind_add_path(bautofree(bfromcstr(".")));
     ppfind_add_path(bautofree(bfromcstr("include")));
     ppfind_add_autopath(bautofree(bfromcstr(input_file->filename[0])));
     for (int i = 0; i < include_dirs->count; ++i)
         ppfind_add_path(bautofree(bfromcstr(include_dirs->filename[i])));
-    bstring pp_result_name = pp_do(bautofree(bfromcstr(input_file->filename[0])));
+    bstring pp_result_name = pp_do(bautofree(bfromcstr("c")),
+            bautofree(bfromcstr(input_file->filename[0])));
 
     if (pp_result_name == NULL)
     {

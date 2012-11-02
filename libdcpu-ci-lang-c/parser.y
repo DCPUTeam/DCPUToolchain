@@ -900,6 +900,8 @@ type_base:
 
 void yyerror(const char *str)
 {
-	assert(yyfilename != NULL);
-	fprintf(stderr,"error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
+	if (yyfilename == NULL)
+	    fprintf(stderr,"error at line %i of '%s': %s\n", yylineno, "<unknown>", str);
+    else
+        fprintf(stderr,"error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
 }

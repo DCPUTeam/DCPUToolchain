@@ -39,8 +39,10 @@ extern bstring	yyfilename;
 // Error handling.
 void yyerror(const char *str)
 {
-	assert(yyfilename != NULL);
-	printd(LEVEL_ERROR, "error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
+    if (yyfilename == NULL)
+    	printd(LEVEL_ERROR, "error at line %i of '%s': %s\n", yylineno, "<unknown>", str);
+    else
+        printd(LEVEL_ERROR, "error at line %i of '%s': %s\n", yylineno, yyfilename->data, str);
 }
 
 // Filename tracking for language producing assembly.

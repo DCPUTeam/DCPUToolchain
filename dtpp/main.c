@@ -19,7 +19,8 @@ char next = '\0';
 
 bool has_input()
 {
-    return next != '!';
+    return !feof(stdin);
+    //return next != '!';
 }
 
 char input()

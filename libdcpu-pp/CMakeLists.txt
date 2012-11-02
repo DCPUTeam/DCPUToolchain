@@ -13,6 +13,8 @@ add_library(libdcpu-pp STATIC
     ppimpl.c
     ppfind.h
     ppfind.c
+    ppcompat.h
+    ppcompat.c
     ppparam.h
     ppparamlexer.l
     ppparamparser.y

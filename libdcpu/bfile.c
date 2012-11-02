@@ -101,6 +101,7 @@ int bfeof(BFILE* file)
 void bfclose(BFILE* file)
 {
     assert(file != NULL);
+    fflush(file->file);
     if (!file->wrapped)
         fclose(file->file);
     file->file = NULL;

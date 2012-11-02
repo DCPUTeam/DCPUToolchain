@@ -25,7 +25,8 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
 
         // If the path is in quotes, then find it relative to the local
         // directory.  Otherwise, if it's in angle brackets, search for it.
-        if (((parameter_t*)list_get_at(result, 0))->type == ANGLED_STRING)
+        if (((parameter_t*)list_get_at(result, 0))->type == ANGLED_STRING ||
+            ((parameter_t*)list_get_at(result, 0))->type == STRING)
             path = ppfind_locate(bautocpy(path));
 
         // Open the specified file.

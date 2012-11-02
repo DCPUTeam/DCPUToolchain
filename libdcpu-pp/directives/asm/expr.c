@@ -73,7 +73,7 @@ void ppimpl_asm_expr_register(state_t* state)
 {
     // Register .IF directive.
     match_t* match = malloc(sizeof(match_t));
-    match->text = bautofree(bfromcstr(".IF"));
+    match->text = bautofree(bfromcstr(".IF "));
     match->handler = if_handle;
     match->userdata = NULL;
     match->line_start_only = true;

@@ -13,6 +13,8 @@
 
 **/
 
+#define INTERNAL_DERR_REFERENCING
+
 #include <stdlib.h>
 #include <setjmp.h>
 #include <ppexpr.h>
@@ -23,6 +25,7 @@
 
 // Error definition
 jmp_buf __derrjmp;
+bool __derrset = false;
 struct errinfo* __derrcurrent = NULL;
 
 struct errinfo* derrinfo()
@@ -33,6 +36,20 @@ struct errinfo* derrinfo()
 // Utility method for throwing errors.
 void dhalt(int errid, const char* errdata)
 {
+    if (!__derrset)
+    {
+        fprintf(stderr, "FATAL: Error handler not set during halting operation!\n");
+        fprintf(stderr, "       This indicates a bug in the program using libdcpu.\n");
+        fprintf(stderr, "       All applications using libdcpu must use 'dsethalt'\n");
+        fprintf(stderr, "       to capture and respond to error messages.\n");
+        fprintf(stderr, "       Please report this to the application's maintainer.\n");
+        fprintf(stderr, "\n");
+        fprintf(stderr, "       The original error ID thrown by the toolchain was (%i).\n", errid);
+        fprintf(stderr, "\n");
+        exit(1);
+        return;
+    }
+
     __derrcurrent = malloc(sizeof(struct errinfo));
     __derrcurrent->errid = errid;
     __derrcurrent->errdata = errdata;

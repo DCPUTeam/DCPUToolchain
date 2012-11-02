@@ -350,7 +350,7 @@ void ppimpl_process(state_t* state)
     size_t i;
     scope_t* current;
 
-    while (state->has_input())
+    while (ppimpl_has_input(state))
     {
         // Fetch a character from the input.
         c = ppimpl_get_input(state);
