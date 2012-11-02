@@ -494,18 +494,20 @@ local_label_param:
         {
             bstring result = bstrcpy(curr_label);
             bstring clean = bstrcpy(bfromcstr($1));
+
+            struct ast_node_address* address = malloc(sizeof(struct ast_node_address));
+            $$ = malloc(sizeof(struct ast_node_parameter));
+            
             bfindreplace(clean, bfromcstr(" "), bfromcstr(""), 0);
             clean = bmidstr(clean, 2, clean->slen);
             bconcat(result, bfromcstr("_"));
             bconcat(result, clean);
 
-            struct ast_node_address* address = malloc(sizeof(struct ast_node_address));
             address->value = expr_new_label(bautofree(result));
             address->bracketed = 0;
             address->added = 0;
             address->addcmpt = NULL;
 
-            $$ = malloc(sizeof(struct ast_node_parameter));
             $$->type = type_address;
             $$->registr = NULL;
             $$->address = address;
