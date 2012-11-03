@@ -403,59 +403,52 @@ type:
         {
             $$ = $<type>1;
         } |
-        CONST type
+        /* give the const modifiers maximum precedence */
+        CONST type %prec DOT
         {
             $$ = $2;
             $$->setConst();
         } |
-        type CONST
+        type CONST %prec DOT
         {
             $$ = $1;
             $$->setConst();
         } |
-        SIGNED type
+        SIGNED type %prec DOT
         {
             $$ = $2;
             $$->setSigned(true);
         } |
-        type SIGNED
+        type SIGNED %prec DOT
         {
             $$ = $1;
             $$->setSigned(true);
         } |
-        UNSIGNED type
+        UNSIGNED type %prec DOT
         {
             $$ = $2;
             $$->setSigned(false);
         } |
-        type UNSIGNED
+        type UNSIGNED %prec DOT
         {
             $$ = $1;
             $$->setSigned(false);
         } |
-        STRUCT ident
+        STRUCT ident %prec DOT
         {
             $$ = new TStruct($<ident>2->name);
             delete $2;
         } |
-        /*
-        type_base STAR %prec IREF
-        {
-            $$ = new TPointer16($<type>1);
-        } |
-        STRUCT ident STAR %prec IREF
-        {
-            $$ = new TPointer16(new TStruct($<ident>2->name));
-            delete $2;
-        } |
-        */
+        
+        // give the pointer types minimum precedence, so the const is
+        // applied to the correct level
         // pointer to type
-        type STAR %prec IREF
+        type STAR %prec COMMA
         {
             $$ = new TPointer16($<type>1);
         } |
         // const pointer to type
-        type STAR CONST %prec IREF
+        type STAR CONST %prec COMMA
         {
             $$ = new TPointer16($<type>1);
             $$->setConst();

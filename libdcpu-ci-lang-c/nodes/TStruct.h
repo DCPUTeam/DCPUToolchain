@@ -68,7 +68,7 @@ public:
     size_t getBitSize();
 
     // a struct is context dependent
-    TStruct(const std::string& name) : m_name(name), m_resolvedStruct(NULL), m_context(NULL) { }
+    TStruct(const std::string& name) : m_name(name), m_resolvedStruct(NULL), m_context(NULL), m_isConst(false), m_isSigned(false) { }
 
     void initContext(AsmGenerator& context);
 

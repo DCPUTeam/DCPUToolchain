@@ -90,6 +90,10 @@ IType* NBinaryOperator::getExpressionType(AsmGenerator& context)
     // A binary operator has the common (promoted) type of it's expressions.
     IType* lType = this->lhs.getExpressionType(context);
     IType* rType = this->rhs.getExpressionType(context);
-
-    return TGenericBasicType::promoteTypes(lType, rType);
+    if (lType->isPointer())
+        return lType;
+    else if (rType->isPointer())
+        return rType;
+    else
+        return TGenericBasicType::promoteTypes(lType, rType);
 }

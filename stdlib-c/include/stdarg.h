@@ -14,18 +14,15 @@
 #ifndef __STDLIB_STDARG_H
 #define __STDLIB_STDARG_H
 
-//#define va_list     void
+// some pp bug, i need to do this twice, otherwise the va_list doesn't get replaced in other files
 #define va_list void*
-
-
 
 // use built-in va_start, needs access to function parameter stack
 #define va_start(list,nparam)   __builtin_va_start(list,nparam)
 
-
-// FIXME uncomment as soon as explicit casting is implemented
-//#define va_arg(list,type)       *((type)*) &(list); list+=sizeof(type)
-#define va_arg(list,type)       *list; list+=sizeof(type)
+// cast the void* to pointer to wanted type and deref, then increase
+// va list pointer
+#define va_arg(list,type)       *((type *) list); list+=sizeof(type)
 
 // va_end doesn't do anything at all
 #define va_end(list)            

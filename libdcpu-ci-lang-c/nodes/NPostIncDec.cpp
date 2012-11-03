@@ -41,6 +41,13 @@ AsmBlock* NPostIncDec::compile(AsmGenerator& context)
                                     "Invalid operand to post increase/decrease operation. (have '"
                                     + exprType->getName() + "')");
     }
+    
+    // check whether this tries to modify a const variable
+    if (exprType->isConst())
+    {
+        throw new CompilerException(this->line, this->file,
+                                    "Error: increase/decrease of read-only variable");
+    }
 
     *block <<   "   SET B, A" << std::endl;
     // return old value in A

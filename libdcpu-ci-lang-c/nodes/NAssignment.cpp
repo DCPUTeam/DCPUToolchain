@@ -1,11 +1,12 @@
 /**
 
-    File:       NAssignment.cpp
+    File:           NAssignment.cpp
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes
+                    Patrick Flick
 
     Description:    Defines the NAssignment AST class.
 
@@ -19,6 +20,7 @@
 #include <CompilerException.h>
 #include "parser.hpp"
 #include "NAssignment.h"
+#include "NIdentifier.h"
 
 AsmBlock* NAssignment::compile(AsmGenerator& context)
 {
@@ -34,6 +36,13 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 
     // get lhs type
     IType* lhsType = this->lhs.getExpressionType(context);
+    
+    // check whether this tries to write a const variable
+    if(lhsType->isConst())
+    {
+        throw new CompilerException(this->line, this->file,
+                                    "Error: assignment of read-only variable");
+    }
 
     // push memory address
     *block <<   "   SET PUSH, A" << std::endl;

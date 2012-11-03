@@ -33,7 +33,7 @@ private:
 public:
     /* inherit copy, ref, push, pop, and compare ops from Uint16 */
 
-    TPointer16(IType* pointingTo) : m_pointingTo(pointingTo) { }
+    TPointer16(IType* pointingTo) : m_pointingTo(pointingTo), m_isConst(false), m_isSigned(false) { }
 
     IType* getPointerBaseType();
 
