@@ -188,7 +188,7 @@ void DCPUToolchain::Start(std::string path, DebuggingSession* session)
     // Tell the emulator to start.
     debuggingSession = session;
     paused = false;
-    start_emulation(
+    vm_t* vm = start_emulation(
         /* Binary path */
         path.c_str(),
 
@@ -207,6 +207,16 @@ void DCPUToolchain::Start(std::string path, DebuggingSession* session)
         &DCPUToolchain_GetUD,
 
         static_cast<void*>(this));
+    
+    DebuggingMessage m;
+    MemoryDumpMessage payload;
+
+    payload.data = vm->ram;
+
+    m.type = MemoryDumpType;
+    m.value = (MessageValue&) payload;
+
+    debuggingSession->AddMessage(m);
 }
 
 void DCPUToolchain::AddStatusMessage(vm_t* vm)

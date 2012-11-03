@@ -7,14 +7,15 @@ DTIDEDebuggingWindow::DTIDEDebuggingWindow(QWidget* parent): QDialog(parent)
     connect(btn_resume, SIGNAL(clicked()), this, SIGNAL(start()));
     connect(btn_pause, SIGNAL(clicked()), this, SIGNAL(pause()));
 
-    data = new QByteArray();
-    buffer = new QBuffer(data);
-    buffer->open(QIODevice::ReadWrite);
+    initializeBuffer();
 
     memoryView->setWordWidth(2);
-    memoryView->setData(QSharedPointer<QBuffer>(buffer));
     memoryView->setShowAsciiDump(false);
     memoryView->setRowWidth(5);
+
+/*
+    QByteArray* newBuffer = new QByteArray("Derp");
+    data = newBuffer; */
 }
 
 QSize DTIDEDebuggingWindow::sizeHint()
@@ -52,4 +53,28 @@ void DTIDEDebuggingWindow::closeEvent(QCloseEvent* e)
 {
     e->accept();
     emit stop();
+}
+
+void DTIDEDebuggingWindow::setMemoryData(QByteArray* bytes)
+{
+    initializeBuffer();
+    QSharedPointer<QBuffer> buff_ptr(buffer);
+
+    buffer->close();
+    buffer->setBuffer(bytes);
+    buffer->open(QIODevice::ReadWrite);
+
+    memoryView->setData(buff_ptr);
+}
+
+void DTIDEDebuggingWindow::initializeBuffer()
+{
+    if(!buffer_initialized)
+    {
+        data = new QByteArray();
+        buffer = new QBuffer(data);
+        buffer->open(QIODevice::ReadWrite);
+
+        buffer_initialized = true;
+    }
 }

@@ -11,7 +11,8 @@ enum MessageType
 {
     StatusType,
     HardwareType,
-    MemoryType
+    MemoryType,
+    MemoryDumpType,
 };
 
 class StatusMessage
@@ -36,11 +37,18 @@ public:
     uint16_t value;
 };
 
+class MemoryDumpMessage
+{
+public:
+    uint16_t* data;
+};
+
 union MessageValue
 {
     StatusMessage status;
     HardwareMessage hardware;
     MemoryMessage memory;
+    MemoryDumpMessage dump;
 };
 
 class DebuggingMessage
