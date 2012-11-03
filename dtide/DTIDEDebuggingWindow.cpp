@@ -6,6 +6,15 @@ DTIDEDebuggingWindow::DTIDEDebuggingWindow(QWidget* parent): QDialog(parent)
     connect(btn_step_into, SIGNAL(clicked()), this, SIGNAL(step()));
     connect(btn_resume, SIGNAL(clicked()), this, SIGNAL(start()));
     connect(btn_pause, SIGNAL(clicked()), this, SIGNAL(pause()));
+
+    QByteArray* data = new QByteArray("lolwat this ftw");
+    QBuffer* buffer = new QBuffer(data);
+    buffer->open(QIODevice::ReadOnly);
+
+    memoryView->setWordWidth(2);
+    memoryView->setData(QSharedPointer<QBuffer>(buffer));
+    memoryView->setShowAsciiDump(false);
+    memoryView->setRowWidth(5);
 }
 
 QSize DTIDEDebuggingWindow::sizeHint()
