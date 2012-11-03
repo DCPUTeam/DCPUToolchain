@@ -22,3 +22,10 @@ target_link_libraries(dtcc
     libdcpu-ci-lang
 )
 cotire(dtcc)
+
+if(${DEPLOYABLE})
+    install(TARGETS dtcc
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+endif()

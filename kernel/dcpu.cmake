@@ -90,7 +90,7 @@ function(add_dcpu_image target)
         COMMAND ${main_path}
         ARGS -s "${CMAKE_CURRENT_BINARY_DIR}/${target}.dsym16" -O3 --symbol-extension="os"
             --keep-outputs -l kernel -o "${CMAKE_CURRENT_BINARY_DIR}/${target}.dkrn16"
-            -j "${CMAKE_CURRENT_BINARY_DIR}/${target}.djmp16" ${tasmoutputs} ${tcoutputs}
+            --jumplist "${CMAKE_CURRENT_BINARY_DIR}/${target}.djmp16" ${tasmoutputs} ${tcoutputs}
         DEPENDS dtld ${tasmoutputs} ${tcoutputs}
         COMMENT "Linking ${target}.dkrn16 as kernel with DCPU-Toolchain...")
 

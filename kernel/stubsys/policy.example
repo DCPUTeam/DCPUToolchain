@@ -1,0 +1,60 @@
+defaults:
+    kernel=@KERNEL_FOLDER@/stubsys.dkrn16
+    jumplist=@KERNEL_FOLDER@/stubsys.djmp16
+    symbols=@KERNEL_FOLDER@/stubsys.dsym16
+
+# image is the .executable format. for applications that will
+# be loaded at runtime.  if this is not defined, the linker will
+# use .image-direct. instead.
+format(image):
+    # offset all references to be relative to 0x1000
+    offset 0x1000
+    # call upon image-direct to perform the rest
+    chain image-direct
+
+# image-direct is the .executable format. for applications that
+# are linked directly against the kernel.
+format(image-direct):
+    # write out the code (the linker has already
+    # attached the kernel)
+    write code
+
+# internal format that writes the adjustment entries.
+internal(write-adjustment):
+    # write out adjustment table
+    write total(adjustment)
+    for $i from 0 to total(adjustment)
+        write field(adjustment, $i, address)
+    endfor
+
+# internal format that writes the provided entries.
+internal(write-provided):
+    # write out provided table
+    write total(provided)
+    for $i from 0 to total(provided)
+        write field(provided, $i, label_size)
+        write field(provided, $i, label_text)
+        write field(provided, $i, address)
+    endfor
+
+# shared is a custom format supported by this kernel
+# in this case it.s a shared library, but we can make
+# any definition here.
+format(shared):
+    # write out magic header
+    write words(0x8A5F, 0x68FF)
+    # write out tables
+    chain write-adjustment
+    chain write-provided
+    # write out the code
+    chain image-direct
+
+# an example of defining a relocatable application
+format(relocatable):
+    # write out magic header
+    write words(0x1234, 0x5678)
+    # write out tables
+    chain write-adjustment
+    # write out the code
+    chain image-direct
+

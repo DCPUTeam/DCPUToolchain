@@ -948,13 +948,13 @@ int32_t bins_optimize(int target, int level)
 ///
 void bins_resolve(bool keepProvided, bool allowMissing, bool keepOptional)
 {
-    struct lconv_entry* required;
-    struct lconv_entry* provided;
-    struct lconv_entry* adjustment;
-    struct lconv_entry* jump;
-    struct lconv_entry* optional;
-    struct ldbin* bin;
-    uint16_t* word;
+    struct lconv_entry* required = NULL;
+    struct lconv_entry* provided = NULL;
+    struct lconv_entry* adjustment = NULL;
+    struct lconv_entry* jump = NULL;
+    struct lconv_entry* optional = NULL;
+    struct ldbin* bin = NULL;
+    uint16_t* word = NULL;
     size_t i;
 
     // Get the first bin.

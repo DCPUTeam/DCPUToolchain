@@ -1,0 +1,60 @@
+///
+/// @addtogroup LibDCPU
+/// @{
+///
+/// @file
+/// @brief Configuration file for deployable builds.
+/// @author James Rhodes
+/// 
+/// This headers provides path information for toolchain builds that have been
+/// made deployable.
+///
+
+#ifndef __DCPU_CONFIG_H
+#define __DCPU_CONFIG_H
+
+///
+/// The path to the modules directory, if TOOLCHAIN_MODULES is not set.
+///
+#cmakedefine DCPU_CONFIG_HAS_MODULE_PATH
+#ifdef DCPU_CONFIG_HAS_MODULE_PATH
+#define DCPU_CONFIG_MODULE_PATH "@DCPU_CONFIG_MODULE_PATH@"
+#endif
+
+///
+/// The path to the kernels directory.
+///
+#cmakedefine DCPU_CONFIG_HAS_KERNEL_PATH
+#ifdef DCPU_CONFIG_HAS_KERNEL_PATH
+#define DCPU_CONFIG_KERNEL_PATH "@DCPU_CONFIG_KERNEL_PATH@"
+#endif
+
+///
+/// The path to the directory that holds standard libraries for languages.
+///
+#cmakedefine DCPU_CONFIG_HAS_STDLIB_PATH
+#ifdef DCPU_CONFIG_HAS_STDLIB_PATH
+#define DCPU_CONFIG_STDLIB_PATH "@DCPU_CONFIG_STDLIB_PATH@"
+#endif
+
+///
+/// The default kernel to use when linking.
+///
+#cmakedefine DCPU_CONFIG_HAS_KERNEL_DEFAULT
+#ifdef DCPU_CONFIG_HAS_KERNEL_DEFAULT
+#define DCPU_CONFIG_KERNEL_DEFAULT "@DCPU_CONFIG_KERNEL_DEFAULT@"
+#endif
+
+///
+/// The current version of the toolchain.
+///
+#cmakedefine DCPU_CONFIG_HAS_VERSION_STAGE
+#cmakedefine DCPU_CONFIG_HAS_VERSION_GIT
+#ifdef DCPU_CONFIG_HAS_VERSION_STAGE
+#define DCPU_CONFIG_VERSION_STAGE "@DCPU_CONFIG_VERSION_STAGE@"
+#endif
+#ifdef DCPU_CONFIG_HAS_VERSION_GIT
+#define DCPU_CONFIG_VERSION_GIT "@DCPU_CONFIG_VERSION_GIT@"
+#endif
+
+#endif

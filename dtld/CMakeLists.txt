@@ -36,3 +36,11 @@ target_link_libraries(dtld
     libdcpu-ci-dbgfmt
 )
 cotire(dtld)
+
+if(${DEPLOYABLE})
+    install(TARGETS dtld
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+endif()
+

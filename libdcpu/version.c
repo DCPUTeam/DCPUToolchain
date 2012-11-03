@@ -16,19 +16,19 @@
 #include "debug.h"
 #include "bstring.h"
 #include "version.h"
-
-#define QUOTE(str) #str
-#define EXPAND_AND_QUOTE(str) QUOTE(str)
-#define STRING_VERSION_GIT EXPAND_AND_QUOTE(VERSION_GIT)
-#define STRING_VERSION_STAGE EXPAND_AND_QUOTE(VERSION_STAGE)
+#include "config.h"
 
 bstring version_get()
 {
-#ifdef VERSION_GIT
-    return bfromcstr(STRING_VERSION_STAGE "; version #" STRING_VERSION_GIT);
+#ifdef DCPU_CONFIG_HAS_VERSION_GIT
+#ifdef DCPU_CONFIG_HAS_VERSION_STAGE
+    return bfromcstr(DCPU_CONFIG_VERSION_STAGE "; version #" DCPU_CONFIG_VERSION_GIT);
 #else
-#ifdef VERSION_STAGE
-    return bfromcstr(STRING_VERSION_STAGE);
+    return bfromcstr("version #" DCPU_CONFIG_VERSION_GIT);
+#endif
+#else
+#ifdef DCPU_CONFIG_VERSION_STAGE
+    return bfromcstr(DCPU_CONFIG_VERSION_STAGE);
 #else
     return bfromcstr("unknown");
 #endif

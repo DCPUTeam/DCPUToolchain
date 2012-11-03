@@ -33,3 +33,10 @@ target_link_libraries(dtemu
     ${OPENGL_LIBRARIES}
 )
 cotire(dtemu)
+
+if(${DEPLOYABLE})
+    install(TARGETS dtemu
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+endif()

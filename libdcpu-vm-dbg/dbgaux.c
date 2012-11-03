@@ -37,9 +37,10 @@ uint16_t flash[0x10000];
 list_t breakpoints;
 list_t backtrace;
 list_t* symbols;
-extern vm_t* vm;
+vm_t* vm;
 int ddbg_return_code;
 bool ignore_next_breakpoint = false;
+struct dbg_state lstate;
 
 FILE* w;
 

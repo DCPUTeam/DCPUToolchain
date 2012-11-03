@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.5)
 project(stdlib-c)
 
 # Define the working directory for tools.
@@ -132,3 +132,26 @@ add_dcpu_image(stdlib-c
 
 # Copy standard library include files.
 file(COPY include DESTINATION ${CMAKE_CURRENT_BINARY_DIR} USE_SOURCE_PERMISSIONS)
+
+if(${DEPLOYABLE})
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/stdlib)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/c)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/stdlib
+        DESTINATION share/dcpu
+        DIRECTORY_PERMISSIONS
+            OWNER_READ GROUP_READ WORLD_READ
+            OWNER_WRITE GROUP_WRITE WORLD_WRITE
+            OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/c
+        DESTINATION share/dcpu/stdlib
+        DIRECTORY_PERMISSIONS
+            OWNER_READ GROUP_READ WORLD_READ
+            OWNER_WRITE GROUP_WRITE WORLD_WRITE
+            OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/stdlib.dlib16
+        ${CMAKE_CURRENT_BINARY_DIR}/stdlib.dsym16
+        DESTINATION
+        share/dcpu/stdlib/c)
+endif()

@@ -62,6 +62,7 @@ if(${QT4_FOUND})
         ${OPENGL_LIBRARIES}
         ${GLFW_LIBRARIES}
     )
+
 else()
     message("Not building GUI debugger due to lack of Qt 4 libraries.")
 endif()

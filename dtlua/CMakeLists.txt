@@ -17,3 +17,11 @@ target_link_libraries(dtlua
     libdcpu
 )
 cotire(dtlua)
+
+if(${DEPLOYABLE})
+    install(TARGETS dtlua
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+endif()
+

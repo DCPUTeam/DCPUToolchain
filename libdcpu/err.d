@@ -43,6 +43,7 @@ WARN_SKIPPING_SHORT_LITERALS_TYPE                    short-literals-skipped-type
 WARN_SKIPPING_SHORT_LITERALS_REQUEST                 short-literals-skipped-request         "skipping short literal compression on request."
 WARN_KERNEL_NOT_PROVIDING_JUMP_LIST                  jump-list-missing                      "kernel did not specify a position to output a jump list with .JUMP."
 WARN_KERNEL_JUMP_LIST_NOT_EXPORTED                   jump-list-not-exported                 "the jump list was not exported along with the kernel."
+WARN_ABSOLUTE_KERNEL_PATH                            absolute-kernel-path                   "specifying absolute kernel paths will be phased out when linker scripts are ready."
 
 ERR_PP_ASM_LINE_PARAMETERS_INCORRECT                 pp-asm-line-parameters-incorrect       "incorrect parameters for .LINE near %s."
 ERR_PP_ASM_ULINE_PARAMETERS_INCORRECT                pp-asm-uline-parameters-incorrect      "incorrect parameters for .ULINE near %s."

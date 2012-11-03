@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "osutil.h"
+#include "config.h"
 
 bstring osutil_arg0 = NULL;
 #ifdef _WIN32
@@ -158,12 +159,17 @@ bstring osutil_getarg0path()
 }
 
 ///
-/// Retrieves the directory that contains toolchain modules.
+/// @brief Retrieves the directory that contains toolchain modules.
 ///
 /// Retrieves the directory that contains toolchain modules based on the existance of the
-/// TOOLCHAIN_MODULES environment variable or defaulting to the modules/ folder in the
-/// same directory as the current application.  This requires osutil_setarg0 to have been
-/// previously called.
+/// TOOLCHAIN_MODULES environment variable or the default modules folder.
+///
+/// If this is a deployed build of the toolchain, the default module directory is based on the
+/// installation path of the toolchain.
+///
+/// If this is a non-deployed build of the toolchain (the default), the default module directory is
+/// the "modules/" folder relative to the location of the applcation.  This requires osutil_setarg0
+/// to have been previously called.
 ///
 /// @return The path of the directory holding toolchain modules.  The result must be freed manually.
 ///
@@ -178,25 +184,108 @@ bstring osutil_getmodulepath()
     char* env = getenv("TOOLCHAIN_MODULES");
     if (env == NULL)
     {
+#ifdef DCPU_CONFIG_HAS_MODULE_PATH
+        tmp = bfromcstr(DCPU_CONFIG_MODULE_PATH);
+#else
         tmp = osutil_getarg0path();
 #ifdef _WIN32
         bcatcstr(tmp, "\\modules");
 #else
         bcatcstr(tmp, "/modules");
 #endif
+#endif
     }
     else
         tmp = bfromcstr(env);
 
-    // Check if path exists.
+    // Locate the correct path.
     result = stat((const char*)tmp->data, &buffer);
-    if (result != 0 || (buffer.st_mode & S_IFDIR) == 0)
-    {
-        bdestroy(tmp);
-        return NULL;
-    }
-    else
+    if (result == 0 && (buffer.st_mode & S_IFDIR) != 0)
         return tmp;
+    binsertch(tmp, 0, 1, '.');
+    result = stat((const char*)tmp->data, &buffer);
+    if (result == 0 && (buffer.st_mode & S_IFDIR) != 0)
+        return tmp;
+    bdestroy(tmp);
+    return NULL;
+}
+
+///
+/// @brief Retrieves the directory that contains toolchain kernels.
+///
+/// Retrieves the directory that contains toolchain kernels or NULL if this is not a deployed
+/// build of the toolchain.
+///
+/// When this is a deployed build of the toolchain, the kernels directory is based on the
+/// installation path of the toolchain.
+///
+/// @return The path of the directory holding toolchain kernels.  The result must be freed manually.
+///
+bstring osutil_getkernelpath()
+{
+    bstring tmp;
+    int result;
+    struct stat buffer;
+#ifdef DCPU_CONFIG_HAS_KERNEL_PATH
+    // Locate the correct path.
+    tmp = bfromcstr(DCPU_CONFIG_KERNEL_PATH);
+    result = stat((const char*)tmp->data, &buffer);
+    if (result == 0 && (buffer.st_mode & S_IFDIR) != 0)
+        return tmp;
+    binsertch(tmp, 0, 1, '.');
+    result = stat((const char*)tmp->data, &buffer);
+    if (result == 0 && (buffer.st_mode & S_IFDIR) != 0)
+        return tmp;
+    bdestroy(tmp);
+    return NULL;
+#else
+    return NULL;
+#endif
+}
+
+///
+/// @brief Retrieves the directory that contains toolchain standard libraries.
+///
+/// Retrieves the directory that contains toolchain standard libraries or NULL if this is not a deployed
+/// build of the toolchain.
+///
+/// When this is a deployed build of the toolchain, the standard libraries directory is based on the
+/// installation path of the toolchain.
+///
+/// @return The path of the directory holding toolchain standard libraries.  The result must be freed manually.
+///
+bstring osutil_getstdlibpath()
+{
+    bstring tmp;
+    int result;
+    struct stat buffer;
+#ifdef DCPU_CONFIG_HAS_STDLIB_PATH
+    // Locate the correct path.
+    tmp = bfromcstr(DCPU_CONFIG_STDLIB_PATH);
+    result = stat((const char*)tmp->data, &buffer);
+    if (result == 0 && (buffer.st_mode & S_IFDIR) != 0)
+        return tmp;
+    binsertch(tmp, 0, 1, '.');
+    result = stat((const char*)tmp->data, &buffer);
+    if (result == 0 && (buffer.st_mode & S_IFDIR) != 0)
+        return tmp;
+    bdestroy(tmp);
+    return NULL;
+#else
+    return NULL;
+#endif
+}
+
+///
+/// @brief Returns the default kernel to use when linking.
+///
+const char* osutil_getkerneldefault()
+{
+#ifdef DCPU_CONFIG_HAS_KERNEL_DEFAULT
+    return DCPU_CONFIG_KERNEL_DEFAULT;
+#else
+    return "stubsys";
+#endif
 }
 
 ///

@@ -7,7 +7,7 @@ add_flex_bison_dependency(libdcpu-ci-lang-c-lexer libdcpu-ci-lang-c-parser)
 if(NOT MSVC AND NOT APPLE)
     set_source_files_properties(${FLEX_libdcpu-ci-lang-c-lexer_OUTPUTS} ${BISON_libdcpu-ci-lang-c-parser_OUTPUTS} PROPERTIES COMPILE_FLAGS -Wno-dangling-else)
 endif()
-add_library(libdcpu-ci-lang-c STATIC
+add_library(libdcpu-ci-lang-c ${LIBRARY_FORMAT}
     nodes/Lists.h
     nodes/NAddressOfOperator.cpp
     nodes/NAddressOfOperator.h
@@ -118,4 +118,17 @@ include_directories(
     ${libdcpu-ci-lang_SOURCE_DIR}
     ${FLEX_UNISTD_INCLUDE}
 )
+set_target_properties(libdcpu-ci-lang-c PROPERTIES PREFIX "")
 cotire(libdcpu-ci-lang-c)
+
+if(${DEPLOYABLE})
+    install(TARGETS libdcpu-ci-lang-c
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+    file(GLOB headers_nodes "${CMAKE_CURRENT_SOURCE_DIR}/nodes/*.h")
+    file(GLOB headers_gen "${CMAKE_CURRENT_BINARY_DIR}/*.hpp")
+    file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+    install(FILES ${headers} ${headers_gen} DESTINATION include/dcpu/ci/lang/c)
+    install(FILES ${headers_nodes} DESTINATION include/dcpu/ci/lang/c/nodes)
+endif()

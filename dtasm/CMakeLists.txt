@@ -22,3 +22,10 @@ target_link_libraries(dtasm
     libdcpu-ci-asm
 )
 cotire(dtasm)
+
+if(${DEPLOYABLE})
+    install(TARGETS dtasm
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+endif()

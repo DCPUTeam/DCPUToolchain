@@ -91,6 +91,13 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         ${OPENGL_LIBRARIES}
         ${QSCINTILLA_LIBRARY}
     )
+
+    if(${DEPLOYABLE})
+        install(TARGETS dtide
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib)
+    endif()
 else()
     if(NOT ${QT_FOUND})
         message("Not building IDE due to lack of Qt 4 libraries.")

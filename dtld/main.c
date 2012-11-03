@@ -38,6 +38,13 @@ int main(int argc, char* argv[])
     char* msg;
     int target;
 
+    // FIXME: Remove these when the policy system is implemented.
+    const char* policy_default;
+    bstring policy_base_path;
+    bstring policy_kernel_path;
+    bstring policy_jumplist_path;
+    bool policy_use_kernel = false;
+
     // Define arguments.
     struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
     struct arg_str* target_arg = arg_str0("l", "link-as", "target", "Link as the specified object, can be 'image', 'static' or 'kernel'.");
@@ -45,8 +52,9 @@ int main(int argc, char* argv[])
     struct arg_str* symbol_ext = arg_str0(NULL, "symbol-extension", "ext", "When -s is used, specifies the extension for symbol files.  Defaults to \"dsym16\".");
     struct arg_file* input_files = arg_filen(NULL, NULL, "<file>", 1, 100, "The input object files.");
     struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
-    struct arg_file* kernel_file = arg_file0("k", "kernel", "<file>", "Directly link in the specified kernel.");
-    struct arg_file* jumplist_file = arg_file0("j", "jumplist", "<file>", "Link against the specified jumplist.");
+    struct arg_str* kernel_name = arg_str0("k", "kernel", "<name>", "Target the specified kernel.");
+    struct arg_file* policy_file = arg_file0("p", "policy", "<file>", "Use the specified policy file instead of the kernel policy.");
+    struct arg_file* jumplist_file = arg_file0(NULL, "jumplist", "<file>", "The path to output the jumplist to (only used for building kernels.");
     struct arg_str* warning_policies = arg_strn("W", NULL, "policy", 0, _WARN_COUNT * 2 + 10, "Modify warning policies.");
     struct arg_lit* keep_output_arg = arg_lit0(NULL, "keep-outputs", "Keep the .OUTPUT entries in the final static library (used for stdlib).");
     struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
@@ -57,7 +65,7 @@ int main(int argc, char* argv[])
     struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
     struct arg_end* end = arg_end(20);
     void* argtable[] = { show_help, target_arg, keep_output_arg, little_endian_mode, opt_level, opt_mode, no_short_literals_arg,
-                         symbol_ext, symbol_file, kernel_file, jumplist_file, warning_policies, output_file, input_files, verbose, quiet, end
+                         symbol_ext, symbol_file, kernel_name, policy_file, jumplist_file, warning_policies, output_file, input_files, verbose, quiet, end
                        };
 
     // Parse arguments.
@@ -127,23 +135,74 @@ int main(int argc, char* argv[])
         }
     }
 
+    // Calculate what policies to use.
+    if (kernel_name->count == 0)
+        policy_default = osutil_getkerneldefault();
+    else
+        policy_default = kernel_name->sval[0];
+
+    // FIXME: When libdcpu-ld-policy is written, use that to parse
+    // policy files instead of defaulting like this.
+    policy_base_path = osutil_getkernelpath();
+    if (policy_base_path == NULL ||
+            (kernel_name->count > 0 && strcmp(kernel_name->sval[0], "none") == 0) ||
+            (kernel_name->count == 0 && target == IMAGE_KERNEL))
+    {
+        if (kernel_name->count > 0 && strcmp(kernel_name->sval[0], "none") != 0)
+        {
+            if (kernel_name->count > 0 && jumplist_file->count == 0)
+                dhalt(ERR_JUMPLIST_FILE_REQUIRED, NULL);
+
+            policy_use_kernel = true;
+            policy_kernel_path = bfromcstr(kernel_name->sval[0]);
+            policy_jumplist_path = bfromcstr(jumplist_file->filename[0]);
+            dwarn(WARN_ABSOLUTE_KERNEL_PATH, NULL);
+        }
+        else
+            policy_use_kernel = false;
+    }
+    else
+    {
+        policy_use_kernel = true;
+        policy_kernel_path = bstrcpy(policy_base_path);
+        bconchar(policy_kernel_path, '/');
+        bcatcstr(policy_kernel_path, policy_default);
+        bconchar(policy_kernel_path, '/');
+        bcatcstr(policy_kernel_path, policy_default);
+        bcatcstr(policy_kernel_path, ".dkrn16");
+        policy_jumplist_path = bstrcpy(policy_base_path);
+        bconchar(policy_jumplist_path, '/');
+        bcatcstr(policy_jumplist_path, policy_default);
+        bconchar(policy_jumplist_path, '/');
+        bcatcstr(policy_jumplist_path, policy_default);
+        bcatcstr(policy_jumplist_path, ".djmp16");
+    }
+
     // If the user wants to link against a kernel, they also need to
     // provide a jumplist.
-    if (kernel_file->count > 0 && target == IMAGE_KERNEL)
+    if (policy_use_kernel && target == IMAGE_KERNEL)
         dhalt(ERR_KERNEL_ARGUMENT_NOT_ALLOWED, NULL);
-    if (kernel_file->count > 0 && jumplist_file == 0)
-        dhalt(ERR_JUMPLIST_FILE_REQUIRED, NULL);
+    // FIXME: if (kernel_name->count > 0 && jumplist_file == 0)
+    // FIXME:    dhalt(ERR_JUMPLIST_FILE_REQUIRED, NULL);
+
+    if (policy_use_kernel)
+    {
+        printd(LEVEL_VERBOSE, "using kernel %s.\n", policy_kernel_path->data);
+        printd(LEVEL_VERBOSE, "using jumplist %s.\n", policy_jumplist_path->data);
+    }
+    else
+        printd(LEVEL_VERBOSE, "not using any kernel.\n");
 
     // Load all passed objects and use linker bin system to
     // produce result.
     bins_init();
-    if ((kernel_file->count > 0 || jumplist_file->count > 0) && target != IMAGE_KERNEL)
+    if (policy_use_kernel && target != IMAGE_KERNEL)
     {
         // Import the jumplist.
-        if (kernel_file->count == 0)
-            bins_load_jumplist(bautofree(bfromcstr(jumplist_file->filename[0])));
-        else
-            bins_load_kernel(bautofree(bfromcstr(jumplist_file->filename[0])), bautofree(bfromcstr(kernel_file->filename[0])));
+        // FIXME: if (kernel_file->count == 0)
+        // FIXME:   bins_load_jumplist(bautofree(bfromcstr(jumplist_file->filename[0])));
+        // FIXME: else
+        bins_load_kernel(bautofree(policy_jumplist_path), bautofree(policy_kernel_path));
     }
     for (i = 0; i < input_files->count; i++)
         if (!bins_load(bautofree(bfromcstr(input_files->filename[i])), symbol_file->count > 0, (symbol_file->count > 0 && symbol_ext->count > 0) ? symbol_ext->sval[0] : "dsym16"))

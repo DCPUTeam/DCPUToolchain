@@ -34,6 +34,26 @@ if(NOT DEFINED M4_EXECUTABLE)
     find_program(M4_EXECUTABLE NAMES m4.exe m4)
 endif()
 
+# Configure options relating to standalone or deployed
+# configuration.
+option(DEPLOYABLE "Build a deployable version of the toolchain" OFF)
+if(${DEPLOYABLE})
+    message("===== Deployable Build Activated =====")
+    message("Deployable builds should be used when you intend")
+    message("to install a final set of binaries on a system that")
+    message("supports dynamic linking and package management.")
+    message("")
+    message("Deployable builds will also install development")
+    message("headers for external use.")
+    message("======================================")
+    set(LIBRARY_FORMAT SHARED)
+else()
+    set(LIBRARY_FORMAT STATIC)
+endif()
+if(CMAKE_HOST_WINDOWS)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/DCPU Toolchain")
+endif()
+
 # Set compiler options.
 set(OUTPUT_EXT "")
 if(MSVC)
@@ -182,3 +202,28 @@ add_subdirectory(tests/drivers/ltestdcpu)
 add_subdirectory(tests/drivers/testasm)
 add_subdirectory(tests/drivers/testld)
 add_subdirectory(tests/drivers/testvm)
+
+# Additional deployment configuration.
+if(${DEPLOYABLE})
+    #include(CMakePackageConfigHelpers)
+    #configure_package_config_file(
+    #    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DCPUConfig.cmake.in
+    #    ${CMAKE_CURRENT_BINARY_DIR}/cmake/DCPUConfig.cmake
+    #)
+
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/modules)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/modules
+        DESTINATION share/dcpu
+        DIRECTORY_PERMISSIONS
+            OWNER_READ GROUP_READ WORLD_READ
+            OWNER_WRITE GROUP_WRITE WORLD_WRITE
+            OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/modules/README.md")
+        file(GLOB modules "${CMAKE_CURRENT_SOURCE_DIR}/modules/*.lua")
+        install(FILES
+            ${modules}
+            DESTINATION
+            share/dcpu/modules)
+    endif()
+endif()

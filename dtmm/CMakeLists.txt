@@ -20,3 +20,11 @@ target_link_libraries(dtmm
     libdcpu
 )
 cotire(dtmm)
+
+if(${DEPLOYABLE})
+    install(TARGETS dtmm
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+endif()
+

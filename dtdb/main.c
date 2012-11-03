@@ -47,11 +47,11 @@
 #define MAX_ARGUMENT_LENGTH 50
 
 bstring path;
-vm_t* vm;
+extern vm_t* vm;
 #ifdef FEATURE_SDP
 pthread_t sdp_thread;
 #endif
-struct dbg_state lstate;
+extern struct dbg_state lstate;
 
 extern int dbg_yyparse(void* scanner);
 

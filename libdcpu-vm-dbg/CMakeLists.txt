@@ -7,7 +7,7 @@ add_flex_bison_dependency(libdcpu-vm-dbg-lexer libdcpu-vm-dbg-parser)
 if(NOT MSVC)
     set_source_files_properties(${FLEX_libdcpu-vm-dbg-lexer_OUTPUTS} ${BISON_libdcpu-vm-dbg-parser_OUTPUTS} PROPERTIES COMPILE_FLAGS -Wno-implicit-function-declaration)
 endif()
-add_library(libdcpu-vm-dbg STATIC
+add_library(libdcpu-vm-dbg ${LIBRARY_FORMAT}
     backtrace.c
     breakpoint.c
     dbgaux.c
@@ -40,4 +40,15 @@ target_link_libraries(libdcpu-vm-dbg
     lua
     ${X11_LIBRARIES}
 )
+set_target_properties(libdcpu-vm-dbg PROPERTIES PREFIX "")
 cotire(libdcpu-vm-dbg)
+
+if(${DEPLOYABLE})
+    install(TARGETS libdcpu-vm-dbg
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+    file(GLOB headers_gen "${CMAKE_CURRENT_BINARY_DIR}/*.h")
+    file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+    install(FILES ${headers} ${headers_gen} DESTINATION include/dcpu/vm/dbg)
+endif()
