@@ -8,7 +8,9 @@ include_directories(
     ${argtable2_SOURCE_DIR}
     ${simclist_SOURCE_DIR}
     ${bstring_SOURCE_DIR}
+    ${libdcpu_SOURCE_DIR}
     ${libdcpu-ld-policy_SOURCE_DIR}
+    ${libdcpu-ld-policy_BINARY_DIR}
 )
 target_link_libraries(dtpolicy
     argtable2
