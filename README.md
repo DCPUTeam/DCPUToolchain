@@ -4,7 +4,7 @@
  *  Linux build status; ![Linux build status](http://dms.dcputoolcha.in/status/linux.png)
  *  Mac build status; ![Mac build status](http://dms.dcputoolcha.in/status/mac.png)
 
-The build server and it's waterfall status can be accessed from http://irc.lysdev.com:8080/waterfall.
+The build server and it's waterfall status can be accessed from http://bb.dcputoolcha.in:8080/waterfall.
 
 ## Binaries
 You can download binaries for Windows from the main http://dcputoolcha.in/ website.
