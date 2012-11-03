@@ -2,6 +2,8 @@
 
 DTIDEDebuggingWindow::DTIDEDebuggingWindow(QWidget* parent): QDialog(parent)
 {
+    buffer_initialized = false;
+
     setupUi(this);
     connect(btn_step_into, SIGNAL(clicked()), this, SIGNAL(step()));
     connect(btn_resume, SIGNAL(clicked()), this, SIGNAL(start()));
