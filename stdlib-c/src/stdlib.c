@@ -51,13 +51,12 @@ void free(void* ptr)
 void* malloc(size_t size)
 {
 	void* result;
-	void** store = &result;
 	__asm
 	{
 		.IMPORT _stubapi_malloc
 		SET A, <size>
 		JSR [_stubapi_malloc]
-		SET <store>, A
+		SET <result>, A
 	}
 	return result;
 }
