@@ -20,6 +20,7 @@
 typedef struct
 {
     FILE* file;
+    size_t pos;
     bool readable;
     bool wrapped;
     int last;
