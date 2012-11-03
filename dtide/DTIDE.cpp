@@ -62,13 +62,19 @@ void DTIDE::runCycles(int count)
                     MemoryDumpMessage memory = (MemoryDumpMessage&) m.value;
                     uint16_t* store = memory.data;
                     QByteArray* ram = new QByteArray();
-                    for(int i = 0; i < 0xffff; i++)
+                    for(int i = 0; i < 0x10000; i++)
                     {
                         ram->push_back(store[i] >> 8);
                         ram->push_back(store[i] & 0xff);
                     }
 
                     debuggingWindow->setMemoryData(ram);
+                    break;
+                }
+                case MemoryType:
+                {
+                    MemoryMessage memory = (MemoryMessage&) m.value;
+                    debuggingWindow->setMemoryAt(memory.pos, memory.value >> 8, memory.value & 0xff);
                     break;
                 }
                 default:

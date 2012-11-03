@@ -21,6 +21,7 @@ public:
 public slots:
     void setRegisters(StatusMessage);
     void setMemoryData(QByteArray*);
+    void setMemoryAt(int, char, char);
 
 signals:
     void start();
@@ -35,7 +36,6 @@ private:
     QByteArray* data;
     QBuffer* buffer;
 
-    bool buffer_initialized;
     void initializeBuffer();
 };
 
