@@ -29,6 +29,10 @@ signals:
 
 protected:
     virtual void closeEvent(QCloseEvent* e);
+
+private:
+    QByteArray* data;
+    QBuffer* buffer;
 };
 
 #endif
