@@ -7,7 +7,10 @@ DTIDEDebuggingWindow::DTIDEDebuggingWindow(QWidget* parent): QDialog(parent)
     connect(btn_resume, SIGNAL(clicked()), this, SIGNAL(start()));
     connect(btn_pause, SIGNAL(clicked()), this, SIGNAL(pause()));
 
-    QByteArray* data = new QByteArray("lolwat this ftw");
+    QByteArray* data = new QByteArray();
+    data->push_back(0x7c);
+    data->push_back(0x01);
+
     QBuffer* buffer = new QBuffer(data);
     buffer->open(QIODevice::ReadOnly);
 
