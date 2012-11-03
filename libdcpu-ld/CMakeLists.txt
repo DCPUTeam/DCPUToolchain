@@ -1,11 +1,17 @@
 cmake_minimum_required(VERSION 2.8.5)
-project(dtld)
+project(libdcpu-ld)
 
-add_executable(dtld
-    main.c
+add_library(libdcpu-ld ${LIBRARY_FORMAT}
+    ldbin.c
+    ldbin.h
+    ldbins.c
+    ldbins.h
+    ldconv.c
+    ldconv.h
+    ldlua.c
+    ldlua.h
 )
 include_directories(
-    ${argtable2_SOURCE_DIR}
     ${simclist_SOURCE_DIR}
     ${bstring_SOURCE_DIR}
     ${lua_SOURCE_DIR}
@@ -14,11 +20,9 @@ include_directories(
     ${libdcpu-pp-expr_SOURCE_DIR}
     ${libdcpu-ci-objfmt_SOURCE_DIR}
     ${libdcpu-ci-dbgfmt_SOURCE_DIR}
-    ${libdcpu-ld_SOURCE_DIR}
     ${FLEX_UNISTD_INCLUDE}
 )
-target_link_libraries(dtld
-    argtable2
+target_link_libraries(libdcpu-ld
     bstring
     simclist
     lua
@@ -27,14 +31,15 @@ target_link_libraries(dtld
     libdcpu-pp-expr
     libdcpu-ci-objfmt
     libdcpu-ci-dbgfmt
-    libdcpu-ld
 )
-cotire(dtld)
+cotire(libdcpu-ld)
 
 if(${DEPLOYABLE})
-    install(TARGETS dtld
+    install(TARGETS libdcpu-ld
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
+    file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+    install(FILES ${headers} ${headers_gen} DESTINATION include/dcpu/ld)
 endif()
 

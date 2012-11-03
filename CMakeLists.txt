@@ -161,6 +161,7 @@ add_subdirectory(libdcpu-ci-objfmt)
 add_subdirectory(libdcpu-ci-lang)
 add_subdirectory(libdcpu-ci-lang-c)
 add_subdirectory(libdcpu-ci-asm)
+add_subdirectory(libdcpu-ld)
 #add_subdirectory(libdcpu-vm-python)
 
 # Put the GFLW projects in the correct directories.

@@ -22,6 +22,6 @@ typedef bool(*has_t)();
 typedef char(*pop_t)();
 typedef void(*push_t)(char);
 
-void ppimpl(freed_bstring lang, has_t has_input, pop_t input, push_t output);
+void ppimpl(freed_bstring filename, int line, freed_bstring lang, has_t has_input, pop_t input, push_t output);
 
 #endif

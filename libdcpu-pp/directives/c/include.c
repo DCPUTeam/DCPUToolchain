@@ -14,6 +14,7 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
     list_t* result = ppparam_get(state);
     char* store = malloc(1);
     size_t pos = 0;
+    size_t diff = 0;
 
     // Ensure the parameter format is correct.
     if (list_size(result) == 1 &&
@@ -29,17 +30,23 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
             ((parameter_t*)list_get_at(result, 0))->type == STRING)
             path = ppfind_locate(bautocpy(path));
 
+        // If the path is NULL, then the file was not found.
+        if (path == NULL)
+            dhalt(ERR_PP_C_INCLUDE_FILE_NOT_FOUND, ppimpl_get_location(state));
+
         // Open the specified file.
         file = bfopen(path->data, "r");
         if (file == NULL)
             dhalt(ERR_PP_C_INCLUDE_FILE_NOT_FOUND, ppimpl_get_location(state));
 
         // Copy the data from the file, byte by byte.
+        ppimpl_printf(state, "\n# %i %s\n", state->current_line, state->current_filename->data);
         while (!bfeof(file))
         {
             bfread(store, 1, 1, file);
             ppimpl_pprintf(state, pos++, "%c", store[0]);
         }
+        ppimpl_printf(state, "\n# %i %s\n", 0, path->data);
 
         // Close the file.
         bfclose(file);

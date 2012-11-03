@@ -21,11 +21,13 @@ add_library(libdcpu-pp ${LIBRARY_FORMAT}
     ${FLEX_libdcpu-pp-param-lexer_OUTPUTS}
     ${BISON_libdcpu-pp-param-parser_OUTPUTS}
     directives/asm.h
+    directives/asm.c
     directives/asm/line.c
     directives/asm/include.c
     directives/asm/define.c
     directives/asm/expr.c
     directives/c.h
+    directives/c.c
     directives/c/line.c
     directives/c/include.c
     directives/c/define.c

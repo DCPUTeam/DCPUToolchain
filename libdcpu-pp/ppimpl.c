@@ -547,7 +547,7 @@ void ppimpl_pop_scope(state_t* state)
 ///
 /// Performs preprocessing.
 ///
-void ppimpl(freed_bstring lang, has_t has_input, pop_t input, push_t output)
+void ppimpl(freed_bstring filename, int line, freed_bstring lang, has_t has_input, pop_t input, push_t output)
 {
     state_t state;
     list_init(&state.cached_input);
@@ -563,8 +563,8 @@ void ppimpl(freed_bstring lang, has_t has_input, pop_t input, push_t output)
     state.has_input = has_input;
     state.input = input;
     state.output = output;
-    state.current_line = 0;
-    state.current_filename = NULL;
+    state.current_line = line;
+    state.current_filename = bstrcpy(filename.ref);
     state.default_filename = bfromcstr("<unknown>");
     state.in_single_string = false;
     state.in_double_string = false;
@@ -574,6 +574,7 @@ void ppimpl(freed_bstring lang, has_t has_input, pop_t input, push_t output)
         ppimpl_asm_expr_register(&state);
         ppimpl_asm_define_register(&state);
         ppimpl_asm_include_register(&state);
+	ppimpl_asm_init(&state);
     }
     else if (biseqcstrcaseless(lang.ref, "c"))
     {
@@ -581,7 +582,9 @@ void ppimpl(freed_bstring lang, has_t has_input, pop_t input, push_t output)
         ppimpl_c_expr_register(&state);
         ppimpl_c_define_register(&state);
         ppimpl_c_include_register(&state);
+        ppimpl_c_init(&state);
     }
     ppimpl_process(&state);
     bautodestroy(lang);
+    bautodestroy(filename);
 }

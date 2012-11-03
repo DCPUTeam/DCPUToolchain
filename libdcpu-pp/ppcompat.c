@@ -77,6 +77,7 @@ bstring pp_do(freed_bstring lang, freed_bstring path)
     }
 
     // Output the initial line information depending on language.
+    /*
     if (biseqcstrcaseless(lang.ref, "asm"))
     {
         if (biseq(path.ref, bfromcstr("-")))
@@ -93,9 +94,10 @@ bstring pp_do(freed_bstring lang, freed_bstring path)
     }
     if (leadin != NULL)
         bfwrite(leadin->data, 0, blength(leadin), _out_file);
+    */
 
     // Now invoke the preprocessor's lexer and parser.
-    ppimpl(lang, _has_input, _input, _output);
+    ppimpl(bautocpy(path.ref), 0, lang, _has_input, _input, _output);
 
     // Now do some cleanup.
     if (!biseq(path.ref, bfromcstr("-")))
@@ -106,6 +108,7 @@ bstring pp_do(freed_bstring lang, freed_bstring path)
 
     // Free bstring.
     bautodestroy(path);
+    bautodestroy(friendly);
 
     // Return the filename.
     return temp;
