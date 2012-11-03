@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QDebug>
 #include <QCloseEvent>
+#include <QBuffer>
 
 #include "Backends.h"
 #include "ui_registers.h"
@@ -28,6 +29,10 @@ signals:
 
 protected:
     virtual void closeEvent(QCloseEvent* e);
+
+private:
+    QByteArray* data;
+    QBuffer* buffer;
 };
 
 #endif

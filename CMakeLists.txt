@@ -34,6 +34,8 @@ if(NOT DEFINED M4_EXECUTABLE)
     find_program(M4_EXECUTABLE NAMES m4.exe m4)
 endif()
 
+option(USE_COTIRE "Use cotire to speed up builds" ON)
+
 # Configure options relating to standalone or deployed
 # configuration.
 option(DEPLOYABLE "Build a deployable version of the toolchain" OFF)
@@ -101,7 +103,13 @@ if(MSVC)
         message("Cotire disabled under MSVC for ${proj}.")
     endfunction()
 else()
-    include(cotire)
+    if(${USE_COTIRE})
+        include(cotire)
+    else()
+        function(cotire proj)
+            message("Cotire disabled by request.")
+        endfunction()
+    endif()
 endif()
 
 # Define a function that automatically sorts

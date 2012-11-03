@@ -767,7 +767,25 @@
     <string>Step over</string>
    </property>
   </widget>
+  <widget class="QHexView" name="memoryView" native="true">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>10</y>
+     <width>341</width>
+     <height>181</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QHexView</class>
+   <extends>QWidget</extends>
+   <header>qhexview/qhexview.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
