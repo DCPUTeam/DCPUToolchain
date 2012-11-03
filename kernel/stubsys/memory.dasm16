@@ -125,7 +125,7 @@
 	
 	:malloc_end
 		SET A, POP
-		SET A, 2
+		ADD A, 2
 		SET I, POP
 		SET PC, POP
 
