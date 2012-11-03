@@ -30,6 +30,7 @@ BFILE* bfopen(const char* path, const char* mode)
     file->readable = (mode[0] == 'r' || mode[strlen(mode) - 1] == '+');
     file->last = -1;
     file->eof = false;
+    file->pos = 0;
     file->wrapped = false;
     if (file->readable)
     {
@@ -65,6 +66,7 @@ int bfgetc(BFILE* file)
     int c;
     assert(file != NULL && file->readable);
     c = file->last;
+    file->pos++;
     file->last = fgetc(file->file);
     file->eof = feof(file->file);
     return c;
@@ -80,16 +82,19 @@ long bftell(BFILE* file)
 {
     assert(file != NULL);
     // TODO: Is this correct?
-    if (file->eof)
-        return ftell(file->file);
-    else
-        return ftell(file->file) - 1;
+    return file->pos;
 }
 
 int bfseek(BFILE* file, long offset, int origin)
 {
     assert(file != NULL);
-    return fseek(file->file, offset, origin);
+    if (origin == SEEK_SET)
+        file->pos = offset;
+    else if (origin == SEEK_CUR)
+        file->pos += offset;
+    else
+        assert(origin != SEEK_END);
+    return fseek(file->file, file->pos, SEEK_SET);
 }
 
 int bfeof(BFILE* file)
@@ -107,6 +112,7 @@ void bfclose(BFILE* file)
     file->file = NULL;
     file->eof = true;
     file->last = -1;
+    file->pos = 0;
     file->readable = false;
     free(file);
 }
@@ -115,8 +121,9 @@ size_t bfread(void* dest, size_t elem, size_t count, BFILE* file)
 {
     size_t result;
     assert(file != NULL && file->readable);
-    fseek(file->file, -1, SEEK_CUR);
+    fseek(file->file, file->pos, SEEK_SET);
     result = fread(dest, elem, count, file->file);
+    file->pos += result;
     file->last = fgetc(file->file);
     file->eof = feof(file->file);
     return result;
@@ -131,8 +138,9 @@ size_t bfiread(uint16_t* dest, BFILE* file)
 {
     size_t result;
     assert(file != NULL && file->readable);
-    fseek(file->file, -1, SEEK_CUR);
+    fseek(file->file, file->pos, SEEK_SET);
     result = iread(dest, file->file);
+    file->pos += result;
     file->last = fgetc(file->file);
     file->eof = feof(file->file);
     return result;
