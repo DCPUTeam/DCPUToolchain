@@ -46,9 +46,6 @@ if(SPHINX_EXECUTABLE)
         SOURCES ${doc_sources})
 
     source_group("Documentation" FILES ${doc_sources})
-
-else()
-    message("Unable to find Sphinx, so user documentation won't be created.")
 endif()
 
 find_package(Doxygen)
