@@ -56,6 +56,7 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
     add_definitions(${QT_DEFINITIONS})
 
     include_directories(
+        ${dtide_SOURCE_DIR}
         ${simclist_SOURCE_DIR}
         ${argtable2_SOURCE_DIR}
         ${bstring_SOURCE_DIR}

@@ -32,6 +32,7 @@
 #include <version.h>
 #include <ldata.h>
 #include <debug.h>
+#include <derr.h>
 #include <iio.h>
 
 // hardware
@@ -107,6 +108,11 @@ int main(int argc, char* argv[])
     int nerrors;
     bstring ss, st;
     host_context_t* dtemu = malloc(sizeof(host_context_t));
+    struct errinfo* errval;
+    const char* prepend = "error: ";
+    const char* warnprefix = "no-";
+    int msglen;
+    char* msg;
 
     // Define arguments.
     struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
@@ -115,13 +121,14 @@ int main(int argc, char* argv[])
     struct arg_lit* debug_mode = arg_lit0("d", "debug", "Show each executed instruction.");
     struct arg_lit* terminate_mode = arg_lit0("t", "show-on-terminate", "Show state of machine when program is terminated.");
     struct arg_lit* legacy_mode = arg_lit0("l", "legacy", "Automatically initialize hardware to legacy values.");
+    struct arg_str* warning_policies = arg_strn("W", NULL, "policy", 0, _WARN_COUNT * 2 + 10, "Modify warning policies.");
     struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
     struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
     struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
     struct arg_int* radiation = arg_intn("r", NULL, "<n>", 0, 1, "Radiation factor (higher is less radiation)");
     struct arg_lit* catch_fire = arg_lit0("c", "catch-fire", "The virtual machine should catch fire instead of halting.");
     struct arg_end* end = arg_end(20);
-    void* argtable[] = { input_file, debug_mode, execution_dump_file, terminate_mode, legacy_mode, little_endian_mode, radiation, catch_fire, verbose, quiet, end };
+    void* argtable[] = { input_file, warning_policies, debug_mode, execution_dump_file, terminate_mode, legacy_mode, little_endian_mode, radiation, catch_fire, verbose, quiet, end };
 
     // Parse arguments.
     nerrors = arg_parse(argc, argv, argtable);
@@ -149,6 +156,29 @@ int main(int argc, char* argv[])
     // Set endianness.
     isetmode(little_endian_mode->count == 0 ? IMODE_BIG : IMODE_LITTLE);
 
+    // Set up warning policies.
+    dsetwarnpolicy(warning_policies);
+    
+    // Set up error handling.
+    if (dsethalt())
+    {
+        errval = derrinfo();
+
+        // FIXME: Use bstrings here.
+        msglen = strlen(derrstr[errval->errid]) + strlen(prepend) + 1;
+        msg = malloc(msglen);
+        memset(msg, '\0', msglen);
+        strcat(msg, prepend);
+        strcat(msg, derrstr[errval->errid]);
+        printd(LEVEL_ERROR, msg, errval->errdata);
+
+        // Handle the error.
+        printd(LEVEL_ERROR, "emulator: error occurred.\n");
+
+        arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+        return 1;
+    }
+
     // Zero out the flash space.
     for (i = 0; i < 0x10000; i++)
         flash[i] = 0x0;
@@ -164,11 +194,7 @@ int main(int argc, char* argv[])
         load = fopen(input_file->filename[0], "rb");
 
         if (load == NULL)
-        {
-            fprintf(stderr, "emulator: unable to load %s from disk.\n", argv[1]);
-            arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-            return 1;
-        }
+            dhalt(ERR_EMU_LOAD_FILE_FAILED, input_file->filename[0]);
     }
     else
     {
@@ -180,6 +206,11 @@ int main(int argc, char* argv[])
         // Set load to stdin.
         load = stdin;
     }
+    
+    // Read leading component.
+    for (i = 0; i < strlen(ldata_objfmt); i++)
+        leading[i] = fgetc(load);
+    fseek(load, 0, SEEK_SET);
 
     // Read up to 0x10000 words.
     for (i = 0; i < 0x10000 && !feof(load); i++)
@@ -193,13 +224,7 @@ int main(int argc, char* argv[])
     for (i = 0; i < strlen(ldata_objfmt); i++)
         bconchar(ss, leading[i]);
     if (biseq(ss, st))
-    {
-        fprintf(stderr, "emulator: it appears you passed intermediate code for execution.  link\n");
-        fprintf(stderr, "   the input code with the toolchain linker to execute it.\n");
-        arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-        return 1;
-    }
-
+        dhalt(ERR_INTERMEDIATE_EXECUTION, NULL);
 
     // Set up the host context.
     glfwInit();

@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     struct arg_lit* show_help = arg_litn("h", "help", 0, 2, "Show this help.");
     struct arg_lit* gen_relocatable = arg_lit0("r", "relocatable", "Generate relocatable code.");
     struct arg_lit* gen_intermediate = arg_lit0("i", "intermediate", "(enabled by default; permitted for backwards compatibility)");
-    struct arg_lit* no_intermediate = arg_lit0(NULL, "no-intermediate", "Do not generate intermediate code for use with the linker.");
+    struct arg_lit* no_intermediate = arg_lit0(NULL, "binary", "Directly generate a DCPU-16 binary without a link stage.");
     // 20 is maxcount for include directories, this has to be set to some constant number.
     struct arg_file* include_dirs = arg_filen("I", NULL, "<directory>", 0, 20, "Adds the directory <dir> to the directories to be searched for header files.");
     struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");

@@ -1,4 +1,7 @@
 
+ERR_INTERMEDIATE_EXECUTION                           intermediate-execution                 "the specified file is in intermediate format and can not be executed.  link the input code with the toolchain linker to execute it, or pass --binary to the assembler."
+ERR_EMU_LOAD_FILE_FAILED                             emu-load-file-failed                   "unable to load %s from disk."
+
 ERR_GENERIC                                          generic                                "generic assembling error."
 ERR_LABEL_NOT_FOUND                                  label-not-found                        "label '%s' not found."
 ERR_OUTPUT_NULL                                      output-null                            "attempted to output NULL operation."
