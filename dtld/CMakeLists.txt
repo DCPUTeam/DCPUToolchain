@@ -15,6 +15,7 @@ include_directories(
     ${libdcpu-ci-objfmt_SOURCE_DIR}
     ${libdcpu-ci-dbgfmt_SOURCE_DIR}
     ${libdcpu-ld_SOURCE_DIR}
+    ${libdcpu-ld-policy_SOURCE_DIR}
     ${FLEX_UNISTD_INCLUDE}
 )
 target_link_libraries(dtld

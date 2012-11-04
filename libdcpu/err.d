@@ -1,4 +1,7 @@
 
+ERR_INTERMEDIATE_EXECUTION                           intermediate-execution                 "the specified file is in intermediate format and can not be executed.  link the input code with the toolchain linker to execute it, or pass --binary to the assembler."
+ERR_EMU_LOAD_FILE_FAILED                             emu-load-file-failed                   "unable to load %s from disk."
+
 ERR_GENERIC                                          generic                                "generic assembling error."
 ERR_LABEL_NOT_FOUND                                  label-not-found                        "label '%s' not found."
 ERR_OUTPUT_NULL                                      output-null                            "attempted to output NULL operation."
@@ -37,13 +40,20 @@ ERR_INVALID_TARGET_NAME                              invalid-target-name        
 ERR_BIN_LOAD_FAILED                                  bin-load-failed                        "failed to load bins from the object file '%s'."
 ERR_KERNEL_ARGUMENT_NOT_ALLOWED                      kernel-argument-not-allowed            "the -k argument can not be used when building a kernel."
 ERR_JUMPLIST_FILE_REQUIRED                           jump-list-required                     "a jumplist is required when linking against a kernel."
-ERR_COULD_NOT_CREATE_OPENGL_CONTEXT                  failed-create-opengl-context           "failed to create an OpenGL context (check your graphic drivers).\n"
+ERR_POLICY_FILE_NOT_FOUND                            policy-file-not-found                  "the specified policy file '%s' could not be opened."
+ERR_POLICY_TARGET_NOT_FOUND                          policy-target-not-found                "the specified policy '%s' was not defined in the policy file."
+ERR_POLICY_IS_INTERNAL                               policy-is-internal                     "the specified policy '%s' is defined as internal and can not be used."
+ERR_POLICY_EXECUTION                                 policy-execution                       "an error occurred while executing the linker policy: '%s'"
+ERR_POLICY_UNKNOWN_TABLE                             policy-unknown-table                   "an unknown table was requested with the field() call."
+ERR_POLICY_UNKNOWN_FIELD                             policy-unknown-field                   "an unknown field was requested with the field() call."
+ERR_POLICY_PATH_UNKNOWN                              policy-path-unknown                    "the path to toolchain kernels is not set with the TOOLCHAIN_KERNELS environment variable and this is not a deployed build of the toolchain."
 
-WARN_SKIPPING_SHORT_LITERALS_TYPE                    short-literals-skipped-type            "skipping short literal compression due to target type."
-WARN_SKIPPING_SHORT_LITERALS_REQUEST                 short-literals-skipped-request         "skipping short literal compression on request."
+WARN_SKIPPING_SHORT_LITERALS_TYPE                    short-literals-skipped-type            "skipped short literal compression due to target type."
+WARN_SKIPPING_SHORT_LITERALS_REQUEST                 short-literals-skipped-request         "skipped short literal compression on request."
 WARN_KERNEL_NOT_PROVIDING_JUMP_LIST                  jump-list-missing                      "kernel did not specify a position to output a jump list with .JUMP."
 WARN_KERNEL_JUMP_LIST_NOT_EXPORTED                   jump-list-not-exported                 "the jump list was not exported along with the kernel."
 WARN_ABSOLUTE_KERNEL_PATH                            absolute-kernel-path                   "specifying absolute kernel paths will be phased out when linker scripts are ready."
+WARN_POLICY_CODE_BIN_NOT_FOUND                       policy-code-bin-not-found              "the bin to return code from was not found when executing the policy."
 
 ERR_PP_ASM_LINE_PARAMETERS_INCORRECT                 pp-asm-line-parameters-incorrect       "incorrect parameters for .LINE near %s."
 ERR_PP_ASM_ULINE_PARAMETERS_INCORRECT                pp-asm-uline-parameters-incorrect      "incorrect parameters for .ULINE near %s."
@@ -72,3 +82,5 @@ ERR_PP_NOT_ENOUGH_PARAMETERS                         pp-not-enough-parameters   
 ERR_PP_LONG_FORM_MACRO_ONLY                          pp-long-form-macro-only                "short form macro not permitted in this language near %s."
 ERR_PP_COMPAT_OPEN_INPUT_FAILED                      pp-compat-open-input-failed            "opening the input file failed in the preprocessor."
 ERR_PP_COMPAT_OPEN_TEMP_FAILED                       pp-compat-open-temp-failed             "opening temporary output file failed in the preprocessor."
+
+ERR_COULD_NOT_CREATE_OPENGL_CONTEXT                  failed-create-opengl-context           "failed to create an OpenGL context (check your graphic drivers)."

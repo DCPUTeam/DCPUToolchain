@@ -10,6 +10,8 @@ add_library(libdcpu-ld ${LIBRARY_FORMAT}
     ldconv.h
     ldlua.c
     ldlua.h
+    ldpolicy.c
+    ldpolicy.h
 )
 include_directories(
     ${simclist_SOURCE_DIR}
@@ -20,6 +22,8 @@ include_directories(
     ${libdcpu-pp-expr_SOURCE_DIR}
     ${libdcpu-ci-objfmt_SOURCE_DIR}
     ${libdcpu-ci-dbgfmt_SOURCE_DIR}
+    ${libdcpu-ld-policy_SOURCE_DIR}
+    ${libdcpu-ld-policy_BINARY_DIR}
     ${FLEX_UNISTD_INCLUDE}
 )
 target_link_libraries(libdcpu-ld
@@ -31,6 +35,7 @@ target_link_libraries(libdcpu-ld
     libdcpu-pp-expr
     libdcpu-ci-objfmt
     libdcpu-ci-dbgfmt
+    libdcpu-ld-policy
 )
 cotire(libdcpu-ld)
 

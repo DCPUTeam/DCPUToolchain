@@ -10,7 +10,6 @@
 
 extern "C" {
 #include <dcpu.h>
-#include <assert.h>
 }
 
 class DCPUToolchainASM: public Language

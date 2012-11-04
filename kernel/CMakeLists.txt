@@ -29,10 +29,6 @@ foreach(k ${KERNELS})
     add_dcpu_image(${k} ${files_append})
 
     if(${DEPLOYABLE})
-        configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/${k}/policy.in
-            ${CMAKE_CURRENT_BINARY_DIR}/${k}/policy
-            @ONLY)
         file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/${k})
         install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/${k}
             DESTINATION share/dcpu/kernels
@@ -44,7 +40,7 @@ foreach(k ${KERNELS})
             ${CMAKE_CURRENT_BINARY_DIR}/${k}.djmp16
             ${CMAKE_CURRENT_BINARY_DIR}/${k}.dkrn16
             ${CMAKE_CURRENT_BINARY_DIR}/${k}.dsym16
-            ${CMAKE_CURRENT_BINARY_DIR}/${k}/policy
+            ${CMAKE_CURRENT_SOURCE_DIR}/${k}/policy
             DESTINATION
             share/dcpu/kernels/${k})
     endif()

@@ -1,7 +1,9 @@
-defaults:
+defaults
+{
     kernel=@KERNEL_FOLDER@/stubsys.dkrn16
     jumplist=@KERNEL_FOLDER@/stubsys.djmp16
     symbols=@KERNEL_FOLDER@/stubsys.dsym16
+}
 
 # image is the .executable format. for applications that will
 # be loaded at runtime.  if this is not defined, the linker will
