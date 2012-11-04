@@ -120,7 +120,9 @@ QHexView::QHexView(QWidget *parent) : QAbstractScrollArea(parent),
         endian(ENDIANNESS_LITTLE_ENDIAN) {
 
     // default to a simple monospace font
-    setFont(QFont("Monospace", 10));
+    QFont f("Monospace", 12);
+    f.setStyleHint(QFont::Monospace);
+    setFont(f);
 
     setShowAddressSeparator(true);
 }
@@ -146,7 +148,11 @@ void QHexView::setShowAddressSeparator(bool value) {
 // Desc:
 //------------------------------------------------------------------------------
 QString QHexView::formatAddress(address_t address) {
-    return format_address(address, show_address_separator_);
+    static char buffer[7];
+    qsnprintf(buffer, sizeof(buffer), "0x%04x", address / word_width_);
+    return QString::fromLocal8Bit(buffer);
+
+//    return format_address(address, show_address_separator_);
 }
 
 //------------------------------------------------------------------------------
@@ -494,8 +500,8 @@ unsigned int QHexView::charsPerWord() const {
 // Desc: returns the lenth in characters the address will take up
 //------------------------------------------------------------------------------
 unsigned int QHexView::addressLen() const {
-    static const unsigned int addressLength = (sizeof(address_t) * CHAR_BIT) / 4;
-    return addressLength + (show_address_separator_ ? 1 : 0);
+    static const unsigned int addressLength = (sizeof(address_t) * CHAR_BIT) / 10;
+    return addressLength /*+ (show_address_separator_ ? 1 : 0)*/;
 }
 
 //------------------------------------------------------------------------------

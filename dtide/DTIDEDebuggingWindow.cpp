@@ -14,10 +14,7 @@ DTIDEDebuggingWindow::DTIDEDebuggingWindow(QWidget* parent): QDialog(parent)
     memoryView->setWordWidth(2);
     memoryView->setShowAsciiDump(false);
     memoryView->setRowWidth(8);
-
-/*
-    QByteArray* newBuffer = new QByteArray("Derp");
-    data = newBuffer; */
+    memoryView->setShowAddressSeparator(false);
 }
 
 QSize DTIDEDebuggingWindow::sizeHint()
