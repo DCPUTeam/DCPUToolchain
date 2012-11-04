@@ -1,16 +1,11 @@
-/**
-
-    File:       ldbins.c
-
-    Project:    DCPU-16 Toolchain
-    Component:  Linker
-
-    Authors:    James Rhodes
-
-    Description:    Provides section bins for storing code in while
-            section and output dependencies are resolved.
-
-**/
+///
+/// @addtogroup LibDCPU-LD
+/// @{
+///
+/// @file
+/// @brief This file defines the functions declared in ldbins.h.
+/// @author James Rhodes
+/// 
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -31,7 +26,7 @@
 #include "ldtarget.h"
 
 ///
-/// Prints out information about a bin.
+/// @brief Prints out information about a bin.
 ///
 void bin_print(const char* context, struct ldbin* bin)
 {
@@ -149,7 +144,7 @@ void bin_print(const char* context, struct ldbin* bin)
 }
 
 ///
-/// Finds a bin in the bin list by it's name.
+/// @brief Finds a bin in the bin list by it's name.
 ///
 int bin_seeker(const void* el, const void* indicator)
 {
@@ -161,7 +156,7 @@ int bin_seeker(const void* el, const void* indicator)
 }
 
 ///
-/// Initializes the linker bin system.
+/// @brief Initializes the linker bin system.
 ///
 void bins_init()
 {
@@ -170,7 +165,7 @@ void bins_init()
 }
 
 ///
-/// Adds a new bin to the system with the specified name.
+/// @brief Adds a new bin to the system with the specified name.
 ///
 /// Adds a new bin to the system with the specified name and link
 /// information.
@@ -203,7 +198,7 @@ struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct 
 }
 
 ///
-/// Loads a new bin by reading a linker object from file.
+/// @brief Loads a new bin by reading a linker object from file.
 ///
 /// Adds a new bin by reading in a linker object stored on disk and
 /// automatically handling loading bytes and linker information into
@@ -307,7 +302,7 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
 }
 
 ///
-/// Loads a kernel from file.
+/// @brief Loads a kernel from file.
 ///
 /// Adds a "<kernel>" bin by reading in a kernel stored on disk.  The kernel
 /// file should *not* be an object file, but instead the raw data of the kernel.
@@ -376,7 +371,7 @@ bool bins_load_kernel(freed_bstring jumplist, freed_bstring kernel)
 }
 
 ///
-/// Loads a jump list from file.
+/// @brief Loads a jump list from file.
 ///
 /// Loads the jumplist references from the specified object file and uses
 /// them for resolving labels not provided as part of the input objects.
@@ -423,7 +418,7 @@ bool bins_load_jumplist(freed_bstring path)
 }
 
 ///
-/// Saves the bin with the specified name to the specified path.
+/// @brief Saves the bin with the specified name to the specified path.
 ///
 /// @param name The name of the bin to save.
 /// @param path The path to save the bin to.
@@ -529,7 +524,7 @@ void bins_save(freed_bstring name, freed_bstring path, int target, bool keepOutp
 }
 
 ///
-/// Writes a word of data into the specified bin.
+/// @brief Writes a word of data into the specified bin.
 ///
 /// @param path The path to load.
 /// @return Whether the bin was loaded successfully.
@@ -547,7 +542,7 @@ bool bins_write(freed_bstring name, uint16_t word)
 }
 
 ///
-/// Updates adjustment targets to associate their bin target information.
+/// @brief Updates adjustment targets to associate their bin target information.
 ///
 void bins_associate()
 {
@@ -577,7 +572,7 @@ void bins_associate()
 }
 
 ///
-/// Splits the currently loaded bins into sectioned bins.
+/// @brief Splits the currently loaded bins into sectioned bins.
 ///
 void bins_sectionize()
 {
@@ -698,8 +693,7 @@ void bins_sectionize()
 }
 
 ///
-/// Flattens all of the current bins into a single contigious
-/// bin.
+/// @brief Flattens all of the current bins into a single contigious bin.
 ///
 void bins_flatten(freed_bstring name)
 {
@@ -797,9 +791,11 @@ void bins_flatten(freed_bstring name)
 }
 
 ///
+/// @brief Writes out the jump table.
+///
 /// Writes out the jump table.
 ///
-/// Writes out the jump table.  Bins must have been flattened at this point.
+/// @note Bins must have been flattened at this point.
 ///
 void bins_write_jump()
 {
@@ -907,8 +903,10 @@ void bins_write_jump()
 }
 
 ///
-/// Runs each bin through the optimization infrastructure, reduce the size and
-/// required number of cycles for the code.
+/// @brief Runs each bin through the optimization infrastructure.
+///
+/// Runs each bin through the optimization infrastructure, reducing the
+/// size and required number of cycles for the code.
 ///
 /// @param mode The optimization mode.
 /// @returns The number of words saved during optimization.
@@ -938,8 +936,9 @@ int32_t bins_optimize(int target, int level)
 }
 
 ///
-/// Resolves all of the required and provided labels in a program.  The bins
-/// must be flattened at this point.
+/// @brief Resolves all of the required and provided labels in a program.
+///
+/// @note The bins must be flattened at this point.
 ///
 /// @param keepProvided Whether the provided label entries should be kept in the flattened
 ///         bin for re-exporting (for example in static libraries).
@@ -1152,6 +1151,8 @@ void bins_resolve(bool keepProvided, bool allowMissing, bool keepOptional)
 }
 
 ///
+/// @brief Performs short-literal optimization.
+///
 /// Compresses all parameters into short literals if possible for
 /// all of the current bins defined.
 ///
@@ -1276,7 +1277,7 @@ uint16_t bins_compress()
 }
 
 ///
-/// Clears the list of bins, freeing all associated memory.
+/// @brief Clears the list of bins, freeing all associated memory.
 ///
 void bins_free()
 {
@@ -1292,3 +1293,7 @@ void bins_free()
     list_iterator_stop(&ldbins.bins);
     list_clear(&ldbins.bins);
 }
+
+///
+/// @}
+///
