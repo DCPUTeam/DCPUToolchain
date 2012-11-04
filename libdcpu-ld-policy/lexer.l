@@ -13,7 +13,9 @@
 
 #include <lexfix.h>
 #include <bstring.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include "policyast.h"
 #include "parser.h"
 
 %}
@@ -38,14 +40,14 @@
 \$[a-z]                                 yylval.string = bfromcstr(yytext); return VARIABLE;
 0x[0-9a-fA-F]+                          yylval.number = strtoul(yytext, NULL, 16); return NUMBER;
 [0-9]+                                  yylval.number = strtoul(yytext, NULL, 10); return NUMBER;
-[ \t]+                                  /* ignore whitespace */;
-\n                                      /* ignore newlines */;
+<*>[ \t]+                               /* ignore whitespace */;
+<*>(\r\n|\r|\n)                         /* ignore newlines */;
 
-    /* Section Types */
+    /* Policy Types */
     
-defaults                                BEGIN(IN_DEFAULTS); return SECT_DEFAULTS;
-internal                                return SECT_INTERNAL;
-format                                  return SECT_FORMAT;
+defaults                                BEGIN(IN_DEFAULTS); return POLICY_SETTINGS;
+internal                                return POLICY_INTERNAL;
+format                                  return POLICY_FORMAT;
 
     /* Instruction Types */
     
@@ -89,6 +91,17 @@ address                                 return FIELD_ADDRESS;
 <EXPECT_KEY>\}                          BEGIN(INITIAL);
 <EXPECT_EQUALS>\=                       BEGIN(EXPECT_VALUE); return EQUAL;
 <EXPECT_VALUE>[^\n]*                    yylval.string = bfromcstr(yytext); BEGIN(EXPECT_KEY); return VALUE;
+
+    /* Default Error Rule */
+
+<*>.|\n                                 {
+                                            char* out = malloc(50);
+                                            memset(out, '\0', 50);
+                                            snprintf(out, 49, "unexpected characters in input '%s' (%i).", yytext, yytext[0]);
+                                            yyerror(out);
+                                            free(out);
+                                            return ERROR;
+                                        }
 
 %%
 

@@ -8,6 +8,12 @@ if(NOT MSVC)
     set_source_files_properties(${FLEX_libdcpu-ld-policy-lexer_OUTPUTS} ${BISON_libdcpu-ld-policy-parser_OUTPUTS} PROPERTIES COMPILE_FLAGS -Wno-implicit-function-declaration)
 endif()
 add_library(libdcpu-ld-policy ${LIBRARY_FORMAT}
+    policy.h
+    policy.c
+    policyast.h
+    policyast.c
+    policyexec.h
+    policyexec.c
     ${FLEX_libdcpu-ld-policy-lexer_OUTPUTS}
     ${BISON_libdcpu-ld-policy-parser_OUTPUTS}
     parser.y

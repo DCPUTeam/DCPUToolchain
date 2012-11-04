@@ -13,9 +13,12 @@
 
 #define YYERROR_VERBOSE
 
+#include <assert.h>
 #include <bstring.h>
 #include <stdio.h>
+#include "policyast.h"
 
+extern policies_t* active_ast;
 extern int yylex();
 void yyerror(const char *str);
 
@@ -25,24 +28,34 @@ void yyerror(const char *str);
 %union
 {
     int number;
-    bstring string;
     int* token;
+    bstring string;
+    list_t* list;
+    policy_t* policy;
+    policy_instruction_t* instruction;
+    policy_value_t* value;
+    policy_function_call_t* function;
 }
 
-// Define our lexical token names.
+// Define  our lexical token names.
 %token <token> COLON OPEN_PARAM CLOSE_PARAM NEWLINE COMMA
-%token <token> SECT_DEFAULTS SECT_INTERNAL SECT_FORMAT
+%token <token> POLICY_SETTINGS POLICY_INTERNAL POLICY_FORMAT
 %token <token> INST_WRITE INST_CHAIN INST_OFFSET
 %token <token> FUNC_TOTAL FUNC_FIELD FUNC_CODE FUNC_WORDS
 %token <token> KEYWORD_FOR KEYWORD_FROM KEYWORD_TO KEYWORD_ENDFOR
-%token <token> TABLE_ADJUSTMENT TABLE_PROVIDED TABLE_REQUIRED TABLE_SECTION TABLE_OUTPUT TABLE_JUMP TABLE_OPTIONAL
-%token <token> FIELD_LABEL_SIZE FIELD_LABEL_TEXT FIELD_ADDRESS
-%token <token> EQUAL 
+%token <token> TABLE TABLE_ADJUSTMENT TABLE_PROVIDED TABLE_REQUIRED TABLE_SECTION TABLE_OUTPUT TABLE_JUMP TABLE_OPTIONAL
+%token <token> FIELD FIELD_LABEL_SIZE FIELD_LABEL_TEXT FIELD_ADDRESS
+%token <token> EQUAL FUNCTION LIST ERROR
 %token <number> NUMBER
 %token <string> KEY VALUE VARIABLE WORD
 
 // Define types.
-%type <token> table field
+%type <number> table_opt field_opt
+%type <policy> settings
+%type <list> instructions
+%type <instruction> instruction
+%type <value> value words table field
+%type <function> function
 
 // Start at the root node.
 %start root
@@ -52,125 +65,219 @@ void yyerror(const char *str);
 root:
         /* empty */
         {
-            
+            // active_ast is already initialized.
         } | 
-        root section
+        root policy
         {
-            printf("end section.\n");
-        } ;
-
-section_name:
-        SECT_INTERNAL OPEN_PARAM WORD CLOSE_PARAM
-        {
-            printf("internal section ( %s )\n", $3->data);
-        } |
-        SECT_FORMAT OPEN_PARAM WORD CLOSE_PARAM
-        {
-            printf("format section ( %s )\n", $3->data);
+            // sections are added in their own handlers.
         } ;
         
 settings:
         /* empty */
         {
+            // Initialize the settings policy.
+            $$ = malloc(sizeof(policy_t));
+            $$->type = POLICY_SETTINGS;
+            $$->name = NULL;
+            $$->instructions = NULL;
+            $$->settings = malloc(sizeof(list_t));
+            list_init($$->settings);
         } |
         settings KEY EQUAL VALUE
         {
-            printf("%s = %s\n", $2->data, $4->data);
+            // Create the new policy setting.
+            policy_setting_t* setting = malloc(sizeof(policy_setting_t));
+            setting->key = $2;
+            setting->value = $4;
+            btrimws(setting->key);
+            btrimws(setting->value);
+            list_append($1->settings, setting);
+            $$ = $1;
         } ;
         
-section:
-        SECT_DEFAULTS settings
+policy:
+        POLICY_SETTINGS settings
         {
-            printf("end settings section.\n");
+            active_ast->settings = $2;
         } |
-        section_name COLON instructions
+        POLICY_INTERNAL OPEN_PARAM WORD CLOSE_PARAM COLON instructions
         {
-            printf("end section with instructions.\n");
+            policy_t* policy = malloc(sizeof(policy_t));
+            policy->type = POLICY_INTERNAL;
+            policy->name = $3;
+            policy->instructions = $6;
+            policy->settings = NULL;
+            list_append(&active_ast->policies, policy);
+        } |
+        POLICY_FORMAT OPEN_PARAM WORD CLOSE_PARAM COLON instructions
+        {
+            policy_t* policy = malloc(sizeof(policy_t));
+            policy->type = POLICY_FORMAT;
+            policy->name = $3;
+            policy->instructions = $6;
+            policy->settings = NULL;
+            list_append(&active_ast->policies, policy);
         } ;
 
 instructions:
         /* empty; no instructions */
         {
+            $$ = malloc(sizeof(list_t));
+            list_init($$);
         } |
         instructions instruction
         {
-            printf("end instruction.\n");
+            list_append($1, $2);
+            $$ = $1;
         } ;
         
 value:
         NUMBER
         {
-            printf("number = %i.\n", $1);
+            $$ = malloc(sizeof(policy_value_t));
+            $$->type = NUMBER;
+            $$->number = $1;
         } |
         VARIABLE
         {
-            printf("variable = %s.\n", $1->data);
+            $$ = malloc(sizeof(policy_value_t));
+            $$->type = VARIABLE;
+            $$->string = $1;
         } |
         function
         {
-            printf("function as value.");
+            $$ = malloc(sizeof(policy_value_t));
+            $$->type = FUNCTION;
+            $$->function = $1;
         } ;
 
 instruction:
         INST_WRITE function
         {
-            printf("end write call.\n");
+            $$ = malloc(sizeof(policy_instruction_t));
+            $$->type = INST_WRITE;
+            $$->value = malloc(sizeof(policy_value_t));
+            $$->value->type = FUNCTION;
+            $$->value->function = $2;
+            $$->for_variable = NULL;
+            $$->for_start = NULL;
+            $$->for_end = NULL;
+            $$->for_instructions = NULL;
         } |
         INST_CHAIN WORD
         {
-            printf("end chain call.\n");
+            $$ = malloc(sizeof(policy_instruction_t));
+            $$->type = INST_CHAIN;
+            $$->value = malloc(sizeof(policy_value_t));
+            $$->value->type = WORD;
+            $$->value->string = $2;
+            $$->for_variable = NULL;
+            $$->for_start = NULL;
+            $$->for_end = NULL;
+            $$->for_instructions = NULL;
         } |
         INST_OFFSET value
         {
-            printf("end offset call.\n");
+            $$ = malloc(sizeof(policy_instruction_t));
+            $$->type = INST_OFFSET;
+            $$->value = $2;
+            $$->for_variable = NULL;
+            $$->for_start = NULL;
+            $$->for_end = NULL;
+            $$->for_instructions = NULL;
         } |
         KEYWORD_FOR VARIABLE KEYWORD_FROM value KEYWORD_TO value instructions KEYWORD_ENDFOR
         {
-            printf("for loop.\n");
+            $$ = malloc(sizeof(policy_instruction_t));
+            $$->type = KEYWORD_FOR;
+            $$->value = NULL;
+            $$->for_variable = $2;
+            $$->for_start = $4;
+            $$->for_end = $6;
+            $$->for_instructions = $7;
         } ;
+
+table_opt:
+        TABLE_ADJUSTMENT { $$ = TABLE_ADJUSTMENT; } |
+        TABLE_PROVIDED { $$ = TABLE_PROVIDED; } | 
+        TABLE_REQUIRED { $$ = TABLE_REQUIRED; } |
+        TABLE_SECTION { $$ = TABLE_SECTION; } | 
+        TABLE_OUTPUT { $$ = TABLE_OUTPUT; } |
+        TABLE_JUMP { $$ = TABLE_JUMP; } | 
+        TABLE_OPTIONAL { $$ = TABLE_OPTIONAL; } ;
         
-        /* VARIABLE KEYWORD_FROM value KEYWORD_TO value instructions KEYWORD_ENDFOR */
+field_opt:
+        FIELD_LABEL_SIZE { $$ = FIELD_LABEL_SIZE; } |
+        FIELD_LABEL_TEXT { $$ = FIELD_LABEL_TEXT; } |
+        FIELD_ADDRESS { $$ = FIELD_ADDRESS; } ;
 
 table:
-        TABLE_ADJUSTMENT |
-        TABLE_PROVIDED | 
-        TABLE_REQUIRED |
-        TABLE_SECTION | 
-        TABLE_OUTPUT |
-        TABLE_JUMP | 
-        TABLE_OPTIONAL ;
-        
+        table_opt
+        {
+            $$ = malloc(sizeof(policy_value_t));
+            $$->type = TABLE;
+            $$->table = $1;
+        } ;
+
 field:
-        FIELD_LABEL_SIZE |
-        FIELD_LABEL_TEXT |
-        FIELD_ADDRESS ;
+        field_opt
+        {
+            $$ = malloc(sizeof(policy_value_t));
+            $$->type = FIELD;
+            $$->field = $1;
+        } ;
         
 words:
         value
         {
-            printf("word. ");
+            $$ = malloc(sizeof(policy_value_t));
+            $$->type = LIST;
+            $$->list = malloc(sizeof(list_t));
+            list_init($$->list);
+            list_append($$->list, $1);
         } | 
         words COMMA value
         {
-            printf("word. ");
+            list_append($1->list, $3);
+            $$ = $1;
         } ;
         
 function:
         FUNC_TOTAL OPEN_PARAM table CLOSE_PARAM
         {
-            printf("total call ( %i ).\n", (int)$3);
+            $$ = malloc(sizeof(policy_function_call_t));
+            $$->function = FUNC_TOTAL;
+            $$->parameters = malloc(sizeof(list_t));
+            list_init($$->parameters);
+            list_append($$->parameters, $3);
         } |
         FUNC_FIELD OPEN_PARAM table COMMA value COMMA field CLOSE_PARAM
         {
-            printf("field call ( %i , ... , %i ).\n", (int)$3, (int)$7);
+            $$ = malloc(sizeof(policy_function_call_t));
+            $$->function = FUNC_FIELD;
+            $$->parameters = malloc(sizeof(list_t));
+            list_init($$->parameters);
+            list_append($$->parameters, $3);
+            list_append($$->parameters, $5);
+            list_append($$->parameters, $7);
         } |
         FUNC_WORDS OPEN_PARAM words CLOSE_PARAM
         {
-            printf("words call.\n");
+            $$ = malloc(sizeof(policy_function_call_t));
+            $$->function = FUNC_WORDS;
+            $$->parameters = malloc(sizeof(list_t));
+            list_init($$->parameters);
+            assert($3->type == LIST);
+            list_iterator_start($3->list);
+            while (list_iterator_hasnext($3->list))
+                list_append($$->parameters, list_iterator_next($3->list));
+            list_iterator_stop($3->list);
         } |
         FUNC_CODE
         {
-            printf("code call.\n");
+            $$ = malloc(sizeof(policy_function_call_t));
+            $$->function = FUNC_CODE;
+            $$->parameters = NULL;
         } ;
 
 %%
