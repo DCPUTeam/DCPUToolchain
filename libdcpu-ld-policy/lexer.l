@@ -18,6 +18,10 @@
 #include "policyast.h"
 #include "parser.h"
 
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
+
 %}
 
 %option yylineno

@@ -23,6 +23,8 @@ void print_value(policy_value_t* value);
 
 void print_function(policy_function_call_t* call)
 {
+    size_t i;
+
     switch (call->function)
     {
         case FUNC_TOTAL:
@@ -42,7 +44,7 @@ void print_function(policy_function_call_t* call)
     if (call->parameters != NULL && list_size(call->parameters) > 0)
     {
         printf("(");
-        for (int i = 0; i < list_size(call->parameters); i++)
+        for (i = 0; i < list_size(call->parameters); i++)
         {
             if (i != 0)
                 printf(", ");
@@ -54,6 +56,8 @@ void print_function(policy_function_call_t* call)
 
 void print_value(policy_value_t* value)
 {
+    size_t i;
+
     switch (value->type)
     {
         case NUMBER:
@@ -111,7 +115,7 @@ void print_value(policy_value_t* value)
             break;
         case LIST:
             printf(" {");
-            for (int i = 0; i < list_size(value->list); i++)
+            for (i = 0; i < list_size(value->list); i++)
             {
                 if (i != 0)
                     printf(", ");
@@ -130,8 +134,9 @@ void print_value(policy_value_t* value)
 
 void print_instructions(int indent, list_t* instructions)
 {
+    int i;
     freed_bstring indentstr = bautofree(bfromcstr(""));
-    for (int i = 0; i < indent; i++)
+    for (i = 0; i < indent; i++)
         bconchar(indentstr.ref, ' ');
     
     list_iterator_start(instructions);
@@ -229,6 +234,8 @@ int main(int argc, char* argv[])
 {
     FILE* file = NULL;
     policies_t* policies = NULL;
+    policy_t* policy = NULL;
+    policy_state_t* state = NULL;
     
     if (argc < 3)
     {
@@ -291,11 +298,11 @@ int main(int argc, char* argv[])
             return 1;
         }
         
-        policy_t* policy = policies_get_policy(policies, bautofree(bfromcstr(argv[3])));
+        policy = policies_get_policy(policies, bautofree(bfromcstr(argv[3])));
         if (policy == NULL)
             printf("no such policy '%s'.\n", argv[3]);
         printf("== executing: %s ==\n", argv[3]);
-        policy_state_t* state = state_from_policy(policy);
+        state = state_from_policy(policy);
         state->call_code = handle_code;
         state->call_field = handle_field;
         state->call_offset = handle_offset;

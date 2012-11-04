@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 project(dtide)
 
-find_package(QScintilla)
 find_package(OpenGL REQUIRED)
 find_package(Qt4)
-if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
+if(${QT4_FOUND} AND ${qscintilla2_FOUND})
     set(dtide_SOURCES 
         main.cpp 
         Backends.cpp
@@ -75,10 +74,16 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         ${CMAKE_CURRENT_BINARY_DIR}
         ${GLFW_SOURCE_DIR}/include
         ${png_SOURCE_DIR}
-        ${QSCINTILLA_INCLUDE_DIR} 
+        ${qscintilla2_SOURCE_DIR} 
     )
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+    if(NOT MSVC)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+    endif()
+
+    if(MSVC)
+        add_definitions(-DQSCINTILLA_DLL)
+    endif()
 
     add_executable(dtide ${dtide_SOURCES}
         ${dtide_HEADERS_MOC}
@@ -99,7 +104,7 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         simclist
         ${GLFW_LIBRARIES}
         ${OPENGL_LIBRARIES}
-        ${QSCINTILLA_LIBRARY}
+        ${qscintilla2_LIBRARY}
     )
 
     if(${DEPLOYABLE})

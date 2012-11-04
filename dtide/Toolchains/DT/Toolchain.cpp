@@ -4,6 +4,7 @@
 #include "dtdb.h"
 #include <iostream>
 #include <cstdlib>
+#include <cassert>
 
 #ifdef WIN32
 #include <io.h>

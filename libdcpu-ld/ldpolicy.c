@@ -7,6 +7,7 @@
 /// @author James Rhodes
 ///
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <dcpu.h>
 #include <debug.h>
@@ -72,6 +73,7 @@ static list_t policy_code(void* userdata)
 ///
 static list_t policy_field(void* userdata, int table, int index, int field)
 {
+    int i;
     list_t words;
     list_t* table_list;
     struct lconv_entry* entry;
@@ -109,7 +111,7 @@ static list_t policy_field(void* userdata, int table, int index, int field)
     
     // If the index is outside the bounds, just return the
     // empty list.
-    if (index < 0 || index > list_size(table_list))
+    if (index < 0 || index > (int)list_size(table_list))
         return words;
     
     // Get the entry in the table.
@@ -130,7 +132,7 @@ static list_t policy_field(void* userdata, int table, int index, int field)
         case FIELD_LABEL_TEXT:
             if (entry->label == NULL)
                 return words;
-            for (int i = 0; i < blength(entry->label); i++)
+            for (i = 0; i < blength(entry->label); i++)
                 list_append(&words, (void*)(uint16_t)entry->label->data[i]);
             return words;
         default:
