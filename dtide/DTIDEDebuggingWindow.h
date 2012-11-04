@@ -24,7 +24,7 @@ public slots:
     void setMemoryAt(int, char, char);
 
 signals:
-    void start();
+    void resume();
     void pause();
     void step();
     void stop();

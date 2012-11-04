@@ -42,6 +42,7 @@ public:
     virtual void Start(BuildAPI& result, DebuggingSession* session);
     virtual void Stop(DebuggingSession* session);
     virtual void Pause(DebuggingSession* session);
+    virtual void Resume(DebuggingSession* session);
 
     virtual void SendStatus();
 

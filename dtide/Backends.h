@@ -221,10 +221,11 @@ public:
 
     // Breakpoints.
     virtual void AddBreakpoint(uint16_t address) = 0;
+    bool BreakpointAt(uint16_t address);
 
 protected:
     std::deque<DebuggingMessage> m_Queue;
-    std::list<uint16_t> b_Queue;
+    std::list<uint16_t> m_BreakList;
 };
 
 enum ModuleType
@@ -297,7 +298,7 @@ public:
     // Debugging / execution interface.
     virtual void Start(BuildAPI& result, DebuggingSession* session) = 0;
     virtual void Pause(DebuggingSession* session) = 0;
-    //virtual void Continue(DebuggingSession& session) = 0;
+    virtual void Resume(DebuggingSession* session) = 0;
     virtual void Stop(DebuggingSession* session) = 0;
     //virtual void AttachDevice(DebuggingSession& session, Device& device) = 0;
     //virtual void DetachDevice(DebuggingSession& session, Device& device) = 0;

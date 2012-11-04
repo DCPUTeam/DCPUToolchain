@@ -57,5 +57,5 @@ DebuggingMessage DTIDEDebuggingSession::GetMessage()
 
 void DTIDEDebuggingSession::AddBreakpoint(uint16_t address)
 {
-    b_Queue.push_back(address);
+    m_BreakList.push_back(address);
 }

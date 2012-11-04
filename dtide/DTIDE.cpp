@@ -132,7 +132,7 @@ void DTIDE::showDebuggerWindow()
 {
     debuggingWindow = new DTIDEDebuggingWindow(this);
     connect(debuggingWindow, SIGNAL(step()), this, SLOT(step()));
-    connect(debuggingWindow, SIGNAL(start()), this, SLOT(compileAndRunProject()));
+    connect(debuggingWindow, SIGNAL(resume()), this, SLOT(resume()));
     connect(debuggingWindow, SIGNAL(pause()), this, SLOT(pause()));
     connect(debuggingWindow, SIGNAL(stop()), this, SLOT(stop()));
 
@@ -181,6 +181,11 @@ void DTIDE::pause()
     toolchain->Pause(debuggingSession);
 }
 
+void DTIDE::resume()
+{
+    toolchain->Resume(debuggingSession);
+}
+
 void DTIDE::newFile()
 {
     //    addCodeTab(DTIDEBackends::getUntitledProperties(type));
@@ -215,6 +220,8 @@ void DTIDE::compileAndRunProject()
     {
         CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
         QList<Breakpoint> breakpoints(w->getBreakpoints());
+        w->run(debuggingSession);
+
         if(!breakpoints.empty())
         {
             for(int i = 0; i < breakpoints.size(); i++)
@@ -222,7 +229,6 @@ void DTIDE::compileAndRunProject()
                 toolchain->AddBreakpoint(debuggingSession, breakpoints[i]);
             }
         }
-        w->run(debuggingSession);
     }
 }
 

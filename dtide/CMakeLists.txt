@@ -22,6 +22,7 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         Toolchains/DT/Toolchain.cpp
         Toolchains/DT/dtasm.c
         Toolchains/DT/dtemu.c
+        Toolchains/DT/dtdb.c
     )
     set(dtide_HEADERS
         Backends.h
@@ -41,6 +42,7 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         Toolchains/DT/Toolchain.h
         Toolchains/DT/dtasm.h
         Toolchains/DT/dtemu.h
+        Toolchains/DT/dtdb.h
     )
         
     set(dtide_FORMS 
@@ -69,6 +71,7 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         ${libdcpu-ci-dbgfmt_SOURCE_DIR}
         ${libdcpu-vm_SOURCE_DIR}
         ${libdcpu-vm-dbg_SOURCE_DIR}
+        ${dtide_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}
         ${GLFW_SOURCE_DIR}/include
         ${png_SOURCE_DIR}
