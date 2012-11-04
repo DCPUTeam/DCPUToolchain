@@ -67,6 +67,7 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         ${libdcpu-ci-objfmt_SOURCE_DIR}
         ${libdcpu-ci-dbgfmt_SOURCE_DIR}
         ${libdcpu-vm_SOURCE_DIR}
+        ${libdcpu-vm-dbg_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}
         ${GLFW_SOURCE_DIR}/include
         ${png_SOURCE_DIR}
@@ -86,9 +87,12 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         argtable2
         libdcpu-ci-asm
         libdcpu-vm
+        libdcpu-ci-dbgfmt
+        libdcpu-vm-dbg
         png
         z
         glfw
+        simclist
         ${GLFW_LIBRARIES}
         ${OPENGL_LIBRARIES}
         ${QSCINTILLA_LIBRARY}

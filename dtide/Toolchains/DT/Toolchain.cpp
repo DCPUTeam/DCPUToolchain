@@ -127,8 +127,8 @@ void DCPUToolchainASM::Build(std::string filename, std::string outputDir, BuildA
     if (perform_assemble(cf, ob, os))
     {
         api.AddOutputFile(ob);
-        unlink(os);
         std::cout << "Assembling success!" << std::endl;
+        api.AddSymbolsFile(os);
     }
     else
     {
@@ -180,7 +180,7 @@ std::list<Language*> DCPUToolchain::GetLanguages()
     return list;
 }
 
-void DCPUToolchain::Start(std::string path, DebuggingSession* session)
+void DCPUToolchain::Start(BuildAPI& result, DebuggingSession* session)
 {
     // For the lack of a proper solution...
     g_this = this;
@@ -188,9 +188,18 @@ void DCPUToolchain::Start(std::string path, DebuggingSession* session)
     // Tell the emulator to start.
     debuggingSession = session;
     paused = false;
+
+    // Get the output files.
+//    std::list<std::string> outputFiles = result.GetOutputFiles();
+
+    // Change this when we have project support.
+ //   assert(outputFiles.size() == 1);
+//    std::string path(*(outputFiles.begin()));
+    
+
     vm_t* vm = start_emulation(
         /* Binary path */
-        path.c_str(),
+        "test",
 
         /* VM Hooks */
         &DCPUToolchain_CycleHook,
@@ -217,6 +226,8 @@ void DCPUToolchain::Start(std::string path, DebuggingSession* session)
     m.value = (MessageValue&) payload;
 
     debuggingSession->AddMessage(m);
+
+    // Load debugging symbols
 }
 
 void DCPUToolchain::AddStatusMessage(vm_t* vm)
@@ -273,3 +284,8 @@ void DCPUToolchain::Pause(DebuggingSession* session)
     paused = true;
 }
 
+void DCPUToolchain::AddBreakpoint(DebuggingSession* session, Breakpoint& b)
+{
+    std::cout << "You want some of this?" << b.Line << ", " << b.File;
+    std::cout << std::endl;
+}

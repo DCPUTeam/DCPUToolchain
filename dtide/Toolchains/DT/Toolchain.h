@@ -9,7 +9,11 @@
 #include <QGLWidget>
 
 extern "C" {
+#include <dbgaux.h>
+#include <ddata.h>
+#include <simclist.h>
 #include <dcpu.h>
+#include <assert.h>
 }
 
 class DCPUToolchainASM: public Language
@@ -39,7 +43,7 @@ public:
 
     virtual std::list<Language*> GetLanguages();
 
-    virtual void Start(std::string path, DebuggingSession* session);
+    virtual void Start(BuildAPI& result, DebuggingSession* session);
     virtual void Stop(DebuggingSession* session);
     virtual void Pause(DebuggingSession* session);
 
@@ -47,9 +51,13 @@ public:
 
     DebuggingSession* debuggingSession;
 
+    virtual void AddBreakpoint(DebuggingSession* session, Breakpoint& b);
+
 private:
     void AddStatusMessage(vm_t* vm);
     bool paused;
+
+    list_t* m_symbols;
 };
 
 #endif

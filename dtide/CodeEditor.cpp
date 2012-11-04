@@ -158,6 +158,31 @@ bool CodeEditor::build()
 
 void CodeEditor::run(DebuggingSession* s)
 {
-    toolchain->Start(buildAPI.output, s);
+    toolchain->Start(buildAPI, s);
 }
 
+QList<Breakpoint> CodeEditor::getBreakpoints()
+{
+    QList<Breakpoint> res;
+    Breakpoint b;
+
+    int prev = 0;
+    int line = -1;
+
+    do
+    {
+        line = markerFindNext(prev, 0xffffffff);
+        if(line != -1)
+        {
+            line += 1;
+            prev = line;
+
+            b.Line = line;
+            b.File = fileName.toLocal8Bit().constData();
+
+            res.push_back(b);
+        }
+    } while(line != -1);
+
+    return res;
+}

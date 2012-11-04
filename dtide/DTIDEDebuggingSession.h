@@ -23,8 +23,7 @@ public:
     virtual void AddMessage(DebuggingMessage m);
     DebuggingMessage GetMessage();
 
-private:
-    std::deque<DebuggingMessage> m_Queue;
+    virtual void AddBreakpoint(uint16_t address);
 };
 
 #endif

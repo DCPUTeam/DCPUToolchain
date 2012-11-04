@@ -54,7 +54,7 @@ void DTIDE::runCycles(int count)
                 case StatusType:
                 {
                     StatusMessage status = (StatusMessage&) m.value;
-                    emit setRegisters(status);
+                    debuggingWindow->setRegisters(status);
                     break;
                 }
                 case MemoryDumpType:
@@ -131,7 +131,6 @@ void DTIDE::setupMenuBar()
 void DTIDE::showDebuggerWindow()
 {
     debuggingWindow = new DTIDEDebuggingWindow(this);
-    connect(this, SIGNAL(setRegisters(StatusMessage)), debuggingWindow, SLOT(setRegisters(StatusMessage)));
     connect(debuggingWindow, SIGNAL(step()), this, SLOT(step()));
     connect(debuggingWindow, SIGNAL(start()), this, SLOT(compileAndRunProject()));
     connect(debuggingWindow, SIGNAL(pause()), this, SLOT(pause()));
@@ -205,6 +204,7 @@ void DTIDE::compileAndRunProject()
 {
     if(debuggingWindow)
         debuggingWindow->close();
+
     stop();
     debuggingSession = new DTIDEDebuggingSession();
     compileProject();
@@ -214,6 +214,14 @@ void DTIDE::compileAndRunProject()
     for (int i = 0; i < tabs->count(); i++)
     {
         CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        QList<Breakpoint> breakpoints(w->getBreakpoints());
+        if(!breakpoints.empty())
+        {
+            for(int i = 0; i < breakpoints.size(); i++)
+            {
+                toolchain->AddBreakpoint(debuggingSession, breakpoints[i]);
+            }
+        }
         w->run(debuggingSession);
     }
 }

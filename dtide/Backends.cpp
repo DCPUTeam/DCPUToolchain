@@ -1,6 +1,16 @@
 #include "Backends.h"
 #include "Toolchains/Toolchains.h"
 
+std::list<std::string> BuildAPI::GetOutputFiles()
+{
+    return m_OutputFiles;
+}
+
+std::list<std::string> BuildAPI::GetSymbolFiles()
+{
+    return m_SymbolFiles;
+}
+
 Language* Toolchain::GetLanguageByExtension(std::string ext)
 {
     std::list<Language*>::iterator it;

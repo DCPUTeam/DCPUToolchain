@@ -11,7 +11,7 @@ void DTIDEBuildAPI::AddError(std::string message, std::string file, int line)
     entry.Message = message;
     entry.File = file;
     entry.Line = line;
-    this->m_ErrorEntries.insert(this->m_ErrorEntries.begin(), entry);
+    m_ErrorEntries.insert(m_ErrorEntries.begin(), entry);
 }
 
 void DTIDEBuildAPI::AddWarning(std::string message, std::string file, int line)
@@ -21,7 +21,7 @@ void DTIDEBuildAPI::AddWarning(std::string message, std::string file, int line)
     entry.Message = message;
     entry.File = file;
     entry.Line = line;
-    this->m_ErrorEntries.insert(this->m_ErrorEntries.begin(), entry);
+    m_ErrorEntries.insert(m_ErrorEntries.begin(), entry);
 }
 
 void DTIDEBuildAPI::AddIntermediateFile(std::string path, std::string langtarget)
@@ -29,15 +29,17 @@ void DTIDEBuildAPI::AddIntermediateFile(std::string path, std::string langtarget
     IntermediateFile entry;
     entry.Path = path;
     entry.Language = langtarget;
-    this->m_IntermediateFiles.insert(this->m_IntermediateFiles.begin(), entry);
+    m_IntermediateFiles.insert(m_IntermediateFiles.begin(), entry);
 }
 
 void DTIDEBuildAPI::AddOutputFile(std::string path)
 {
-    this->m_OutputFiles.insert(this->m_OutputFiles.begin(), path);
+    m_OutputFiles.insert(m_OutputFiles.begin(), path);
+}
 
-    // FIXME: Remove this when we have proper project support.
-    output = path;
+void DTIDEBuildAPI::AddSymbolsFile(std::string path)
+{
+    m_SymbolFiles.insert(m_SymbolFiles.begin(), path);
 }
 
 void DTIDEBuildAPI::End()

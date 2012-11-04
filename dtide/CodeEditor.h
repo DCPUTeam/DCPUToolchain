@@ -27,6 +27,7 @@ public:
 
     QString getPath();
     bool build();
+    QList<Breakpoint> getBreakpoints();
     void run(DebuggingSession* s);
 
 signals:
