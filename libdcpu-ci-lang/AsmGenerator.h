@@ -22,10 +22,12 @@ class StackFrame;
 #include <utility>
 #include "Assembler.h"
 #include "AsmBlock.h"
-#include "StackFrame.h"
-#include "nodes/IDeclarations.h"
-#include "nodes/IFunctionDeclaration.h"
-#include "nodes/IFunctionSignature.h"
+
+
+class IDeclarations;
+class IFunctionDeclaration;
+class IFunctionSignature;
+class SymbolTable;
 
 class AsmGenerator
 {
@@ -38,17 +40,11 @@ private:
     std::deque<std::pair<std::string, std::string> > m_loopStack;
 
 public:
-    StackFrame* m_CurrentFrame;
-    StackFrame* m_GlobalFrame;
     IDeclarations* m_RootNode;
+    SymbolTable* symbolTable;
 
 public:
     AsmGenerator(std::string asmtarget);
-
-    IFunctionDeclaration* getFunction(std::string name);
-    StackFrame* generateStackFrame(IFunctionDeclaration* function, bool referenceOnly = true);
-    StackFrame* generateStackFrameIncomplete(IFunctionSignature* signature);
-    void finishStackFrame(StackFrame* frame);
 
     // loop control stack
     void initLoopStack();
@@ -67,5 +63,11 @@ public:
         return true;
     }
 };
+
+#include "nodes/IDeclaration.h"
+#include "nodes/IFunctionDeclaration.h"
+#include "nodes/IFunctionSignature.h"
+#include "nodes/IDeclarations.h"
+#include "SymbolTable.h"
 
 #endif

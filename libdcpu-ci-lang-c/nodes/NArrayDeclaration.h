@@ -44,6 +44,8 @@ public:
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* initPointerTable(AsmGenerator& context, char arrayPointerAdr, char arrayMemAreaAdr);
     virtual AsmBlock* reference(AsmGenerator& context);
+    
+    virtual void insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position);
 };
 
 #endif

@@ -25,7 +25,8 @@ public:
     NDeclarations() : Node("declarations") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
-    virtual IFunctionDeclaration* getFunction(std::string name);
+    //virtual void analyse(AsmGenerator& context, bool reference);
+    //virtual IFunctionDeclaration* getFunction(std::string name);
 };
 
 #endif

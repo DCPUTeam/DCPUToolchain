@@ -14,9 +14,13 @@
 #ifndef __DCPU_COMP_INTERFACES_FUNCTION_DECLARATION_H
 #define __DCPU_COMP_INTERFACES_FUNCTION_DECLARATION_H
 
+//class IDeclaration;
+
+#include "IDeclaration.h"
 #include "../StackMap.h"
 
-class IFunctionDeclaration
+
+class IFunctionDeclaration : public IDeclaration
 {
 public:
     virtual StackMap generateLocalsStackMap() = 0;

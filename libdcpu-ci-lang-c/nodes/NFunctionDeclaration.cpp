@@ -16,6 +16,7 @@
 #include "NFunctionDeclaration.h"
 #include "NFunctionSignature.h"
 #include "NArrayDeclaration.h"
+#include <SymbolTypes.h>
 
 NFunctionDeclaration::NFunctionDeclaration(const IType* type, const NIdentifier& id, const VariableList& arguments, NBlock* block, bool varArgs)
     : id(id), block(block), pointerType(NULL), NDeclaration("function"), NFunctionSignature(type, arguments, varArgs)
@@ -23,9 +24,6 @@ NFunctionDeclaration::NFunctionDeclaration(const IType* type, const NIdentifier&
     // We need to generate an NFunctionPointerType for when we are resolved
     // as a pointer (for storing a reference to us into a variable).
     this->pointerType = new NFunctionPointerType(type, arguments);
-
-    // FIXME remove debug output
-    //std::cout << "Parsed Function " << this->id.name << " and signature " << this->getSignature() << std::endl;
 }
 
 NFunctionDeclaration::~NFunctionDeclaration()
@@ -68,17 +66,35 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
         *block <<  ".EXPORT cfunc_" << this->id.name << std::endl;
 
     // Calculate total stack space required.
-    StackFrame* frame = context.generateStackFrame(this, false);
+    //StackFrame* frame = context.generateStackFrame(this, false);
+    
+    // set up new scope and fill it
+    this->functionScope = context.symbolTable->beginNewScope();
+    for (VariableList::const_iterator i = this->arguments.begin(); i != this->arguments.end(); i++)
+    {
+        // add function parameters
+        (*i)->insertIntoScope(context, context.symbolTable->getCurrentScope(), PARAMETER_STACK);
+    }
+    for (StatementList::iterator i = this->block->statements.begin(); i != this->block->statements.end(); i++)
+    {
+        // TODO do this cleanly
+        if ((*i)->cType == "statement-declaration-variable" || (*i)->cType == "statement-declaration-array")
+        {
+            // add local variables
+            ((NDeclaration*) *i)->insertIntoScope(context, context.symbolTable->getCurrentScope(), LOCAL_STACK);
+        }
+    }
+    
     context.initLoopStack();
 
     // Output the leading information and immediate jump.
     *block <<  ":cfunc_" << this->id.name << std::endl;
     *block <<  "    SET PC, cfunc_" << this->id.name << "_actual" << std::endl;
-    *block <<  "    DAT " << frame->getParametersSize() << std::endl;
+    *block <<  "    DAT " << this->functionScope->getParameterStackSize() << std::endl;
     *block <<  ":cfunc_" << this->id.name << "_actual" << std::endl;
 
     // Allocate locals.
-    *block <<  "    SUB SP, " << frame->getLocalsSize() << std::endl;
+    *block <<  "    SUB SP, " << this->functionScope->getLocalStackSize() << std::endl;
 
     // Now compile the block.
     AsmBlock* iblock = this->block->compile(context);
@@ -86,15 +102,16 @@ AsmBlock* NFunctionDeclaration::compile(AsmGenerator& context)
     delete iblock;
 
     // Free locals.
-    *block <<  "    ADD SP, " << frame->getLocalsSize() << std::endl;
+    *block <<  "    ADD SP, " << this->functionScope->getLocalStackSize() << std::endl;
 
     // Return from this function.
     *block <<  "    SET A, 0xFFFF" << std::endl;
-    *block <<  "    SET X, " << frame->getParametersSize() << std::endl;
+    *block <<  "    SET X, " << this->functionScope->getParameterStackSize() << std::endl;
     *block <<  "    SET PC, _stack_callee_return" << std::endl;
 
     // Clean up frame.
-    context.finishStackFrame(frame);
+    //context.finishStackFrame(frame);
+    context.symbolTable->endScope();
     context.initLoopStack();
 
     return block;
@@ -165,4 +182,9 @@ StackMap NFunctionDeclaration::generateParametersStackMap()
 IType* NFunctionDeclaration::getPointerType()
 {
     return this->pointerType;
+}
+
+void NFunctionDeclaration::insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position)
+{
+    scope.insert(this->id.name, FUNCTION_DECL, this->getPointerType(), (IFunctionDeclaration*) this, position);
 }

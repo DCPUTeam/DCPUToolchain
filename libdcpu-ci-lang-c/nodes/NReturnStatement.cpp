@@ -33,10 +33,10 @@ AsmBlock* NReturnStatement::compile(AsmGenerator& context)
     }
 
     // Free locals.
-    *block <<  "    ADD SP, " << context.m_CurrentFrame->getLocalsSize() << std::endl;
+    *block <<  "    ADD SP, " << context.symbolTable->getCurrentScope().getLocalStackSize() << std::endl;
 
     // Return from this function.
-    *block <<  "    SET X, " << context.m_CurrentFrame->getParametersSize() << std::endl;
+    *block <<  "    SET X, " << context.symbolTable->getCurrentScope().getParameterStackSize() << std::endl;
     *block <<  "    SET PC, _stack_callee_return" << std::endl;
 
     return block;

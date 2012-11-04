@@ -28,6 +28,8 @@ public:
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
     virtual size_t getWordSize(AsmGenerator& context);
+    
+    virtual void insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position);
 };
 
 #endif

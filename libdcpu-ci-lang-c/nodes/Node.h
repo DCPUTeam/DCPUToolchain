@@ -46,6 +46,7 @@ public:
     virtual ~Node() {}
     virtual AsmBlock* compile(AsmGenerator& context) = 0;
     virtual AsmBlock* reference(AsmGenerator& context) = 0;
+    //virtual void analyse(AsmGenerator& context, bool reference) = 0;
     AsmBlock getFileAndLineState() const;
 };
 

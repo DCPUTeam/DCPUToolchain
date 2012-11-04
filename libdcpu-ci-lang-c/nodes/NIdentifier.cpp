@@ -24,8 +24,10 @@ AsmBlock* NIdentifier::compile(AsmGenerator& context)
     *block << this->getFileAndLineState();
 
     // Get the position and type of the variable.
-    TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
-    IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
+    //TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
+    TypePosition result = context.symbolTable->getPositionOfVariable(this->name);
+    //IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
+    IType* type = context.symbolTable->getTypeOfVariable(this->name);
 
     if (!result.isFound())
         throw new CompilerException(this->line, this->file, "The variable '" + this->name + "' was not found in the scope.");
@@ -49,7 +51,8 @@ AsmBlock* NIdentifier::reference(AsmGenerator& context)
     *block << this->getFileAndLineState();
 
     // Get the position of the variable.
-    TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
+    //TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
+    TypePosition result = context.symbolTable->getPositionOfVariable(this->name);
 
     if (!result.isFound())
         throw new CompilerException(this->line, this->file, "The variable '" + this->name + "' was not found in the scope.");
@@ -64,7 +67,8 @@ IType* NIdentifier::getExpressionType(AsmGenerator& context)
 {
     // Search the current context for the variable with
     // this name and return it's type.
-    IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
+    //IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
+    IType* type = context.symbolTable->getTypeOfVariable(this->name);
 
     if (type == NULL)
         throw new CompilerException(this->line, this->file, "Unable to resolve variable '" + this->name + "' when determining type information (does the variable exist?).");

@@ -9,14 +9,20 @@ add_library(libdcpu-ci-lang STATIC
     Assembler.cpp
     Assembler.h
     CompilerException.h
+    nodes/IDeclaration.h
     nodes/IDeclarations.h
     nodes/IFunctionDeclaration.h
     nodes/IFunctionSignature.h
     nodes/IType.h
-    StackFrame.cpp
-    StackFrame.h
     StackMap.h
     TypePosition.cpp
     TypePosition.h
+    SymbolTable.cpp
+    SymbolTable.h
+    SymbolTableScope.cpp
+    SymbolTableScope.h
+    SymbolObject.cpp
+    SymbolObject.h
+    SymbolTypes.h
 )
 cotire(libdcpu-ci-lang)

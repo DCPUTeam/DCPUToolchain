@@ -48,6 +48,7 @@ bool TypePosition::isFunction()
     return this->m_Function;
 }
 
+
 std::string TypePosition::getAddress()
 {
     std::stringstream sstr;
@@ -70,6 +71,7 @@ std::string TypePosition::getAddress()
 
     return sstr.str();
 }
+
 
 std::string TypePosition::pushAddress(char registr)
 {

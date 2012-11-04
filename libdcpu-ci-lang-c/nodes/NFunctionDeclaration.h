@@ -27,6 +27,9 @@ public:
     const NIdentifier& id;
     NBlock* block;
     NFunctionPointerType* pointerType;
+    
+    SymbolTableScope* functionScope;
+    
     NFunctionDeclaration(const IType* type, const NIdentifier& id, const VariableList& arguments, NBlock* block, bool varArgs);
     ~NFunctionDeclaration();
     virtual AsmBlock* compile(AsmGenerator& context);
@@ -34,6 +37,8 @@ public:
     virtual StackMap generateLocalsStackMap();
     virtual StackMap generateParametersStackMap();
     virtual IType* getPointerType();
+    
+    virtual void insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position);
 };
 
 #endif

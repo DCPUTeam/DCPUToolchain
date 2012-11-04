@@ -27,18 +27,19 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
     // Get the function declaration.
     bool isDirect = true;
-    NFunctionSignature* funcsig = (NFunctionDeclaration*)context.getFunction(this->id.name);
+    NFunctionSignature* funcsig = (NFunctionDeclaration*)context.symbolTable->getFunction(this->id.name);
 
     // FIXME: get rid of the use of NType for function signatures!!
     if (funcsig == NULL)
     {
         // Try and get a variable with matching signature then.
-        TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+        //TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+        TypePosition varpos = context.symbolTable->getPositionOfVariable(this->id.name);
 
         if (!varpos.isFound())
             throw new CompilerException(this->line, this->file, "Neither a function nor a function pointer was found by the name '" + this->id.name + "'.");
 
-        NType* vartype = (NType*)context.m_CurrentFrame->getTypeOfVariable(this->id.name);
+        NType* vartype = (NType*)context.symbolTable->getTypeOfVariable(this->id.name);
 
         if (vartype->cType != "expression-identifier-type-function")
             throw new CompilerException(this->line, this->file, "Unable to call variable '" + this->id.name + "' as it is not a function pointer.");
@@ -63,7 +64,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
     }
 
     // Get the stack table of this method.
-    StackFrame* frame = context.generateStackFrameIncomplete(funcsig);
+    //StackFrame* frame = context.generateStackFrameIncomplete(funcsig);
 
     // Get a random label for our jump-back point.
     std::string jmpback = context.getRandomLabel("callback");
@@ -145,7 +146,8 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
     {
         // we are referencing the previous stack frame here
         // => parameter previousStackFrame=true
-        TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name, true);
+        //TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name, true);
+        TypePosition varpos = context.symbolTable->getPositionOfVariable(this->id.name, true);
         *block <<  varpos.pushAddress('X');
         *block <<  "    SET X, [X]" << std::endl;
         *block <<  "    SET PC, X" << std::endl;
@@ -174,7 +176,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
     }
     
     // Clean up frame.
-    context.finishStackFrame(frame);
+    //context.finishStackFrame(frame);
 
     return block;
 }
@@ -187,7 +189,7 @@ AsmBlock* NMethodCall::reference(AsmGenerator& context)
 IType* NMethodCall::getExpressionType(AsmGenerator& context)
 {
     // An method call has the type of the method's return type.
-    NFunctionDeclaration* funcdecl = (NFunctionDeclaration*)context.getFunction(this->id.name);
+    NFunctionDeclaration* funcdecl = (NFunctionDeclaration*)context.symbolTable->getFunction(this->id.name);
 
     if (funcdecl == NULL)
         throw new CompilerException(this->line, this->file, "Called function was not found '" + this->id.name + "'.");

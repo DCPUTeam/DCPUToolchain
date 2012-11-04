@@ -16,6 +16,7 @@
 #include "NArrayDeclaration.h"
 #include "TPointer16.h"
 #include "TArrayMemArea.h"
+#include <SymbolTypes.h>
 
 NArrayDeclaration::NArrayDeclaration(IType* type, NIdentifier& id, DimensionsList* dims, ExpressionList* initExprList) :
     id(id), m_dims(dims), m_baseType(type), m_initExprs(initExprList), NDeclaration("array")
@@ -116,13 +117,15 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
     *block << this->getFileAndLineState();
 
     // Get the position of the array variable.
-    TypePosition variablePos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+    //TypePosition variablePos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+    TypePosition variablePos = context.symbolTable->getPositionOfVariable(this->id.name);
     if (!variablePos.isFound())
         throw new CompilerException(this->line, this->file, "The variable '" + this->id.name + "' was not found in the scope.");
 
     // Get the position of the mem area
     // TODO maybe move the "<arraymem>" internal tag into some unified variable
-    TypePosition memPos = context.m_CurrentFrame->getPositionOfVariable("<arraymem>_" + this->id.name);
+    //TypePosition memPos = context.m_CurrentFrame->getPositionOfVariable("<arraymem>_" + this->id.name);
+    TypePosition memPos = context.symbolTable->getPositionOfVariable("<arraymem>_" + this->id.name);
     if (!memPos.isFound())
         throw new CompilerException(this->line, this->file, "The space for the array '" + this->id.name + "' was not allocated.");
 
@@ -197,4 +200,12 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 AsmBlock* NArrayDeclaration::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a variable.");
+}
+
+
+void NArrayDeclaration::insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position)
+{
+    scope.insert(this->id.name, VARIABLE_DECL, this->getPointerType(), this, position);
+    // insert also the mem area for the data of the array
+    scope.insert("<arraymem>_" + this->id.name, VARIABLE_DECL, this->getMemAreaType(), this, position);
 }

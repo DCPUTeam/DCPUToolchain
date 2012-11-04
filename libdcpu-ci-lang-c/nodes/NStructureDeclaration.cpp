@@ -15,6 +15,7 @@
 #include <CompilerException.h>
 #include "NStructureDeclaration.h"
 #include "NArrayDeclaration.h"
+#include <SymbolTypes.h>
 
 AsmBlock* NStructureDeclaration::compile(AsmGenerator& context)
 {
@@ -46,4 +47,9 @@ size_t NStructureDeclaration::getWordSize(AsmGenerator& context)
         }
     }
     return s;
+}
+
+void NStructureDeclaration::insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position)
+{
+    scope.insert(this->id.name, STRUCT_DECL, NULL, this, position);
 }

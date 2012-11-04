@@ -15,6 +15,7 @@
 #include <CompilerException.h>
 #include "NVariableDeclaration.h"
 #include "TStruct.h"
+#include <SymbolTypes.h>
 
 AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 {
@@ -22,13 +23,15 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
     AsmBlock* block = new AsmBlock();
 
     // Get the position of the variable.
-    TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+    //TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+    TypePosition result = context.symbolTable->getPositionOfVariable(this->id.name);
 
     if (!result.isFound())
         throw new CompilerException(this->line, this->file, "The variable '" + this->id.name + "' was not found in the scope.");
 
     // get variable type
-    IType* varType = context.m_CurrentFrame->getTypeOfVariable(this->id.name);
+    //IType* varType = context.m_CurrentFrame->getTypeOfVariable(this->id.name);
+    IType* varType = this->type;
 
     // if this is a struct, it may has to be initialized (arrays within structs)
     if (varType->isStruct())
@@ -78,4 +81,17 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 AsmBlock* NVariableDeclaration::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a variable.");
+}
+
+void NVariableDeclaration::insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position)
+{
+    if (scope.contains(this->id.name))
+    {
+        throw new CompilerException(this->line, this->file, "Error: Variable with name '" + this->id.name + "' was declared before.");
+    }
+    else if (scope.containsRec(this->id.name))
+    {
+        // TODO maybe warn??
+    }
+    scope.insert(this->id.name, VARIABLE_DECL, this->type, this, position);
 }

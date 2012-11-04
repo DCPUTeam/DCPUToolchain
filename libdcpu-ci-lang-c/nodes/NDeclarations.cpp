@@ -21,6 +21,9 @@
 /// Defines the function that handles calling the standard
 /// library entry point.
 ///
+
+// FIXME: not needed (i think)
+/*
 class StandardLibraryEntryFunction : public IFunctionDeclaration
 {
 public:
@@ -45,6 +48,8 @@ public:
         throw new CompilerException(0, "internal", "Attempted to get reference type for internal standard library entry point.");
     }
 };
+*/
+
 
 AsmBlock* NDeclarations::compile(AsmGenerator& context)
 {
@@ -92,9 +97,18 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
             //    see if it already has a match).
         }
     }
+    
+    // do it in the new way
+    for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
+    {
+        (*i)->insertIntoScope(context, context.symbolTable->getGlobalScope(), GLOBAL);
+    }
 
-    context.m_GlobalFrame = new StackFrame(context, *map);
+    //context.m_GlobalFrame = new StackFrame(context, *map);
 
+
+/*
+    int outputDATs = 0;
     // Output the global data storage area.
     *block << std::endl;
     *block <<  ":_DATA" << std::endl;
@@ -112,9 +126,13 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 
             // Output zero'd data sections.
             *block <<  "    DAT 0";
+            outputDATs++;
 
             for (unsigned int b = 1; b < size; b++)
+            {
                 *block <<  ", 0";
+                outputDATs++;
+            }
 
             *block << std::endl;
         }
@@ -130,13 +148,53 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
 
             // Output zero'd data sections.
             *block <<  "    DAT 0";
+            outputDATs++;
 
             for (unsigned int b = 1; b < size; b++)
+            {
                 *block <<  ", 0";
+                outputDATs++;
+            }
 
             *block << std::endl;
         }
     }
+    * */
+    
+    // Output the global data storage area.
+    *block << std::endl;
+    *block <<  ":_DATA" << std::endl;
+    uint16_t globalDATs = context.symbolTable->getGlobalScope().getGlobalsSize();
+    if (globalDATs > 0)
+    {
+        // Output zero'd data sections.
+        *block <<  "; BEGIN: Global Data Space" << std::endl;
+        
+        // output in blocks of 10 DAT
+        while (globalDATs >= 10)
+        {
+            *block <<  "    DAT 0";
+            for (unsigned int b = 1; b < 10; b++)
+            {
+                *block <<  ", 0";
+            }
+            *block << std::endl;
+            globalDATs -= 10;
+        }
+        
+        if (globalDATs > 0)
+        {
+            // output the rest
+            *block <<  "    DAT 0";
+            for (unsigned int b = 1; b < globalDATs; b++)
+            {
+                *block <<  ", 0";
+            }
+            *block << std::endl;
+        }
+        *block <<  "; END: Global Data Space" << std::endl;
+    }
+    
 
     *block << std::endl;
 
@@ -145,7 +203,7 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
     {
         // Output the block for initializing global data storage.
         *block <<  ".SECTION INIT" << std::endl;
-        context.m_CurrentFrame = context.m_GlobalFrame; // So that the NVariableDeclaration compiles successfully.
+        //context.m_CurrentFrame = context.m_GlobalFrame; // So that the NVariableDeclaration compiles successfully.
 
         for (DeclarationList::iterator i = this->definitions.begin(); i != this->definitions.end(); i++)
         {
@@ -180,24 +238,26 @@ AsmBlock* NDeclarations::compile(AsmGenerator& context)
     }
 
     // Deal with the main setup.
-    NFunctionDeclaration* main = (NFunctionDeclaration*)context.getFunction("main");
+    NFunctionDeclaration* main = (NFunctionDeclaration*)context.symbolTable->getFunction("main");
     if (main != NULL && main->block != NULL /* Check it's not just a declaration, but a definition. */)
     {
+        // FIXME :  we dont need this:
         // Get the stack table of _stdlib_entry.
-        StandardLibraryEntryFunction* func = new StandardLibraryEntryFunction();
-        StackFrame* frame = context.generateStackFrame(func, false);
-        delete func;
+        //StandardLibraryEntryFunction* func = new StandardLibraryEntryFunction();
+        //StackFrame* frame = context.generateStackFrame(func, false);
+        //delete func;
 
         // Output assembly for calling main.
         // NOTE: _stdlib_enter() should never return or bad things will happen!
         // NOTE: _stdlib_enter() always takes 0 parameters!
-        *block <<  "    SET X, " << frame->getParametersSize() << std::endl;
+        *block <<  "    SET X, 0" << std::endl;
         *block <<  "    SET Z, 0" << std::endl;
         *block <<  "    JSR _stack_caller_init" << std::endl;
         *block <<  "    SET PC, cfunc__stdlib_enter" << std::endl;
 
         // Clean up frame.
-        context.finishStackFrame(frame);
+        // FIXME: delete this
+        //context.finishStackFrame(frame);
     }
 
     // Handle function definitions.
@@ -222,6 +282,7 @@ AsmBlock* NDeclarations::reference(AsmGenerator& context)
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a list-of-declarations node.");
 }
 
+/*
 IFunctionDeclaration* NDeclarations::getFunction(std::string name)
 {
     // FIXME: IDeclarations must provide functionality to get a function by name.
@@ -234,3 +295,4 @@ IFunctionDeclaration* NDeclarations::getFunction(std::string name)
 
     return NULL;
 }
+*/

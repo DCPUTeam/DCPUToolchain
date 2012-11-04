@@ -29,8 +29,12 @@ public:
         type(type), id(id), initExpr(NULL), NDeclaration("variable") { }
     NVariableDeclaration(IType* type, NIdentifier& id, NExpression* initExpr) :
         type(type), id(id), initExpr(initExpr), NDeclaration("variable") { }
+        
+        
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    
+    virtual void insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position);
 };
 
 #endif
