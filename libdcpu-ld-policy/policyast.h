@@ -133,6 +133,7 @@ typedef struct
     policy_call_section_t call_section; //< Call handler for section() function.
     policy_error_t error; //< Error handler for when execution fails.
     list_t variables; //< A list of local variables (policy_variable_t).
+    void* userdata; //< Userdata associated with this state.
 } policy_state_t;
 
 void policy_execute(policies_t* policies, policy_state_t* state);

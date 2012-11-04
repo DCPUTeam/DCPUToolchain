@@ -34,7 +34,7 @@ static policy_value_t* function_evaluate(policy_state_t* state, policy_function_
             assert(call->parameters != NULL && list_size(call->parameters) == 1);
             value_0 = list_get_at(call->parameters, 0);
             assert(value_0->type == TABLE);
-            int_result = state->call_total_table(value_0->number);
+            int_result = state->call_total_table(state->userdata, value_0->number);
             new_value = malloc(sizeof(policy_value_t));
             new_value->type = NUMBER;
             new_value->runtime = true;
@@ -51,7 +51,7 @@ static policy_value_t* function_evaluate(policy_state_t* state, policy_function_
             value_1 = value_evaluate(state, value_1);
             if (value_1 == NULL)
                 return NULL;
-            list_result = state->call_field(value_0->number, value_1->number, value_2->number);
+            list_result = state->call_field(state->userdata, value_0->number, value_1->number, value_2->number);
             new_value = malloc(sizeof(policy_value_t));
             new_value->type = LIST;
             new_value->runtime = true;
@@ -71,7 +71,7 @@ static policy_value_t* function_evaluate(policy_state_t* state, policy_function_
             return new_value;
         case FUNC_CODE:
             assert(call->parameters == NULL || list_size(call->parameters) == 0);
-            list_result = state->call_code();
+            list_result = state->call_code(state->userdata);
             new_value = malloc(sizeof(policy_value_t));
             new_value->type = LIST;
             new_value->runtime = true;
@@ -203,7 +203,7 @@ static void instructions_execute(policies_t* policies, policy_state_t* state, li
                     list_iterator_stop(instructions);
                     return;
                 }
-                state->call_offset(value->number);
+                state->call_offset(state->userdata, value->number);
                 free_policy_value(true, value);
                 break;
             case INST_WRITE:
@@ -217,7 +217,7 @@ static void instructions_execute(policies_t* policies, policy_state_t* state, li
                     while (list_iterator_hasnext(value->list))
                         list_append(&temp, (void*)(uint16_t)((policy_value_t*)list_iterator_next(value->list))->number);
                     list_iterator_stop(value->list);
-                    state->call_write(temp);
+                    state->call_write(state->userdata, temp);
                     list_destroy(&temp);
                     free_policy_value(true, value);
                 }
@@ -225,7 +225,7 @@ static void instructions_execute(policies_t* policies, policy_state_t* state, li
                 {
                     list_init(&temp);
                     list_append(&temp, (void*)value->number);
-                    state->call_write(temp);
+                    state->call_write(state->userdata, temp);
                     list_destroy(&temp);
                     free_policy_value(true, value);
                 }

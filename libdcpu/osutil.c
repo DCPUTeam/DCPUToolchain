@@ -226,9 +226,24 @@ bstring osutil_getkernelpath()
     bstring tmp;
     int result;
     struct stat buffer;
+    char* env = getenv("TOOLCHAIN_KERNELS");
+    if (env == NULL)
+    {
 #ifdef DCPU_CONFIG_HAS_KERNEL_PATH
+        tmp = bfromcstr(DCPU_CONFIG_KERNEL_PATH);
+#else
+        tmp = osutil_getarg0path();
+#ifdef _WIN32
+        bcatcstr(tmp, "\\kernel");
+#else
+        bcatcstr(tmp, "/kernel");
+#endif
+#endif
+    }
+    else
+        tmp = bfromcstr(env);
+    
     // Locate the correct path.
-    tmp = bfromcstr(DCPU_CONFIG_KERNEL_PATH);
     result = stat((const char*)tmp->data, &buffer);
     if (result == 0 && (buffer.st_mode & S_IFDIR) != 0)
         return tmp;
@@ -238,9 +253,6 @@ bstring osutil_getkernelpath()
         return tmp;
     bdestroy(tmp);
     return NULL;
-#else
-    return NULL;
-#endif
 }
 
 ///
@@ -259,9 +271,24 @@ bstring osutil_getstdlibpath()
     bstring tmp;
     int result;
     struct stat buffer;
+    char* env = getenv("TOOLCHAIN_STDLIBS");
+    if (env == NULL)
+    {
 #ifdef DCPU_CONFIG_HAS_STDLIB_PATH
+        tmp = bfromcstr(DCPU_CONFIG_STDLIB_PATH);
+#else
+        tmp = osutil_getarg0path();
+#ifdef _WIN32
+        bcatcstr(tmp, "\\kernel");
+#else
+        bcatcstr(tmp, "/kernel");
+#endif
+#endif
+    }
+    else
+        tmp = bfromcstr(env);
+    
     // Locate the correct path.
-    tmp = bfromcstr(DCPU_CONFIG_STDLIB_PATH);
     result = stat((const char*)tmp->data, &buffer);
     if (result == 0 && (buffer.st_mode & S_IFDIR) != 0)
         return tmp;
@@ -271,9 +298,6 @@ bstring osutil_getstdlibpath()
         return tmp;
     bdestroy(tmp);
     return NULL;
-#else
-    return NULL;
-#endif
 }
 
 ///

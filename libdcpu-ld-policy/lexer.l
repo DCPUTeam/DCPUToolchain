@@ -87,7 +87,7 @@ address                                 return FIELD_ADDRESS;
 
 [a-zA-Z-]+                              yylval.string = bfromcstr(yytext); return WORD;
 <IN_DEFAULTS>\{                         BEGIN(EXPECT_KEY);
-<EXPECT_KEY>[a-zA-Z0-9]+                yylval.string = bfromcstr(yytext); BEGIN(EXPECT_EQUALS); return KEY;
+<EXPECT_KEY>[a-zA-Z0-9_-]+             yylval.string = bfromcstr(yytext); BEGIN(EXPECT_EQUALS); return KEY;
 <EXPECT_KEY>\}                          BEGIN(INITIAL);
 <EXPECT_EQUALS>\=                       BEGIN(EXPECT_VALUE); return EQUAL;
 <EXPECT_VALUE>[^\n]*                    yylval.string = bfromcstr(yytext); BEGIN(EXPECT_KEY); return VALUE;

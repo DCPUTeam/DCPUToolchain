@@ -17,12 +17,14 @@
 #ifndef __DCPU_LD_POLICY_H
 #define __DCPU_LD_POLICY_H
 
+#include <bstring.h>
 #include "policyast.h"
 
 policies_t* policies_load(FILE* input);
 void policies_free(policies_t* policies);
 policy_t* policies_get_policy(policies_t* policies, freed_bstring name);
 policy_t* policies_get_settings(policies_t* policies);
+bstring policies_get_setting(policies_t* policies, freed_bstring key);
 
 policy_state_t* state_from_policy(policy_t* policy);
 void state_execute(policies_t* policies, policy_state_t* state);

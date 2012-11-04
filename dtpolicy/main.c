@@ -176,7 +176,7 @@ void print_instructions(int indent, list_t* instructions)
     bautodestroy(indentstr);
 }
 
-list_t handle_code()
+list_t handle_code(void* userdata)
 {
     list_t words;
     printf("code called\n");
@@ -190,7 +190,7 @@ list_t handle_code()
     return words;
 }
 
-list_t handle_field(int table, int index, int field)
+list_t handle_field(void* userdata, int table, int index, int field)
 {
     list_t words;
     printf("field called with %i, %i, %i\n", table, index, field);
@@ -198,18 +198,18 @@ list_t handle_field(int table, int index, int field)
     return words;
 }
 
-void handle_offset(int position)
+void handle_offset(void* userdata, int position)
 {
     printf("offset called with %i\n", position);
 }
 
-int handle_total_table(int table)
+int handle_total_table(void* userdata, int table)
 {
     printf("total called with %i\n", table);
     return 3;
 }
 
-void handle_write(list_t words)
+void handle_write(void* userdata, list_t words)
 {
     printf("write called with:\n");
     list_iterator_start(&words);

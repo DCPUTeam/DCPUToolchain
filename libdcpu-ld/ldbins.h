@@ -1,16 +1,19 @@
-/**
-
-    File:       ldbins.h
-
-    Project:    DCPU-16 Toolchain
-    Component:  Linker
-
-    Authors:    James Rhodes
-
-    Description:    Provides a section bin list upon which operations
-            can then be performed.
-
-**/
+///
+/// @addtogroup LibDCPU-LD
+/// @brief Library for performing linking.
+///
+/// This library manipulates DCPU-16 code according to rules and information
+/// in object files to combine DCPU-16 code into a single resulting binary.
+///
+/// @{
+///
+/// @file
+/// @brief API for creating and modifying sets of linker bins.
+/// @author James Rhodes
+/// 
+/// This header provides functionality for loading, creating, re-arranging
+/// and optimizing sets of linker bins.
+///
 
 #ifndef __DCPU_LD_BINS_H
 #define __DCPU_LD_BINS_H
@@ -29,7 +32,7 @@
 #define OPTIMIZE_DANGEROUS 3
 
 ///
-/// The global bin storage.
+/// @brief The global bin storage.
 ///
 struct
 {
@@ -57,3 +60,7 @@ uint16_t bins_compress();
 void bins_free();
 
 #endif
+
+///
+/// @}
+///

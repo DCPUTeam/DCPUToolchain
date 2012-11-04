@@ -93,6 +93,40 @@ policy_t* policies_get_settings(policies_t* policies)
 }
 
 ///
+/// @brief Retrieves the value associated with the specified setting.
+///
+/// Returns the value associated with the specified key.  Returns NULL
+/// if no such key exists.
+///
+/// @note The returned bstring is a reference to the value and will be
+/// automatically freed when policies_free() is called.
+///
+/// @param policies The policies AST.
+/// @param key The name of the setting.
+/// @return The value of the setting.
+///
+bstring policies_get_setting(policies_t* policies, freed_bstring key)
+{
+    policy_setting_t* setting = NULL;
+    if (policies->settings == NULL)
+        return NULL;
+    list_iterator_start(policies->settings->settings);
+    while (list_iterator_hasnext(policies->settings->settings))
+    {
+        setting = list_iterator_next(policies->settings->settings);
+        if (biseq(setting->key, key.ref))
+        {
+            list_iterator_stop(policies->settings->settings);
+            bautodestroy(key);
+            return setting->value;
+        }
+    }
+    list_iterator_stop(policies->settings->settings);
+    bautodestroy(key);
+    return NULL;
+}
+
+///
 /// @brief Creates a new execution state for a policy.
 ///
 /// @param policy The policy to create a state from.
