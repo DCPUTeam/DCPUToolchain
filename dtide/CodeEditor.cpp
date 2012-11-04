@@ -3,6 +3,7 @@
 CodeEditor::CodeEditor(Toolchain* t, QString filename, QWidget* parent): QsciScintilla(parent)
 {
     highlighter = 0;
+    buildAPI = 0;
     
     connect(this, SIGNAL(textChanged()), this, SLOT(updateFileName()));
     connect(this, SIGNAL(linesChanged()), this, SLOT(updateLineNumberMarginWidth()));
@@ -151,14 +152,18 @@ bool CodeEditor::build()
     QFileInfo f(getPath());
     std::string absolutePath = f.absolutePath().toStdString();
 
-    lang->Build(path.toStdString(), absolutePath, buildAPI);
+    if(buildAPI != 0)
+        delete buildAPI;
+
+    buildAPI = new DTIDEBuildAPI();
+    lang->Build(path.toStdString(), absolutePath, *buildAPI);
 
     return true;
 }
 
 void CodeEditor::run(DebuggingSession* s)
 {
-    toolchain->Start(buildAPI, s);
+    toolchain->Start(*buildAPI, s);
 }
 
 QList<Breakpoint> CodeEditor::getBreakpoints()

@@ -50,7 +50,7 @@ private:
     QString fileName;
     QString path;
 
-    DTIDEBuildAPI buildAPI;
+    DTIDEBuildAPI* buildAPI;
 
     int marginPadding;
     bool dirty;

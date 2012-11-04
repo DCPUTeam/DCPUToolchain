@@ -9,6 +9,7 @@ class DTIDEBuildAPI: public BuildAPI
 {
 public:
     DTIDEBuildAPI();
+    ~DTIDEBuildAPI();
 
     void AddError(std::string message, std::string file, int line);
     void AddWarning(std::string message, std::string file, int line);
