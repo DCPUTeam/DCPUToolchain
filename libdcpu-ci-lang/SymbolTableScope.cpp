@@ -83,8 +83,11 @@ void SymbolTableScope::insert(std::string name, DeclType declType, IType* type, 
     {
         if (pos == LOCAL_STACK)
         {
-            offset = this->m_localStackSize;
+            // here we have to first add the word size because the
+            // local stack is from bottom up, but the adress should point
+            // to the first word of the type
             this->m_localStackSize += type->getWordSize(this->m_Generator);
+            offset = this->m_localStackSize;
         }
         else if (pos == PARAMETER_STACK)
         {

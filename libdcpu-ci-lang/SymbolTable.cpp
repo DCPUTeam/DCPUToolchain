@@ -94,7 +94,7 @@ TypePosition SymbolTable::getPositionOfVariable(std::string name, bool previousS
         //    implement recursive and non-recursive versions of 'contains' and 'find'
         //    replace StackMap, StackFrame and all the calls to it in the compiler
         if (obj.objectPos == LOCAL_STACK)
-            return TypePosition(true, false, false, previousStackFrame, this->m_currentScope->getLocalStackSize() - obj.positionOffset);
+            return TypePosition(true, false, false, previousStackFrame, obj.positionOffset);
         else if (obj.objectPos == PARAMETER_STACK)
             return TypePosition(true, false, true, previousStackFrame, obj.positionOffset);
         else if (obj.objectPos == GLOBAL)
