@@ -1,15 +1,21 @@
-/**
-
-    File:       bfile.h
-
-    Project:    DCPU-16 Toolchain
-    Component:  LibDCPU
-
-    Authors:    James Rhodes
-
-    Description:    Provides buffered file access.
-
-**/
+///
+/// @addtogroup LibDCPU
+/// @{
+///
+/// @file
+/// @brief API for buffered file access.
+/// @author James Rhodes
+/// 
+/// The standalone file functions provided in the C standard library do not reliably
+/// check for EOF ahead of time.
+///
+/// This buffered file access API provides a BFILE structure that will check one character
+/// ahead of time whenever performing reads so that bfeof() will reliably return whether
+/// the end of the file has been reached.
+///
+/// This library also deals with platform quirks such as the 14880 hole that occurs
+/// on Windows.
+///
 
 #ifndef __DCPU_BFILE_H
 #define __DCPU_BFILE_H
@@ -17,14 +23,20 @@
 #include <stdio.h>
 #include "dcpu.h"
 
+///
+/// @brief The BFILE structure, representing a buffered file handle.
+///
+/// This structure should for the most part be considered opaque and
+/// not modified directly by users.
+///
 typedef struct
 {
-    FILE* file;
-    size_t pos;
-    bool readable;
-    bool wrapped;
-    int last;
-    int eof;
+    FILE* file; //< A reference to the underlying FILE* handle which we operate on.
+    size_t pos; //< The current read position in the file.
+    bool readable; //< Whether the file handle is readable.
+    bool wrapped; //< Whether this is a buffered wrapping around an already open file.
+    int last; //< The last character read from the FILE* handle.
+    int eof; //< Whether we have reached the end of the file.
 } BFILE;
 
 BFILE* bfopen(const char* path, const char* mode);
@@ -41,3 +53,7 @@ size_t bfiread(uint16_t* dest, BFILE* file);
 size_t bfiwrite(const uint16_t* src, BFILE* file);
 
 #endif
+
+///
+/// @}
+///

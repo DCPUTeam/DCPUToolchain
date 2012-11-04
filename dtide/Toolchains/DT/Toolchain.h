@@ -9,11 +9,7 @@
 #include <QGLWidget>
 
 extern "C" {
-#include <dbgaux.h>
-#include <ddata.h>
-#include <simclist.h>
 #include <dcpu.h>
-#include <assert.h>
 }
 
 class DCPUToolchainASM: public Language
@@ -56,8 +52,6 @@ public:
 private:
     void AddStatusMessage(vm_t* vm);
     bool paused;
-
-    list_t* m_symbols;
 };
 
 #endif
