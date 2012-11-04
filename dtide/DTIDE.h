@@ -46,6 +46,7 @@ private slots:
     void step();
     void stop();
     void pause();
+    void resume();
 
     void compileProject();
     void compileAndRunProject();

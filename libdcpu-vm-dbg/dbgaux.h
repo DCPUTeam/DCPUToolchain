@@ -28,6 +28,7 @@
 /// The last return code from a debugging command (to indicate
 /// success or failure).
 ///
+
 extern int ddbg_return_code;
 
 void ddbg_init();
@@ -53,3 +54,5 @@ void ddbg_dump_state();
 void ddbg_dump_ram(int start, int difference);
 void ddbg_disassemble_default();
 void ddbg_disassemble(int start, int difference);
+
+int32_t ddbg_file_to_address(bstring file, int index);

@@ -9,9 +9,6 @@
 #include <QGLWidget>
 
 extern "C" {
-#include <dbgaux.h>
-#include <ddata.h>
-#include <simclist.h>
 #include <dcpu.h>
 #include <assert.h>
 }
@@ -46,6 +43,7 @@ public:
     virtual void Start(BuildAPI& result, DebuggingSession* session);
     virtual void Stop(DebuggingSession* session);
     virtual void Pause(DebuggingSession* session);
+    virtual void Resume(DebuggingSession* session);
 
     virtual void SendStatus();
 
@@ -56,8 +54,6 @@ public:
 private:
     void AddStatusMessage(vm_t* vm);
     bool paused;
-
-    list_t* m_symbols;
 };
 
 #endif

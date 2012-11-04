@@ -98,7 +98,6 @@ bool perform_assemble(const char* input_filename,
     list_iterator_stop(&symbols);
 
     // Write symbols.
-    printf("writing dem symbols (%d) to %s\n", list_size(&symbols), output_symbols_filename);
     dbgfmt_write(bfromcstr(output_symbols_filename), &symbols);
     printd(LEVEL_VERBOSE, "assembler: wrote debugging symbols.\n");
 

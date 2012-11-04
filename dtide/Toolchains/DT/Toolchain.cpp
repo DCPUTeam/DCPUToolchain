@@ -1,6 +1,7 @@
 #include "Toolchain.h"
 #include "dtasm.h"
 #include "dtemu.h"
+#include "dtdb.h"
 #include <iostream>
 #include <cstdlib>
 
@@ -44,6 +45,13 @@ void* DCPUToolchain_GetUD(void* context)
 
 void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
 {
+    DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
+
+    // Check for breakpoints
+    if(t->debuggingSession->BreakpointAt(vm->pc))
+    {
+        t->Pause(t->debuggingSession);
+    }
 }
 
 void DCPUToolchain_WriteHook(vm_t* vm, uint16_t pos, void* ud)
@@ -190,16 +198,16 @@ void DCPUToolchain::Start(BuildAPI& result, DebuggingSession* session)
     paused = false;
 
     // Get the output files.
-//    std::list<std::string> outputFiles = result.GetOutputFiles();
+    std::list<std::string> outputFiles = result.GetOutputFiles();
 
     // Change this when we have project support.
- //   assert(outputFiles.size() == 1);
-//    std::string path(*(outputFiles.begin()));
+    assert(outputFiles.size() == 1);
+    std::string path(*(outputFiles.begin()));
     
 
     vm_t* vm = start_emulation(
         /* Binary path */
-        "test",
+        path.c_str(),
 
         /* VM Hooks */
         &DCPUToolchain_CycleHook,
@@ -228,6 +236,14 @@ void DCPUToolchain::Start(BuildAPI& result, DebuggingSession* session)
     debuggingSession->AddMessage(m);
 
     // Load debugging symbols
+    std::list<std::string> symbolFiles = result.GetSymbolFiles();
+
+    // Change this when we have project support.
+    assert(symbolFiles.size() == 1);
+
+    // Load the symbols.
+    std::string symbolsPath(*(symbolFiles.begin()));
+    dtdb_read_symbols(symbolsPath.c_str());
 }
 
 void DCPUToolchain::AddStatusMessage(vm_t* vm)
@@ -284,8 +300,16 @@ void DCPUToolchain::Pause(DebuggingSession* session)
     paused = true;
 }
 
+void DCPUToolchain::Resume(DebuggingSession* session)
+{
+    paused = false;
+}
+
 void DCPUToolchain::AddBreakpoint(DebuggingSession* session, Breakpoint& b)
 {
-    std::cout << "You want some of this?" << b.Line << ", " << b.File;
-    std::cout << std::endl;
+    int32_t address = dtdb_get_line_address(b.File.c_str(), b.Line);
+    if(address != -1)
+        session->AddBreakpoint((uint16_t) address);
+    else
+        std::cout << "Unable to resolve breakpoint " << b.File << ":" << b.Line << std::endl;
 }
