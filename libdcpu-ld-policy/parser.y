@@ -136,18 +136,21 @@ value:
         {
             $$ = malloc(sizeof(policy_value_t));
             $$->type = NUMBER;
+            $$->runtime = false;
             $$->number = $1;
         } |
         VARIABLE
         {
             $$ = malloc(sizeof(policy_value_t));
             $$->type = VARIABLE;
+            $$->runtime = false;
             $$->string = $1;
         } |
         function
         {
             $$ = malloc(sizeof(policy_value_t));
             $$->type = FUNCTION;
+            $$->runtime = false;
             $$->function = $1;
         } ;
 
@@ -158,6 +161,7 @@ instruction:
             $$->type = INST_WRITE;
             $$->value = malloc(sizeof(policy_value_t));
             $$->value->type = FUNCTION;
+            $$->value->runtime = false;
             $$->value->function = $2;
             $$->for_variable = NULL;
             $$->for_start = NULL;
@@ -170,6 +174,7 @@ instruction:
             $$->type = INST_CHAIN;
             $$->value = malloc(sizeof(policy_value_t));
             $$->value->type = WORD;
+            $$->value->runtime = false;
             $$->value->string = $2;
             $$->for_variable = NULL;
             $$->for_start = NULL;
@@ -216,6 +221,7 @@ table:
         {
             $$ = malloc(sizeof(policy_value_t));
             $$->type = TABLE;
+            $$->runtime = false;
             $$->table = $1;
         } ;
 
@@ -224,6 +230,7 @@ field:
         {
             $$ = malloc(sizeof(policy_value_t));
             $$->type = FIELD;
+            $$->runtime = false;
             $$->field = $1;
         } ;
         
@@ -232,6 +239,7 @@ words:
         {
             $$ = malloc(sizeof(policy_value_t));
             $$->type = LIST;
+            $$->runtime = false;
             $$->list = malloc(sizeof(list_t));
             list_init($$->list);
             list_append($$->list, $1);

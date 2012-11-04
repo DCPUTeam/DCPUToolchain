@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <simclist.h>
 #include <bstring.h>
+#include <dcpu.h>
 
 ///
 /// @brief The structure that represents a linker policy.
@@ -49,6 +50,7 @@ typedef struct
 typedef struct
 {
     int type; //< The type of value, either WORD, NUMBER, VARIABLE, FUNCTION, LIST, TABLE or FIELD.
+    bool runtime; //< Whether this is a runtime value.
     union
     {
         int number; //< The numeric value (NUMBER).

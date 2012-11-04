@@ -181,12 +181,12 @@ list_t handle_code()
     list_t words;
     printf("code called\n");
     list_init(&words);
-    list_append(&words, (void*)0x0001);
-    list_append(&words, (void*)0x0002);
-    list_append(&words, (void*)0x0003);
-    list_append(&words, (void*)0x0004);
-    list_append(&words, (void*)0x0005);
-    list_append(&words, (void*)0x0006);
+    list_append(&words, (void*)(uint16_t)0x0001);
+    list_append(&words, (void*)(uint16_t)0x0002);
+    list_append(&words, (void*)(uint16_t)0x0003);
+    list_append(&words, (void*)(uint16_t)0x0004);
+    list_append(&words, (void*)(uint16_t)0x0005);
+    list_append(&words, (void*)(uint16_t)0x0006);
     return words;
 }
 
@@ -303,6 +303,7 @@ int main(int argc, char* argv[])
         state->call_write = handle_write;
         state->error = handle_error;
         state_execute(policies, state);
+        state_free(state);
     }
     else   
     {

@@ -11,9 +11,10 @@ add_library(libdcpu-ld-policy ${LIBRARY_FORMAT}
     policy.h
     policy.c
     policyast.h
-    policyast.c
     policyexec.h
     policyexec.c
+    policyfree.h
+    policyfree.c
     ${FLEX_libdcpu-ld-policy-lexer_OUTPUTS}
     ${BISON_libdcpu-ld-policy-parser_OUTPUTS}
     parser.y

@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include "policyast.h"
 #include "policyexec.h"
+#include "policyfree.h"
 #include "parser.h"
 
 policies_t* active_ast; 
@@ -51,7 +52,7 @@ policies_t* policies_load(FILE* input)
 ///
 void policies_free(policies_t* policies)
 {
-    // FIXME: Actually free this data.
+    free_policies(false, policies);
 }
 
 ///
@@ -144,7 +145,7 @@ void state_execute(policies_t* policies, policy_state_t* state)
 ///
 void state_free(policy_state_t* state)
 {
-    // FIXME: Actually free this data.
+    free_policy_state(false, state);
 }
 
 ///

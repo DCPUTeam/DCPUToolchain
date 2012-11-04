@@ -8,12 +8,13 @@
 ///
 
 #include <stdlib.h>
-#include "dcpu.h"
+#include <assert.h>
+#include <dcpu.h>
 #include "policy.h"
 #include "policyast.h"
 #include "policyexec.h"
+#include "policyfree.h"
 #include "parser.h"
-#include "assert.h"
 
 static policy_value_t* value_evaluate(policy_state_t* state, policy_value_t* value);
 
@@ -23,9 +24,9 @@ static policy_value_t* function_evaluate(policy_state_t* state, policy_function_
     policy_value_t* value_1;
     policy_value_t* value_2;
     policy_value_t* new_value;
+    policy_value_t* temp_value;
     int int_result;
     list_t list_result;
-    list_t* list_copy;
     
     switch (call->function)
     {
@@ -36,6 +37,7 @@ static policy_value_t* function_evaluate(policy_state_t* state, policy_function_
             int_result = state->call_total_table(value_0->number);
             new_value = malloc(sizeof(policy_value_t));
             new_value->type = NUMBER;
+            new_value->runtime = true;
             new_value->number = int_result;
             return new_value;
         case FUNC_FIELD:
@@ -50,25 +52,53 @@ static policy_value_t* function_evaluate(policy_state_t* state, policy_function_
             if (value_1 == NULL)
                 return NULL;
             list_result = state->call_field(value_0->number, value_1->number, value_2->number);
-            list_copy = malloc(sizeof(list_t));
-            memcpy(list_copy, &list_result, sizeof(list_t));
             new_value = malloc(sizeof(policy_value_t));
             new_value->type = LIST;
-            new_value->list = list_copy;
+            new_value->runtime = true;
+            new_value->list = malloc(sizeof(list_t));
+            list_init(new_value->list);
+            list_iterator_start(&list_result);
+            while (list_iterator_hasnext(&list_result))
+            {
+                temp_value = malloc(sizeof(policy_value_t));
+                temp_value->type = NUMBER;
+                temp_value->runtime = true;
+                temp_value->number = (uint16_t)list_iterator_next(&list_result);
+                list_append(new_value->list, temp_value);
+            }
+            list_iterator_stop(&list_result);
+            list_destroy(&list_result);
             return new_value;
         case FUNC_CODE:
             assert(call->parameters == NULL || list_size(call->parameters) == 0);
             list_result = state->call_code();
-            list_copy = malloc(sizeof(list_t));
-            memcpy(list_copy, &list_result, sizeof(list_t));
             new_value = malloc(sizeof(policy_value_t));
             new_value->type = LIST;
-            new_value->list = list_copy;
+            new_value->runtime = true;
+            new_value->list = malloc(sizeof(list_t));
+            list_init(new_value->list);
+            list_iterator_start(&list_result);
+            while (list_iterator_hasnext(&list_result))
+            {
+                temp_value = malloc(sizeof(policy_value_t));
+                temp_value->type = NUMBER;
+                temp_value->runtime = true;
+                temp_value->number = (uint16_t)list_iterator_next(&list_result);
+                list_append(new_value->list, temp_value);
+            }
+            list_iterator_stop(&list_result);
+            list_destroy(&list_result);
             return new_value;
         case FUNC_WORDS:
             new_value = malloc(sizeof(policy_value_t));
             new_value->type = LIST;
-            new_value->list = call->parameters;
+            new_value->runtime = true;
+            new_value->list = malloc(sizeof(list_t));
+            list_init(new_value->list);
+            list_iterator_start(call->parameters);
+            while (list_iterator_hasnext(call->parameters))
+                list_append(new_value->list, value_evaluate(state, list_iterator_next(call->parameters)));
+            list_iterator_stop(call->parameters);
             return new_value;
         default:
             state->error(bautofree(bfromcstr("unknown function was called.")));
@@ -89,11 +119,13 @@ static policy_value_t* value_evaluate(policy_state_t* state, policy_value_t* val
         case FIELD:
             new_value = malloc(sizeof(policy_value_t));
             memcpy(new_value, value, sizeof(policy_value_t));
+            new_value->runtime = true;
             return new_value;
         case LIST:
             new_value = malloc(sizeof(policy_value_t));
             memset(new_value, '\0', sizeof(policy_value_t));
             new_value->type = LIST;
+            new_value->runtime = true;
             new_value->list = malloc(sizeof(policy_value_t));
             list_init(new_value->list);
             list_iterator_start(value->list);
@@ -150,7 +182,7 @@ static void instructions_execute(policies_t* policies, policy_state_t* state, li
                 list_init(&new_state->variables);
                 if (new_state->policy == NULL)
                 {
-                    free(new_state);
+                    free_policy_state(true, new_state);
                     state->error(bautofree(bfromcstr("policy to chain into not found.")));
                     list_iterator_stop(instructions);
                     return;
@@ -160,19 +192,19 @@ static void instructions_execute(policies_t* policies, policy_state_t* state, li
                 instructions_execute(policies, new_state, new_state->policy->instructions);
                 
                 // Free state.
-                free(new_state);
+                free_policy_state(true, new_state);
                 break;
             case INST_OFFSET:
                 value = value_evaluate(state, inst->value);
                 if (value->type != NUMBER)
                 {
-                    free(value);
+                    free_policy_value(true, value);
                     state->error(bautofree(bfromcstr("expected numeric value for parameter to offset().")));
                     list_iterator_stop(instructions);
                     return;
                 }
                 state->call_offset(value->number);
-                free(value);
+                free_policy_value(true, value);
                 break;
             case INST_WRITE:
                 value = value_evaluate(state, inst->value);
@@ -180,8 +212,14 @@ static void instructions_execute(policies_t* policies, policy_state_t* state, li
                     return;
                 if (value->type == LIST)
                 {
-                    state->call_write(*value->list);
-                    free(value);
+                    list_init(&temp);
+                    list_iterator_start(value->list);
+                    while (list_iterator_hasnext(value->list))
+                        list_append(&temp, (void*)(uint16_t)((policy_value_t*)list_iterator_next(value->list))->number);
+                    list_iterator_stop(value->list);
+                    state->call_write(temp);
+                    list_destroy(&temp);
+                    free_policy_value(true, value);
                 }
                 else if (value->type == NUMBER)
                 {
@@ -189,11 +227,11 @@ static void instructions_execute(policies_t* policies, policy_state_t* state, li
                     list_append(&temp, (void*)value->number);
                     state->call_write(temp);
                     list_destroy(&temp);
-                    free(value);
+                    free_policy_value(true, value);
                 }
                 else
                 {
-                    free(value);
+                    free_policy_value(true, value);
                     state->error(bautofree(bfromcstr("expected numeric or list value for parameter to write().")));
                     list_iterator_stop(instructions);
                     return;
@@ -246,7 +284,7 @@ static void instructions_execute(policies_t* policies, policy_state_t* state, li
                 // Now remove the variable.
                 printf("removed %s to the list of variables.\n", var->name->data);
                 list_delete_at(&state->variables, for_remove_at);
-                free(var);
+                free_policy_variable(true, var);
                 break;
             }
             default:
