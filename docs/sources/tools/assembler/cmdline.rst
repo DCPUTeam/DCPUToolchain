@@ -42,6 +42,14 @@ Generic options
     can be `-` to indicate that the input should be read from
     standard input.  Specifying standard input can be used to chain
     assembler execution after the compiler.
+    
+.. cmdoption:: -v[vv]
+
+    Increase verbosity.
+    
+.. cmdoption:: -q[qq]
+
+    Decrease verbosity.
 
 .. _assembler-output-options:
 

@@ -5,4 +5,9 @@
 Emulator
 =============================================
 
-Content for the emulator would go here.
+The emulator executes DCPU-16 code.
+
+.. toctree::
+   :maxdepth: 3
+   
+   cmdline
