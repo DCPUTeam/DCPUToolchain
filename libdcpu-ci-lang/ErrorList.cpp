@@ -12,7 +12,10 @@
 **/
 
 #include "ErrorList.h"
-#include <derr.defs.h>
+extern "C"
+{
+    #include <derr.defs.h>
+}
 #include <cstdio>
 #include <iostream>
 
