@@ -41,6 +41,7 @@ vm_t* vm;
 int ddbg_return_code;
 bool ignore_next_breakpoint = false;
 struct dbg_state lstate;
+host_context_t* host;
 
 FILE* w;
 
@@ -415,8 +416,7 @@ void ddbg_init(host_context_t* context)
 
     // Create VM.
     ddbg_create_vm();
-    printf("%p\n", context);
-    vm->host = context;
+    host = context;
 }
 
 void ddbg_create_vm()
@@ -464,6 +464,7 @@ void ddbg_continue_vm()
 
 void ddbg_attach(bstring hw)
 {
+    vm->host = host;
     if (biseq(hw, bfromcstr("lem1802")))
         vm_hw_lem1802_init(vm);
     else if (biseq(hw, bfromcstr("keyboard")))
@@ -473,6 +474,8 @@ void ddbg_attach(bstring hw)
         vm_hw_timer_init(vm);
     else if (biseq(hw, bfromcstr("m35fd")))
         vm_hw_m35fd_init(vm);
+    else if (biseq(hw, bfromcstr("sped3")))
+        vm_hw_sped3_init(vm);
     else
         printd(LEVEL_DEFAULT, "Unrecognized hardware.\n");
 }

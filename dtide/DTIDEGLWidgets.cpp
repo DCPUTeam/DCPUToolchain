@@ -10,10 +10,11 @@ QGLWidget* DTIDEGLWidgets::requestWidget(QString title, int width, int height)
     QGLFormat glFormat(QGL::SampleBuffers);
     glFormat.setSwapInterval(0);
     QGLWidget* res = new QGLWidget(glFormat);
-
+    
+    res->resize(width, height);
+    res->setWindowTitle(title);
+    res->show();
     activeWidgets.append(res);
-
-    emit spawnGLWidget(res, title, width, height);
 
     res->makeCurrent();
     return res;

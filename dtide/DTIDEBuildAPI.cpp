@@ -4,6 +4,18 @@ DTIDEBuildAPI::DTIDEBuildAPI()
 {
 }
 
+DTIDEBuildAPI::~DTIDEBuildAPI()
+{
+    std::list<std::string>::iterator it;
+
+    // Clean up.
+    for(it = m_OutputFiles.begin(); it != m_OutputFiles.end(); it++)
+        unlink((*it).c_str());
+
+    for(it = m_SymbolFiles.begin(); it != m_SymbolFiles.begin(); it++)
+        unlink((*it).c_str());
+}
+
 void DTIDEBuildAPI::AddError(std::string message, std::string file, int line)
 {
     ErrorEntry entry;

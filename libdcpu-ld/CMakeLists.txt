@@ -14,6 +14,8 @@ add_library(libdcpu-ld ${LIBRARY_FORMAT}
     ldpolicy.h
 )
 include_directories(
+    ${libdcpu-ld-policy_SOURCE_DIR}
+    ${libdcpu-ld-policy_BINARY_DIR}
     ${simclist_SOURCE_DIR}
     ${bstring_SOURCE_DIR}
     ${lua_SOURCE_DIR}
@@ -22,8 +24,6 @@ include_directories(
     ${libdcpu-pp-expr_SOURCE_DIR}
     ${libdcpu-ci-objfmt_SOURCE_DIR}
     ${libdcpu-ci-dbgfmt_SOURCE_DIR}
-    ${libdcpu-ld-policy_SOURCE_DIR}
-    ${libdcpu-ld-policy_BINARY_DIR}
     ${FLEX_UNISTD_INCLUDE}
 )
 target_link_libraries(libdcpu-ld
