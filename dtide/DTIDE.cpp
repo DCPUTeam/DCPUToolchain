@@ -77,6 +77,19 @@ void DTIDE::runCycles(int count)
                     debuggingWindow->setMemoryAt(memory.pos, memory.value >> 8, memory.value & 0xff);
                     break;
                 }
+                case LineHitType:
+                {
+                    LineHitMessage hit = (LineHitMessage&) m.value;
+                    Line line = hit.line;
+                    
+                    for (int i = 0; i < tabs->count(); i++)
+                    {
+                        CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+                        if(w->getFileName() == QString::fromLocal8Bit(line.Path))
+                            w->highlightLine(line.Line);
+                    }
+                    break;
+                }
                 default:
                     // Not implemented.
                     break;

@@ -65,8 +65,7 @@ QColor QsciLexerDASM16::defaultColor(int style) const
 QFont QsciLexerDASM16::defaultFont(int style) const
 {
     QFont f;
-    f.setFamily("Monospace");
-    f.setFixedPitch(true);
+    f.setStyleHint(QFont::TypeWriter);
 
     switch(style)
     {
@@ -79,11 +78,6 @@ QFont QsciLexerDASM16::defaultFont(int style) const
         case DoubleQuotedString:
         case SingleQuoteString:
         case UnclosedString:
-            #if defined(Q_OS_WIN)
-                f = QFont("Courier New",8);
-            #else
-                f = QFont("Bitstream Vera Sans Mono",8);
-            #endif
             break;
         case DASM_Directive:
             f.setWeight(QFont::Bold);
@@ -109,7 +103,7 @@ const char *QsciLexerDASM16::keywords(int set) const
                 "ifb ifc ife ife ifn ifg ifa ifl ifu adx sbx sti std jsr int"
                 "iag ias rfi iaq hwn hwq hwi";
     else if(set == 3) 
-        return  "a b c x y z i j pc sp ex ia";
+        return  "a b c x y z i j pc sp ex ia push pop pick";
     return 0;
 }
 

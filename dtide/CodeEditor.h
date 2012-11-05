@@ -14,6 +14,7 @@
 #include "Backends.h"
 
 #define MARKER 2
+#define LINE_BG 3
 
 class CodeEditor: public QsciScintilla 
 {
@@ -26,10 +27,13 @@ public:
     void saveFile();
 
     QString getPath();
+    QString getFileName();
     void ResetBuild();
     bool build();
     QList<Breakpoint> getBreakpoints();
     void run(DebuggingSession* s);
+
+    void highlightLine(int line);
 
 signals:
     void fileNameChanged(QString);
