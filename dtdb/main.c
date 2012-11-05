@@ -141,7 +141,6 @@ int main(int argc, char** argv)
     // Parse arguments.
     nerrors = arg_parse(argc, argv, argtable);
 
-    version_print(bautofree(bfromcstr("Debugger")));
     if (nerrors != 0 || show_help->count != 0)
     {
         if (show_help->count != 0)
@@ -157,6 +156,9 @@ int main(int argc, char** argv)
 
     // Set verbosity level.
     debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
+    
+    // Show version information.
+    version_print(bautofree(bfromcstr("Debugger")));
 
     // Set global path variable.
     osutil_setarg0(bautofree(bfromcstr(argv[0])));

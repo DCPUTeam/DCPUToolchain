@@ -21,6 +21,9 @@ int main(int argc, char** argv)
     debug_setlevel(LEVEL_VERBOSE);
     osutil_setarg0(bautofree(bfromcstr(argv[0])));
     isetmode(IMODE_BIG);
+    
+    // Show version information.
+    version_print(bautofree(bfromcstr("IDE")));
 
     // Start glfw.
     glfwInit();
