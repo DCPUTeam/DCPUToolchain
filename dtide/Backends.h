@@ -296,6 +296,7 @@ public:
     virtual void Cycle() = 0;
     virtual void Step() = 0;
     virtual void SendStatus() = 0;
+    virtual void PostBatchHook() = 0;
 
     // Configuration interface.
     //virtual std::list<ConfigurationOption> GetOptions() = 0;

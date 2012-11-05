@@ -34,6 +34,7 @@ public:
     void run(DebuggingSession* s);
 
     void highlightLine(int line);
+    void stopHighlighting();
 
 signals:
     void fileNameChanged(QString);

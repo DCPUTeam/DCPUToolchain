@@ -65,6 +65,11 @@ void CodeEditor::highlightLine(int line)
     markerAdd(line - 1, LINE_BG);
 }
 
+void CodeEditor::stopHighlighting()
+{
+    markerDeleteAll(LINE_BG);
+}
+
 void CodeEditor::updateFileName()
 {
     if(isModified() && !dirty)
