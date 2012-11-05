@@ -5,97 +5,59 @@
 What's new in DCPU-16 Toolchain?
 =====================================
 
-.. warning::
+.. note::
 
-    This is written with Release Candidate 1 in mind.  It does not reflect the current state of the
-    development tree.
+    Since the toolchain has adopted a contigious build system, this is an overview of some of the most recent,
+    major features to appear in the toolchain.
 
-Release Candidate 1 brings more functionality and more stability to the toolchain.  In particular, the notable
-features of this release are:
+The latest features to be implemented in the toolchain are:
 
-Stability
------------
+Toolchain IDE
+-------------------
 
-This release has been heavily focused on bringing stability to the toolchain, with over 33 bug and feature reports
-fixed affecting all components of the toolchain.  Here's a short list of some of the most serious issues fixed:
+Still in active development, there is now an open source IDE for the DCPU-16.  Currently featuring:
 
-  * Linker will now compile multiple C files correctly (via the `-e` option).
-  * Linker will now merge symbol information.
-  * Font modification in the emulator now works correctly.
-  * Preprocessor definition and expression system improved.
+* Syntax highlighting for DCPU-16 assembly.
+* Compilation of DCPU-16 assembly.
+* Execution of the result binary with full debugging interface.
 
-Quite a few edge-cases have also been resolved in this release.  Check the full list of `closed issues <https://github.com/DCPUTeam/DCPUToolchain/issues?milestone=2&page=1&state=closed>`_
-for a more detailed list.
+Linker Policies and Kernel Support
+-------------------------------------
+
+The toolchain now has support for linker policies which enable DCPU-16 assembly to be written
+once and run under every toolchain-compatible kernel.  Linker policies allow for the advanced creation
+of file formats, including :ref:`shared libraries <kernels-writing-shared>` and
+:ref:`relocatable code <kernels-writing-policies>`.
+
+New Preprocessor
+--------------------
+
+The toolchain now has a fully recursive preprocessor.  It includes:
+
+* Different syntax sets for C and assembly.
+* Full macro support in both C and assembly.
+* Internally a better infrastructure for future developments.
+
+C Compiler Improvements
+--------------------------
+
+The C compiler has seen major improvements.  It is now a 2-pass C compiler which can analyize errors before
+attempting compilation.  This allows multiple errors to be reported with greater detail.
+
+Variable argument lists are now supported.  It also has proper type support and checking, as well as the
+inclusion of explicit type casting.  It also includes more standard library functions which integrate with
+the new kernel systems.
 
 Documentation
 ----------------
 
-Perhaps the most desired aspect to the toolchain was proper documentation.  You're reading it right now, so why
-not have a look around?
+There is now documentation on the `internal toolchain APIs <http://dcputoolcha.in/docs/api>`_ which allows third-party developers
+to build upon the toolchain libraries.
 
-Build Server
-----------------
+In addition, the user documentation has been brought up-to-date and is now considered to cover every aspect
+of the toolchain.
 
-We now have a build server producing builds for each commit.  Check out the `build server <http://irc.lysdev.com:8080/>`_ if you're interested in living on the edge
-or if you need a fix for an immediate problem.  Linux and Windows builds are provided by the build server, unfortunately Mac can not be cross-compiled for and thus
-we are limited in the binary releases we can do for this platform.
+Build Server Migration
+-------------------------
 
-Prefix / Postfix Support
----------------------------
-
-The C compiler now supports prefix and postfix operations.
-
-.. code-block:: c
-
-    void main()
-    {
-        int i = 0;
-        
-        --i;
-        ++i;
-        i--;
-        i++;
-    }
-
-Array Declaration Support
----------------------------
-
-The C compiler now supports array declarations and array access operators.  See :ref:`compiler-lang-c-syntax` for
-more information.
-
-.. code-block:: c
-
-    void main()
-    {
-        int myVar[3];
-        int i = 0;
-        
-        myVar[0] = 5;
-        myVar[1] = 10;
-        myVar[2] = 15;
-
-        for (i = 0; i < 3; i++)
-            myVar[i] += 5;
-    }
-
-Signed Integer Support
----------------------------
-
-The C compiler now supports signed integer math correctly.
-
-.. code-block:: c
-
-    void main()
-    {
-        int i = -200;
-        
-        i *= 2;
-        
-        // i is now -400
-    }
-
-Code Hotswapping
--------------------
-
-The debugger is now capable of compiling and assembling code on-the-fly and hotswapping functions as needed.  This
-allows you to modify and update functionality as you test it.
+The build server is now on a dedicated machine and resides at `http://bb.dcputoolcha.in:8080/ <http://bb.dcputoolcha.in:8080/>`_ .

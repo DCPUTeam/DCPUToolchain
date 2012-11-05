@@ -3,7 +3,7 @@
 Standard API (stubapi)
 ==================================
 
-In order for a given peice of code to link against almost any kernel, there must be
+In order for a given piece of code to link against almost any kernel, there must be
 a consistant API in place for performing operations with the kernel.  While kernel
 developers may expose more than the minimum set of functionality and may expose
 functionality beyond the scope of this API, there is a minimum set of functions that

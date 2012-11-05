@@ -108,9 +108,9 @@ int abs(int n)
 
 struct div_s div(int numerator, int denominator)
 {
-	struct div_s result;
-	result.quot = numerator / denominator;
-	result.rem = numerator % denominator;
-	return result;
+    struct div_s result;
+    result.quot = numerator / denominator;
+    result.rem = numerator % denominator;
+    return result;
 }
 

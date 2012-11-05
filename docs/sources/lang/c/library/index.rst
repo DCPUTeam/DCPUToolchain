@@ -15,7 +15,10 @@ Module List
 .. toctree::
     :maxdepth: 1
    
+    stdio.h.rst
+    stdint.h.rst
     stdlib.h.rst
+    stdarg.h.rst
     string.h.rst
     math.h.rst
 
@@ -28,13 +31,7 @@ When linking C applications, you should provide `stdlib.dlib16` as the first obj
 standard library provides startup mechanisms that must be run before your application starts and thus it
 is essential that it is the entry point for the image.
 
-This mechanism will replace the existing `bootstrap.asm` file as the bootstrap assembly is now contained
-inside the standard library.
-
-The other advantage of merging `bootstrap.asm` into the standard library is that it is no longer necessary
-to provide the `-e` option to the compiler.
-
-.. warning::
+.. note::
     
-    We encourage people to move to the new standard of linking against `stdlib.dlib16` as `bootstrap.asm`
-    and the `-e` compiler option will be going away soon.
+    In the future, the compiler will automatically insert symbols to inform the linker of this requirement
+    and thus linking against the standard library will become an automatic step.
