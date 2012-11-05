@@ -138,7 +138,7 @@ void CodeEditor::updateLineNumberMarginWidth()
 
 QString CodeEditor::getPath()
 {
-    if (path.isEmpty())
+    if (path.isEmpty() || dirty)
     {
         saveFile();
     }
