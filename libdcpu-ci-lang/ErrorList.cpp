@@ -26,7 +26,7 @@ void ErrorList::addWarning(int line, std::string file, int errid)
 
 void ErrorList::addWarning(int line, std::string file, int errid, std::string errdata)
 {
-    Error err(line, file, errid, errdata, ErrorList::WARNING);
+    Error err(line, file, errid, errdata, ErrorList::ERROR_LIST_WARNING);
     this->m_list.push_back(err);
     this->m_hasWarnings = true;
 }
@@ -38,7 +38,7 @@ void ErrorList::addError(int line, std::string file, int errid)
 
 void ErrorList::addError(int line, std::string file, int errid, std::string errdata)
 {
-    Error err(line, file, errid, errdata, ErrorList::ERROR);
+    Error err(line, file, errid, errdata, ErrorList::ERROR_LIST_ERROR);
     this->m_list.push_back(err);
     this->m_hasErrors = true;
 }
@@ -50,7 +50,7 @@ void ErrorList::addFatalError(int line, std::string file, int errid)
 
 void ErrorList::addFatalError(int line, std::string file, int errid, std::string errdata)
 {
-    Error err(line, file, errid, errdata, ErrorList::FATAL_ERROR);
+    Error err(line, file, errid, errdata, ErrorList::ERROR_LIST_FATAL_ERROR);
     this->m_list.push_back(err);
     this->m_hasErrors = true;
     
@@ -68,13 +68,13 @@ void ErrorList::printall()
         std::string errwar;
         switch (it->warnErr)
         {
-            case ErrorList::WARNING:
+            case ErrorList::ERROR_LIST_WARNING:
                 errwar = "[WARNING]";
                 break;
-            case ErrorList::ERROR:
+            case ErrorList::ERROR_LIST_ERROR:
                 errwar = "[ERROR]";
                 break;
-            case ErrorList::FATAL_ERROR:
+            case ErrorList::ERROR_LIST_FATAL_ERROR:
                 errwar = "[FATAL ERROR]";
                 break;
         }

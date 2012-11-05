@@ -42,9 +42,9 @@ private:
     bool m_hasWarnings;
     bool m_hasErrors;
 public:
-    static const int WARNING = 0;
-    static const int ERROR = 1;
-    static const int FATAL_ERROR = 2;
+    static const int ERROR_LIST_WARNING = 0;
+    static const int ERROR_LIST_ERROR = 1;
+    static const int ERROR_LIST_FATAL_ERROR = 2;
 
     ErrorList() : m_list(std::vector<Error>()), m_hasWarnings(false), m_hasErrors(false) {}
     
