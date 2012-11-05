@@ -16,6 +16,8 @@
 #include "NArrayDeclaration.h"
 #include "TPointer16.h"
 #include "TArrayMemArea.h"
+#include <SymbolTypes.h>
+#include <derr.defs.h>
 
 NArrayDeclaration::NArrayDeclaration(IType* type, NIdentifier& id, DimensionsList* dims, ExpressionList* initExprList) :
     id(id), m_dims(dims), m_baseType(type), m_initExprs(initExprList), NDeclaration("array")
@@ -115,22 +117,11 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
     // Add file and line information.
     *block << this->getFileAndLineState();
 
-    // Get the position of the array variable.
-    TypePosition variablePos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
-    if (!variablePos.isFound())
-        throw new CompilerException(this->line, this->file, "The variable '" + this->id.name + "' was not found in the scope.");
-
-    // Get the position of the mem area
-    // TODO maybe move the "<arraymem>" internal tag into some unified variable
-    TypePosition memPos = context.m_CurrentFrame->getPositionOfVariable("<arraymem>_" + this->id.name);
-    if (!memPos.isFound())
-        throw new CompilerException(this->line, this->file, "The space for the array '" + this->id.name + "' was not allocated.");
-
     // set up the pointer and the pointer table (for multi dims)
 
     // set the pointer that is the array variable
-    *block << memPos.pushAddress('A');
-    *block << variablePos.pushAddress('I');
+    *block << this->m_memPos.pushAddress('A');
+    *block << this->m_variablePos.pushAddress('I');
 
     // init pointer table
     *block << *(this->initPointerTable(context, 'I', 'A'));
@@ -141,11 +132,6 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
     // push data address onto stack
     *block <<   "   SET PUSH, A" << std::endl;
 
-    if (this->m_initExprs->size() > this->m_numElements)
-        throw new CompilerException(this->line, this->file,
-                                    "Excess elements in array initializer of array '"
-                                    + this->id.name + "'");
-
     for (uint16_t i = 0; i < this->m_numElements; ++i)
     {
         if (i < this->m_initExprs->size())
@@ -155,18 +141,10 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
             *block << *expr;
             delete expr;
 
-            // get type, it may has to be cast
-            IType* exprType = (*this->m_initExprs)[i]->getExpressionType(context);
             // cast to expr to array base type
-            if (exprType->implicitCastable(context, this->m_baseType))
+            if (this->m_initExprTypes[i]->implicitCastable(context, this->m_baseType))
             {
-                *block << *(exprType->implicitCast(context, this->m_baseType, 'A'));
-            }
-            else
-            {
-                throw new CompilerException(this->line, this->file,
-                                            "Unable to implicitly cast '" + exprType->getName()
-                                            + "' to '" + this->m_baseType->getName() + "'");
+                *block << *(this->m_initExprTypes[i]->implicitCast(context, this->m_baseType, 'A'));
             }
 
             // init in memory
@@ -196,5 +174,61 @@ AsmBlock* NArrayDeclaration::compile(AsmGenerator& context)
 
 AsmBlock* NArrayDeclaration::reference(AsmGenerator& context)
 {
-    throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a variable.");
+    throw new CompilerException(this->line, this->file, "INTERNAL: Unable to get reference to an Array Declaration.");
+}
+
+void NArrayDeclaration::analyse(AsmGenerator& context, bool reference)
+{
+
+    // Get the position of the array variable.
+    //TypePosition variablePos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
+    this->m_variablePos = context.symbolTable->getPositionOfVariable(this->id.name);
+    if (!this->m_variablePos.isFound())
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_VARIABLE_NOT_IN_SCOPE, this->id.name);
+        return;
+    }
+
+    // Get the position of the mem area
+    // TODO maybe move the "<arraymem>" internal tag into some unified variable
+    this->m_memPos = context.symbolTable->getPositionOfVariable("<arraymem>_" + this->id.name);
+    if (!this->m_memPos.isFound())
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_SPACE_FOR_ARRAY_NOT_ALLOC, this->id.name);
+        return;
+    }
+    
+    if (this->m_initExprs == NULL)
+        return;
+    
+    // check that the init list is not bigger than the number of elements
+    if (this->m_initExprs->size() > this->m_numElements)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_EXCESS_ELEMENTS_IN_ARRAY_INIT, this->id.name);
+        return;
+    }
+        
+    this->m_initExprTypes = std::vector<IType*>(this->m_initExprs->size());
+    for (uint16_t i = 0; i < this->m_initExprs->size(); ++i)
+    {
+        // FIXME:
+        (*this->m_initExprs)[i]->analyse(context, false);
+
+        // get type, it may has to be cast
+        this->m_initExprTypes[i] = (*this->m_initExprs)[i]->getExpressionType(context);
+        // cast to expr to array base type
+        if (!this->m_initExprTypes[i]->implicitCastable(context, this->m_baseType))
+        {
+            context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_IMPLICIT_CAST, "'" + this->m_initExprTypes[i]->getName()
+                                        + "' to '" + this->m_baseType->getName() + "'");
+        }
+    }
+}
+
+
+void NArrayDeclaration::insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position)
+{
+    scope.insert(this->id.name, VARIABLE_DECL, this->getPointerType(), this, position);
+    // insert also the mem area for the data of the array
+    scope.insert("<arraymem>_" + this->id.name, VARIABLE_DECL, this->getMemAreaType(), this, position);
 }

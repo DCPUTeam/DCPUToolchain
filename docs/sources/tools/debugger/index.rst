@@ -5,4 +5,10 @@
 Debugger
 =============================================
 
-Content for the debugger would go here.
+The debugger lets you run, inspect and verify DCPU-16 code.
+
+.. toctree::
+   :maxdepth: 3
+   
+   cmdline
+   commands

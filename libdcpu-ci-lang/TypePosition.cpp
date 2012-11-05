@@ -48,6 +48,7 @@ bool TypePosition::isFunction()
     return this->m_Function;
 }
 
+
 std::string TypePosition::getAddress()
 {
     std::stringstream sstr;
@@ -71,12 +72,19 @@ std::string TypePosition::getAddress()
     return sstr.str();
 }
 
+
 std::string TypePosition::pushAddress(char registr)
 {
     std::stringstream sstr;
 
+    TypePosition * blah = NULL;
+    
+
     if (!this->m_Found)
+    {
+        blah->pushAddress('A');
         throw new CompilerException(0, "<internal>", "Attempted to push reference position of unknown type position result (internal error).");
+    }
 
     if (this->m_Function)
         sstr << "   SET " << registr << ", cfunc_" << this->m_FunctionName << std::endl;

@@ -9,6 +9,7 @@ Contents:
     :maxdepth: 2
    
     whatsnew/index
+    whatsnew/deployable
     tutorial/index
     tools/index
     lang/index

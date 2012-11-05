@@ -16,10 +16,11 @@
 #include <algorithm>
 #include <iterator>
 #include "AsmGenerator.h"
+#include "ErrorList.h"
 
 // Sets up the assembly generator.
 AsmGenerator::AsmGenerator(std::string target)
-    : m_CurrentFrame(NULL), m_RootNode(NULL)
+    : m_RootNode(NULL), errorList(ErrorList())
 {
     // Get a references to the assembler.
     Assembler::loadAll();
@@ -27,18 +28,23 @@ AsmGenerator::AsmGenerator(std::string target)
 
     // Set the global frame to NULL as it doesn't
     // exist until the NDeclarations root node is processed.
-    this->m_GlobalFrame = NULL;
+    //this->m_GlobalFrame = NULL;
 
     this->m_loopStack = std::deque<std::pair<std::string, std::string> >();
+    
+    this->symbolTable = new SymbolTable(*this);
 }
 
 // Return the specified function or NULL if none is defined.
+/*
 IFunctionDeclaration* AsmGenerator::getFunction(std::string name)
 {
     return this->m_RootNode->getFunction(name);
 }
+*/
 
 // Generates the stack frame for the specified function.
+/*
 StackFrame* AsmGenerator::generateStackFrame(IFunctionDeclaration* function, bool referenceOnly)
 {
     StackMap parameters = function->generateParametersStackMap();
@@ -52,16 +58,20 @@ StackFrame* AsmGenerator::generateStackFrame(IFunctionDeclaration* function, boo
     else
         return new StackFrame(*this, parameters);
 }
+*/
 
 // Generates an incomplete stack frame for the specified function.
+/*
 StackFrame* AsmGenerator::generateStackFrameIncomplete(IFunctionSignature* signature)
 {
     StackMap map = signature->generateStackMap();
 
     return new StackFrame(*this, map);
 }
+*/
 
 // Frees the stack frame.
+/*
 void AsmGenerator::finishStackFrame(StackFrame* frame)
 {
     if (this->m_CurrentFrame == frame)
@@ -72,6 +82,7 @@ void AsmGenerator::finishStackFrame(StackFrame* frame)
     else
         delete frame;
 }
+*/
 
 void AsmGenerator::initLoopStack()
 {

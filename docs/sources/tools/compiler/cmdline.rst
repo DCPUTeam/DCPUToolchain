@@ -9,7 +9,7 @@ When invoking the compiler, you may specify any of these options
 
 .. code-block:: bash
 
-    dtcc [-eh] -o output [-t type] [-I directory] input
+    dtcc [-hvq] -o output [-t type] [-I directory] input
 
 The most common use case is compiling a C file into assembler:
 
@@ -43,6 +43,14 @@ Generic options
 
     Adds the directory `dir` to the directories to
     be searched for header files.
+    
+.. cmdoption:: -v[vv]
+
+    Increase verbosity.
+    
+.. cmdoption:: -q[qq]
+
+    Decrease verbosity.
 
 .. _compiler-output-options:
 
@@ -54,9 +62,3 @@ Output options
 
     Specifies the output assembler to target.  See the section
     on :ref:`compiler-targets`.
-
-.. warning::
-
-    The `-e` option is now deprecated in favour of the standard
-    library.  See :ref:`compiler-stdlib-c-linking` on linking usage and
-    equivalent functionality.

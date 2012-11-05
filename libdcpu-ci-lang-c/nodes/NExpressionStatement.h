@@ -24,6 +24,7 @@ public:
     NExpressionStatement(NExpression& expression) :
         expression(expression), NStatement("expression") { }
     virtual AsmBlock* compile(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
     virtual AsmBlock* reference(AsmGenerator& context);
 };
 

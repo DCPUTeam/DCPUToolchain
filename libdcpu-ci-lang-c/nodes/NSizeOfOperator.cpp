@@ -1,11 +1,11 @@
 /**
 
-    File:       NSizeOfOperator.cpp
+    File:           NSizeOfOperator.cpp
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Defines the NSizeOfOperator AST class.
 
@@ -14,6 +14,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NSizeOfOperator.h"
+#include <derr.defs.h>
 
 AsmBlock* NSizeOfOperator::compile(AsmGenerator& context)
 {
@@ -31,4 +32,13 @@ AsmBlock* NSizeOfOperator::compile(AsmGenerator& context)
 AsmBlock* NSizeOfOperator::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of the sizeof() operator.");
+}
+
+void NSizeOfOperator::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " a size of operator");
+        return;
+    }
 }

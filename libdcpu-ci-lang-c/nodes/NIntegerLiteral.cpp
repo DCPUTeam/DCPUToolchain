@@ -1,11 +1,11 @@
 /**
 
-    File:       NIntegerLiteral.cpp
+    File:           NIntegerLiteral.cpp
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Defines the NIntegerLiteral AST class.
 
@@ -15,6 +15,7 @@
 #include <CompilerException.h>
 #include "NIntegerLiteral.h"
 #include "TInt16.h"
+#include <derr.defs.h>
 
 AsmBlock* NIntegerLiteral::compile(AsmGenerator& context)
 {
@@ -32,6 +33,15 @@ AsmBlock* NIntegerLiteral::compile(AsmGenerator& context)
 AsmBlock* NIntegerLiteral::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a numeric literal.");
+}
+
+void NIntegerLiteral::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " an integer literal value");
+        return;
+    }
 }
 
 IType* NIntegerLiteral::getExpressionType(AsmGenerator& context)

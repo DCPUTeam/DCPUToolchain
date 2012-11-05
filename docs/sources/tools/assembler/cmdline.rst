@@ -9,13 +9,13 @@ When invoking the assembler, you may specify any of these options
 
 .. code-block:: bash
 
-    dtasm [-rih] [-s symbols] -o output input
+    dtasm [-hrivq] [-s symbols] [-W policy]... [--binary] [--little-endian] [-I directory]... -o output input
 
 The most common use case is assembling intermediate code for later linking:
 
 .. code-block:: bash
 
-    dtasm -i -s test.dsym16 -o test.dobj16 test.dasm16
+    dtasm -s test.dsym16 -o test.dobj16 test.dasm16
 
 .. _assembler-generic-options:
 
@@ -42,6 +42,14 @@ Generic options
     can be `-` to indicate that the input should be read from
     standard input.  Specifying standard input can be used to chain
     assembler execution after the compiler.
+    
+.. cmdoption:: -v[vv]
+
+    Increase verbosity.
+    
+.. cmdoption:: -q[qq]
+
+    Decrease verbosity.
 
 .. _assembler-output-options:
 

@@ -17,6 +17,7 @@
 #include "NDereferenceOperator.h"
 #include "TPointer16.h"
 #include "TInt16.h"
+#include <derr.defs.h>
 
 AsmBlock* NDereferenceOperator::compile(AsmGenerator& context)
 {
@@ -28,14 +29,9 @@ AsmBlock* NDereferenceOperator::compile(AsmGenerator& context)
     // When an expression is evaluated, the result goes into the A register.
     AsmBlock* expr = this->expr.compile(context);
 
-    // An dereference operator has the "unpointered" type of it's expression.
-    IType* i = this->expr.getExpressionType(context);
-
-    IType* baseType = this->getExpressionType(context);
-
     // Dereference the value.
     *block <<   *expr;
-    *block <<   *(baseType->loadFromRef(context, 'A', 'A')) << std::endl;
+    *block <<   *(this->m_baseType->loadFromRef(context, 'A', 'A')) << std::endl;
     delete expr;
 
     return block;
@@ -47,6 +43,14 @@ AsmBlock* NDereferenceOperator::reference(AsmGenerator& context)
     // a memory address in assignment, hence we don't actually dereference
     // the value.
     return this->expr.compile(context);
+}
+
+void NDereferenceOperator::analyse(AsmGenerator& context, bool reference)
+{
+    this->expr.analyse(context, false);
+    
+    // An dereference operator has the "unpointered" type of it's expression.
+    this->m_baseType = this->getExpressionType(context);
 }
 
 IType* NDereferenceOperator::getExpressionType(AsmGenerator& context)
@@ -62,6 +66,7 @@ IType* NDereferenceOperator::getExpressionType(AsmGenerator& context)
     }
     else
     {
-        throw new CompilerException(this->line, this->file, "Attempting to dereference non-pointer type during type resolution.");
+        context.errorList.addError(this->line, this->file, ERR_CC_DEREF_NON_POINTER);
+        return new TInt16("void");
     }
 }

@@ -1,20 +1,20 @@
 .. highlightlang:: none
 
-.. _preprocessor-syntax:
+.. _asm-preprocessor-syntax:
 
-Syntax
+Assembler Syntax
 =============================================
 
-The following syntax is applicable to the preprocessor.
+The following syntax is applicable to the assembler preprocessor.
 
-.. _preprocessor-directives:
+.. _asm-preprocessor-directives:
 
 Directives
 ---------------
 
 In all preprocessor directives, the leading character can either be
-`.` (assembly standard) or `#` (C standard).  They can be used
-interchangably.  The preprocessor provides the following directives:
+`.` or `#`.  The preprocessor directives are case insensitive.
+The preprocessor provides the following directives:
 
 .. ppdirective:: .LINE number "filename"
 
@@ -33,7 +33,11 @@ interchangably.  The preprocessor provides the following directives:
 
 .. ppdirective:: .INCLUDE "filename"
 
-    Includes the specified file recursively.
+    Include the specified file relative to the current file being preprocessed.
+    
+.. ppdirective:: .INCLUDE <filename>
+
+    Include the specified file by searching through the include directories.
 
 .. ppdirective:: .EQUATE name value
                   .EQU name value
@@ -41,8 +45,8 @@ interchangably.  The preprocessor provides the following directives:
     
     Defines the specified preprocessor constant with name `name` to
     evaluate to the specified value `value`.  `value` is from the first
-    character to the end of the line, including whitespace.  The toolchain
-    preprocessor at this stage does not support using `\\` to wrap lines.
+    character to the end of the line, including whitespace.  `\\` can be used
+    to wrap the definition over multiple lines.
     
     When `name` is located in the source text from now on, it will be replaced with `value`.
 
@@ -82,78 +86,7 @@ interchangably.  The preprocessor provides the following directives:
 
     Signals the end of a macro definition.
     
-.. ppdirective:: ..name(valueA, valueB)
+.. ppdirective:: name(valueA, valueB)
 
-    Evaluates the macro with the name `name` (the double `.` or double
-    `#` at the beginning is required).  Each passed value is result
-    of each parameter that will be transformed.  As with other preprocessor
-    definitions, macro calls can only be placed on their own line, with
-    only whitespace permitted between the start of the line and the leading
-    `.` or `#`.
-
-.. _preprocessor-expressions:
-
-Constant Expressions
----------------------------
-
-The preprocessor supports constant expressions comprising of literals that evaluate to numeric values
-(all literals except strings evaluate to single, numeric values).  All expressions are calculated
-as 16-bit unsigned integers.
-
-The following expression operations are supported:
-
-.. ppexpressionop:: a + b
-
-    Adds `a` to `b`.
-
-.. ppexpressionop:: a - b
-
-    Subtracts `b` from `a`.
-    
-.. ppexpressionop:: a / b
-
-    Divides `a` by `b`.
-
-.. ppexpressionop:: a * b
-
-    Multiplies `a` and `b`.
-
-.. ppexpressionop:: a % b
-
-    Returns the modulo of `a` over `b`.
-
-.. ppexpressionop:: a == b
-
-    Returns 1 if `a` is equal to `b`, 0 otherwise.
-
-.. ppexpressionop:: a != b
-
-    Returns 1 if `a` is not equal to `b`, 0 otherwise.
-    
-.. ppexpressionop:: a < b
-
-    Returns 1 if `a` is less than `b`, 0 otherwise.
-    
-.. ppexpressionop:: a <= b
-
-    Returns 1 if `a` is less than or equal to `b`, 0 otherwise.
-    
-.. ppexpressionop:: a > b
-
-    Returns 1 if `a` is greater than `b`, 0 otherwise.
-    
-.. ppexpressionop:: a >= b
-
-    Returns 1 if `a` is greater than or equal to `b`, 0 otherwise.
-    
-.. ppexpressionop:: a & b
-
-    The binary and of `a` and `b`.
-    
-.. ppexpressionop:: a | b
-
-    The binary or of `a` and `b`.
-    
-.. ppexpressionop:: a ^ b
-
-    The exclusive or of `a` and `b`.
+    Evaluates the macro with the name `name`.  Each passed value is result
+    of each parameter that will be transformed.

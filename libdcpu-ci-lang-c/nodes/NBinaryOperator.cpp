@@ -23,6 +23,7 @@
 #include "NBinaryOperator.h"
 #include "TGenericBasicType.h"
 #include "TPointer16.h"
+#include <derr.defs.h>
 
 AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 {
@@ -83,6 +84,18 @@ AsmBlock* NBinaryOperator::compile(AsmGenerator& context)
 AsmBlock* NBinaryOperator::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an binary operator.");
+}
+
+void NBinaryOperator::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " the result of a binary operation");
+        return;
+    }
+    // TODO this is somewhat more complex ... do it tmrw
+    this->lhs.analyse(context, false);
+    this->rhs.analyse(context, false);
 }
 
 IType* NBinaryOperator::getExpressionType(AsmGenerator& context)

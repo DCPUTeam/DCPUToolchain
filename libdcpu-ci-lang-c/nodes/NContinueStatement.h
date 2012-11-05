@@ -19,10 +19,13 @@
 
 class NContinueStatement : public NStatement
 {
+private:
+    std::string m_continueLabel;
 public:
     NContinueStatement() :
         NStatement("continue") { }
     virtual AsmBlock* compile(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
     virtual AsmBlock* reference(AsmGenerator& context);
 };
 

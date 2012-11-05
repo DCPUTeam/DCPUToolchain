@@ -21,8 +21,11 @@ class NAddressOfOperator : public NExpression
 public:
     NExpression& expr;
     NAddressOfOperator(NExpression& expr) : expr(expr), NExpression("addressof") { }
+    
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
+    
     virtual IType* getExpressionType(AsmGenerator& context);
 };
 

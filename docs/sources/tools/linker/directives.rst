@@ -17,11 +17,16 @@ Cross-file references
 You can import and export labels between files by using the `.IMPORT` and `.EXPORT`
 directives.
 
-.. asmdirective:: .IMPORT label
+.. asmdirective:: .IMPORT [OPTIONAL] label
 
     Imports the specified label from an external object at link
     time.  The label will only be correctly imported if it was
     exported from another object file using the .EXPORT directive.
+    
+    `OPTIONAL` can also be added between the `.IMPORT` and the label,
+    indicating that if this label is not available at link time, rather
+    than exiting with an error, any references to the label should
+    be replaced with 0x0000.
 
 .. asmdirective:: .EXPORT label
 
@@ -137,3 +142,36 @@ The directives relevant to section usage are as follows:
     
     To prevent circular dependencies, .OUTPUT may not be placed in a section
     and thus, no .SECTION directives are permitted before .OUTPUT.
+
+Jumplists
+---------------
+
+You can export a jumplist when producing a kernel and you can import a jumplist entry
+when linking in non-kernel mode.  For exporting a jumplist in kernel mode, see
+:ref:`Jumplist-based kernels <kernels-writing-defaults-jumplist>`.
+
+When linking in non-kernel mode, you can import a jump entry like so:
+
+.. code-block:: nasm
+    
+    .JUMP something
+    
+    ; Call something.
+    JSR [something]
+    
+.. warning::
+    
+    Application code should not directly reference jumplists in all but exceptional circumstances.
+    To call into kernel functions, applications should use the `.CALL` directive as outlined below.
+    
+Kernel calls
+--------------
+
+The `.CALL` directive calls an API function exposed by the kernel.  How the call is performed is
+dependent on the current kernel and it's linker policy.
+
+When using the `.CALL` directive, users must use the register-call calling convention as outlined
+in the `ABI standard <https://github.com/0x10cStandardsCommittee/0x10c-Standards/blob/master/ABI/ABI%20draft%202.txt>`_.
+
+For more information on usage, see :ref:`kernels-usage`.
+

@@ -17,10 +17,10 @@
 #include <string>
 #include "IFunctionDeclaration.h"
 
+// FIXME: we don't need an empty interface!
 class IDeclarations
 {
 public:
-    virtual IFunctionDeclaration* getFunction(std::string name) = 0;
 };
 
 #endif

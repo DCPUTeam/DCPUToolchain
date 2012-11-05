@@ -30,6 +30,7 @@ private:
 public:
     TypePosition(bool isFound, bool isGlobal, bool isFunctionParameter, bool previousStackFrame, uint16_t position);
     TypePosition(bool isFound, std::string funcName);
+    TypePosition() : m_Found(false), m_Global(false), m_Function(false), m_IsFunctionParameter(false), m_Position(0) {}
     bool isFound();
     bool isFunction();
     std::string getAddress();

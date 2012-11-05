@@ -19,10 +19,14 @@
 
 class NBreakStatement : public NStatement
 {
+private:
+    std::string m_breakLabel;
+
 public:
     NBreakStatement() :
         NStatement("break") { }
     virtual AsmBlock* compile(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
     virtual AsmBlock* reference(AsmGenerator& context);
 };
 

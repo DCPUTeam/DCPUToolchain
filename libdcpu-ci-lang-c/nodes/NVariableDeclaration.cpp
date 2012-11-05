@@ -1,11 +1,11 @@
 /**
 
-    File:       NVariableDeclaration.cpp
+    File:           NVariableDeclaration.cpp
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Defines the NVariableDeclaration AST class.
 
@@ -15,26 +15,22 @@
 #include <CompilerException.h>
 #include "NVariableDeclaration.h"
 #include "TStruct.h"
+#include <SymbolTypes.h>
+#include <derr.defs.h>
 
 AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 {
     // Create our new block.
     AsmBlock* block = new AsmBlock();
 
-    // Get the position of the variable.
-    TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
-
-    if (!result.isFound())
-        throw new CompilerException(this->line, this->file, "The variable '" + this->id.name + "' was not found in the scope.");
-
     // get variable type
-    IType* varType = context.m_CurrentFrame->getTypeOfVariable(this->id.name);
+    IType* varType = this->type;
 
     // if this is a struct, it may has to be initialized (arrays within structs)
     if (varType->isStruct())
     {
         // Set the value of the variable directly.
-        *block << result.pushAddress('I');
+        *block << this->m_varPos.pushAddress('I');
         TStruct* structType = (TStruct*) varType;
         *block << *(structType->initStruct(context, 'I'));
     }
@@ -51,23 +47,15 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
     *block << *expr;
     delete expr;
 
-    // get type, it may has to be cast
-    IType* exprType = this->initExpr->getExpressionType(context);
 
     // cast to rhs to lhs type
-    if (exprType->implicitCastable(context, varType))
+    if (this->m_exprType->implicitCastable(context, varType))
     {
-        *block << *(exprType->implicitCast(context, varType, 'A'));
-    }
-    else
-    {
-        throw new CompilerException(this->line, this->file,
-                                    "Unable to implicitly cast '" + exprType->getName()
-                                    + "' to '" + varType->getName() + "'");
+        *block << *(this->m_exprType->implicitCast(context, varType, 'A'));
     }
 
     // Set the value of the variable directly.
-    *block << result.pushAddress('I');
+    *block << this->m_varPos.pushAddress('I');
 
     // save the value A to [I]
     *block << *(varType->saveToRef(context, 'A', 'I'));
@@ -78,4 +66,50 @@ AsmBlock* NVariableDeclaration::compile(AsmGenerator& context)
 AsmBlock* NVariableDeclaration::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a variable.");
+}
+
+void NVariableDeclaration::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " a variable declaration");
+        return;
+    }
+    
+    // Get the position of the variable.
+    this->m_varPos = context.symbolTable->getPositionOfVariable(this->id.name);
+
+    if (!this->m_varPos.isFound())
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_VARIABLE_NOT_IN_SCOPE, this->id.name);
+        return;
+    }
+    
+    if (this->initExpr == NULL)
+        return;
+    
+    this->initExpr->analyse(context, false);
+    
+    // get type, it may has to be cast
+    this->m_exprType = this->initExpr->getExpressionType(context);
+
+    // cast to rhs to lhs type
+    if (!this->m_exprType->implicitCastable(context, this->type))
+    {
+            context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_IMPLICIT_CAST, "'" + this->m_exprType->getName()
+                                        + "' to '" + this->type->getName()  + "'");
+    }
+}
+
+void NVariableDeclaration::insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position)
+{
+    if (scope.contains(this->id.name))
+    {
+        throw new CompilerException(this->line, this->file, "Error: Variable with name '" + this->id.name + "' was declared before.");
+    }
+    else if (scope.containsRec(this->id.name))
+    {
+        // TODO maybe warn??
+    }
+    scope.insert(this->id.name, VARIABLE_DECL, this->type, this, position);
 }

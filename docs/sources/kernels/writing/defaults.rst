@@ -67,6 +67,8 @@ JSR call.  When you write your kernel, you need to specify the position for the 
 the labels that are exported in the jumplist.  As such, your `start.dasm16` file might look
 something like this:
 
+.. _kernels-writing-defaults-jumplist:
+
 .. code-block:: nasm
     
     SET PC, _kern_start

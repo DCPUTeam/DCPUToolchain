@@ -23,6 +23,7 @@ public:
     NCharacter(std::string value) : value(value), NExpression("character") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
     virtual IType* getExpressionType(AsmGenerator& context);
 };
 

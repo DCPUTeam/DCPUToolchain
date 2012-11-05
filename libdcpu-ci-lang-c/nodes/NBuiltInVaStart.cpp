@@ -15,6 +15,7 @@
 #include <CompilerException.h>
 #include "NBuiltInVaStart.h"
 #include "TInt16.h"
+#include <derr.defs.h>
 
 AsmBlock* NBuiltInVaStart::compile(AsmGenerator& context)
 {
@@ -41,6 +42,17 @@ AsmBlock* NBuiltInVaStart::compile(AsmGenerator& context)
 AsmBlock* NBuiltInVaStart::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference __builtin_va_start.");
+}
+
+void NBuiltInVaStart::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " __builtin_va_start");
+        return;
+    }
+    this->vaListID.analyse(context, true);
+    this->paramNID.analyse(context, true);
 }
 
 IType* NBuiltInVaStart::getExpressionType(AsmGenerator& context)
