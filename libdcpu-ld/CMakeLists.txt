@@ -18,6 +18,8 @@ add_library(libdcpu-ld ${LIBRARY_FORMAT}
     ccstackcall.c
     ccregistercall.h
     ccregistercall.c
+    ccregisterdirect.h
+    ccregisterdirect.c
 )
 include_directories(
     ${libdcpu-ld-policy_SOURCE_DIR}

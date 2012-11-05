@@ -13,6 +13,7 @@
 #include "ldcall.h"
 #include "ccstackcall.h"
 #include "ccregistercall.h"
+#include "ccregisterdirect.h"
 
 ///
 /// @brief Generates a standard jump call into a jump table.
@@ -87,6 +88,8 @@ void ldcall_generate(policies_t* policies, list_t* all, struct ldbin* bin, struc
         generate_ccstackcall(policies, all, bin, call);
     else if (biseqcstrcaseless(policy_interrupt_call, "register-call"))
         generate_ccregistercall(policies, all, bin, call);
+    else if (biseqcstrcaseless(policy_interrupt_call, "register-direct"))
+        generate_ccregisterdirect(policies, all, bin, call);
     else
         dhalt(ERR_CALL_CONVENTION_UNKNOWN, NULL);
 }
