@@ -28,8 +28,8 @@
 // Structures:
 struct div_s
 {
-	int quot;
-	int rem;
+    int quot;
+    int rem;
 };
 
 // String conversion:
