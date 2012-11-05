@@ -31,6 +31,11 @@ class NArrayDeclaration : public NDeclaration
     IType* m_baseType;
     IType* m_pointerType;
     IType* m_memAreaType;
+    
+    TypePosition m_variablePos;
+    TypePosition m_memPos;
+    
+    std::vector<IType*> m_initExprTypes;
 
 public:
     ExpressionList* m_initExprs;
@@ -38,7 +43,6 @@ public:
 
     IType* getPointerType();
     IType* getMemAreaType();
-    //IType* type;
 
     NArrayDeclaration(IType* type, NIdentifier& id, DimensionsList* dims, ExpressionList* initExprList);
     virtual AsmBlock* compile(AsmGenerator& context);
@@ -46,6 +50,8 @@ public:
     virtual AsmBlock* reference(AsmGenerator& context);
     
     virtual void insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position);
+    
+    virtual void analyse(AsmGenerator& context, bool reference);
 };
 
 #endif

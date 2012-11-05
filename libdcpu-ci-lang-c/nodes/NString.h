@@ -1,11 +1,11 @@
 /**
 
-    File:       NString.h
+    File:           NString.h
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Declares the NString AST class.
 
@@ -23,6 +23,7 @@ public:
     NString(std::string value) : value(value), NExpression("string") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
     virtual IType* getExpressionType(AsmGenerator& context);
 };
 

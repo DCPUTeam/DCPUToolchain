@@ -23,8 +23,6 @@
 class IFunctionDeclaration : public IDeclaration
 {
 public:
-    virtual StackMap generateLocalsStackMap() = 0;
-    virtual StackMap generateParametersStackMap() = 0;
     virtual IType* getPointerType() = 0;
 };
 

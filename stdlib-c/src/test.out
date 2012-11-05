@@ -1,0 +1,725 @@
+.IMPORT _stack_caller_init
+.IMPORT _stack_caller_init_overlap
+.IMPORT _stack_callee_return
+.IMPORT cfunc__stdlib_enter
+.ULINE 35 "<unknown>"
+
+:_DATA
+
+.SECTION INIT
+.SECTION CODE
+
+.ULINE 39 "<unknown>"
+.IMPORT cfunc_atoi
+
+.ULINE 46 "<unknown>"
+.IMPORT cfunc_rand
+
+.ULINE 47 "<unknown>"
+.IMPORT cfunc_srand
+
+.ULINE 50 "<unknown>"
+.IMPORT cfunc_calloc
+
+.ULINE 51 "<unknown>"
+.IMPORT cfunc_free
+
+.ULINE 52 "<unknown>"
+.IMPORT cfunc_malloc
+
+.ULINE 53 "<unknown>"
+.IMPORT cfunc_realloc
+
+.ULINE 56 "<unknown>"
+.IMPORT cfunc_abort
+
+.ULINE 63 "<unknown>"
+.IMPORT cfunc_bsearch
+
+.ULINE 64 "<unknown>"
+.IMPORT cfunc_qsort
+
+.ULINE 67 "<unknown>"
+.IMPORT cfunc_abs
+
+.ULINE 68 "<unknown>"
+.IMPORT cfunc_div
+
+.ULINE 81 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_atoi
+:cfunc_atoi
+    SET PC, cfunc_atoi_actual
+    DAT 1
+:cfunc_atoi_actual
+    SUB SP, 0
+.ULINE 84 "<unknown>"
+.ULINE 84 "<unknown>"
+.ULINE 84 "<unknown>"
+   SET A, 0
+
+    ADD SP, 0
+    SET X, 1
+    SET PC, _stack_callee_return
+
+
+    ADD SP, 0
+    SET A, 0xFFFF
+    SET X, 1
+    SET PC, _stack_callee_return
+
+.ULINE 88 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_rand
+:cfunc_rand
+    SET PC, cfunc_rand_actual
+    DAT 0
+:cfunc_rand_actual
+    SUB SP, 0
+.ULINE 90 "<unknown>"
+.ULINE 90 "<unknown>"
+.ULINE 90 "<unknown>"
+   SET A, 4
+
+    ADD SP, 0
+    SET X, 0
+    SET PC, _stack_callee_return
+
+
+    ADD SP, 0
+    SET A, 0xFFFF
+    SET X, 0
+    SET PC, _stack_callee_return
+
+.ULINE 94 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_srand
+:cfunc_srand
+    SET PC, cfunc_srand_actual
+    DAT 1
+:cfunc_srand_actual
+    SUB SP, 0
+.ULINE 97 "<unknown>"
+
+    ADD SP, 0
+    SET A, 0xFFFF
+    SET X, 1
+    SET PC, _stack_callee_return
+
+.ULINE 100 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_calloc
+:cfunc_calloc
+    SET PC, cfunc_calloc_actual
+    DAT 2
+:cfunc_calloc_actual
+    SUB SP, 0
+.ULINE 102 "<unknown>"
+.ULINE 102 "<unknown>"
+.ULINE 102 "<unknown>"
+.ULINE 102 "<unknown>"
+.ULINE 102 "<unknown>"
+   SET I, Y
+   SET A, [I]
+
+
+   SET PUSH, A
+
+.ULINE 102 "<unknown>"
+   SET I, Y
+   ADD I, 1
+   SET A, [I]
+
+
+   SET PUSH, A
+
+   SET B, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+   SET A, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+
+   MUL A, B
+
+
+
+
+   SET PUSH, A
+
+    SET Z, __callback_HGddsZKycp
+    JSR _stack_caller_init_overlap
+    SET PC, cfunc_malloc
+:__callback_HGddsZKycp
+
+    ADD SP, 0
+    SET X, 2
+    SET PC, _stack_callee_return
+
+
+    ADD SP, 0
+    SET A, 0xFFFF
+    SET X, 2
+    SET PC, _stack_callee_return
+
+.ULINE 105 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_free
+:cfunc_free
+    SET PC, cfunc_free_actual
+    DAT 1
+:cfunc_free_actual
+    SUB SP, 0
+.ULINE 112 "<unknown>"
+.ULINE 112 "<unknown>"
+
+		.IMPORT _stubapi_free
+		SET A, [Y+0]
+		JSR [_stubapi_free]
+	
+
+
+    ADD SP, 0
+    SET A, 0xFFFF
+    SET X, 1
+    SET PC, _stack_callee_return
+
+.ULINE 115 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_malloc
+:cfunc_malloc
+    SET PC, cfunc_malloc_actual
+    DAT 1
+:cfunc_malloc_actual
+    SUB SP, 2
+.ULINE 117 "<unknown>"
+
+.ULINE 118 "<unknown>"
+.ULINE 118 "<unknown>"
+   SET A, Y
+   SUB A, 2
+   SUB A, 1
+
+
+   SET I, Y
+   SUB I, 2
+   SUB I, 2
+   SET [I], A
+
+
+.ULINE 125 "<unknown>"
+
+		.IMPORT _stubapi_malloc
+		SET A, [Y+0]
+		JSR [_stubapi_malloc]
+		SET [Y+65532], A
+	
+
+.ULINE 126 "<unknown>"
+.ULINE 126 "<unknown>"
+   SET I, Y
+   SUB I, 2
+   SUB I, 1
+   SET A, [I]
+
+
+    ADD SP, 2
+    SET X, 1
+    SET PC, _stack_callee_return
+
+
+    ADD SP, 2
+    SET A, 0xFFFF
+    SET X, 1
+    SET PC, _stack_callee_return
+
+.ULINE 129 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_realloc
+:cfunc_realloc
+    SET PC, cfunc_realloc_actual
+    DAT 2
+:cfunc_realloc_actual
+    SUB SP, 2
+.ULINE 131 "<unknown>"
+
+.ULINE 132 "<unknown>"
+.ULINE 132 "<unknown>"
+.ULINE 132 "<unknown>"
+   SET I, Y
+   ADD I, 1
+   SET A, [I]
+
+
+
+   SET PUSH, A
+
+    SET Z, __callback_d3PHGoN28y
+    JSR _stack_caller_init_overlap
+    SET PC, cfunc_malloc
+:__callback_d3PHGoN28y
+
+
+   SET I, Y
+   SUB I, 2
+   SUB I, 2
+   SET [I], A
+
+
+.ULINE 138 "<unknown>"
+.ULINE 137 "<unknown>"
+.ULINE 137 "<unknown>"
+   SET A, Y
+   SUB A, 2
+   SUB A, 1
+
+   SET PUSH, A
+.ULINE 137 "<unknown>"
+   SET A, 0
+
+
+   SET B, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+   SET [B], A
+
+
+:__for_gisQJFTvZc
+.ULINE 137 "<unknown>"
+.ULINE 137 "<unknown>"
+   SET I, Y
+   SUB I, 2
+   SUB I, 1
+   SET A, [I]
+
+
+   SET PUSH, A
+
+.ULINE 137 "<unknown>"
+.ULINE 137 "<unknown>"
+.ULINE 137 "<unknown>"
+   SET I, Y
+   SET A, [I]
+
+
+   SET PUSH, A
+
+.ULINE 137 "<unknown>"
+   SET A, 2
+
+   SET PUSH, A
+
+   SET B, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+   SET A, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+   MUL B, 1
+   SUB A, B
+
+
+
+   SET A, [A]
+
+
+
+   SET PUSH, A
+
+   SET B, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+   SET A, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+
+   SET PUSH, 0
+   IFL A, B
+       SET PEEK, 1
+   SET A, POP
+
+
+
+   IFN A, 0x1
+       SET PC, __endfor_3f21XZXTtA
+.ULINE 138 "<unknown>"
+.ULINE 138 "<unknown>"
+.ULINE 138 "<unknown>"
+.ULINE 138 "<unknown>"
+   SET I, Y
+   SUB I, 2
+   SUB I, 2
+   SET A, [I]
+
+
+   SET PUSH, A
+
+.ULINE 138 "<unknown>"
+   SET I, Y
+   SUB I, 2
+   SUB I, 1
+   SET A, [I]
+
+
+ SET B, A
+   SET A, POP
+
+   MUL B, 1
+   ADD A, B
+
+
+   SET PUSH, A
+.ULINE 138 "<unknown>"
+.ULINE 138 "<unknown>"
+   SET I, Y
+   SET A, [I]
+
+
+   SET PUSH, A
+
+.ULINE 138 "<unknown>"
+   SET I, Y
+   SUB I, 2
+   SUB I, 1
+   SET A, [I]
+
+
+ SET B, A
+   SET A, POP
+
+   MUL B, 1
+   ADD A, B
+
+   SET A, [A]
+
+
+
+   SET B, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+   SET [B], A
+
+
+
+:__continuefor_pAgk82TCua
+.ULINE 137 "<unknown>"
+   SET A, Y
+   SUB A, 2
+   SUB A, 1
+
+   SET B, A
+   SET A, [B]
+
+   ADD [B], 1
+
+
+   SET PC, __for_gisQJFTvZc
+:__endfor_3f21XZXTtA
+
+.ULINE 139 "<unknown>"
+.ULINE 139 "<unknown>"
+   SET I, Y
+   SET A, [I]
+
+
+
+   SET PUSH, A
+
+    SET Z, __callback_M4NwlUps6O
+    JSR _stack_caller_init_overlap
+    SET PC, cfunc_free
+:__callback_M4NwlUps6O
+
+.ULINE 140 "<unknown>"
+.ULINE 140 "<unknown>"
+   SET I, Y
+   SUB I, 2
+   SUB I, 2
+   SET A, [I]
+
+
+    ADD SP, 2
+    SET X, 2
+    SET PC, _stack_callee_return
+
+
+    ADD SP, 2
+    SET A, 0xFFFF
+    SET X, 2
+    SET PC, _stack_callee_return
+
+.ULINE 144 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_abort
+:cfunc_abort
+    SET PC, cfunc_abort_actual
+    DAT 0
+:cfunc_abort_actual
+    SUB SP, 0
+.ULINE 151 "<unknown>"
+.ULINE 151 "<unknown>"
+
+        .IMPORT _stubapi_exit
+        SET A, -1
+        JSR [_stubapi_exit]
+    
+
+
+    ADD SP, 0
+    SET A, 0xFFFF
+    SET X, 0
+    SET PC, _stack_callee_return
+
+.ULINE 157 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_bsearch
+:cfunc_bsearch
+    SET PC, cfunc_bsearch_actual
+    DAT 5
+:cfunc_bsearch_actual
+    SUB SP, 0
+.ULINE 160 "<unknown>"
+.ULINE 160 "<unknown>"
+.ULINE 160 "<unknown>"
+   SET A, 0
+
+    ADD SP, 0
+    SET X, 5
+    SET PC, _stack_callee_return
+
+
+    ADD SP, 0
+    SET A, 0xFFFF
+    SET X, 5
+    SET PC, _stack_callee_return
+
+.ULINE 163 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_qsort
+:cfunc_qsort
+    SET PC, cfunc_qsort_actual
+    DAT 4
+:cfunc_qsort_actual
+    SUB SP, 0
+.ULINE 166 "<unknown>"
+
+    ADD SP, 0
+    SET A, 0xFFFF
+    SET X, 4
+    SET PC, _stack_callee_return
+
+.ULINE 169 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_abs
+:cfunc_abs
+    SET PC, cfunc_abs_actual
+    DAT 1
+:cfunc_abs_actual
+    SUB SP, 0
+.ULINE 174 "<unknown>"
+.ULINE 174 "<unknown>"
+.ULINE 171 "<unknown>"
+.ULINE 171 "<unknown>"
+   SET I, Y
+   SET A, [I]
+
+
+   SET PUSH, A
+
+.ULINE 171 "<unknown>"
+   SET A, 0
+
+   SET PUSH, A
+
+   SET B, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+   SET A, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+
+   SET PUSH, 0
+   IFU A, B
+       SET PEEK, 1
+   SET A, POP
+
+
+
+   IFN A, 0x0
+       SET PC, __if_2INpTHDLB3
+   SET PC, __else_DxIiijLQHS
+:__if_2INpTHDLB3
+.ULINE 172 "<unknown>"
+.ULINE 172 "<unknown>"
+.ULINE 172 "<unknown>"
+.ULINE 172 "<unknown>"
+   SET I, Y
+   SET A, [I]
+
+
+   SET PUSH, A
+   SET A, 0x0
+   SUB A, POP
+
+
+    ADD SP, 0
+    SET X, 1
+    SET PC, _stack_callee_return
+
+
+   SET PC, __end_vG2J0lg3P4
+:__else_DxIiijLQHS
+.ULINE 174 "<unknown>"
+.ULINE 174 "<unknown>"
+.ULINE 174 "<unknown>"
+   SET I, Y
+   SET A, [I]
+
+
+    ADD SP, 0
+    SET X, 1
+    SET PC, _stack_callee_return
+
+
+   SET PC, __end_vG2J0lg3P4
+:__end_vG2J0lg3P4
+
+
+    ADD SP, 0
+    SET A, 0xFFFF
+    SET X, 1
+    SET PC, _stack_callee_return
+
+.ULINE 177 "<unknown>"
+.BOUNDARY
+.EXPORT cfunc_div
+:cfunc_div
+    SET PC, cfunc_div_actual
+    DAT 2
+:cfunc_div_actual
+    SUB SP, 2
+.ULINE 179 "<unknown>"
+   SET I, Y
+   SUB I, 2
+   SUB I, 2
+
+
+.ULINE 180 "<unknown>"
+.ULINE 180 "<unknown>"
+.ULINE 180 "<unknown>"
+   SET A, Y
+   SUB A, 2
+   SUB A, 2
+
+   ADD A, 0
+
+   SET PUSH, A
+.ULINE 180 "<unknown>"
+.ULINE 180 "<unknown>"
+   SET I, Y
+   SET A, [I]
+
+
+   SET PUSH, A
+
+.ULINE 180 "<unknown>"
+   SET I, Y
+   ADD I, 1
+   SET A, [I]
+
+
+   SET PUSH, A
+
+   SET B, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+   SET A, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+
+   DVI A, B
+
+
+
+
+   SET B, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+   SET [B], A
+
+
+.ULINE 181 "<unknown>"
+.ULINE 181 "<unknown>"
+.ULINE 181 "<unknown>"
+   SET A, Y
+   SUB A, 2
+   SUB A, 2
+
+   ADD A, 1
+
+   SET PUSH, A
+.ULINE 181 "<unknown>"
+.ULINE 181 "<unknown>"
+   SET I, Y
+   SET A, [I]
+
+
+   SET PUSH, A
+
+.ULINE 181 "<unknown>"
+   SET I, Y
+   ADD I, 1
+   SET A, [I]
+
+
+   SET PUSH, A
+
+   SET B, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+   SET A, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+
+
+   MDI A, B
+
+
+
+
+   SET B, PEEK
+   SET PEEK, 0
+   ADD SP, 1
+   SET [B], A
+
+
+.ULINE 182 "<unknown>"
+.ULINE 182 "<unknown>"
+   SET I, Y
+   SUB I, 2
+   SUB I, 2
+   SET A, I
+
+
+    ADD SP, 2
+    SET X, 2
+    SET PC, _stack_callee_return
+
+
+    ADD SP, 2
+    SET A, 0xFFFF
+    SET X, 2
+    SET PC, _stack_callee_return
+
+

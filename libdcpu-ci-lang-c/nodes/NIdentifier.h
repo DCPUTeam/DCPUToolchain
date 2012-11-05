@@ -18,12 +18,17 @@
 
 class NIdentifier : public NExpression
 {
+private:
+    TypePosition m_varPos;
+    IType* m_varType;
 public:
     std::string name;
     NIdentifier(const std::string& name) : name(name), NExpression("identifier") { }
     NIdentifier(const std::string& name, std::string type) : name(name), NExpression("identifier-" + type) { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
+    
     virtual IType* getExpressionType(AsmGenerator& context);
 };
 

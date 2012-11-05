@@ -16,6 +16,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NAssemblyStatement.h"
+#include <derr.defs.h>
 
 void NAssemblyStatement::findreplace(std::string& str, const std::string find, const std::string replace)
 {
@@ -108,5 +109,16 @@ AsmBlock* NAssemblyStatement::compile(AsmGenerator& context)
 
 AsmBlock* NAssemblyStatement::reference(AsmGenerator& context)
 {
-    throw new CompilerException(this->line, this->file, "Unable to get reference to the result of inline assembly.");
+    throw new CompilerException(this->line, this->file, "INNER: Unable to get reference to the result of inline assembly.");
+}
+
+void NAssemblyStatement::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " the result of inline assembly");
+        return;
+    }
+    
+    // TODO check for errors here, not during compile, compile shoulds just copy-paste the code
 }

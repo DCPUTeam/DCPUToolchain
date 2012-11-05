@@ -17,6 +17,7 @@
 #include "NFunctionDeclaration.h"
 #include "NFunctionSignature.h"
 #include "NFunctionPointerType.h"
+#include <derr.defs.h>
 
 AsmBlock* NMethodCall::compile(AsmGenerator& context)
 {
@@ -24,47 +25,6 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
     // Add file and line information.
     *block << this->getFileAndLineState();
-
-    // Get the function declaration.
-    bool isDirect = true;
-    NFunctionSignature* funcsig = (NFunctionDeclaration*)context.symbolTable->getFunction(this->id.name);
-
-    // FIXME: get rid of the use of NType for function signatures!!
-    if (funcsig == NULL)
-    {
-        // Try and get a variable with matching signature then.
-        //TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
-        TypePosition varpos = context.symbolTable->getPositionOfVariable(this->id.name);
-
-        if (!varpos.isFound())
-            throw new CompilerException(this->line, this->file, "Neither a function nor a function pointer was found by the name '" + this->id.name + "'.");
-
-        NType* vartype = (NType*)context.symbolTable->getTypeOfVariable(this->id.name);
-
-        if (vartype->cType != "expression-identifier-type-function")
-            throw new CompilerException(this->line, this->file, "Unable to call variable '" + this->id.name + "' as it is not a function pointer.");
-
-        funcsig = (NFunctionSignature*)((NFunctionPointerType*)vartype);
-        isDirect = false;
-    }
-
-
-
-    // check if the called function matches the signature size of this
-    // method call
-    if (!(funcsig->callerSignatureMatching(this->arguments)))
-    {
-        throw new CompilerException(this->line, this->file,
-                                    "Unable to find function\n"
-                                    "with singature:                 "
-                                    + this->id.name + this->calculateSignature(context)
-                                    + "\n"
-                                    + "Candidates are:               "
-                                    + this->id.name + funcsig->getSignature());
-    }
-
-    // Get the stack table of this method.
-    //StackFrame* frame = context.generateStackFrameIncomplete(funcsig);
 
     // Get a random label for our jump-back point.
     std::string jmpback = context.getRandomLabel("callback");
@@ -81,64 +41,31 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
         *block << *inst;
         delete inst;
 
-        IType* instType = this->arguments[i]->getExpressionType(context);
-
         // check types and cast implicitly
-        if ((!funcsig->varArgs) || i < funcsig->arguments.size())
+        if ((!this->m_funcsig->varArgs) || i < this->m_funcsig->arguments.size())
         {
-            IType* parameterType = funcsig->arguments[i]->type;
-            if (instType->implicitCastable(context, parameterType))
+            IType* parameterType = this->m_funcsig->arguments[i]->type;
+            if (this->m_parameterTypes[i]->implicitCastable(context, parameterType))
             {
                 // do cast
-                *block << *(instType->implicitCast(context, parameterType, 'A'));
-            }
-            else
-            {
-                throw new CompilerException(this->line, this->file,
-                                            "Unable to find function\n"
-                                            "with singature:                 "
-                                            + this->id.name + this->calculateSignature(context)
-                                            + "\n"
-                                            + "Candidates are:               "
-                                            + this->id.name + funcsig->getSignature());
+                *block << *(this->m_parameterTypes[i]->implicitCast(context, parameterType, 'A'));
             }
             // Push the result onto the stack.
             *block << *(parameterType->pushStack(context, 'A'));
         }
         else
         {
-            *block << *(instType->pushStack(context, 'A'));
+            *block << *(this->m_parameterTypes[i]->pushStack(context, 'A'));
             // count the words if this is a var-arg argument
-            callerVarArgsStackSize += instType->getWordSize(context);
+            callerVarArgsStackSize += this->m_parameterTypes[i]->getWordSize(context);
         }
     }
-
-    // Initialize the stack for this method.
-    
-    // * FIXME do we really still need this??
-    /*
-    if (isDirect)
-    {
-        *block <<  "    SET X, cfunc_" << this->id.name << std::endl;
-        *block <<  "    ADD X, 2" << std::endl;
-    }
-    else
-    {
-        TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name);
-        *block <<  varpos.pushAddress('X');
-        *block <<  "    SET X, [X]" << std::endl;
-        *block <<  "    ADD X, 2" << std::endl;
-    }
-    *block <<  "    SET X, [X]" << std::endl;
-    */
-    
-    
     
     *block <<  "    SET Z, " << jmpback << std::endl;
     *block <<  "    JSR _stack_caller_init_overlap" << std::endl;
 
     // Then call the actual method and insert the return label.
-    if (isDirect)
+    if (this->m_IsDirect)
     {
         *block <<  "    SET PC, cfunc_" << this->id.name << std::endl;
     }
@@ -146,9 +73,8 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
     {
         // we are referencing the previous stack frame here
         // => parameter previousStackFrame=true
-        //TypePosition varpos = context.m_CurrentFrame->getPositionOfVariable(this->id.name, true);
-        TypePosition varpos = context.symbolTable->getPositionOfVariable(this->id.name, true);
-        *block <<  varpos.pushAddress('X');
+        
+        *block <<  this->m_funcPtrPos.pushAddress('X');
         *block <<  "    SET X, [X]" << std::endl;
         *block <<  "    SET PC, X" << std::endl;
 
@@ -160,7 +86,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
 
     *block <<  ":" << jmpback << std::endl;
     
-    if (funcsig->varArgs && callerVarArgsStackSize > 0)
+    if (this->m_funcsig->varArgs && callerVarArgsStackSize > 0)
     {
         // in case of variable arguments:
         // pop the additional stack elements from the stack
@@ -174,9 +100,6 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
             *block <<  "    ADD SP, " << callerVarArgsStackSize << std::endl;
         }
     }
-    
-    // Clean up frame.
-    //context.finishStackFrame(frame);
 
     return block;
 }
@@ -196,6 +119,74 @@ IType* NMethodCall::getExpressionType(AsmGenerator& context)
 
     IType* exprType = (IType*) funcdecl->type;
     return exprType;
+}
+
+void NMethodCall::analyse(AsmGenerator& context, bool reference)
+{
+    // Get the function declaration.
+    this->m_IsDirect = true;
+    this->m_funcsig = (NFunctionDeclaration*)context.symbolTable->getFunction(this->id.name);
+
+    // FIXME: get rid of the use of NType for function signatures!!
+    if (this->m_funcsig == NULL)
+    {
+        // Try and get a variable with matching signature then.
+        TypePosition varpos = context.symbolTable->getPositionOfVariable(this->id.name);
+
+        if (!varpos.isFound())
+        {
+            context.errorList.addError(this->line, this->file, ERR_CC_FUNCTION_AND_PTR_NOT_IN_SCOPE, this->id.name);
+            return;
+        }
+
+        NType* vartype = (NType*)context.symbolTable->getTypeOfVariable(this->id.name);
+
+        if (vartype->cType != "expression-identifier-type-function")
+        {
+            context.errorList.addError(this->line, this->file, ERR_CC_VARIABLE_NOT_CALLABLE, this->id.name);
+            return;
+        }
+
+        this->m_funcsig = (NFunctionSignature*)((NFunctionPointerType*)vartype);
+        this->m_IsDirect = false;
+    }
+    
+    // check if the called function matches the signature size of this
+    // method call
+    if (!(this->m_funcsig->callerSignatureMatching(this->arguments)))
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_NO_MATCHING_SIGNATURES, this->id.name + this->calculateSignature(context));
+        context.errorList.addError(this->line, this->file, ERR_CC_CANDIDATES_ARE, this->id.name + this->m_funcsig->getSignature());
+        return;
+    }
+    
+    for(int i = 0; i < this->arguments.size(); i++)
+    {
+        // analyse arguments
+        this->arguments[i]->analyse(context,false);
+    }
+    
+    // check type compatibility of arguments
+    this->m_parameterTypes = std::vector<IType*>(this->arguments.size());
+    for (int i = 0; i < this->arguments.size(); ++i)
+    {
+        this->m_parameterTypes[i] = this->arguments[i]->getExpressionType(context);
+
+        if ((!this->m_funcsig->varArgs) || i < this->m_funcsig->arguments.size())
+        {
+            IType* parameterType = this->m_funcsig->arguments[i]->type;
+            if (!this->m_parameterTypes[i]->implicitCastable(context, parameterType))
+            {
+                context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_IMPLICIT_CAST, "'" + this->m_parameterTypes[i]->getName()
+                                            + "' to '" + parameterType->getName() + "'");
+            }
+        }
+    }
+    
+    if (!this->m_IsDirect)
+    {
+        this->m_funcPtrPos = context.symbolTable->getPositionOfVariable(this->id.name, true);
+    }
 }
 
 

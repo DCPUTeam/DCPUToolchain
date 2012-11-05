@@ -1,11 +1,11 @@
 /**
 
-    File:       NStructureDeclaration.h
+    File:           NStructureDeclaration.h
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Declares the NStructureDeclaration AST class.
 
@@ -27,6 +27,7 @@ public:
         id(id), fields(fields), NDeclaration("structure") { };
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
     virtual size_t getWordSize(AsmGenerator& context);
     
     virtual void insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position);

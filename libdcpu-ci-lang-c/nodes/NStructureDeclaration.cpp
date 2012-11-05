@@ -1,11 +1,11 @@
 /**
 
-    File:       NStructureDeclaration.cpp
+    File:           NStructureDeclaration.cpp
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Defines the NStructureDeclaration AST class.
 
@@ -16,17 +16,29 @@
 #include "NStructureDeclaration.h"
 #include "NArrayDeclaration.h"
 #include <SymbolTypes.h>
+#include <derr.defs.h>
 
 AsmBlock* NStructureDeclaration::compile(AsmGenerator& context)
 {
     // There is nothing to do for a structure declaration as
     // everything is handled when we first use the structure.
-    return NULL;
+    return new AsmBlock();
 }
 
 AsmBlock* NStructureDeclaration::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a structure declaration.");
+}
+
+void NStructureDeclaration::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " a struct declaration");
+        return;
+    }
+    
+    // FIXME: implement this
 }
 
 size_t NStructureDeclaration::getWordSize(AsmGenerator& context)

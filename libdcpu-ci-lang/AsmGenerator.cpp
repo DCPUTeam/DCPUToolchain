@@ -16,10 +16,11 @@
 #include <algorithm>
 #include <iterator>
 #include "AsmGenerator.h"
+#include "ErrorList.h"
 
 // Sets up the assembly generator.
 AsmGenerator::AsmGenerator(std::string target)
-    : m_RootNode(NULL)
+    : m_RootNode(NULL), errorList(ErrorList())
 {
     // Get a references to the assembler.
     Assembler::loadAll();

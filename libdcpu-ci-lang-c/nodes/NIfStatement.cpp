@@ -1,11 +1,11 @@
 /**
 
-    File:       NIfStatement.cpp
+    File:           NIfStatement.cpp
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Defines the NIfStatement AST class.
 
@@ -14,6 +14,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NIfStatement.h"
+#include <derr.defs.h>
 
 AsmBlock* NIfStatement::compile(AsmGenerator& context)
 {
@@ -36,7 +37,7 @@ AsmBlock* NIfStatement::compile(AsmGenerator& context)
     delete expr;
 
     // Check the value of A to see where the flow should go.
-    *block <<       "   IFE A, 0x1" << std::endl;
+    *block <<       "   IFN A, 0x0" << std::endl;
     *block <<       "       SET PC, " << truelbl << std::endl;
 
     if (this->if_false != NULL)
@@ -70,4 +71,20 @@ AsmBlock* NIfStatement::compile(AsmGenerator& context)
 AsmBlock* NIfStatement::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an if statement.");
+}
+
+void NIfStatement::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " an if statement");
+        return;
+    }
+    
+    this->eval.analyse(context, false);
+    this->if_true.analyse(context, false);
+    if (this->if_false != NULL)
+    {
+        this->if_false->analyse(context, false);
+    }
 }

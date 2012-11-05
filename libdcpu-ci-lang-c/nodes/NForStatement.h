@@ -1,11 +1,11 @@
 /**
 
-    File:       NForStatement.h
+    File:           NForStatement.h
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Declares the NForStatement AST class.
 
@@ -17,9 +17,14 @@
 #include "NStatement.h"
 #include "NExpression.h"
 #include "NBlock.h"
+#include <string>
 
 class NForStatement : public NStatement
 {
+private:
+    std::string m_startlbl;
+    std::string m_endlbl;
+    std::string m_continuelbl;
 public:
     NExpression& initEval;
     NExpression& checkEval;
@@ -29,6 +34,7 @@ public:
         initEval(initEval), checkEval(checkEval), loopEval(loopEval), expr(expr), NStatement("for") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
 };
 
 #endif

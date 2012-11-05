@@ -156,6 +156,19 @@ int main(int argc, char* argv[])
     try
     {
         AsmGenerator generator(asmtype);
+        
+        // 1st pass: analyse (which generates errors)
+        program->analyse(generator, false);
+        
+        if(generator.errorList.hasErrors())
+        {
+            generator.errorList.printall();
+            dhalt(0, "There were errors while compiling");
+        }
+        
+        // TODO eventually an optimization pass here!
+        
+        // 2nd pass: compile (only in case no errors occured)
         AsmBlock* block = program->compile(generator);
 
         std::ofstream output(temp.c_str(), std::ios::out | std::ios::trunc);

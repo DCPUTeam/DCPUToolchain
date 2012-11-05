@@ -71,3 +71,39 @@ ERR_PP_NOT_ENOUGH_PARAMETERS                         pp-not-enough-parameters   
 ERR_PP_LONG_FORM_MACRO_ONLY                          pp-long-form-macro-only                "short form macro not permitted in this language near %s."
 ERR_PP_COMPAT_OPEN_INPUT_FAILED                      pp-compat-open-input-failed            "opening the input file failed in the preprocessor."
 ERR_PP_COMPAT_OPEN_TEMP_FAILED                       pp-compat-open-temp-failed             "opening temporary output file failed in the preprocessor."
+
+
+
+
+ERR_CC_ASM_NO_SECTION_GLOBAL_INIT                    cc-asm-no-section-global-init          "Initializers not permitted on global variables for assemblers that don't support sections."
+ERR_CC_ASM_NO_SECTION_GLOBAL_ARRAY                   cc-asm-no-section-global-array         "Global arrays not permitted for assemblers that don't support sections."
+ERR_CC_ASM_NO_IMPORT_DECL_FUNC                       cc-asm-no-import-decl-func            "Can't declare a function with no body without linker support in the target assembler."
+ERR_CC_ASM_NO_DAT_FOR_STRING                         cc-asm-no-dat-for-string               "Unable to compile strings without DAT support in assembler."
+ERR_CC_SPACE_FOR_ARRAY_NOT_ALLOC                     cc-space-for-array-not-alloc           "The space for the array '%s' was not allocated."
+ERR_CC_EXCESS_ELEMENTS_IN_ARRAY_INIT                 cc-excess-elements-in-array-init       "Excess elements in array initializer of array '%s'"
+ERR_CC_CANNOT_IMPLICIT_CAST                          cc-cannot-implicit-cast                "Unable to implicitly cast %s"
+ERR_CC_CANNOT_EXPLICIT_CAST                          cc-cannot-explicit-cast                "Unable to explicitly cast %s"
+ERR_CC_VARIABLE_NOT_IN_SCOPE                         cc-variable-not-in-scope               "The variable '%s' was not found in the scope."
+ERR_CC_FUNCTION_AND_PTR_NOT_IN_SCOPE                 cc-function-and-ptr-not-in-scope      "Neither a function nor a function pointer was found by the name '%s'."
+ERR_CC_VARIABLE_NOT_CALLABLE                         cc-variable-not-callable                "Unable to call variable '%s' as it is not a function pointer."
+ERR_CC_NO_MATCHING_SIGNATURES                        cc-no-matching-signatures               "Unable to find function with singature: %s"
+ERR_CC_CANDIDATES_ARE                                cc-no-candidates-are                    "                        Candidates are: %s"
+ERR_CC_CANNOT_REFERENCE_REFOP                        cc-cannot-reference-refop               "Unable to get reference to the result of an address-of operator."
+ERR_CC_INVALID_ARRAY_ACCESS_TYPE                     cc-invalid-array-access-type            "Invalid operand as array access type. (have '%s')"
+ERR_CC_INVALID_ARRAY_ACCESS_OFFSET                   cc-invalid-array-access-offset          "Invalid operand as array access offset. (have '%s')"
+ERR_CC_CANNOT_REFERENCE                              cc-cannot-reference                     "Unable to reference %s"
+ERR_CC_WRITE_TO_CONST                                cc-write-to-const                      "Assignment of read-only variable."
+ERR_CC_INVALID_ASSIGN_OPERANDS                       cc-invalid-assign-operands              "Invalid operands to assign operation: %s"
+ERR_CC_CASE_OUTSIDE_OF_SWITCH                        cc-case-outside-of-switch              "Invalid case statement outside of a switch statement."
+ERR_CC_BREAK_OUTSIDE_OF_LOOP                         cc-break-outside-of-loop                "Invalid break statement outside of a loop."
+ERR_CC_CONTINUE_OUTSIDE_OF_LOOP                      cc-continue-outside-of-loop             "Invalid continue statement outside of a loop."
+ERR_CC_DEFAULT_OUTSIDE_OF_SWITCH                     cc-default-outside-of-switch           "Invalid default statement outside of a switch statement."
+ERR_CC_DEREF_NON_POINTER                             cc-deref-non-pointer                     "Attempting to dereference non-pointer type during type resolution."
+ERR_CC_VALUE_OF_FUNCTION                             cc-value-of-function                    "Can not get value representation of function '%s'; did you want a reference instead?"
+ERR_CC_INVALID_INC_DEC_OPERAND                       cc-invalid-inc-dec-operand               "Invalid operand to post increase/decrease operation. (have '%s')"
+ERR_CC_INC_DEC_CONST                                 cc-inc-dec-const                        "Cannot increase/decrease read-only variable"
+ERR_CC_MULTIPLE_DEFAULT                              cc-multiple-default                     "Invalid multiple default statements within switch statement."
+ERR_CC_INVALID_UNARY_OPERAND                         cc-invalid-unary-operand                 "Invalid operand to unary operation. (have '%s')"
+
+
+

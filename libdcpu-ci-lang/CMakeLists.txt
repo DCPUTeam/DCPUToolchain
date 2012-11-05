@@ -8,6 +8,8 @@ add_library(libdcpu-ci-lang STATIC
     AsmGenerator.h
     Assembler.cpp
     Assembler.h
+    ErrorList.cpp
+    ErrorList.h
     CompilerException.h
     nodes/IDeclaration.h
     nodes/IDeclarations.h
@@ -25,4 +27,12 @@ add_library(libdcpu-ci-lang STATIC
     SymbolObject.h
     SymbolTypes.h
 )
+
+include_directories(
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${bstring_SOURCE_DIR}
+    ${libdcpu_SOURCE_DIR}
+)
+
 cotire(libdcpu-ci-lang)

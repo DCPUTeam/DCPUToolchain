@@ -22,6 +22,7 @@ class StackFrame;
 #include <utility>
 #include "Assembler.h"
 #include "AsmBlock.h"
+#include "ErrorList.h"
 
 
 class IDeclarations;
@@ -42,6 +43,7 @@ private:
 public:
     IDeclarations* m_RootNode;
     SymbolTable* symbolTable;
+    ErrorList errorList;
 
 public:
     AsmGenerator(std::string asmtarget);

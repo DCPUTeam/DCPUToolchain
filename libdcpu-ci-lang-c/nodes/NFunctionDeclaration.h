@@ -23,6 +23,9 @@
 
 class NFunctionDeclaration : public NDeclaration, public NFunctionSignature, public IFunctionDeclaration
 {
+private:
+    bool m_isDeclaration;
+
 public:
     const NIdentifier& id;
     NBlock* block;
@@ -30,15 +33,17 @@ public:
     
     SymbolTableScope* functionScope;
     
+    
     NFunctionDeclaration(const IType* type, const NIdentifier& id, const VariableList& arguments, NBlock* block, bool varArgs);
     ~NFunctionDeclaration();
+    
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
-    virtual StackMap generateLocalsStackMap();
-    virtual StackMap generateParametersStackMap();
+    virtual void analyse(AsmGenerator& context, bool reference);
+
     virtual IType* getPointerType();
-    
     virtual void insertIntoScope(AsmGenerator& context, SymbolTableScope& scope, ObjectPosition position);
+
 };
 
 #endif

@@ -21,6 +21,7 @@
 #include "parser.hpp"
 #include "NAssignment.h"
 #include "NIdentifier.h"
+#include <derr.defs.h>
 
 AsmBlock* NAssignment::compile(AsmGenerator& context)
 {
@@ -34,16 +35,6 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
     AsmBlock* las = this->lhs.reference(context);
     *block << *las;
 
-    // get lhs type
-    IType* lhsType = this->lhs.getExpressionType(context);
-    
-    // check whether this tries to write a const variable
-    if(lhsType->isConst())
-    {
-        throw new CompilerException(this->line, this->file,
-                                    "Error: assignment of read-only variable");
-    }
-
     // push memory address
     *block <<   "   SET PUSH, A" << std::endl;
     delete las;
@@ -56,19 +47,10 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
         *block <<   *rhs;
         delete rhs;
 
-        // get rhs type
-        IType* rhsType = this->rhs.getExpressionType(context);
-
         // cast to rhs to lhs type
-        if (rhsType->implicitCastable(context, lhsType))
+        if (this->m_rhsType->implicitCastable(context, this->m_lhsType))
         {
-            *block << *(rhsType->implicitCast(context, lhsType, 'A'));
-        }
-        else
-        {
-            throw new CompilerException(this->line, this->file,
-                                        "Unable to implicitly cast '" + rhsType->getName()
-                                        + "' to '" + lhsType->getName() + "'");
+            *block << *(this->m_rhsType->implicitCast(context, this->m_lhsType, 'A'));
         }
 
         // Pop the address of lhs into B
@@ -87,7 +69,7 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
         }
 
         // save the value A to [B]
-        *block << *(lhsType->saveToRef(context, 'A', 'B'));
+        *block << *(this->m_lhsType->saveToRef(context, 'A', 'B'));
     }
     else
     {
@@ -96,41 +78,12 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
         *block <<   *rhs;
         delete rhs;
 
-        // get rhs type
-        IType* rhsType = this->rhs.getExpressionType(context);
-
-        // Check if both types are of a basic type
-        bool isPointerOp = false;
-        if (lhsType->isPointer() && rhsType->isBasicType())
-        {
-            // pointer op: p += i, or p -= i
-            isPointerOp = true;
-            if (this->op != ASSIGN_ADD && this->op != ASSIGN_SUBTRACT)
-            {
-                throw new CompilerException(this->line, this->file,
-                                            "Invalid operands to assign operation. (have '"
-                                            + lhsType->getName() + "' and '" + rhsType->getName() + "')");
-            }
-        }
-        else if ((!rhsType->isBasicType()) || (!lhsType->isBasicType()))
-        {
-            throw new CompilerException(this->line, this->file,
-                                        "Invalid operands to assign operation. (have '"
-                                        + lhsType->getName() + "' and '" + rhsType->getName() + "')");
-        }
-
-        if (!isPointerOp)
+        if (!this->m_IsPointerOp)
         {
             // cast to rhs to lhs type
-            if (rhsType->implicitCastable(context, lhsType))
+            if (this->m_rhsType->implicitCastable(context, this->m_lhsType))
             {
-                *block << *(rhsType->implicitCast(context, lhsType, 'A'));
-            }
-            else
-            {
-                throw new CompilerException(this->line, this->file,
-                                            "Unable to implicitly cast '" + rhsType->getName()
-                                            + "' to '" + lhsType->getName() + "'");
+                *block << *(this->m_rhsType->implicitCast(context, this->m_lhsType, 'A'));
             }
         }
 
@@ -139,7 +92,7 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 
         // get referenced value and put it in A
         *block <<   "   SET A, PEEK" << std::endl;
-        *block << *(lhsType->loadFromRef(context, 'A', 'A'));
+        *block << *(this->m_lhsType->loadFromRef(context, 'A', 'A'));
 
         // Now do the appropriate operation.
         // TODO a lot of assignment operations are missing !!
@@ -147,43 +100,43 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
         switch (this->op)
         {
             case ASSIGN_ADD:
-                *block << *(lhsType->add(context, 'A', 'B'));
+                *block << *(this->m_lhsType->add(context, 'A', 'B'));
                 break;
 
             case ASSIGN_SUBTRACT:
-                *block << *(lhsType->sub(context, 'A', 'B'));
+                *block << *(this->m_lhsType->sub(context, 'A', 'B'));
                 break;
 
             case ASSIGN_MULTIPLY:
-                *block << *(lhsType->mul(context, 'A', 'B'));
+                *block << *(this->m_lhsType->mul(context, 'A', 'B'));
                 break;
 
             case ASSIGN_DIVIDE:
-                *block << *(lhsType->div(context, 'A', 'B'));
+                *block << *(this->m_lhsType->div(context, 'A', 'B'));
                 break;
 
             case ASSIGN_MOD:
-                *block << *(lhsType->mod(context, 'A', 'B'));
+                *block << *(this->m_lhsType->mod(context, 'A', 'B'));
                 break;
 
             case ASSIGN_BAND:
-                *block << *(lhsType->band(context, 'A', 'B'));
+                *block << *(this->m_lhsType->band(context, 'A', 'B'));
                 break;
 
             case ASSIGN_BOR:
-                *block << *(lhsType->bor(context, 'A', 'B'));
+                *block << *(this->m_lhsType->bor(context, 'A', 'B'));
                 break;
 
             case ASSIGN_BXOR:
-                *block << *(lhsType->bxor(context, 'A', 'B'));
+                *block << *(this->m_lhsType->bxor(context, 'A', 'B'));
                 break;
 
             case ASSIGN_SHL:
-                *block << *(lhsType->shl(context, 'A', 'B'));
+                *block << *(this->m_lhsType->shl(context, 'A', 'B'));
                 break;
 
             case ASSIGN_SHR:
-                *block << *(lhsType->shr(context, 'A', 'B'));
+                *block << *(this->m_lhsType->shr(context, 'A', 'B'));
                 break;
 
             default:
@@ -207,7 +160,7 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
         }
 
         // Move the value into the target address.
-        *block << *(lhsType->saveToRef(context, 'A', 'B'));
+        *block << *(this->m_lhsType->saveToRef(context, 'A', 'B'));
     }
     return block;
 }
@@ -215,6 +168,62 @@ AsmBlock* NAssignment::compile(AsmGenerator& context)
 AsmBlock* NAssignment::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an assignment.");
+}
+
+void NAssignment::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " the result of assignment");
+        return;
+    }
+    
+    // first analyse the smaller parts
+    this->lhs.analyse(context, true);
+    this->rhs.analyse(context, false);
+    
+    // get lhs type
+    this->m_lhsType = this->lhs.getExpressionType(context);
+    
+    // check whether this tries to write a const variable
+    if(this->m_lhsType->isConst())
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_WRITE_TO_CONST, " the result of inline assembly");
+    }
+    
+    // get rhs type
+    this->m_rhsType = this->rhs.getExpressionType(context);
+    
+    // Check if both types are of a basic type
+    this->m_IsPointerOp = false;
+    if (this->op != ASSIGN_EQUAL)
+    {
+        if (this->m_lhsType->isPointer() && this->m_rhsType->isBasicType())
+        {
+            // pointer op: p += i, or p -= i
+            this->m_IsPointerOp = true;
+            if (this->op != ASSIGN_ADD && this->op != ASSIGN_SUBTRACT)
+            {
+                context.errorList.addError(this->line, this->file, ERR_CC_INVALID_ASSIGN_OPERANDS, "(have '"
+                                            + this->m_lhsType->getName() + "' and '" + this->m_rhsType->getName() + "')");
+            }
+        }
+        else if ((!this->m_rhsType->isBasicType()) || (!this->m_lhsType->isBasicType()))
+        {
+                context.errorList.addError(this->line, this->file, ERR_CC_INVALID_ASSIGN_OPERANDS, "(have '"
+                                            + this->m_lhsType->getName() + "' and '" + this->m_rhsType->getName() + "')");
+        }
+    }
+    
+    if (!this->m_IsPointerOp)
+    {
+        // cast to rhs to lhs type
+        if (!this->m_rhsType->implicitCastable(context, this->m_lhsType))
+        {
+            context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_IMPLICIT_CAST, "'" + this->m_rhsType->getName()
+                                        + "' to '" + this->m_lhsType->getName() + "'");
+        }
+    }
 }
 
 IType* NAssignment::getExpressionType(AsmGenerator& context)

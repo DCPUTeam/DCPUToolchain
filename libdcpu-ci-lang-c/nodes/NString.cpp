@@ -1,11 +1,11 @@
 /**
 
-    File:       NString.cpp
+    File:           NString.cpp
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Defines the NString AST class.
 
@@ -16,6 +16,7 @@
 #include "NString.h"
 #include "TPointer16.h"
 #include "TInt16.h"
+#include <derr.defs.h>
 
 AsmBlock* NString::compile(AsmGenerator& context)
 {
@@ -24,14 +25,11 @@ AsmBlock* NString::compile(AsmGenerator& context)
     // Add file and line information.
     *block << this->getFileAndLineState();
 
-    // Stop if the assembler doesn't support DAT.
-    if (!context.getAssembler().supportsDataInstruction)
-        throw new CompilerException(this->line, this->file, "Unable to compile strings without DAT support in assembler.");
-
-    //
+    // get string
     std::string s = this->value;
     std::stringstream outputstr;
     outputstr << "\"";
+    // replace escape characters
     for (std::string::const_iterator i = s.begin(), end = s.end(); i != end; ++i)
     {
         unsigned char c = *i;
@@ -93,6 +91,22 @@ AsmBlock* NString::compile(AsmGenerator& context)
 AsmBlock* NString::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a string literal.");
+}
+
+void NString::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " a string literal");
+        return;
+    }
+    
+    // Stop if the assembler doesn't support DAT.
+    if (!context.getAssembler().supportsDataInstruction)
+    {
+        context.errorList.addFatalError(this->line, this->file, ERR_CC_ASM_NO_DAT_FOR_STRING);
+        return;
+    }
 }
 
 IType* NString::getExpressionType(AsmGenerator& context)

@@ -18,6 +18,9 @@
 
 class NExplicitCastOperator : public NExpression
 {
+private:
+IType* m_rhsType;
+    
 public:
     NExpression& rhs;
     IType* castType;
@@ -25,6 +28,7 @@ public:
         castType(castType), rhs(rhs), NExpression("explicitcastop") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
     virtual IType* getExpressionType(AsmGenerator& context);
 };
 

@@ -15,6 +15,8 @@
 #include <CompilerException.h>
 #include "NIdentifier.h"
 #include "NType.h"
+#include <derr.defs.h>
+#include <iostream>
 
 AsmBlock* NIdentifier::compile(AsmGenerator& context)
 {
@@ -23,22 +25,9 @@ AsmBlock* NIdentifier::compile(AsmGenerator& context)
     // Add file and line information.
     *block << this->getFileAndLineState();
 
-    // Get the position and type of the variable.
-    //TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
-    TypePosition result = context.symbolTable->getPositionOfVariable(this->name);
-    //IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
-    IType* type = context.symbolTable->getTypeOfVariable(this->name);
-
-    if (!result.isFound())
-        throw new CompilerException(this->line, this->file, "The variable '" + this->name + "' was not found in the scope.");
-
-    if (result.isFunction())
-        throw new CompilerException(this->line, this->file, "Can not get value representation of function '" + this->name + "'; did you want a reference instead?");
-
     // Load the value of the variable into register A.
-    *block << result.pushAddress('I');
-    *block << *(type->loadFromRef(context, 'I', 'A'));
-    //*block << "   SET A, [I]" << std::endl;
+    *block << this->m_varPos.pushAddress('I');
+    *block << *(this->m_varType->loadFromRef(context, 'I', 'A'));
 
     return block;
 }
@@ -50,28 +39,43 @@ AsmBlock* NIdentifier::reference(AsmGenerator& context)
     // Add file and line information.
     *block << this->getFileAndLineState();
 
-    // Get the position of the variable.
-    //TypePosition result = context.m_CurrentFrame->getPositionOfVariable(this->name);
-    TypePosition result = context.symbolTable->getPositionOfVariable(this->name);
-
-    if (!result.isFound())
-        throw new CompilerException(this->line, this->file, "The variable '" + this->name + "' was not found in the scope.");
-
     // Load the position of the variable into register A.
-    *block << result.pushAddress('A');
+    *block << this->m_varPos.pushAddress('A');
 
     return block;
+}
+
+void NIdentifier::analyse(AsmGenerator& context, bool reference)
+{
+    // Get the position and type of the variable.
+    this->m_varPos = context.symbolTable->getPositionOfVariable(this->name);
+    
+    if (!this->m_varPos.isFound())
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_VARIABLE_NOT_IN_SCOPE, this->name);
+        return;
+    }
+    
+    this->m_varType = context.symbolTable->getTypeOfVariable(this->name);
+
+    if ((!reference) && this->m_varPos.isFunction())
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_VALUE_OF_FUNCTION, this->name);
+        return;
+    }
 }
 
 IType* NIdentifier::getExpressionType(AsmGenerator& context)
 {
     // Search the current context for the variable with
     // this name and return it's type.
-    //IType* type = context.m_CurrentFrame->getTypeOfVariable(this->name);
     IType* type = context.symbolTable->getTypeOfVariable(this->name);
 
     if (type == NULL)
-        throw new CompilerException(this->line, this->file, "Unable to resolve variable '" + this->name + "' when determining type information (does the variable exist?).");
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_VARIABLE_NOT_IN_SCOPE, this->name);
+        return NULL;
+    }
     else
     {
         // Return type

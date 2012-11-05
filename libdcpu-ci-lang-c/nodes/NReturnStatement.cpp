@@ -5,8 +5,7 @@
     Project:        DCPU-16 Tools
     Component:      LibDCPU-ci-lang-c
 
-    Authors:        James Rhodes
-                    Patrick Flick
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Defines the NReturnStatement AST class.
 
@@ -15,6 +14,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NReturnStatement.h"
+#include <derr.defs.h>
 
 AsmBlock* NReturnStatement::compile(AsmGenerator& context)
 {
@@ -45,4 +45,18 @@ AsmBlock* NReturnStatement::compile(AsmGenerator& context)
 AsmBlock* NReturnStatement::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an return statement.");
+}
+
+void NReturnStatement::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " a return statement");
+        return;
+    }
+    
+    if (this->result != NULL)
+    {
+        this->result->analyse(context, false);
+    }
 }

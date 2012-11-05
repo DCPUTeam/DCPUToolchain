@@ -5,8 +5,7 @@
     Project:        DCPU-16 Tools
     Component:      LibDCPU-ci-lang-c
 
-    Authors:        James Rhodes
-                    Patrick Flick
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Declares the NReturnStatement AST class.
 
@@ -26,6 +25,7 @@ public:
         result(result), NStatement("return") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
 };
 
 #endif
