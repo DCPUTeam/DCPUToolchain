@@ -89,6 +89,13 @@ AsmBlock* NStructureResolutionOperator::reference(AsmGenerator& context)
     return block;
 }
 
+void NStructureResolutionOperator::analyse(AsmGenerator& context, bool reference)
+{
+    // FIXME TODO implement this!!
+    lhs.analyse(context, true);
+    
+}
+
 IType* NStructureResolutionOperator::getExpressionType(AsmGenerator& context)
 {
     // init variables, and check types

@@ -40,7 +40,7 @@ void TPointer16::setConst()
 
 std::string TPointer16::getName() const
 {
-    return "(" + m_pointingTo->getName() + ")*";
+    return std::string("(") + m_pointingTo->getName() + ")*";
 }
 
 std::string TPointer16::getInternalName() const

@@ -43,6 +43,8 @@ public:
     virtual uint16_t getWordSize(AsmGenerator& context);
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    void analyse(AsmGenerator& context, bool reference) {}
+    
     virtual IType* getExpressionType(AsmGenerator& context);
 
     // Operator overloads.

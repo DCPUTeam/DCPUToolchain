@@ -15,6 +15,7 @@
 #include <CompilerException.h>
 #include "NCharacter.h"
 #include "TInt16.h"
+#include <derr.defs.h>
 
 AsmBlock* NCharacter::compile(AsmGenerator& context)
 {
@@ -32,6 +33,15 @@ AsmBlock* NCharacter::compile(AsmGenerator& context)
 AsmBlock* NCharacter::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to a character node.");
+}
+
+void NCharacter::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " a char literal");
+        return;
+    }
 }
 
 IType* NCharacter::getExpressionType(AsmGenerator& context)

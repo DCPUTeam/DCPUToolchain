@@ -33,6 +33,7 @@ public:
         m_structType(NULL), lhs(lhs), rhs(rhs), isDereference(isDereference), NExpression("field") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
     virtual IType* getExpressionType(AsmGenerator& context);
 };
 

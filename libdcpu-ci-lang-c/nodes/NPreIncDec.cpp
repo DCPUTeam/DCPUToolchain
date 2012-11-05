@@ -1,11 +1,11 @@
 /**
 
-    File:       NPreIncDec.cpp
+    File:           NPreIncDec.cpp
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    Patrick Flick
+    Authors:        Patrick Flick
 
     Description:    Defines the NPreIncDec AST class.
 
@@ -19,6 +19,7 @@
 #include <CompilerException.h>
 #include "parser.hpp"
 #include "NPreIncDec.h"
+#include <derr.defs.h>
 
 AsmBlock* NPreIncDec::compile(AsmGenerator& context)
 {
@@ -30,36 +31,17 @@ AsmBlock* NPreIncDec::compile(AsmGenerator& context)
     *block <<   *reference;
     delete reference;
 
-    // get type
-    IType* exprType = this->expr.getExpressionType(context);
-
-    // Type checking
-    if ((!exprType->isPointer()) && (!exprType->isBasicType()))
-    {
-        throw new CompilerException(this->line, this->file,
-                                    "Invalid operand to pre increase/decrease operation. (have '"
-                                    + exprType->getName() + "')");
-    }
-    
-    // check whether this tries to modify a const variable
-    if (exprType->isConst())
-    {
-        throw new CompilerException(this->line, this->file,
-                                    "Error: increase/decrease of read-only variable");
-    }
-
     *block <<   "   SET B, A" << std::endl;
-
 
     // Now do the appropriate operation.
     switch (this->op)
     {
         case INCREMENT:
-            *block << *(exprType->inc(context, 'B'));
+            *block << *(this->m_exprType->inc(context, 'B'));
             break;
 
         case DECREMENT:
-            *block << *(exprType->dec(context, 'B'));
+            *block << *(this->m_exprType->dec(context, 'B'));
             break;
 
         default:
@@ -67,7 +49,7 @@ AsmBlock* NPreIncDec::compile(AsmGenerator& context)
     }
 
     // return value in A
-    *block << *(exprType->loadFromRef(context, 'B', 'A'));
+    *block << *(this->m_exprType->loadFromRef(context, 'B', 'A'));
 
     return block;
 }
@@ -75,6 +57,35 @@ AsmBlock* NPreIncDec::compile(AsmGenerator& context)
 AsmBlock* NPreIncDec::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an Pre-Increment.");
+}
+
+void NPreIncDec::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " result of an pre-increment operation");
+        return;
+    }
+    
+    // analyse expr
+    this->expr.analyse(context, true);
+    
+    // get type
+    this->m_exprType = this->expr.getExpressionType(context);
+    
+    // Type checking
+    if ((!this->m_exprType->isPointer()) && (!this->m_exprType->isBasicType()))
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_INVALID_INC_DEC_OPERAND, this->m_exprType->getName());
+        return;
+    }
+    
+    // check whether this tries to modify a const variable
+    if (this->m_exprType->isConst())
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_INC_DEC_CONST);
+        return;
+    }
 }
 
 IType* NPreIncDec::getExpressionType(AsmGenerator& context)

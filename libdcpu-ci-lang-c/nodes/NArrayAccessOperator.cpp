@@ -16,6 +16,7 @@
 #include "NType.h"
 #include "NArrayAccessOperator.h"
 #include "TPointer16.h"
+#include <derr.defs.h>
 
 AsmBlock* NArrayAccessOperator::compile(AsmGenerator& context)
 {
@@ -37,24 +38,12 @@ AsmBlock* NArrayAccessOperator::reference(AsmGenerator& context)
     // Add file and line information.
     *block << this->getFileAndLineState();
 
-    // Get our type.
-    IType* baseType = this->getExpressionType(context);
-    IType* pointerType = this->exprA.getExpressionType(context);
-
     // Get a reference to the first component of the array access (result
     // will end up in A).
     AsmBlock* exprA = this->exprA.compile(context);
     *block << *exprA;
-    *block << *(pointerType->pushStack(context, 'A'));
+    *block << *(this->m_pointerType->pushStack(context, 'A'));
     delete exprA;
-
-    // type checking exprA
-    if (!pointerType->isPointer())
-    {
-        throw new CompilerException(this->line, this->file,
-                                    "Invalid operand as array access name. (have '"
-                                    + pointerType->getName() + "')");
-    }
 
     // Evaluate the second component of the array access (result
     // will end up in A).
@@ -62,25 +51,40 @@ AsmBlock* NArrayAccessOperator::reference(AsmGenerator& context)
     *block << *exprB;
     delete exprB;
 
-    // get type
-    IType* integralType = this->exprB.getExpressionType(context);
-
-    if (!integralType->isBasicType())
-    {
-        throw new CompilerException(this->line, this->file,
-                                    "Invalid operand as array access offset. (have '"
-                                    + integralType->getName() + "')");
-    }
-
+    // get result from exprA from stack
     *block << " SET B, A" << std::endl;
-    *block << *(pointerType->popStackReturn(context, 'A'));
-
+    *block << *(this->m_pointerType->popStackReturn(context, 'A'));
 
     // Add the two together.
-    *block << *(pointerType->add(context, 'A', 'B'));
+    *block << *(this->m_pointerType->add(context, 'A', 'B'));
 
     // The memory address is now in A, so we can simply return.
     return block;
+}
+
+void NArrayAccessOperator::analyse(AsmGenerator& context, bool reference)
+{
+    // Get array types
+    this->m_baseType = this->getExpressionType(context);
+    this->m_pointerType = this->exprA.getExpressionType(context);
+    
+    this->exprA.analyse(context, false);
+    this->exprB.analyse(context, false);
+    
+    // type checking exprA
+    if (!this->m_pointerType->isPointer())
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_INVALID_ARRAY_ACCESS_TYPE, this->m_pointerType->getName());
+        return;
+    }
+    
+    // get type
+    IType* integralType = this->exprB.getExpressionType(context);
+    if (!integralType->isBasicType())
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_INVALID_ARRAY_ACCESS_OFFSET, integralType->getName());
+        return;
+    }
 }
 
 IType* NArrayAccessOperator::getExpressionType(AsmGenerator& context)

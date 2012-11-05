@@ -20,12 +20,16 @@
 
 class NDeclarations : public Node, public IDeclarations
 {
+private:
+    uint16_t m_globalDataSize;
+    bool m_hasMain;
+    
 public:
     DeclarationList definitions;
-    NDeclarations() : Node("declarations") { }
+    NDeclarations() : Node("declarations"), m_globalDataSize(0), m_hasMain(false) { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
-    virtual IFunctionDeclaration* getFunction(std::string name);
+    virtual void analyse(AsmGenerator& context, bool reference);
 };
 
 #endif

@@ -31,6 +31,7 @@ public:
         asmcode(asmcode), NStatement("assembly") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
 };
 
 #endif

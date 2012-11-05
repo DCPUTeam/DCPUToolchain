@@ -1,11 +1,11 @@
 /**
 
-    File:       NUnaryOperator.cpp
+    File:           NUnaryOperator.cpp
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    Patrick Flick
+    Authors:        Patrick Flick
 
     Description:    Defines the NUnaryOperator AST class.
 
@@ -19,6 +19,7 @@
 #include <CompilerException.h>
 #include "parser.hpp"
 #include "NUnaryOperator.h"
+#include <derr.defs.h>
 
 AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 {
@@ -30,16 +31,6 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
     // When an expression is evaluated, the result goes into the A register.
     AsmBlock* rhs = this->rhs.compile(context);
 
-    // get type
-    IType* rhsType = this->rhs.getExpressionType(context);
-
-    if (!rhsType->isBasicType())
-    {
-        throw new CompilerException(this->line, this->file,
-                                    "Invalid operand to unary operation. (have '"
-                                    + rhsType->getName() + "')");
-    }
-
     // Move the value into A
     *block <<   *rhs;
     delete rhs;
@@ -50,22 +41,22 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
     {
         case ADD:
             /* TODO integer promotion */
-            compiledOp = rhsType->plus(context, 'A');
+            compiledOp = this->m_rhsType->plus(context, 'A');
             break;
 
             /* unary negative:  "A = -A" */
         case SUBTRACT:
             // A = 0 - A
-            compiledOp = rhsType->minus(context, 'A');
+            compiledOp = this->m_rhsType->minus(context, 'A');
             break;
 
             /* unary bitwise negate:  "A = ~A" */
         case BITWISE_NEGATE:
-            compiledOp = rhsType->bnot(context, 'A');
+            compiledOp = this->m_rhsType->bnot(context, 'A');
             break;
             /* boolean negate: A = !A  */
         case NEGATE:
-            compiledOp = rhsType->lnot(context, 'A');
+            compiledOp = this->m_rhsType->lnot(context, 'A');
             break;
 
         default:
@@ -79,6 +70,26 @@ AsmBlock* NUnaryOperator::compile(AsmGenerator& context)
 AsmBlock* NUnaryOperator::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an unary operator.");
+}
+
+void NUnaryOperator::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " an unary operation");
+        return;
+    }
+    
+    this->rhs.analyse(context, false);
+    
+    // get type
+    this->m_rhsType = this->rhs.getExpressionType(context);
+
+    if (!this->m_rhsType->isBasicType())
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_INVALID_UNARY_OPERAND, this->m_rhsType->getName());
+        return;
+    }
 }
 
 IType* NUnaryOperator::getExpressionType(AsmGenerator& context)

@@ -15,6 +15,7 @@
 #include <CompilerException.h>
 #include "NDefaultStatement.h"
 #include <sstream>
+#include <derr.defs.h>
 
 void NDefaultStatement::setLabelPrefix(std::string prefix)
 {
@@ -33,9 +34,6 @@ AsmBlock* NDefaultStatement::compile(AsmGenerator& context)
     // Add file and line information.
     *block << this->getFileAndLineState();
 
-    if (this->m_label == std::string(""))
-        throw new CompilerException(this->line, this->file, "Invalid default statement outside of a switch statement.");
-
     // insert the label.
     *block << ":" << this->m_label << std::endl;
 
@@ -45,4 +43,19 @@ AsmBlock* NDefaultStatement::compile(AsmGenerator& context)
 AsmBlock* NDefaultStatement::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an return statement.");
+}
+
+void NDefaultStatement::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " a default statement");
+        return;
+    }
+    
+    if (this->m_label == std::string(""))
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_DEFAULT_OUTSIDE_OF_SWITCH);
+        return;
+    }
 }

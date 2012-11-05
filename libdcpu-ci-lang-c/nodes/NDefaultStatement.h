@@ -26,6 +26,7 @@ public:
     NDefaultStatement() : NStatement("default") {};
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
 
     void setLabelPrefix(std::string prefix);
 };

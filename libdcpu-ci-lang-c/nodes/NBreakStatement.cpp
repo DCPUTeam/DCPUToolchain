@@ -14,6 +14,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NBreakStatement.h"
+#include <derr.defs.h>
 
 AsmBlock* NBreakStatement::compile(AsmGenerator& context)
 {
@@ -22,18 +23,28 @@ AsmBlock* NBreakStatement::compile(AsmGenerator& context)
     // Add file and line information.
     *block << this->getFileAndLineState();
 
-    std::string brklabel = context.getBreakLabel();
-    if (brklabel == std::string(""))
-    {
-        throw new CompilerException(this->line, this->file, "Invalid break statement outside of loop.");
-    }
-
-    *block <<  "    SET PC, " << brklabel << std::endl;
+    *block <<  "    SET PC, " << this->m_breakLabel << std::endl;
 
     return block;
 }
 
 AsmBlock* NBreakStatement::reference(AsmGenerator& context)
 {
-    throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an return statement.");
+    throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an break statement.");
+}
+
+void NBreakStatement::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " a return statement");
+        return;
+    }
+    
+    this->m_breakLabel = context.getBreakLabel();
+    if (this->m_breakLabel == std::string(""))
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_BREAK_OUTSIDE_OF_LOOP);
+        return;
+    }
 }

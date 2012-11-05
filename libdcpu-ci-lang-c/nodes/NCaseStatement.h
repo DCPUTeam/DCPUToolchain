@@ -28,6 +28,7 @@ public:
     NCaseStatement(int value);
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
 
     std::string getConstantLiteral();
     void setLabelPrefix(std::string prefix);

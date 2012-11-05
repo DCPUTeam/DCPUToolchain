@@ -16,6 +16,7 @@
 #include "NType.h"
 #include "NAddressOfOperator.h"
 #include "TPointer16.h"
+#include <derr.defs.h>
 
 AsmBlock* NAddressOfOperator::compile(AsmGenerator& context)
 {
@@ -25,7 +26,18 @@ AsmBlock* NAddressOfOperator::compile(AsmGenerator& context)
 
 AsmBlock* NAddressOfOperator::reference(AsmGenerator& context)
 {
-    throw new CompilerException(this->line, this->file, "Unable to get reference to the result of an address-of operator.");
+    throw new CompilerException(this->line, this->file, "INTERNAL: Unable to get reference to the result of an address-of operator.");
+}
+
+void NAddressOfOperator::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE_REFOP);
+        return;
+    }
+    else
+        expr.analyse(context, true);
 }
 
 IType* NAddressOfOperator::getExpressionType(AsmGenerator& context)

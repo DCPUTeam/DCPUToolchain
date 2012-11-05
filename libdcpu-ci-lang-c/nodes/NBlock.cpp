@@ -14,6 +14,7 @@
 #include <AsmGenerator.h>
 #include <CompilerException.h>
 #include "NBlock.h"
+#include <derr.defs.h>
 
 AsmBlock* NBlock::compile(AsmGenerator& context)
 {
@@ -36,6 +37,20 @@ AsmBlock* NBlock::compile(AsmGenerator& context)
 AsmBlock* NBlock::reference(AsmGenerator& context)
 {
     throw new CompilerException(this->line, this->file, "Unable to get reference to the result of a block node.");
+}
+
+void NBlock::analyse(AsmGenerator& context, bool reference)
+{
+    if (reference)
+    {
+        context.errorList.addError(this->line, this->file, ERR_CC_CANNOT_REFERENCE, " the result of a binary operation");
+        return;
+    }
+    
+    for (StatementList::iterator i = this->statements.begin(); i != this->statements.end(); i++)
+    {
+        (*i)->analyse(context, false);
+    }
 }
 
 IType* NBlock::getExpressionType(AsmGenerator& context)

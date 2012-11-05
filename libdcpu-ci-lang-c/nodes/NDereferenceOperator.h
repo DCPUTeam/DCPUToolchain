@@ -18,11 +18,14 @@
 
 class NDereferenceOperator : public NExpression
 {
+private:
+    IType* m_baseType;
 public:
     NExpression& expr;
     NDereferenceOperator(NExpression& expr) : expr(expr), NExpression("dereference") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
     virtual IType* getExpressionType(AsmGenerator& context);
 };
 

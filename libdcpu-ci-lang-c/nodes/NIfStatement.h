@@ -1,11 +1,11 @@
 /**
 
-    File:       NIfStatement.h
+    File:           NIfStatement.h
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Declares the NIfStatement AST class.
 
@@ -30,6 +30,7 @@ public:
         eval(eval), if_true(if_true), if_false(if_false), NStatement("if") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);
+    virtual void analyse(AsmGenerator& context, bool reference);
 };
 
 #endif
