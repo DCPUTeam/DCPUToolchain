@@ -7,12 +7,19 @@
 #include <stdint.h>
 #include "DTIDEGLWidgets.h"
 
+struct Line
+{
+    const char* Path;
+    int Line;
+};
+
 enum MessageType
 {
     StatusType,
     HardwareType,
     MemoryType,
     MemoryDumpType,
+    LineHitType,
 };
 
 class StatusMessage
@@ -43,12 +50,19 @@ public:
     uint16_t* data;
 };
 
+class LineHitMessage
+{
+public:
+    Line line;
+};
+
 union MessageValue
 {
     StatusMessage status;
     HardwareMessage hardware;
     MemoryMessage memory;
     MemoryDumpMessage dump;
+    LineHitMessage hit;
 };
 
 class DebuggingMessage
@@ -300,6 +314,7 @@ public:
     virtual void Pause(DebuggingSession* session) = 0;
     virtual void Resume(DebuggingSession* session) = 0;
     virtual void Stop(DebuggingSession* session) = 0;
+    virtual Line LineAt(DebuggingSession* session, uint16_t address) = 0;
     //virtual void AttachDevice(DebuggingSession& session, Device& device) = 0;
     //virtual void DetachDevice(DebuggingSession& session, Device& device) = 0;
     //virtual void SendCommand(DebuggingSession& session, std::string cmd) = 0; // send custom command (only to be used on user input).
