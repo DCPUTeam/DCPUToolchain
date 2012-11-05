@@ -9,7 +9,7 @@ When invoking the emulator, you may specify any of these options
 
 .. code-block:: bash
 
-    dtemu [-dtlcvq] program [-W policy] [-e dump] [--little-endian] [-r n]
+    dtemu [-dtlcvq] [-W policy]... [-e dump] [--little-endian] [-r n] program
 
 The most common use case is executing a DCPU-16 program:
 
