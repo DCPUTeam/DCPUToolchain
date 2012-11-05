@@ -1,5 +1,9 @@
 #include "DTIDEBuildAPI.h"
 
+#ifndef WIN32
+#include <unistd.h>
+#endif
+
 DTIDEBuildAPI::DTIDEBuildAPI()
 {
 }
