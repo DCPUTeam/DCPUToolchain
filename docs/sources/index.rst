@@ -8,11 +8,12 @@ Contents:
 .. toctree::
     :maxdepth: 2
    
-    whatsnew/index.rst
-    tutorial/index.rst
-    tools/index.rst
-    lang/index.rst
-    modules/index.rst
+    whatsnew/index
+    tutorial/index
+    tools/index
+    lang/index
+    modules/index
+    kernels/index
 
 
 Indices and tables
