@@ -81,10 +81,6 @@ if(${QT4_FOUND} AND ${qscintilla2_FOUND})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
     endif()
 
-    if(MSVC)
-        add_definitions(-DQSCINTILLA_DLL)
-    endif()
-
     add_executable(dtide ${dtide_SOURCES}
         ${dtide_HEADERS_MOC}
         ${dtide_HEADERS}

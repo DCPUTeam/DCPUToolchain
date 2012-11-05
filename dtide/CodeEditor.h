@@ -26,6 +26,7 @@ public:
     void saveFile();
 
     QString getPath();
+    void ResetBuild();
     bool build();
     QList<Breakpoint> getBreakpoints();
     void run(DebuggingSession* s);

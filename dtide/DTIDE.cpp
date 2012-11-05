@@ -237,6 +237,7 @@ void DTIDE::compileProject()
     for (int i = 0; i < tabs->count(); i++)
     {
         CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        w->ResetBuild();
         w->build();
     }
 }

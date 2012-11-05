@@ -146,12 +146,18 @@ QString CodeEditor::getPath()
     return path;
 }
 
+void CodeEditor::ResetBuild()
+{
+    // Create a new Build API instance.  The "build API" class should be used as
+    // a temporary object while the build is occurred and the subsequent debug
+    // execution, but discarded when a new build starts.
+    this->buildAPI = DTIDEBuildAPI();
+}
+
 bool CodeEditor::build()
 {
     QFileInfo f(getPath());
-    std::string absolutePath = f.absolutePath().toStdString();
-
-    lang->Build(path.toStdString(), absolutePath, buildAPI);
+    lang->Build(path.toStdString(), f.absolutePath().toStdString(), buildAPI);
 
     return true;
 }

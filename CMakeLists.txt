@@ -61,9 +61,12 @@ set(OUTPUT_EXT "")
 if(MSVC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3 /wd4273 /wd4065 /wd4996 /wd4005 /D_CRT_SECURE_NO_WARNINGS /DSIMCLIST_NO_DUMPRESTORE")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4273 /wd4065 /wd4996 /wd4005 /D_CRT_SECURE_NO_WARNINGS /DSIMCLIST_NO_DUMPRESTORE")
-    # This is to deal with a bug introduced in the MSVC linker when both VS2010 and VS2012 are
-    # installed on the same machine.
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO")
+    option(VS2010_VS2012_CONFLICT_WORKAROUND "Fixes linking issues when building on a computer with both VS2010 and VS2012 installed." OFF)
+    if(${VS2010_VS2012_CONFLICT_WORKAROUND})
+        # This is to deal with a bug introduced in the MSVC linker when both VS2010 and VS2012 are
+        # installed on the same machine.
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO")
+    endif()
 elseif(APPLE)
     # TODO: Set warnings as errors under Mac / XCode.
 elseif(MINGW)
@@ -215,12 +218,6 @@ add_subdirectory(tests/drivers/testvm)
 
 # Additional deployment configuration.
 if(${DEPLOYABLE})
-    #include(CMakePackageConfigHelpers)
-    #configure_package_config_file(
-    #    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DCPUConfig.cmake.in
-    #    ${CMAKE_CURRENT_BINARY_DIR}/cmake/DCPUConfig.cmake
-    #)
-
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs)
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/modules)
     install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/modules
