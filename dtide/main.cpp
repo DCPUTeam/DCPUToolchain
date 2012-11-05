@@ -12,6 +12,7 @@ extern "C"
 #include <bstring.h>
 #include <debug.h>
 #include <iio.h>
+#include <version.h>
 #include <GL/glfw3.h>
 }
 
