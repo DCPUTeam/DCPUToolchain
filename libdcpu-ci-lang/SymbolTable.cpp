@@ -105,10 +105,8 @@ TypePosition SymbolTable::getPositionOfVariable(std::string name, bool previousS
                 return TypePosition(true, true, false, previousStackFrame, obj.positionOffset);
         }
     }
-    else
-    {
-        return TypePosition(false, false, false, false, 0);
-    }
+    
+    return TypePosition(false, false, false, false, 0);
 }
 
 TypePosition SymbolTable::getPositionOfVariable(std::string name)
