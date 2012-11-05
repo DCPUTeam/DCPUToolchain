@@ -5,13 +5,17 @@
 Preprocessor
 =============================================
 
-The preprocessor parses and transforms text before it is read in by the compiler or assembler.  In the toolchain we
-use the preprocessor for both the compiler infrastructure and the assembler, thus all directives in the preprocessor
-are supported in both high-level languages and assembly.
+The toolchain preprocessor is a fully recursive, queue-based preprocessor.  The preprocessor infrastructure is the
+same for all languages, but each language is exposed to a different set of available directives.
+
+.. note::
+    
+    Preprocessor module directives are only exposed to the assembler.
 
 .. toctree::
    :maxdepth: 3
    
-   cmdline
-   syntax
+   expressions
+   asm-syntax
+   c-syntax
 

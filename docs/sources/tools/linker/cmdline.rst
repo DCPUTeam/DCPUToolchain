@@ -52,6 +52,14 @@ Generic options
         
         In the future, the compiler will automatically insert symbols to inform the linker of this requirement
         and thus linking against the standard library will become an automatic step.
+    
+.. cmdoption:: -v[vv]
+
+    Increase verbosity.
+    
+.. cmdoption:: -q[qq]
+
+    Decrease verbosity.
 
 Output options
 ~~~~~~~~~~~~~~~~~~
