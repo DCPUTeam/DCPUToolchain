@@ -12,6 +12,12 @@ add_library(libdcpu-ld ${LIBRARY_FORMAT}
     ldlua.h
     ldpolicy.c
     ldpolicy.h
+    ldcall.c
+    ldcall.h
+    ccstackcall.h
+    ccstackcall.c
+    ccregistercall.h
+    ccregistercall.c
 )
 include_directories(
     ${libdcpu-ld-policy_SOURCE_DIR}

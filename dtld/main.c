@@ -227,9 +227,9 @@ int main(int argc, char* argv[])
     if (policy_use_kernel && target != IMAGE_KERNEL)
     {
         // Import the jumplist.
-        if (policy_direct)
+        if (policy_direct && policy_jumplist_path != NULL && policy_kernel_path != NULL)
             bins_load_kernel(bautocpy(policy_jumplist_path), bautocpy(policy_kernel_path));
-        else
+        else if (policy_jumplist_path != NULL)
             bins_load_jumplist(bautocpy(policy_jumplist_path));
     }
     for (i = 0; i < input_files->count; i++)
@@ -250,6 +250,8 @@ int main(int argc, char* argv[])
         dwarn(WARN_SKIPPING_SHORT_LITERALS_TYPE, NULL);
     else
         dwarn(WARN_SKIPPING_SHORT_LITERALS_REQUEST, NULL);
+    if (target == IMAGE_APPLICATION)
+        bins_resolve_kernel(loaded_policies);
     bins_resolve(
         target == IMAGE_STATIC_LIBRARY,
         target == IMAGE_STATIC_LIBRARY,
@@ -276,6 +278,8 @@ int main(int argc, char* argv[])
         printd(LEVEL_DEFAULT, "linker: saved %i words during optimization.\n", saved);
     else if (saved < 0)
         printd(LEVEL_DEFAULT, "linker: increased by %i words during optimization.\n", -saved);
+    if (loaded_policies != NULL)
+        policies_free(loaded_policies);
 
     arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
     return 0;

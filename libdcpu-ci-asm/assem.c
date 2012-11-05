@@ -467,6 +467,14 @@ void process_line(struct ast_node_line* line)
 
                     break;
 
+                case CALL:
+                    printd(LEVEL_VERBOSE, ".CALL %s", bstr2cstr(line->keyword_data_string, '0'));
+
+                    // Emit kernel call metadata.
+                    aout_emit(aout_create_metadata_call(bstr2cstr(line->keyword_data_string, '0')));
+
+                    break;
+
                 default:
                     printd(LEVEL_VERBOSE, "?? UNKNOWN KEYWORD\n");
                     dhalt(ERR_UNSUPPORTED_KEYWORD, NULL);

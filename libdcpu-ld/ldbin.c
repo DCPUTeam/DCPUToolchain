@@ -25,9 +25,10 @@
 /// Creates a new linker bin.
 ///
 /// @param name The name of the linker bin.
+/// @param initialize Whether to initialize the list structures.
 /// @return The new linker bin.
 ///
-struct ldbin* bin_create(freed_bstring name)
+struct ldbin* bin_create(freed_bstring name, bool initialize)
 {
     struct ldbin* bin = malloc(sizeof(struct ldbin));
     memset(bin, 0, sizeof(struct ldbin));
@@ -45,7 +46,20 @@ struct ldbin* bin_create(freed_bstring name)
     bin->output = NULL;
     bin->jump = NULL;
     bin->optional = NULL;
+    bin->call = NULL;
     bin->symbols = NULL;
+    if (initialize)
+    {
+        bin->provided = list_create();
+        bin->required = list_create();
+        bin->adjustment = list_create();
+        bin->section = list_create();
+        bin->output = list_create();
+        bin->jump = list_create();
+        bin->optional = list_create();
+        bin->call = list_create();
+        bin->symbols = dbgfmt_create_list();
+    }
     return bin;
 }
 
@@ -63,6 +77,7 @@ void bin_destroy(struct ldbin* bin)
     if (bin->output != NULL) list_prov_destroy(bin->output);
     if (bin->jump != NULL) list_prov_destroy(bin->jump);
     if (bin->optional != NULL) list_prov_destroy(bin->optional);
+    if (bin->call != NULL) list_prov_destroy(bin->call);
     if (bin->symbols != NULL) dbgfmt_free(bin->symbols);
     list_destroy(&bin->words);
     bdestroy(bin->name);
@@ -179,6 +194,7 @@ void bin_insert(list_t* all, struct ldbin* to, struct ldbin* from, size_t at, si
     bin_info_insert(all, to, to->output, from, from->output, false, true, at, offset, count);
     bin_info_insert(all, to, to->jump, from, from->jump, false, false, at, offset, count);
     bin_info_insert(all, to, to->optional, from, from->optional, false, false, at, offset, count);
+    bin_info_insert(all, to, to->call, from, from->call, false, false, at, offset, count);
     bin_info_insert_symbols(to, from, at, offset, count);
 }
 
@@ -215,6 +231,7 @@ void bin_remove(list_t* all, struct ldbin* bin, size_t offset, size_t count)
     bin_info_remove(all, bin, bin->output, false, offset, count);
     bin_info_remove(all, bin, bin->jump, false, offset, count);
     bin_info_remove(all, bin, bin->optional, false, offset, count);
+    bin_info_remove(all, bin, bin->call, false, offset, count);
     bin_info_remove_symbols(bin, offset, count);
 }
 
@@ -554,6 +571,10 @@ void bin_info_insert_symbols(struct ldbin* to, struct ldbin* from, size_t at, si
     struct dbg_sym* copy;
     size_t k;
     uint16_t address;
+
+    // Skip if the from list is NULL.
+    if (from->symbols == NULL) return;
+    assert(to->symbols != NULL);
 
     // Adjust all of the memory addresses for debugging symbol entries in the
     // bin that was written to and shift them up.

@@ -22,6 +22,7 @@
 #include <bstring.h>
 #include <lprov.h>
 #include <dcpu.h>
+#include <policy.h>
 #include "ldbin.h"
 
 #define OPTIMIZE_SPEED 0
@@ -43,7 +44,7 @@ void bins_init();
 struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct lprov_entry* required,
                        struct lprov_entry* adjustment, struct lprov_entry* section,
                        struct lprov_entry* output, struct lprov_entry* jump,
-                       struct lprov_entry* optional);
+                       struct lprov_entry* optional, struct lprov_entry* call);
 void bins_set_kernel(struct lprov_entry* jump);
 bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbolExtension);
 bool bins_load_jumplist(freed_bstring path);
@@ -55,6 +56,7 @@ void bins_sectionize();
 void bins_write_jump();
 void bins_flatten(freed_bstring name);
 int32_t bins_optimize(int target, int level);
+void bins_resolve_kernel(policies_t* policies);
 void bins_resolve(bool keepProvided, bool allowMissing, bool keepOptional);
 uint16_t bins_compress();
 void bins_free();

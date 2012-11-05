@@ -30,7 +30,9 @@ struct lprov_entry* objfile_get_last(struct lprov_entry* first)
 
 void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov_entry** provided,
                   struct lprov_entry** required, struct lprov_entry** adjustment, struct lprov_entry** section,
-                  struct lprov_entry** output, struct lprov_entry** jump, struct lprov_entry** optional)
+                  struct lprov_entry** output, struct lprov_entry** jump, struct lprov_entry** optional,
+                  struct lprov_entry** call
+                 )
 {
     struct ldata_entry* entry = NULL;
     struct lprov_entry* prov_last = provided == NULL ? NULL : objfile_get_last(*provided);
@@ -47,6 +49,8 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
     struct lprov_entry* jump_current = NULL;
     struct lprov_entry* opt_last = optional == NULL ? NULL : objfile_get_last(*optional);
     struct lprov_entry* opt_current = NULL;
+    struct lprov_entry* call_last = call == NULL ? NULL : objfile_get_last(*call);
+    struct lprov_entry* call_current = NULL;
     uint16_t section_last_address = 0;
     size_t sz;
 
@@ -146,6 +150,17 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 
             opt_last = opt_current;
         }
+        else if (entry->mode == LABEL_CALL && call != NULL)
+        {
+            call_current = lprov_create(strdup(entry->label), entry->address + *offset);
+
+            if (call_last == NULL)
+                *call = call_current;
+            else
+                call_last->next = call_current;
+
+            call_last = call_current;
+        }
 
         ldata_free(entry);
         entry = ldata_read(in);
@@ -163,7 +178,7 @@ void objfile_load(const char* filename, FILE* in, uint16_t* offset, struct lprov
 void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* required,
                   struct lprov_entry* adjustment, struct lprov_entry* section,
                   struct lprov_entry* output, struct lprov_entry* jump,
-                  struct lprov_entry* optional)
+                  struct lprov_entry* optional, struct lprov_entry* call)
 {
     struct ldata_entry* entry = NULL;
 
@@ -259,6 +274,19 @@ void objfile_save(FILE* out, struct lprov_entry* provided, struct lprov_entry* r
         free(entry);
 
         optional = optional->next;
+    }
+
+    // Now write out the call table.
+    while (call != NULL)
+    {
+        entry = malloc(sizeof(struct ldata_entry));
+        entry->mode = LABEL_CALL;
+        entry->address = call->address;
+        strcpy(entry->label, call->label);
+        ldata_write(out, entry);
+        free(entry);
+
+        call = call->next;
     }
 
     // Now write out the NULL entry.

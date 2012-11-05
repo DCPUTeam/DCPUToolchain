@@ -31,11 +31,12 @@ struct ldbin
     list_t* output;
     list_t* jump;
     list_t* optional;
+    list_t* call;
     list_t* symbols;
     list_t words;
 };
 
-struct ldbin* bin_create(freed_bstring name);
+struct ldbin* bin_create(freed_bstring name, bool initialize);
 void bin_destroy(struct ldbin* bin);
 void bin_write(struct ldbin* bin, uint16_t word);
 

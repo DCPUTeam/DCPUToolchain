@@ -860,7 +860,7 @@ void ddbg_disassemble(int start, int difference)
             printd(LEVEL_DEFAULT, "<null>\n");
         else if (inst.pretty.op == NULL)
             printd(LEVEL_DEFAULT, "???\n");
-        else if (inst.pretty.b == NULL)
+        else if (inst.original.op == OP_NONBASIC)
             printd(LEVEL_DEFAULT, "%s %s\n", inst.pretty.op->data, inst.pretty.a->data);
         else
             printd(LEVEL_DEFAULT, "%s %s, %s\n", inst.pretty.op->data, inst.pretty.b->data, inst.pretty.a->data);

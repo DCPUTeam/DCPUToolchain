@@ -24,6 +24,7 @@
 #include "ldconv.h"
 #include "ddata.h"
 #include "ldtarget.h"
+#include "ldcall.h"
 
 ///
 /// @brief Prints out information about a bin.
@@ -40,6 +41,7 @@ void bin_print(const char* context, struct ldbin* bin)
     bin->output != NULL ? printd(LEVEL_VERBOSE,     "    total outputs: %u\n", list_size(bin->output)) : false;
     bin->jump != NULL ? printd(LEVEL_VERBOSE,       "    total jump: %u\n", list_size(bin->jump)) : false;
     bin->optional != NULL ? printd(LEVEL_VERBOSE,   "    total optional: %u\n", list_size(bin->optional)) : false;
+    bin->call != NULL ? printd(LEVEL_VERBOSE,   "    total call: %u\n", list_size(bin->call)) : false;
     bin->symbols != NULL ? printd(LEVEL_VERBOSE,    "    total symbols: %u\n", list_size(bin->symbols)) : false;
     printd(LEVEL_VERBOSE,               "    total words: 0x%04X\n", list_size(&bin->words));
     list_iterator_start(&bin->words);
@@ -132,6 +134,18 @@ void bin_print(const char* context, struct ldbin* bin)
         }
         list_iterator_stop(bin->optional);
     }
+    if (bin->call != NULL && list_size(bin->call) != 0)
+    {
+        printd(LEVEL_DEBUG,            "    ------: ------\n");
+        printd(LEVEL_DEBUG,            "    KERNEL CALLS\n");
+        list_iterator_start(bin->call);
+        while (list_iterator_hasnext(bin->call))
+        {
+            entry = list_iterator_next(bin->call);
+            printd(LEVEL_DEBUG,            "    0x%04X (%s)\n", entry->address, entry->label->data);
+        }
+        list_iterator_stop(bin->call);
+    }
     printd(LEVEL_DEBUG,                "    ------: ------\n");
     if (bin->symbols != NULL)
     {
@@ -178,13 +192,14 @@ void bins_init()
 /// @param output A linked list of defined output areas.
 /// @param jump A linked list of jump table entries.
 /// @param optional A linked list of optional labels.
+/// @param call A linked list of kernel calls.
 ///
 struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct lprov_entry* required,
                        struct lprov_entry* adjustment, struct lprov_entry* section,
                        struct lprov_entry* output, struct lprov_entry* jump,
-                       struct lprov_entry* optional)
+                       struct lprov_entry* optional, struct lprov_entry* call)
 {
-    struct ldbin* bin = bin_create(name);
+    struct ldbin* bin = bin_create(name, false);
     bin->provided = list_convert(provided);
     bin->required = list_convert(required);
     bin->adjustment = list_convert(adjustment);
@@ -192,6 +207,7 @@ struct ldbin* bins_add(freed_bstring name, struct lprov_entry* provided, struct 
     bin->output = list_convert(output);
     bin->jump = list_convert(jump);
     bin->optional = list_convert(optional);
+    bin->call = list_convert(call);
     bin->symbols = dbgfmt_create_list();
     list_append(&ldbins.bins, bin);
     return bin;
@@ -217,6 +233,7 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
     struct lprov_entry* output = NULL;
     struct lprov_entry* jump = NULL;
     struct lprov_entry* optional = NULL;
+    struct lprov_entry* call = NULL;
     struct ldbin* bin;
     FILE* in;
     char* test;
@@ -254,10 +271,10 @@ bool bins_load(freed_bstring path, bool loadDebugSymbols, const char* debugSymbo
     }
 
     // Load only the provided label entries into memory.
-    objfile_load(path.ref->data, in, &offset, &provided, &required, &adjustment, &section, &output, &jump, &optional);
+    objfile_load(path.ref->data, in, &offset, &provided, &required, &adjustment, &section, &output, &jump, &optional, &call);
 
     // Add the new bin.
-    bin = bins_add(path, provided, required, adjustment, section, output, jump, optional);
+    bin = bins_add(path, provided, required, adjustment, section, output, jump, optional, call);
 
     // Load all of the debugging symbols if requested.
     if (loadDebugSymbols)
@@ -342,10 +359,10 @@ bool bins_load_kernel(freed_bstring jumplist, freed_bstring kernel)
     free(test);
 
     // Load only the provided label entries into memory.
-    objfile_load("<kernel>", jin, &offset, NULL, NULL, &adjustment, NULL, NULL, &jump, &optional);
+    objfile_load("<kernel>", jin, &offset, NULL, NULL, &adjustment, NULL, NULL, &jump, &optional, NULL);
 
     // Add the new bin.
-    bin = bins_add(bautofree(bfromcstr("<kernel>")), NULL, NULL, adjustment, NULL, NULL, jump, optional);
+    bin = bins_add(bautofree(bfromcstr("<kernel>")), NULL, NULL, adjustment, NULL, NULL, jump, optional, NULL);
 
     // Copy all of the input file's data into the output
     // file, word by word.
@@ -403,10 +420,10 @@ bool bins_load_jumplist(freed_bstring path)
     free(test);
 
     // Load only the provided label entries into memory.
-    objfile_load(path.ref->data, in, &offset, NULL, NULL, NULL, NULL, NULL, &jump, NULL);
+    objfile_load(path.ref->data, in, &offset, NULL, NULL, NULL, NULL, NULL, &jump, NULL, NULL);
 
     // Add the new bin.
-    bin = bins_add(bautofree(bfromcstr("<jumplist>")), NULL, NULL, NULL, NULL, NULL, jump, NULL);
+    bin = bins_add(bautofree(bfromcstr("<jumplist>")), NULL, NULL, NULL, NULL, NULL, jump, NULL, NULL);
 
     // Close the file.
     fclose(in);
@@ -439,6 +456,7 @@ void bins_save(freed_bstring name, freed_bstring path, int target, bool keepOutp
     struct lprov_entry* outputs = NULL;
     struct lprov_entry* jump = NULL;
     struct lprov_entry* optional = NULL;
+    struct lprov_entry* call = NULL;
     bstring sympath;
     assert(bin != NULL);
 
@@ -464,9 +482,10 @@ void bins_save(freed_bstring name, freed_bstring path, int target, bool keepOutp
         section = list_revert(bin->section);
         jump = list_revert(bin->jump);
         optional = list_revert(bin->optional);
+        call = list_revert(bin->call);
         if (keepOutputs)
             outputs = list_revert(bin->output);
-        objfile_save(out, provided, required, adjustment, section, outputs, jump, optional);
+        objfile_save(out, provided, required, adjustment, section, outputs, jump, optional, call);
         lprov_free(provided);
         lprov_free(required);
         lprov_free(adjustment);
@@ -474,6 +493,7 @@ void bins_save(freed_bstring name, freed_bstring path, int target, bool keepOutp
         lprov_free(outputs);
         lprov_free(jump);
         lprov_free(optional);
+        lprov_free(call);
     }
 
     // Check if we need to just write out the jump
@@ -491,7 +511,7 @@ void bins_save(freed_bstring name, freed_bstring path, int target, bool keepOutp
         adjustment = list_revert(bin->adjustment);
         jump = list_revert(bin->jump);
         optional = list_revert(bin->optional);
-        objfile_save(jumplist, NULL, NULL, adjustment, NULL, NULL, jump, optional);
+        objfile_save(jumplist, NULL, NULL, adjustment, NULL, NULL, jump, optional, NULL);
         lprov_free(jump);
         lprov_free(optional);
         lprov_free(adjustment);
@@ -613,14 +633,7 @@ void bins_sectionize()
             bconcat(name, entry->label);
             if (list_seek(&create, name) == NULL)
             {
-                target = bin_create(bautofree(name));
-                target->provided = list_create();
-                target->required = list_create();
-                target->adjustment = list_create();
-                target->output = list_create();
-                target->jump = list_create();
-                target->optional = list_create();
-                target->symbols = dbgfmt_create_list();
+                target = bin_create(bautofree(name), true);
                 list_append(&create, target);
                 printd(LEVEL_DEBUG, "created section %s\n", target->name->data);
             }
@@ -704,13 +717,14 @@ void bins_flatten(freed_bstring name)
     size_t i;
 
     // Create the output bin.
-    target = bin_create(name);
+    target = bin_create(name, false);
     target->provided = list_create();
     target->required = list_create();
     target->adjustment = list_create();
     target->output = list_create();
     target->jump = list_create();
     target->optional = list_create();
+    target->call = list_create();
     target->symbols = dbgfmt_create_list();
 
     // Loop through all of the current file bins and copy their
@@ -863,14 +877,7 @@ void bins_write_jump()
         // We add 0x0000 to the jump list, not yet actually placing
         // a value in there, and then we replace it with the value
         // since by adding a new word, we'll change the position.
-        empty = bin_create(bautofree(bfromcstr("<temp>")));
-        empty->provided = list_create();
-        empty->required = list_create();
-        empty->adjustment = list_create();
-        empty->output = list_create();
-        empty->jump = list_create();
-        empty->optional = list_create();
-        empty->symbols = dbgfmt_create_list();
+        empty = bin_create(bautofree(bfromcstr("<temp>")), true);
         bin_write(empty, 0x0000);
         bin_move(&ldbins.bins, bin, empty, pos, 0, 1);
         bin_destroy(empty);
@@ -933,6 +940,38 @@ int32_t bins_optimize(int target, int level)
 
     // Return total number of words saved.
     return saved;
+}
+
+///
+/// @brief Resolves all of the .CALL directives in a program.
+///
+/// @note The bins must be flattened at this point.  This operation
+///       should only be used on application targets.
+///
+/// @param policies The linker policies.
+///
+void bins_resolve_kernel(policies_t* policies)
+{
+    struct lconv_entry* call = NULL;
+    struct ldbin* bin = NULL;
+    uint16_t* word = NULL;
+    size_t i;
+    
+    // Get the first bin.
+    assert(list_size(&ldbins.bins) == 1);
+    bin = list_get_at(&ldbins.bins, 0);
+    
+    // Iterator over all call values.
+    list_iterator_start(bin->call);
+    while (list_iterator_hasnext(bin->call))
+    {
+        // Get the call entries.
+        call = list_iterator_next(bin->call);
+        
+        // Resolve the call.
+        ldcall_generate(policies, &ldbins.bins, bin, call);
+    }
+    list_iterator_stop(bin->call);
 }
 
 ///

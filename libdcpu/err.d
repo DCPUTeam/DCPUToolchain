@@ -47,6 +47,11 @@ ERR_POLICY_EXECUTION                                 policy-execution           
 ERR_POLICY_UNKNOWN_TABLE                             policy-unknown-table                   "an unknown table was requested with the field() call."
 ERR_POLICY_UNKNOWN_FIELD                             policy-unknown-field                   "an unknown field was requested with the field() call."
 ERR_POLICY_PATH_UNKNOWN                              policy-path-unknown                    "the path to toolchain kernels is not set with the TOOLCHAIN_KERNELS environment variable and this is not a deployed build of the toolchain."
+ERR_CALL_NO_SETTINGS                                 call-no-settings                       "the kernel policy does not contain a defaults section and thus the calling convention is unknown for the use of .CALL"
+ERR_CALL_CONVENTION_AMBIGIOUS                        call-convention-ambigious              "the kernel policy specifies both a jumplist and interrupt mappings and thus is ambigious in the calling convention to use."
+ERR_CALL_CONVENTION_MISSING                          call-convention-missing                "the kernel policy does not specify either a jumplist or interrupt mappings and thus the calling convention is unknown for the use of .CALL"
+ERR_CALL_CONVENTION_UNKNOWN                          call-convention-unknown                "the interrupt calling convention specified in the kernel policy was not recognised by the linker and thus the calling convention is unknown for the use of .CALL"
+ERR_CALL_MISSING_INTERRUPT_PARAMETERS                call-missing-interrupt-parameters      "the interrupt calling convention specified in the kernel is missing either interrupt-call() or interrupt-size() for '%s' and thus the required code can not be determined."
 
 WARN_SKIPPING_SHORT_LITERALS_TYPE                    short-literals-skipped-type            "skipped short literal compression due to target type."
 WARN_SKIPPING_SHORT_LITERALS_REQUEST                 short-literals-skipped-request         "skipped short literal compression on request."

@@ -1,8 +1,26 @@
 defaults
 {
     kernel=@KERNEL_FOLDER@/stubsys.dkrn16
-    jumplist=@KERNEL_FOLDER@/stubsys.djmp16
     symbols=@KERNEL_FOLDER@/stubsys.dsym16
+
+    # some kernels will use jumplists...
+    jumplist=@KERNEL_FOLDER@/stubsys.djmp16
+
+    # others can use interrupts...
+    #   the options for this setting are register-call
+    #   or stack-call (see the assembly ABI and toolchain
+    #   documentation).
+    interrupt-call=register-call
+
+    # interrupt call mappings
+    interrupt-call(_stubapi_malloc)=0x4001
+    interrupt-call(_stubapi_free)=0x4002
+    interrupt-call(_stubapi_errno)=0x4003
+    interrupt-call(_stubapi_exit)=0x4004
+    interrupt-size(_stubapi_malloc)=1
+    interrupt-size(_stubapi_free)=1
+    interrupt-size(_stubapi_errno)=0
+    interrupt-size(_stubapi_exit)=1
 }
 
 # image is the .executable format. for applications that will

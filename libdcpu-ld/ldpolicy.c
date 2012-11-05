@@ -260,7 +260,7 @@ void bins_apply_policy(freed_bstring path, freed_bstring target, freed_bstring c
     ud = malloc(sizeof(struct policy_userdata));
     ud->state = state;
     ud->code_bin = code.ref;
-    ud->output_bin = bins_add(output, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    ud->output_bin = bins_add(output, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     ud->previous_offset = 0;
     state->userdata = ud;
     state->call_code = policy_code;
