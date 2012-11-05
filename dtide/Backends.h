@@ -10,7 +10,7 @@
 struct Line
 {
     const char* Path;
-    int Line;
+    int LineNumber;
 };
 
 enum MessageType

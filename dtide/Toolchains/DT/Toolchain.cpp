@@ -59,7 +59,7 @@ void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
 void DCPUToolchain::PostBatchHook()
 {
     Line line = LineAt(debuggingSession, vm->pc);
-    if(line.Line != 0) {
+    if(line.LineNumber != 0) {
         DebuggingMessage m;
         LineHitMessage payload;
 
@@ -303,6 +303,7 @@ void DCPUToolchain::Cycle()
 
 void DCPUToolchain::Step()
 {
+    vm->sleep_cycles = 0;
     cycle_emulation();
 }
 
@@ -336,12 +337,12 @@ Line DCPUToolchain::LineAt(DebuggingSession* session, uint16_t address)
 {
     Line result;
 
-    result.Line = 0;
+    result.LineNumber = 0;
     result.Path = NULL;
 
     if(dtdb_line_at_address(address))
     {
-        result.Line = dtdb_get_line_number();
+        result.LineNumber = dtdb_get_line_number();
         result.Path = dtdb_get_line_path();
     }
 

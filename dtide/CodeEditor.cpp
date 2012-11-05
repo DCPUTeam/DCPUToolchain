@@ -199,7 +199,6 @@ QList<Breakpoint> CodeEditor::getBreakpoints()
         line = markerFindNext(prev, (1 << MARKER));
         if(line != -1)
         {
-            qDebug() << markersAtLine(line);
             line += 1;
             prev = line;
 
