@@ -36,7 +36,8 @@ As you can see, this is the linker policy file for stubsys, the default kernel f
 more information about the format of linker policy files, see these topics:
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    
    defaults
    policies
+   shared
