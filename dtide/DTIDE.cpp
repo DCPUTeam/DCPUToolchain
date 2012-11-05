@@ -45,6 +45,7 @@ void DTIDE::runCycles(int count)
                 this->toolchain->Cycle();
 
         this->toolchain->SendStatus();
+        this->toolchain->PostBatchHook();
 
         while (debuggingSession->HasMessages())
         {
@@ -186,6 +187,13 @@ void DTIDE::stop()
     {
         debuggingWindow = 0;
     }
+
+    for (int i = 0; i < tabs->count(); i++)
+    {
+        CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        w->stopHighlighting();
+    }
+
     toolchain->Stop(debuggingSession);
 }
 

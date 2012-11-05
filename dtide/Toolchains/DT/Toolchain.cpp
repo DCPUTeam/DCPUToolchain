@@ -54,9 +54,11 @@ void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
         t->Pause(t->debuggingSession);
     }
 
-    // OPTIMIZATION: We needn't do this in every cycle, we could do it 
-    // only at the end of each "batch" of cycles.
-    Line line = t->LineAt(t->debuggingSession, vm->pc);
+}
+
+void DCPUToolchain::PostBatchHook()
+{
+    Line line = LineAt(debuggingSession, vm->pc);
     if(line.Line != 0) {
         DebuggingMessage m;
         LineHitMessage payload;
@@ -66,7 +68,7 @@ void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
         m.type = LineHitType;
         m.value = (MessageValue&) payload;
 
-        t->debuggingSession->AddMessage(m);
+        debuggingSession->AddMessage(m);
     }
 }
 
@@ -221,7 +223,7 @@ void DCPUToolchain::Start(BuildAPI& result, DebuggingSession* session)
     std::string path(*(outputFiles.begin()));
     
 
-    vm_t* vm = start_emulation(
+    vm = start_emulation(
         /* Binary path */
         path.c_str(),
 
