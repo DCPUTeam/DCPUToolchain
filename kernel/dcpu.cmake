@@ -45,7 +45,7 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
                 add_custom_command(
                     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
                     COMMAND ${asm_path}
-                        ARGS ${asmwarningsilence} -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
+                        ARGS ${asmwarningsilence} -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
                     DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
                     COMMENT "Assembling ${fpth}/${fbse}.oa with DCPU-Toolchain...")
                 if("${tout}" STREQUAL "")
@@ -78,7 +78,7 @@ function(add_dcpu_image target)
     set(toutputs "")    
 
     # Define each of the tools using the files list.
-    define_dcpu_tool(dtasm "-i" "Assembling" "${ARGN}" "false" tasmoutputs ".dasm" ".dasm16")
+    define_dcpu_tool(dtasm "" "Assembling" "${ARGN}" "false" tasmoutputs ".dasm" ".dasm16")
     define_dcpu_tool(dtcc "" "Compiling" "${ARGN}" "true" tcoutputs ".c")
 
     # Define the linker.
@@ -90,7 +90,7 @@ function(add_dcpu_image target)
         COMMAND ${main_path}
         ARGS -s "${CMAKE_CURRENT_BINARY_DIR}/${target}.dsym16" -O3 --symbol-extension="os"
             --keep-outputs -l kernel -o "${CMAKE_CURRENT_BINARY_DIR}/${target}.dkrn16"
-            -j "${CMAKE_CURRENT_BINARY_DIR}/${target}.djmp16" ${tasmoutputs} ${tcoutputs}
+            --jumplist "${CMAKE_CURRENT_BINARY_DIR}/${target}.djmp16" ${tasmoutputs} ${tcoutputs}
         DEPENDS dtld ${tasmoutputs} ${tcoutputs}
         COMMENT "Linking ${target}.dkrn16 as kernel with DCPU-Toolchain...")
 

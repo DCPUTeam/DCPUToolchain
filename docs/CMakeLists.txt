@@ -35,7 +35,7 @@ if(SPHINX_EXECUTABLE)
     
     file(GLOB_RECURSE doc_sources ${CMAKE_CURRENT_SOURCE_DIR}/sources/*.rst)
 
-    add_custom_target(user-docs ALL
+    add_custom_target(user-docs
         ${SPHINX_EXECUTABLE}
         -q -b html
         -c "${BINARY_BUILD_DIR}"
@@ -46,9 +46,6 @@ if(SPHINX_EXECUTABLE)
         SOURCES ${doc_sources})
 
     source_group("Documentation" FILES ${doc_sources})
-
-else()
-    message("Unable to find Sphinx, so user documentation won't be created.")
 endif()
 
 find_package(Doxygen)
@@ -56,7 +53,7 @@ find_package(Doxygen)
 if(DOXYGEN_FOUND)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in"
         "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" @ONLY)
-    add_custom_target(api-docs ALL
+    add_custom_target(api-docs
         ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating API documentation with Doxygen" VERBATIM

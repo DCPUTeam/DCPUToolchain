@@ -27,14 +27,16 @@
 #include <stdint.h>
 #include <stdio.h>
 
-// Boolean stuff.
 #ifndef __cplusplus
 #ifndef __GNUC__
+/// Defines a type for representing boolean values.
 typedef uint8_t bool;
 #ifndef true
+/// Represents true.
 #define true 1
 #endif
 #ifndef false
+/// Represents false.
 #define false 0
 #endif
 #else
@@ -46,7 +48,7 @@ typedef uint8_t bool;
 /// @addtogroup ValueDefinitions Value Definitions
 /// @ingroup LibDCPU
 /// @brief A list of macro definitions that provide the values for accessing DCPU-16 memory and registers.
-/// @seealso http://dcpu.com/dcpu-16/
+/// @sa http://dcpu.com/dcpu-16/
 /// @{
 ///
 
@@ -134,7 +136,7 @@ typedef uint8_t bool;
 /// @addtogroup OpcodeDefinitions Opcode Definitions
 /// @ingroup LibDCPU
 /// @brief A list of opcode definitions for the DCPU.
-/// @seealso http://dcpu.com/dcpu-16/
+/// @sa http://dcpu.com/dcpu-16/
 /// @{
 ///
 
@@ -197,28 +199,37 @@ typedef uint8_t bool;
 
 /// The reserved non-basic instruction for future expansion.
 #define NBOP_RESERVED 0x00
+/// The JSR instruction, which pushes the next instruction's address onto the stack and jumps to the address in the first value.
 #define NBOP_JSR      0x01
+/// The INT instruction, which sends a software interrupt with the message specified by the first value.
 #define NBOP_INT      0x08
+/// The IAG instruction, which gets the address to the interrupt handler and stores it in the A register.
 #define NBOP_IAG      0x09
+/// The IAS instruction, which sets the address of the interrupt handler to the first value.
 #define NBOP_IAS      0x0A
+/// The RFI instruction, which should be used to return from an interrupt handler.  See the DCPU-16 specification for semantics.
 #define NBOP_RFI      0x0B
+/// The IAQ instruction, which turns interrupt queuing on or off depending on the first value.
 #define NBOP_IAQ      0x0C
+/// The HWN instruction, which places the total number of hardware into the first value.
 #define NBOP_HWN      0x10
+/// The HWQ instruction, which queries hardware.  See the DCPU-16 specification for semantics.
 #define NBOP_HWQ      0x11
+/// The HWI instruction, which sends a hardware interrupt to the hardware specified by the first value.
 #define NBOP_HWI      0x12
 
 ///
 /// @}
 ///
 
-// Arithmetic constants
+/// The value for the EX register that indicates no overflow.
 #define AR_NOFLOW     0x0000
+/// The value for the EX register that indicates an overflow occurred.
 #define AR_OVERFLOW   0x0001
+/// The value for the EX register that indicates an underflow occurred.
 #define AR_UNDERFLOW  0xFFFF
+/// The maximu unsigned integer value that can be stored.
 #define AR_MAX        0xFFFF
-
-// Interrupt messages
-#define INT_TIMER     0x0
 
 /// Combines the parameters into the 16-bit unsigned integer for the instruction.
 #define INSTRUCTION_CREATE(op, b, a) (((a & 0x3f) << 10) + ((b & 0x1f) << 5) + (op & 0x1f))
@@ -232,9 +243,11 @@ typedef uint8_t bool;
 /// Defines the maximum number of interrupts permitted on the DCPU.
 #define INTERRUPT_MAX    255
 
-// Timing and Frequency settings
+/// The frequency the DCPU-16 should run at.
 #define DCPU_TICKS_KHZ          100
+/// The number of milliseconds in a second.
 #define DCPU_NUM_TIMING_TICKS   1000
+/// The number of milliseconds to consume per cycle.
 #define DCPU_MICS_PER_CYCLE     (1000/DCPU_TICKS_KHZ)
 
 ///
@@ -363,6 +376,10 @@ typedef struct
 /// @brief The function signature of an internal hardware interrupt.
 ///
 typedef void (*hw_interrupt)(vm_t* vm, void* ud);
+
+///
+/// @brief The function signature for freeing resources used by hardware.
+///
 typedef void (*hw_free_handler)(void* ud);
 
 ///
@@ -374,7 +391,7 @@ typedef struct
     uint16_t version;           ///< The hardware version.
     uint32_t manufacturer;      ///< The hardware manufacturer.
     hw_interrupt handler;       ///< The function which handles interrupts sent to this hardware component.
-    hw_free_handler free_handler;
+    hw_free_handler free_handler; ///< The function which handles free'ing any data this hardware component uses.
     void* userdata;             ///< Userdata associated with the hardware.
 } hw_t;
 

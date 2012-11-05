@@ -34,14 +34,39 @@ if(NOT DEFINED M4_EXECUTABLE)
     find_program(M4_EXECUTABLE NAMES m4.exe m4)
 endif()
 
+option(USE_COTIRE "Use cotire to speed up builds" ON)
+
+# Configure options relating to standalone or deployed
+# configuration.
+option(DEPLOYABLE "Build a deployable version of the toolchain" OFF)
+if(${DEPLOYABLE})
+    message("===== Deployable Build Activated =====")
+    message("Deployable builds should be used when you intend")
+    message("to install a final set of binaries on a system that")
+    message("supports dynamic linking and package management.")
+    message("")
+    message("Deployable builds will also install development")
+    message("headers for external use.")
+    message("======================================")
+    set(LIBRARY_FORMAT SHARED)
+else()
+    set(LIBRARY_FORMAT STATIC)
+endif()
+if(CMAKE_HOST_WINDOWS)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/DCPU Toolchain")
+endif()
+
 # Set compiler options.
 set(OUTPUT_EXT "")
 if(MSVC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3 /wd4273 /wd4065 /wd4996 /wd4005 /D_CRT_SECURE_NO_WARNINGS /DSIMCLIST_NO_DUMPRESTORE")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4273 /wd4065 /wd4996 /wd4005 /D_CRT_SECURE_NO_WARNINGS /DSIMCLIST_NO_DUMPRESTORE")
-    # This is to deal with a bug introduced in the MSVC linker when both VS2010 and VS2012 are
-    # installed on the same machine.
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO")
+    option(VS2010_VS2012_CONFLICT_WORKAROUND "Fixes linking issues when building on a computer with both VS2010 and VS2012 installed." OFF)
+    if(${VS2010_VS2012_CONFLICT_WORKAROUND})
+        # This is to deal with a bug introduced in the MSVC linker when both VS2010 and VS2012 are
+        # installed on the same machine.
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO")
+    endif()
 elseif(APPLE)
     # TODO: Set warnings as errors under Mac / XCode.
 elseif(MINGW)
@@ -78,10 +103,14 @@ message("   (must be Cygwin versions on Windows)")
 # Speed up build with cotire.
 if(MSVC)
     function(cotire proj)
-        message("Cotire disabled under MSVC for ${proj}.")
     endfunction()
 else()
-    include(cotire)
+    if(${USE_COTIRE})
+        include(cotire)
+    else()
+        function(cotire proj)
+        endfunction()
+    endif()
 endif()
 
 # Define a function that automatically sorts
@@ -130,6 +159,7 @@ add_subdirectory(third-party/bstring)
 add_subdirectory(third-party/simclist)
 add_subdirectory(third-party/curl)
 add_subdirectory(third-party/lua)
+add_subdirectory(third-party/qscintilla2)
 add_subdirectory(tool-errgen)
 add_subdirectory(libdcpu)
 add_subdirectory(libdcpu-pp-expr)
@@ -141,6 +171,8 @@ add_subdirectory(libdcpu-ci-objfmt)
 add_subdirectory(libdcpu-ci-lang)
 add_subdirectory(libdcpu-ci-lang-c)
 add_subdirectory(libdcpu-ci-asm)
+add_subdirectory(libdcpu-ld-policy)
+add_subdirectory(libdcpu-ld)
 #add_subdirectory(libdcpu-vm-python)
 
 # Put the GFLW projects in the correct directories.
@@ -152,6 +184,7 @@ add_subdirectory(dtpp)
 add_subdirectory(dtcc)
 add_subdirectory(dtasm)
 add_subdirectory(dtld)
+add_subdirectory(dtpolicy)
 add_subdirectory(dtide)
 add_subdirectory(dtimg)
 add_subdirectory(dtlua)
@@ -182,3 +215,22 @@ add_subdirectory(tests/drivers/ltestdcpu)
 add_subdirectory(tests/drivers/testasm)
 add_subdirectory(tests/drivers/testld)
 add_subdirectory(tests/drivers/testvm)
+
+# Additional deployment configuration.
+if(${DEPLOYABLE})
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/modules)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/modules
+        DESTINATION share/dcpu
+        DIRECTORY_PERMISSIONS
+            OWNER_READ GROUP_READ WORLD_READ
+            OWNER_WRITE GROUP_WRITE WORLD_WRITE
+            OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/modules/README.md")
+        file(GLOB modules "${CMAKE_CURRENT_SOURCE_DIR}/modules/*.lua")
+        install(FILES
+            ${modules}
+            DESTINATION
+            share/dcpu/modules)
+    endif()
+endif()

@@ -31,7 +31,7 @@ vm_t* get_vm(void)
     return vm;
 }
 
-bool start_emulation(
+vm_t* start_emulation(
     const char* filename,
 
     vm_hook cyclehook,
@@ -122,7 +122,7 @@ bool start_emulation(
     vm_hook_register(vm, hardwarehook, HOOK_ON_HARDWARE_CHANGE, toolchain);
     vm_hook_register(vm, sixtyhz, HOOK_ON_60HZ, toolchain);
 
-    return true;
+    return vm;
 }
 
 void cycle_emulation()

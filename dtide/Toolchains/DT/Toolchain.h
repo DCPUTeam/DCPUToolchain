@@ -39,13 +39,16 @@ public:
 
     virtual std::list<Language*> GetLanguages();
 
-    virtual void Start(std::string path, DebuggingSession* session);
+    virtual void Start(BuildAPI& result, DebuggingSession* session);
     virtual void Stop(DebuggingSession* session);
     virtual void Pause(DebuggingSession* session);
+    virtual void Resume(DebuggingSession* session);
 
     virtual void SendStatus();
 
     DebuggingSession* debuggingSession;
+
+    virtual void AddBreakpoint(DebuggingSession* session, Breakpoint& b);
 
 private:
     void AddStatusMessage(vm_t* vm);

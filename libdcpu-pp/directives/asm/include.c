@@ -35,11 +35,13 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
             dhalt(ERR_PP_ASM_INCLUDE_FILE_NOT_FOUND, ppimpl_get_location(state));
 
         // Copy the data from the file, byte by byte.
+        ppimpl_printf(state, "\n# %i %s\n", state->current_line, state->current_filename->data);
         while (!bfeof(file))
         {
             bfread(store, 1, 1, file);
             ppimpl_pprintf(state, pos++, "%c", store[0]);
         }
+        ppimpl_printf(state, "\n# %i %s\n", 0, path->data);
 
         // Close the file.
         bfclose(file);

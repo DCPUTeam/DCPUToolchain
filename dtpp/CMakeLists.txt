@@ -22,3 +22,11 @@ target_link_libraries(dtpp
     libdcpu-pp
     libdcpu-pp-expr
 )
+
+if(${DEPLOYABLE})
+    install(TARGETS dtpp
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+endif()
+

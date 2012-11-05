@@ -11,7 +11,8 @@ enum MessageType
 {
     StatusType,
     HardwareType,
-    MemoryType
+    MemoryType,
+    MemoryDumpType,
 };
 
 class StatusMessage
@@ -36,11 +37,18 @@ public:
     uint16_t value;
 };
 
+class MemoryDumpMessage
+{
+public:
+    uint16_t* data;
+};
+
 union MessageValue
 {
     StatusMessage status;
     HardwareMessage hardware;
     MemoryMessage memory;
+    MemoryDumpMessage dump;
 };
 
 class DebuggingMessage
@@ -86,6 +94,13 @@ public:
     ConfigurationValue Value;
 };
 
+class Breakpoint
+{
+public:
+    int Line;
+    std::string File;
+};
+
 class BuildAPI
 {
 private:
@@ -93,6 +108,20 @@ private:
     // building.    You could use multiple BuildAPIs to do parallel
     // builds.
 public:
+    struct IntermediateFile
+    {
+        std::string Path;
+        std::string Language;
+    };
+
+    struct ErrorEntry
+    {
+        bool IsWarning;
+        std::string Message;
+        std::string File;
+        int Line;
+    };
+
     // Implemented by IDE.
     virtual void AddError(std::string message, std::string file, int line) = 0;
     virtual void AddWarning(std::string message, std::string file, int line) = 0;
@@ -106,12 +135,21 @@ public:
     // whether there were errors).
     virtual void AddIntermediateFile(std::string path, std::string langtarget) = 0;
     virtual void AddOutputFile(std::string path) = 0;
+    virtual void AddSymbolsFile(std::string path) = 0;
 
     // Called when build is complete; this essentially means that the tool
     // is done.  Note that toolchains should only call AddIntermediateFile
     // when the file is fully generated as this can be used again to speed up
     // parallel builds.
     virtual void End() = 0;
+
+    std::list<std::string> GetOutputFiles();
+    std::list<std::string> GetSymbolFiles();
+protected:
+    std::list<IntermediateFile> m_IntermediateFiles;
+    std::list<std::string> m_OutputFiles;
+    std::list<std::string> m_SymbolFiles;
+    std::list<ErrorEntry> m_ErrorEntries;
 };
 
 class Language
@@ -177,12 +215,17 @@ public:
     // any LEM1802 screens, etc. which the IDE can then draw inline.
     // Device IDs are used to differentiate between two devices of the
     // same type (e.g. two LEM1802 screens).
-    bool HasMessages();
     virtual void AddMessage(DebuggingMessage m) = 0;
+    bool HasMessages();
     DebuggingMessage GetMessage();
 
-private:
+    // Breakpoints.
+    virtual void AddBreakpoint(uint16_t address) = 0;
+    bool BreakpointAt(uint16_t address);
+
+protected:
     std::deque<DebuggingMessage> m_Queue;
+    std::list<uint16_t> m_BreakList;
 };
 
 enum ModuleType
@@ -253,17 +296,17 @@ public:
     Language* GetLanguageByExtension(std::string ext);
 
     // Debugging / execution interface.
-    virtual void Start(std::string path, DebuggingSession* session) = 0;
+    virtual void Start(BuildAPI& result, DebuggingSession* session) = 0;
     virtual void Pause(DebuggingSession* session) = 0;
-    //virtual void Continue(DebuggingSession& session) = 0;
+    virtual void Resume(DebuggingSession* session) = 0;
     virtual void Stop(DebuggingSession* session) = 0;
-    //virtual void AddBreakpoint(DebuggingSession& session, std::string path, int line) = 0;
-    //virtual void AddBreakpoint(DebuggingSession& session, uint16_t memory) = 0;
     //virtual void AttachDevice(DebuggingSession& session, Device& device) = 0;
     //virtual void DetachDevice(DebuggingSession& session, Device& device) = 0;
     //virtual void SendCommand(DebuggingSession& session, std::string cmd) = 0; // send custom command (only to be used on user input).
     // TODO: Some kind of API for live memory update.
 
+    // Breakpoints.
+    virtual void AddBreakpoint(DebuggingSession* session, Breakpoint& b) = 0;
     // Modules and extensions.
     //virtual std::list<Module&> GetModules() = 0;
     //virtual std::list<Device&> GetCustomDevices() = 0;

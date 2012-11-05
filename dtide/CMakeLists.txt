@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 project(dtide)
 
-find_package(QScintilla)
 find_package(OpenGL REQUIRED)
 find_package(Qt4)
-if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
+if(${QT4_FOUND} AND ${qscintilla2_FOUND})
     set(dtide_SOURCES 
         main.cpp 
         Backends.cpp
@@ -15,12 +14,14 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         DTIDEHighlighting.cpp
         DTIDEDebuggingSession.cpp
         DTIDEDebuggingWindow.cpp
+        qhexview/qhexview.cpp
         DTIDEGLWidgets.cpp
         CodeEditor.cpp
         Highlighters/QsciLexerDASM16.cpp
         Toolchains/DT/Toolchain.cpp
         Toolchains/DT/dtasm.c
         Toolchains/DT/dtemu.c
+        Toolchains/DT/dtdb.c
     )
     set(dtide_HEADERS
         Backends.h
@@ -31,6 +32,7 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         DTIDEHighlighting.h
         DTIDEDebuggingSession.h
         DTIDEDebuggingWindow.h
+        qhexview/qhexview.h
         DTIDEGLWidgets.h
         CodeEditor.h
         Highlighters/Highlighters.h
@@ -39,6 +41,7 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         Toolchains/DT/Toolchain.h
         Toolchains/DT/dtasm.h
         Toolchains/DT/dtemu.h
+        Toolchains/DT/dtdb.h
     )
         
     set(dtide_FORMS 
@@ -54,6 +57,7 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
     add_definitions(${QT_DEFINITIONS})
 
     include_directories(
+        ${dtide_SOURCE_DIR}
         ${simclist_SOURCE_DIR}
         ${argtable2_SOURCE_DIR}
         ${bstring_SOURCE_DIR}
@@ -65,13 +69,17 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         ${libdcpu-ci-objfmt_SOURCE_DIR}
         ${libdcpu-ci-dbgfmt_SOURCE_DIR}
         ${libdcpu-vm_SOURCE_DIR}
+        ${libdcpu-vm-dbg_SOURCE_DIR}
+        ${dtide_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}
         ${GLFW_SOURCE_DIR}/include
         ${png_SOURCE_DIR}
-        ${QSCINTILLA_INCLUDE_DIR} 
+        ${qscintilla2_SOURCE_DIR} 
     )
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+    if(NOT MSVC)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+    endif()
 
     add_executable(dtide ${dtide_SOURCES}
         ${dtide_HEADERS_MOC}
@@ -84,13 +92,23 @@ if(${QT4_FOUND} AND ${QSCINTILLA_FOUND})
         argtable2
         libdcpu-ci-asm
         libdcpu-vm
+        libdcpu-ci-dbgfmt
+        libdcpu-vm-dbg
         png
         z
         glfw
+        simclist
         ${GLFW_LIBRARIES}
         ${OPENGL_LIBRARIES}
-        ${QSCINTILLA_LIBRARY}
+        ${qscintilla2_LIBRARY}
     )
+
+    if(${DEPLOYABLE})
+        install(TARGETS dtide
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib)
+    endif()
 else()
     if(NOT ${QT_FOUND})
         message("Not building IDE due to lack of Qt 4 libraries.")

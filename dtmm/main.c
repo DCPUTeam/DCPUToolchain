@@ -428,7 +428,6 @@ int main(int argc, char* argv[])
     // Parse arguments.
     int nerrors = arg_parse(argc, argv, argtable);
 
-    version_print(bautofree(bfromcstr("Module Manager")));
     if (nerrors != 0 || show_help->count != 0 || (all_flag->count == 0 && nameopt->count == 0))
     {
         if (all_flag->count == 0 && nameopt->count == 0)
@@ -446,6 +445,9 @@ int main(int argc, char* argv[])
 
     // Set verbosity level.
     debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
+    
+    // Show version information.
+    version_print(bautofree(bfromcstr("Module Manager")));
 
     // Set argument 0 and convert parameters.
     osutil_setarg0(bautofree(bfromcstr(argv[0])));

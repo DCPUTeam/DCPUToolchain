@@ -2,14 +2,6 @@ cmake_minimum_required(VERSION 2.8.5)
 project(dtld)
 
 add_executable(dtld
-    ldbin.c
-    ldbin.h
-    ldbins.c
-    ldbins.h
-    ldconv.c
-    ldconv.h
-    ldlua.c
-    ldlua.h
     main.c
 )
 include_directories(
@@ -22,6 +14,8 @@ include_directories(
     ${libdcpu-pp-expr_SOURCE_DIR}
     ${libdcpu-ci-objfmt_SOURCE_DIR}
     ${libdcpu-ci-dbgfmt_SOURCE_DIR}
+    ${libdcpu-ld_SOURCE_DIR}
+    ${libdcpu-ld-policy_SOURCE_DIR}
     ${FLEX_UNISTD_INCLUDE}
 )
 target_link_libraries(dtld
@@ -34,5 +28,14 @@ target_link_libraries(dtld
     libdcpu-pp-expr
     libdcpu-ci-objfmt
     libdcpu-ci-dbgfmt
+    libdcpu-ld
 )
 cotire(dtld)
+
+if(${DEPLOYABLE})
+    install(TARGETS dtld
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+endif()
+

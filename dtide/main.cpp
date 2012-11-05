@@ -12,6 +12,7 @@ extern "C"
 #include <bstring.h>
 #include <debug.h>
 #include <iio.h>
+#include <version.h>
 #include <GL/glfw3.h>
 }
 
@@ -21,6 +22,9 @@ int main(int argc, char** argv)
     debug_setlevel(LEVEL_VERBOSE);
     osutil_setarg0(bautofree(bfromcstr(argv[0])));
     isetmode(IMODE_BIG);
+    
+    // Show version information.
+    version_print(bautofree(bfromcstr("IDE")));
 
     // Start glfw.
     glfwInit();

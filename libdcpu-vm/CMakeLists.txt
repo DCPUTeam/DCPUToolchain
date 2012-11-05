@@ -17,7 +17,7 @@ else()
 endif()
 
 find_package(OpenGL REQUIRED)
-add_library(libdcpu-vm STATIC
+add_library(libdcpu-vm ${LIBRARY_FORMAT}
     dcpu.c
     dcpubase.h
     dcpudis.h
@@ -70,4 +70,21 @@ include_directories(
 target_link_libraries(libdcpu-vm
     libdcpu
 )
+set_target_properties(libdcpu-vm PROPERTIES PREFIX "")
 cotire(libdcpu-vm)
+
+if(${DEPLOYABLE})
+    target_link_libraries(libdcpu-vm
+        z
+        png
+        glfw
+        ${GLFW_LIBRARIES}
+        ${OPENGL_LIBRARIES}
+    )
+    install(TARGETS libdcpu-vm
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+    file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+    install(FILES ${headers} DESTINATION include/dcpu/vm)
+endif()

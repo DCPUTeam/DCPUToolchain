@@ -32,6 +32,9 @@ void osutil_setarg0(freed_bstring arg0);
 bstring osutil_getarg0();
 bstring osutil_getarg0path();
 bstring osutil_getmodulepath();
+bstring osutil_getkernelpath();
+bstring osutil_getstdlibpath();
+const char* osutil_getkerneldefault();
 int osutil_gettimeofday(struct ostimeval* tv, void* unused);
 void osutil_usleep(int milliseconds);
 

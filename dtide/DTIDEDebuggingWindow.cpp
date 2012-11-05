@@ -2,10 +2,19 @@
 
 DTIDEDebuggingWindow::DTIDEDebuggingWindow(QWidget* parent): QDialog(parent)
 {
+    buffer = 0;
+
     setupUi(this);
     connect(btn_step_into, SIGNAL(clicked()), this, SIGNAL(step()));
-    connect(btn_resume, SIGNAL(clicked()), this, SIGNAL(start()));
+    connect(btn_resume, SIGNAL(clicked()), this, SIGNAL(resume()));
     connect(btn_pause, SIGNAL(clicked()), this, SIGNAL(pause()));
+
+    initializeBuffer();
+
+    memoryView->setWordWidth(2);
+    memoryView->setShowAsciiDump(false);
+    memoryView->setRowWidth(8);
+    memoryView->setShowAddressSeparator(false);
 }
 
 QSize DTIDEDebuggingWindow::sizeHint()
@@ -43,4 +52,36 @@ void DTIDEDebuggingWindow::closeEvent(QCloseEvent* e)
 {
     e->accept();
     emit stop();
+}
+
+void DTIDEDebuggingWindow::setMemoryData(QByteArray* bytes)
+{
+    initializeBuffer();
+    QSharedPointer<QBuffer> buff_ptr(buffer);
+
+    data = bytes;
+
+    buffer->close();
+    buffer->setBuffer(data);
+    buffer->open(QIODevice::ReadWrite);
+
+    memoryView->setData(buff_ptr);
+}
+
+void DTIDEDebuggingWindow::setMemoryAt(int pos, char v1, char v2)
+{
+    char replacement[3] = { v1, v2, 0 };
+    data->replace(pos * 2, 2, replacement, 2);
+
+    setMemoryData(data);
+}
+
+void DTIDEDebuggingWindow::initializeBuffer()
+{
+//    if(buffer != 0)
+//        delete buffer;
+
+    data = new QByteArray();
+    buffer = new QBuffer(data);
+    buffer->open(QIODevice::ReadWrite);
 }

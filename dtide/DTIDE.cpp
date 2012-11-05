@@ -54,7 +54,27 @@ void DTIDE::runCycles(int count)
                 case StatusType:
                 {
                     StatusMessage status = (StatusMessage&) m.value;
-                    emit setRegisters(status);
+                    debuggingWindow->setRegisters(status);
+                    break;
+                }
+                case MemoryDumpType:
+                {
+                    MemoryDumpMessage memory = (MemoryDumpMessage&) m.value;
+                    uint16_t* store = memory.data;
+                    QByteArray* ram = new QByteArray();
+                    for(int i = 0; i < 0x10000; i++)
+                    {
+                        ram->push_back(store[i] >> 8);
+                        ram->push_back(store[i] & 0xff);
+                    }
+
+                    debuggingWindow->setMemoryData(ram);
+                    break;
+                }
+                case MemoryType:
+                {
+                    MemoryMessage memory = (MemoryMessage&) m.value;
+                    debuggingWindow->setMemoryAt(memory.pos, memory.value >> 8, memory.value & 0xff);
                     break;
                 }
                 default:
@@ -111,9 +131,8 @@ void DTIDE::setupMenuBar()
 void DTIDE::showDebuggerWindow()
 {
     debuggingWindow = new DTIDEDebuggingWindow(this);
-    connect(this, SIGNAL(setRegisters(StatusMessage)), debuggingWindow, SLOT(setRegisters(StatusMessage)));
     connect(debuggingWindow, SIGNAL(step()), this, SLOT(step()));
-    connect(debuggingWindow, SIGNAL(start()), this, SLOT(compileAndRunProject()));
+    connect(debuggingWindow, SIGNAL(resume()), this, SLOT(resume()));
     connect(debuggingWindow, SIGNAL(pause()), this, SLOT(pause()));
     connect(debuggingWindow, SIGNAL(stop()), this, SLOT(stop()));
 
@@ -162,6 +181,11 @@ void DTIDE::pause()
     toolchain->Pause(debuggingSession);
 }
 
+void DTIDE::resume()
+{
+    toolchain->Resume(debuggingSession);
+}
+
 void DTIDE::newFile()
 {
     //    addCodeTab(DTIDEBackends::getUntitledProperties(type));
@@ -185,6 +209,7 @@ void DTIDE::compileAndRunProject()
 {
     if(debuggingWindow)
         debuggingWindow->close();
+
     stop();
     debuggingSession = new DTIDEDebuggingSession();
     compileProject();
@@ -194,7 +219,16 @@ void DTIDE::compileAndRunProject()
     for (int i = 0; i < tabs->count(); i++)
     {
         CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        QList<Breakpoint> breakpoints(w->getBreakpoints());
         w->run(debuggingSession);
+
+        if(!breakpoints.empty())
+        {
+            for(int i = 0; i < breakpoints.size(); i++)
+            {
+                toolchain->AddBreakpoint(debuggingSession, breakpoints[i]);
+            }
+        }
     }
 }
 
@@ -203,6 +237,7 @@ void DTIDE::compileProject()
     for (int i = 0; i < tabs->count(); i++)
     {
         CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        w->ResetBuild();
         w->build();
     }
 }

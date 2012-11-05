@@ -13,17 +13,18 @@ Unsupported Constructs
 
 The following constructs are currently unsupported in the C compiler:
 
-Array Declarations
+Type Definitions
 ~~~~~~~~~~~~~~~~~~~~~
 
-You can not currently declare arrays as part of the stack.  For example, the following will not compile
-successfully:
+You can not currently create type definitions:
 
 .. code-block:: c
 
+    typedef blah_t int;
+
     void main()
     {
-        int myVar[3];
+        blah_t myVar;
 
         // code here
     }
@@ -45,24 +46,4 @@ does not (and will not) support this non-standard extension.  In the toolchain C
         {
             int b;  /* Incorrect */
         }
-    }
-    
-Temporary Extensions
--------------------------
-
-These extensions to C are temporary during the transitional period in which a full C standard library
-is not yet available.  These extensions may *disappear at any time*, so you should not rely on them.
-
-Debug Statement
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-It is sometimes important to stop execution to inspect the given value of an expression at a particular
-point in time.  The debug statement evaluates an expression, places the result in the A register and
-halts program execution so that the state of the CPU can be inspected.
-
-.. code-block:: c
-
-    void main()
-    {
-        debug 4 + 5; /* A register will contain 9 */
     }

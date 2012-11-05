@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 2.8.5)
+
+if(MSVC)
+    set(qscintilla2_FOUND true PARENT_SCOPE)
+    set(qscintilla2_LIBRARY ${toolchain_SOURCE_DIR}/third-party/qscintilla2/lib/qscintilla2.lib PARENT_SCOPE)
+    set(qscintilla2_SOURCE_DIR ${toolchain_SOURCE_DIR}/third-party/qscintilla2/include ${toolchain_SOURCE_DIR}/third-party/qscintilla2/include/Qsci PARENT_SCOPE)
+else()
+    find_package(QScintilla)
+    set(qscintilla2_FOUND ${QSCINTILLA_FOUND} PARENT_SCOPE)
+    set(qscintilla2_SOURCE_DIR ${QSCINTILLA_INCLUDE_DIR} PARENT_SCOPE)
+    set(qscintilla2_LIBRARY ${QSCINTILLA_LIBRARY} PARENT_SCOPE)
+endif()

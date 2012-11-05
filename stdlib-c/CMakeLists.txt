@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.5)
 project(stdlib-c)
 
 # Define the working directory for tools.
@@ -50,7 +50,7 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
                 add_custom_command(
                     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
                     COMMAND ${asm_path}
-                        ARGS ${asmwarningsilence} -i -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
+                        ARGS ${asmwarningsilence} -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
                     DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
                     COMMENT "Assembling ${fpth}/${fbse}.oa with DCPU-Toolchain...")
                 if("${tout}" STREQUAL "")
@@ -83,7 +83,7 @@ function(add_dcpu_image target)
     set(toutputs "")    
 
     # Define each of the tools using the files list.
-    define_dcpu_tool(dtasm "-i" "Assembling" "${ARGN}" "false" tasmoutputs ".dasm" ".dasm16")
+    define_dcpu_tool(dtasm "" "Assembling" "${ARGN}" "false" tasmoutputs ".dasm" ".dasm16")
     define_dcpu_tool(dtcc "" "Compiling" "${ARGN}" "true" tcoutputs ".c")
 
     # Define the linker.
@@ -132,3 +132,26 @@ add_dcpu_image(stdlib-c
 
 # Copy standard library include files.
 file(COPY include DESTINATION ${CMAKE_CURRENT_BINARY_DIR} USE_SOURCE_PERMISSIONS)
+
+if(${DEPLOYABLE})
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/stdlib)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/c)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/stdlib
+        DESTINATION share/dcpu
+        DIRECTORY_PERMISSIONS
+            OWNER_READ GROUP_READ WORLD_READ
+            OWNER_WRITE GROUP_WRITE WORLD_WRITE
+            OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.dirs/c
+        DESTINATION share/dcpu/stdlib
+        DIRECTORY_PERMISSIONS
+            OWNER_READ GROUP_READ WORLD_READ
+            OWNER_WRITE GROUP_WRITE WORLD_WRITE
+            OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/stdlib.dlib16
+        ${CMAKE_CURRENT_BINARY_DIR}/stdlib.dsym16
+        DESTINATION
+        share/dcpu/stdlib/c)
+endif()

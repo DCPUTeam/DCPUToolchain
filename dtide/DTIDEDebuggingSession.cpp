@@ -54,3 +54,8 @@ DebuggingMessage DTIDEDebuggingSession::GetMessage()
 
     return result;
 }
+
+void DTIDEDebuggingSession::AddBreakpoint(uint16_t address)
+{
+    m_BreakList.push_back(address);
+}

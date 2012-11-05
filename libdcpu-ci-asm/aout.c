@@ -205,6 +205,23 @@ struct aout_byte* aout_create_metadata_jump(char* name)
     return byte;
 }
 
+struct aout_byte* aout_create_metadata_call(char* name)
+{
+    struct aout_byte* byte = malloc(sizeof(struct aout_byte));
+    byte->type = AOUT_TYPE_METADATA_CALL;
+    byte->opcode = 0;
+    byte->a = 0;
+    byte->b = 0;
+    byte->next = NULL;
+    byte->prev = NULL;
+    byte->expr = NULL;
+    byte->label = name;
+    byte->raw_used = false;
+    byte->raw = 0x0;
+    list_init(&byte->symbols);
+    return byte;
+}
+
 struct aout_byte* aout_create_metadata_import(char* name)
 {
     struct aout_byte* byte = malloc(sizeof(struct aout_byte));
@@ -375,6 +392,7 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
     struct lprov_entry* linker_output = NULL;
     struct lprov_entry* linker_jump = NULL;
     struct lprov_entry* linker_optional = NULL;
+    struct lprov_entry* linker_call = NULL;
     struct lprov_entry* linker_temp = NULL;
     uint32_t mem_index, out_index;
     uint16_t inst;
@@ -489,6 +507,24 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
             linker_jump = linker_temp;
             printd(LEVEL_VERBOSE, "LINK JUMP %s -> 0x%04X\n", current_outer->label, eaddr);
         }
+        else if (current_outer->type == AOUT_TYPE_METADATA_CALL)
+        {
+            // Ensure parameter is set.
+            if (current_outer->label == NULL)
+                dhalt(ERR_KEYWORD_PARAMETER_MISSING, "CALL");
+
+            // We're exporting the current address as the insertion point
+            // for a call into the kernel being linked against.
+            if (!intermediate)
+                dhalt(ERR_NOT_GENERATING_INTERMEDIATE_CODE, NULL);
+
+            // Create linker entry.
+            has_output = true;
+            linker_temp = lprov_create(current_outer->label, out_index);
+            linker_temp->next = linker_call;
+            linker_call = linker_temp;
+            printd(LEVEL_VERBOSE, "LINK CALL 0x%04X -> %s\n", out_index, current_outer->label);
+        }
         else if (current_outer->type == AOUT_TYPE_NORMAL && current_outer->expr != NULL)
         {
             if (current_outer->expr->type != EXPR_LABEL)
@@ -598,7 +634,7 @@ uint16_t aout_write(FILE* out, bool relocatable, bool intermediate)
         objfile_save(out, linker_provided, linker_required,
                      linker_adjustment, linker_section,
                      linker_output, linker_jump,
-                     linker_optional);
+                     linker_optional, linker_call);
 
         // Adjust the "true origin" for .ORIGIN directivies because
         // the linker table won't exist in the final result when

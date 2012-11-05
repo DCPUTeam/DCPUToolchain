@@ -31,7 +31,6 @@ bool perform_assemble(const char* input_filename,
     list_t symbols;
     uint16_t final;
     FILE* output_binary;
-    FILE* output_symbols;
 
     // Run the preprocessor.
     ppfind_add_autopath(bautofree(bfromcstr(input_filename)));
@@ -84,14 +83,6 @@ bool perform_assemble(const char* input_filename,
         printd(LEVEL_ERROR, "assembler: binary file not writable.\n");
         return false;
     }
-    output_symbols = fopen(output_symbols_filename, "wb+");
-    if (output_symbols == NULL)
-    {
-        printd(LEVEL_ERROR, "assembler: binary file not writable.\n");
-        fclose(output_binary);
-        output_binary = NULL;
-        return false;
-    }
 
     // Write content.
     // FIXME: Second argument to aout_write is whether to generate intermediate code.
@@ -115,7 +106,6 @@ bool perform_assemble(const char* input_filename,
 
     // Close files.
     fclose(output_binary);
-    fclose(output_symbols);
 
     return true;
 }

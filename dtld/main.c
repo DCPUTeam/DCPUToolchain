@@ -11,20 +11,26 @@
 
 **/
 
+#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include <argtable2.h>
 #include <version.h>
 #include <debug.h>
 #include <osutil.h>
 #include <iio.h>
 #include <derr.h>
+#include <policy.h>
 #include "objfile.h"
 #include "lprov.h"
 #include "ldata.h"
 #include "ldbins.h"
 #include "ldtarget.h"
+#include "ldpolicy.h"
+
+struct tagbstring default_target = bsStatic("image");
 
 int main(int argc, char* argv[])
 {
@@ -37,16 +43,30 @@ int main(int argc, char* argv[])
     int msglen;
     char* msg;
     int target;
+    policies_t* loaded_policies = NULL;
+    const char* policy_kernel = NULL;
+    FILE* policy_file_io = NULL;
+    bstring policy_path = NULL;
+    bstring policy_kernel_path = NULL;
+    bstring policy_jumplist_path = NULL;
+    bstring policy_target = NULL;
+    bstring policy_direct_target = NULL;
+    bstring policy_direct_default = NULL;
+    bool policy_direct = false;
+    bool policy_use_kernel = false;
 
     // Define arguments.
     struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
-    struct arg_str* target_arg = arg_str0("l", "link-as", "target", "Link as the specified object, can be 'image', 'static' or 'kernel'.");
+    struct arg_str* target_arg = arg_str0("l", "link-as", "target", "Link as the specified object, can be 'static', 'kernel' or policy target.");
     struct arg_file* symbol_file = arg_file0("s", "symbols", "<file>", "Produce a combined symbol file (~triples memory usage!).");
     struct arg_str* symbol_ext = arg_str0(NULL, "symbol-extension", "ext", "When -s is used, specifies the extension for symbol files.  Defaults to \"dsym16\".");
     struct arg_file* input_files = arg_filen(NULL, NULL, "<file>", 1, 100, "The input object files.");
     struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
-    struct arg_file* kernel_file = arg_file0("k", "kernel", "<file>", "Directly link in the specified kernel.");
-    struct arg_file* jumplist_file = arg_file0("j", "jumplist", "<file>", "Link against the specified jumplist.");
+    struct arg_str* kernel_name = arg_str0("k", "kernel", "<name>", "Target the specified kernel.");
+    struct arg_file* policy_file = arg_file0("p", "policy", "<file>", "Use the specified policy file instead of the kernel policy.");
+    struct arg_file* jumplist_file = arg_file0(NULL, "jumplist", "<file>", "The path to output the jumplist to (only used for building kernels.");
+    struct arg_lit* direct_link = arg_lit0(NULL, "direct", "Perform a direct link against the kernel, overriding the kernel default.");
+    struct arg_lit* no_direct_link = arg_lit0(NULL, "no-direct", "Do not perform a direct link against the kernel, overriding the kernel default.");
     struct arg_str* warning_policies = arg_strn("W", NULL, "policy", 0, _WARN_COUNT * 2 + 10, "Modify warning policies.");
     struct arg_lit* keep_output_arg = arg_lit0(NULL, "keep-outputs", "Keep the .OUTPUT entries in the final static library (used for stdlib).");
     struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
@@ -56,14 +76,14 @@ int main(int argc, char* argv[])
     struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
     struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
     struct arg_end* end = arg_end(20);
-    void* argtable[] = { show_help, target_arg, keep_output_arg, little_endian_mode, opt_level, opt_mode, no_short_literals_arg,
-                         symbol_ext, symbol_file, kernel_file, jumplist_file, warning_policies, output_file, input_files, verbose, quiet, end
+    void* argtable[] = { show_help, target_arg, keep_output_arg, little_endian_mode, opt_level, opt_mode, direct_link, no_direct_link,
+                         no_short_literals_arg, symbol_ext, symbol_file, kernel_name, policy_file, jumplist_file, warning_policies, output_file,
+                         input_files, verbose, quiet, end
                        };
 
     // Parse arguments.
     nerrors = arg_parse(argc, argv, argtable);
 
-    version_print(bautofree(bfromcstr("Linker")));
     if (nerrors != 0 || show_help->count != 0)
     {
         if (show_help->count != 0)
@@ -79,6 +99,9 @@ int main(int argc, char* argv[])
 
     // Set verbosity level.
     debug_setlevel(LEVEL_DEFAULT + verbose->count - quiet->count);
+    
+    // Show version information.
+    version_print(bautofree(bfromcstr("Linker")));
 
     // Set global path variable.
     osutil_setarg0(bautofree(bfromcstr(argv[0])));
@@ -114,36 +137,100 @@ int main(int argc, char* argv[])
         target = IMAGE_APPLICATION;
     else
     {
-        if (strcmp(target_arg->sval[0], "image") == 0)
-            target = IMAGE_APPLICATION;
-        else if (strcmp(target_arg->sval[0], "static") == 0)
+        if (strcmp(target_arg->sval[0], "static") == 0)
             target = IMAGE_STATIC_LIBRARY;
         else if (strcmp(target_arg->sval[0], "kernel") == 0)
             target = IMAGE_KERNEL;
         else
-        {
-            // Invalid option.
-            dhalt(ERR_INVALID_TARGET_NAME, NULL);
-        }
+            target = IMAGE_APPLICATION;
     }
 
-    // If the user wants to link against a kernel, they also need to
-    // provide a jumplist.
-    if (kernel_file->count > 0 && target == IMAGE_KERNEL)
-        dhalt(ERR_KERNEL_ARGUMENT_NOT_ALLOWED, NULL);
-    if (kernel_file->count > 0 && jumplist_file == 0)
-        dhalt(ERR_JUMPLIST_FILE_REQUIRED, NULL);
+    // If this is an application, we need to handle linker policies.
+    if (target == IMAGE_APPLICATION)
+    {
+        bstring find = NULL;
+        bstring repl = NULL;
+        
+        // Calculate what policies to use.
+        if (kernel_name->count == 0)
+            policy_kernel = osutil_getkerneldefault();
+        else
+            policy_kernel = kernel_name->sval[0];
+        
+        // If we are using the "none" kernel, we use no kernel
+        // at all.
+        policy_use_kernel = strcmp(policy_kernel, "none") != 0;
+        
+        if (policy_use_kernel)
+        {
+            if (policy_file->count > 0)
+            {
+                // Override the policy file that is being used.
+                policy_path = bfromcstr(policy_file->filename[0]);
+            }
+            else
+            {
+                // Determine the path to the policy file.
+                policy_path = osutil_getkernelpath();
+                if (policy_path == NULL)
+                    dhalt(ERR_POLICY_PATH_UNKNOWN, NULL);
+                bconchar(policy_path, '/');
+                bcatcstr(policy_path, policy_kernel);
+                bcatcstr(policy_path, "/policy");
+            }
+            
+            // Read in the policy file.
+            policy_file_io = fopen(policy_path->data, "r");
+            if (policy_file_io == NULL)
+                dhalt(ERR_POLICY_FILE_NOT_FOUND, policy_path->data);
+            loaded_policies = policies_load(policy_file_io);
+            fclose(policy_file_io);
+
+            // Read the settings.
+            policy_kernel_path = policies_get_setting(loaded_policies, bautofree(bfromcstr("kernel")));
+            policy_jumplist_path = policies_get_setting(loaded_policies, bautofree(bfromcstr("jumplist")));
+            policy_target = policies_get_setting(loaded_policies, bautofree(bfromcstr("target")));
+            policy_direct_target = policies_get_setting(loaded_policies, bautofree(bfromcstr("direct-target")));
+            policy_direct_default = policies_get_setting(loaded_policies, bautofree(bfromcstr("direct-default")));
+            
+            // Set the defaults if a setting isn't specified.
+            if (policy_target == NULL)
+                policy_target = &default_target;
+            if (target_arg->count > 0)
+                policy_target = bfromcstr(target_arg->sval[0]);
+            if (policy_direct_default == NULL)
+                policy_direct = false;
+            else
+                policy_direct = biseqcstrcaseless(policy_direct_default, "true");
+            if (direct_link->count > 0)
+                policy_direct = true;
+            else if (no_direct_link->count > 0)
+                policy_direct = false;
+            if (policy_direct && target_arg->count == 0 && policy_direct_target != NULL)
+                policy_target = policy_direct_target;
+            
+            // Replace @KERNEL_FOLDER@ with the kernel's folder.
+            find = bfromcstr("@KERNEL_FOLDER@");
+            repl = osutil_getkernelpath();
+            bfindreplace(policy_kernel_path, find, repl, 0);
+            bfindreplace(policy_jumplist_path, find, repl, 0);
+            bdestroy(find);
+            bdestroy(repl);
+            find = NULL;
+            repl = NULL;
+        }
+    }
 
     // Load all passed objects and use linker bin system to
     // produce result.
     bins_init();
-    if ((kernel_file->count > 0 || jumplist_file->count > 0) && target != IMAGE_KERNEL)
+    if (policy_use_kernel && target != IMAGE_KERNEL)
     {
         // Import the jumplist.
-        if (kernel_file->count == 0)
-            bins_load_jumplist(bautofree(bfromcstr(jumplist_file->filename[0])));
-        else
-            bins_load_kernel(bautofree(bfromcstr(jumplist_file->filename[0])), bautofree(bfromcstr(kernel_file->filename[0])));
+        if (policy_direct && policy_jumplist_path != NULL && policy_kernel_path != NULL)
+            bins_load_kernel(bautocpy(policy_jumplist_path), bautocpy(policy_kernel_path));
+        else if (policy_jumplist_path != NULL)
+            bins_load_jumplist(bautocpy(policy_jumplist_path));
     }
     for (i = 0; i < input_files->count; i++)
         if (!bins_load(bautofree(bfromcstr(input_files->filename[i])), symbol_file->count > 0, (symbol_file->count > 0 && symbol_ext->count > 0) ? symbol_ext->sval[0] : "dsym16"))
@@ -163,12 +250,24 @@ int main(int argc, char* argv[])
         dwarn(WARN_SKIPPING_SHORT_LITERALS_TYPE, NULL);
     else
         dwarn(WARN_SKIPPING_SHORT_LITERALS_REQUEST, NULL);
+    if (target == IMAGE_APPLICATION)
+        bins_resolve_kernel(loaded_policies);
     bins_resolve(
         target == IMAGE_STATIC_LIBRARY,
         target == IMAGE_STATIC_LIBRARY,
         target == IMAGE_STATIC_LIBRARY || target == IMAGE_KERNEL);
+    if (target == IMAGE_APPLICATION)
+    {
+        assert(policy_path != NULL);
+        bins_apply_policy(
+            bautofree(policy_path),
+            bautocpy(policy_target),
+            bautofree(bfromcstr("output")),
+            bautofree(bfromcstr("output_applied"))
+            );
+    }
     bins_save(
-        bautofree(bfromcstr("output")),
+        target == IMAGE_APPLICATION ? bautofree(bfromcstr("output_applied")) : bautofree(bfromcstr("output")),
         bautofree(bfromcstr(output_file->filename[0])),
         target,
         keep_output_arg->count > 0,
@@ -179,6 +278,8 @@ int main(int argc, char* argv[])
         printd(LEVEL_DEFAULT, "linker: saved %i words during optimization.\n", saved);
     else if (saved < 0)
         printd(LEVEL_DEFAULT, "linker: increased by %i words during optimization.\n", -saved);
+    if (loaded_policies != NULL)
+        policies_free(loaded_policies);
 
     arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
     return 0;

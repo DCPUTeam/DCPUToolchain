@@ -38,6 +38,12 @@ int main(int argc, char* argv[])
 {
     struct errinfo* errval;
 
+    if (argc != 2)
+    {
+        fprintf(stderr, "usage: dtpp lang < file\n");
+        return 1;
+    }
+    
     if (dsethalt())
     {
         errval = derrinfo();
@@ -49,7 +55,7 @@ int main(int argc, char* argv[])
     }
 
     printf("! terminates input.\n\n");
-    ppimpl(bautofree(bfromcstr("asm")), has_input, input, output);
+    ppimpl(bautofree(bfromcstr("<stdin>")), 0, bautofree(bfromcstr(argv[1])), has_input, input, output);
     getc(stdin);
     getc(stdin);
     return 0;

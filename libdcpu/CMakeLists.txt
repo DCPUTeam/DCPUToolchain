@@ -13,8 +13,9 @@ include_directories(
     ${libdcpu_SOURCE_DIR}
     # Need to manual path this since we have a cyclic dependency.
     ${toolchain_SOURCE_DIR}/libdcpu-pp-expr
+    ${CMAKE_CURRENT_BINARY_DIR}
 )
-add_library(libdcpu STATIC
+add_library(libdcpu ${LIBRARY_FORMAT}
     derr.defs.c
     derr.defs.h
     derr.c
@@ -41,5 +42,47 @@ add_library(libdcpu STATIC
     osutil.c
     rparse.c
     version.c
+    config.h.in
 )
 cotire(libdcpu)
+set_target_properties(libdcpu PROPERTIES PREFIX "")
+
+if(DEFINED VERSION_STAGE)
+    set(DCPU_CONFIG_HAS_VERSION_STAGE TRUE)
+    set(DCPU_CONFIG_VERSION_STAGE ${VERSION_STAGE})
+endif()
+if(DEFINED VERSION_GIT)
+    set(DCPU_CONFIG_HAS_VERSION_GIT TRUE)
+    set(DCPU_CONFIG_VERSION_GIT ${VERSION_GIT})
+endif()
+option(KERNEL_DEFAULT "The name of the default kernel that the toolchain should use for linking" "stubsys")
+if(${DEPLOYABLE})
+    if(DEFINED KERNEL_DEFAULT)
+        set(DCPU_CONFIG_HAS_KERNEL_DEFAULT TRUE)
+        set(DCPU_CONFIG_KERNEL_DEFAULT ${KERNEL_DEFAULT})
+    endif()
+    set(DCPU_CONFIG_HAS_MODULE_PATH TRUE)
+    set(DCPU_CONFIG_HAS_KERNEL_PATH TRUE)
+    set(DCPU_CONFIG_HAS_STDLIB_PATH TRUE)
+    set(DCPU_CONFIG_MODULE_PATH ${CMAKE_INSTALL_PREFIX}/share/dcpu/modules)
+    set(DCPU_CONFIG_KERNEL_PATH ${CMAKE_INSTALL_PREFIX}/share/dcpu/kernels)
+    set(DCPU_CONFIG_STDLIB_PATH ${CMAKE_INSTALL_PREFIX}/share/dcpu/stdlib)
+endif()
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
+    @ONLY
+)
+
+if(${DEPLOYABLE})
+    target_link_libraries(libdcpu
+        bstring
+    )
+    install(TARGETS libdcpu
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+    file(GLOB headers_gen "${CMAKE_CURRENT_BINARY_DIR}/*.h")
+    file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+    install(FILES ${headers} ${headers_gen} DESTINATION include/dcpu)
+endif()

@@ -65,6 +65,7 @@ bstring yyfilename = NULL;
 \.[Ss][Ee][Cc][Tt][Ii][Oo][Nn]          yylval.number = SECTION; return KEYWORD;
 \.[Oo][Uu][Tt][Pp][Uu][Tt]              yylval.number = OUTPUT; return KEYWORD;
 \.[Jj][Uu][Mm][Pp]                      yylval.number = JUMP; return KEYWORD;
+\.[Cc][Aa][Ll][Ll]                      yylval.number = CALL; return KEYWORD;
 \.[Ss][Yy][Mm][Bb][Oo][Ll][ \t]*        BEGIN(IN_SYMBOL); yylval.number = SYMBOL; return KEYWORD;
 <IN_SYMBOL>[^\n]+                       yylval.string = bfromcstr(yytext); return STRING;
 <IN_SYMBOL>(\r\n|\r|\n)                 BEGIN(INITIAL); return NEWLINE;

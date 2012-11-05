@@ -48,3 +48,10 @@ target_link_libraries(dtdb
     ${GLFW_LIBRARIES}
 )
 cotire(dtdb)
+
+if(${DEPLOYABLE})
+    install(TARGETS dtdb
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+endif()

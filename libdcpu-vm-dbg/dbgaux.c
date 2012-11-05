@@ -37,9 +37,11 @@ uint16_t flash[0x10000];
 list_t breakpoints;
 list_t backtrace;
 list_t* symbols;
-extern vm_t* vm;
+vm_t* vm;
 int ddbg_return_code;
 bool ignore_next_breakpoint = false;
+struct dbg_state lstate;
+host_context_t* host;
 
 FILE* w;
 
@@ -414,8 +416,7 @@ void ddbg_init(host_context_t* context)
 
     // Create VM.
     ddbg_create_vm();
-    printf("%p\n", context);
-    vm->host = context;
+    host = context;
 }
 
 void ddbg_create_vm()
@@ -463,6 +464,7 @@ void ddbg_continue_vm()
 
 void ddbg_attach(bstring hw)
 {
+    vm->host = host;
     if (biseq(hw, bfromcstr("lem1802")))
         vm_hw_lem1802_init(vm);
     else if (biseq(hw, bfromcstr("keyboard")))
@@ -472,6 +474,8 @@ void ddbg_attach(bstring hw)
         vm_hw_timer_init(vm);
     else if (biseq(hw, bfromcstr("m35fd")))
         vm_hw_m35fd_init(vm);
+    else if (biseq(hw, bfromcstr("sped3")))
+        vm_hw_sped3_init(vm);
     else
         printd(LEVEL_DEFAULT, "Unrecognized hardware.\n");
 }
@@ -856,7 +860,7 @@ void ddbg_disassemble(int start, int difference)
             printd(LEVEL_DEFAULT, "<null>\n");
         else if (inst.pretty.op == NULL)
             printd(LEVEL_DEFAULT, "???\n");
-        else if (inst.pretty.b == NULL)
+        else if (inst.original.op == OP_NONBASIC)
             printd(LEVEL_DEFAULT, "%s %s\n", inst.pretty.op->data, inst.pretty.a->data);
         else
             printd(LEVEL_DEFAULT, "%s %s, %s\n", inst.pretty.op->data, inst.pretty.b->data, inst.pretty.a->data);

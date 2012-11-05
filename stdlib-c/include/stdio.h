@@ -14,8 +14,6 @@
 #ifndef __STDLIB_STDIO_H
 #define __STDLIB_STDIO_H
 
-char * itoa(int value, char * str, int base);
-
 /**
  * @brief Write formatted data to string
  * @param str Pointer to a buffer where the resulting C-string is stored. The buffer should be large enough to contain the resulting string.

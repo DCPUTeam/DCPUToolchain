@@ -1,8 +1,10 @@
 #include "Toolchain.h"
 #include "dtasm.h"
 #include "dtemu.h"
+#include "dtdb.h"
 #include <iostream>
 #include <cstdlib>
+#include <cassert>
 
 #ifdef WIN32
 #include <io.h>
@@ -44,6 +46,13 @@ void* DCPUToolchain_GetUD(void* context)
 
 void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
 {
+    DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
+
+    // Check for breakpoints
+    if(t->debuggingSession->BreakpointAt(vm->pc))
+    {
+        t->Pause(t->debuggingSession);
+    }
 }
 
 void DCPUToolchain_WriteHook(vm_t* vm, uint16_t pos, void* ud)
@@ -127,8 +136,8 @@ void DCPUToolchainASM::Build(std::string filename, std::string outputDir, BuildA
     if (perform_assemble(cf, ob, os))
     {
         api.AddOutputFile(ob);
-        unlink(os);
         std::cout << "Assembling success!" << std::endl;
+        api.AddSymbolsFile(os);
     }
     else
     {
@@ -180,7 +189,7 @@ std::list<Language*> DCPUToolchain::GetLanguages()
     return list;
 }
 
-void DCPUToolchain::Start(std::string path, DebuggingSession* session)
+void DCPUToolchain::Start(BuildAPI& result, DebuggingSession* session)
 {
     // For the lack of a proper solution...
     g_this = this;
@@ -188,7 +197,16 @@ void DCPUToolchain::Start(std::string path, DebuggingSession* session)
     // Tell the emulator to start.
     debuggingSession = session;
     paused = false;
-    start_emulation(
+
+    // Get the output files.
+    std::list<std::string> outputFiles = result.GetOutputFiles();
+
+    // Change this when we have project support.
+    assert(outputFiles.size() == 1);
+    std::string path(*(outputFiles.begin()));
+    
+
+    vm_t* vm = start_emulation(
         /* Binary path */
         path.c_str(),
 
@@ -207,6 +225,26 @@ void DCPUToolchain::Start(std::string path, DebuggingSession* session)
         &DCPUToolchain_GetUD,
 
         static_cast<void*>(this));
+    
+    DebuggingMessage m;
+    MemoryDumpMessage payload;
+
+    payload.data = vm->ram;
+
+    m.type = MemoryDumpType;
+    m.value = (MessageValue&) payload;
+
+    debuggingSession->AddMessage(m);
+
+    // Load debugging symbols
+    std::list<std::string> symbolFiles = result.GetSymbolFiles();
+
+    // Change this when we have project support.
+    assert(symbolFiles.size() == 1);
+
+    // Load the symbols.
+    std::string symbolsPath(*(symbolFiles.begin()));
+    dtdb_read_symbols(symbolsPath.c_str());
 }
 
 void DCPUToolchain::AddStatusMessage(vm_t* vm)
@@ -263,3 +301,16 @@ void DCPUToolchain::Pause(DebuggingSession* session)
     paused = true;
 }
 
+void DCPUToolchain::Resume(DebuggingSession* session)
+{
+    paused = false;
+}
+
+void DCPUToolchain::AddBreakpoint(DebuggingSession* session, Breakpoint& b)
+{
+    int32_t address = dtdb_get_line_address(b.File.c_str(), b.Line);
+    if(address != -1)
+        session->AddBreakpoint((uint16_t) address);
+    else
+        std::cout << "Unable to resolve breakpoint " << b.File << ":" << b.Line << std::endl;
+}
