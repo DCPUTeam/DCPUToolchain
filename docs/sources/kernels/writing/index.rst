@@ -40,4 +40,5 @@ more information about the format of linker policy files, see these topics:
    
    defaults
    policies
+   stubapi
    shared

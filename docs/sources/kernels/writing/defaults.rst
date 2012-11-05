@@ -159,8 +159,8 @@ The options available for interrupt-based kernels are:
 .. py:attribute:: interrupt-call
     :noindex:
     
-    The type of interrupt calls to make.  Currently supported are "stack-call" and "register-call",
-    each defining their own semantics about how parameters are passed to the kernel.
+    The type of interrupt calls to make.  Currently supported are "stack-call", "register-call"
+    and "register-direct" each defining their own semantics about how parameters are passed to the kernel.
     
     For users of the .CALL directive this is irrelevant as the linker ensures that parameters are
     translated from an ABI register call, to a stack or register kernel call.
@@ -181,9 +181,18 @@ The options available for interrupt-based kernels are:
         placed into the top of the stack and thus, if there are less than 4 arguments,
         a dummy value is pushed to hold the result.
         
+    .. note::
+        
+        The "register-direct" calling convention is one where the first 3 arguments
+        are put into the A, B and C registers respectively and then any additional
+        arguments are pushed onto the stack.  The result of the kernel is placed
+        into the position on the stack where RFI will restore from and thus upon
+        returning from the interrupt, the DCPU-16 automatically sets the A register
+        to the corect value.
+        
     .. warning::
     
-        A kernel register call is *not* the same as an ABI register call since interrupts
+        A kernel "register-call" is *not* the same as an ABI register call since interrupts
         clobber the A register on the RFI instruction.
     
 .. py:function:: interrupt-call(name)
