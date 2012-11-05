@@ -37,6 +37,9 @@ void CodeEditor::setupMargins()
 
     markerDefine(QsciScintilla::RightArrow, MARKER);
     setMarkerBackgroundColor(QColor("#ee1111"), MARKER);
+
+    markerDefine(QsciScintilla::Background, LINE_BG);
+    setMarkerBackgroundColor(QColor("#ffff00").lighter(170), LINE_BG);
 }
 
 void CodeEditor::setupSignals()
@@ -54,6 +57,12 @@ void CodeEditor::handleMarginClick(int margin, int line, Qt::KeyboardModifiers k
     {
         markerAdd(line, MARKER);
     }
+}
+
+void CodeEditor::highlightLine(int line)
+{
+    markerDeleteAll(LINE_BG);
+    markerAdd(line - 1, LINE_BG);
 }
 
 void CodeEditor::updateFileName()
@@ -146,6 +155,11 @@ QString CodeEditor::getPath()
     return path;
 }
 
+QString CodeEditor::getFileName()
+{
+    return fileName;
+}
+
 void CodeEditor::ResetBuild()
 {
     // Create a new Build API instance.  The "build API" class should be used as
@@ -177,9 +191,10 @@ QList<Breakpoint> CodeEditor::getBreakpoints()
 
     do
     {
-        line = markerFindNext(prev, 0xffffffff);
+        line = markerFindNext(prev, (1 << MARKER));
         if(line != -1)
         {
+            qDebug() << markersAtLine(line);
             line += 1;
             prev = line;
 

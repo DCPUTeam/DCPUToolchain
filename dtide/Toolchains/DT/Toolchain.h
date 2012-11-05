@@ -43,6 +43,7 @@ public:
     virtual void Stop(DebuggingSession* session);
     virtual void Pause(DebuggingSession* session);
     virtual void Resume(DebuggingSession* session);
+    virtual Line LineAt(DebuggingSession* session, uint16_t address);
 
     virtual void SendStatus();
 

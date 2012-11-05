@@ -53,6 +53,21 @@ void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
     {
         t->Pause(t->debuggingSession);
     }
+
+    // OPTIMIZATION: We needn't do this in every cycle, we could do it 
+    // only at the end of each "batch" of cycles.
+    Line line = t->LineAt(t->debuggingSession, vm->pc);
+    if(line.Line != 0) {
+        DebuggingMessage m;
+        LineHitMessage payload;
+
+        payload.line = line;
+
+        m.type = LineHitType;
+        m.value = (MessageValue&) payload;
+
+        t->debuggingSession->AddMessage(m);
+    }
 }
 
 void DCPUToolchain_WriteHook(vm_t* vm, uint16_t pos, void* ud)
@@ -313,4 +328,20 @@ void DCPUToolchain::AddBreakpoint(DebuggingSession* session, Breakpoint& b)
         session->AddBreakpoint((uint16_t) address);
     else
         std::cout << "Unable to resolve breakpoint " << b.File << ":" << b.Line << std::endl;
+}
+
+Line DCPUToolchain::LineAt(DebuggingSession* session, uint16_t address)
+{
+    Line result;
+
+    result.Line = 0;
+    result.Path = NULL;
+
+    if(dtdb_line_at_address(address))
+    {
+        result.Line = dtdb_get_line_number();
+        result.Path = dtdb_get_line_path();
+    }
+
+    return result;
 }
