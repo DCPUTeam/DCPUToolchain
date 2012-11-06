@@ -19,15 +19,28 @@ that appears on other platforms.
     
     A structure representing a variable argument list.
     
-.. c:macro:: void va_start(list, param)
+.. c:macro:: void va_start(va_list list, paramN)
     
-    Initializes the `list` structure based on the variable arguments passed to this macro.  `param`
+    Initializes the object `list` of type va_list based on the variable arguments passed to this macro.  `paramN`
     is the name of the last named parameter before the variable arguments begin.
     
-.. c:macro:: void va_arg(list, type)
+.. c:macro:: type va_arg(va_list list, type)
     
-    Returns the next variable argument in the list `list`, assuming it is of type `type`.
+    Returns the next variable argument in the list `list` as an expression of type `type`.
+    Consecutive calls to this function will return the extra arguments to this function
+    in the order they were passed.
     
-.. c:macro:: void va_end(list)
+    .. warning::
+        
+        Notice: va_arg cannot determine the actual type of the argument passed to the function, but will use the given type `type`.
+        
+    .. warning::
+        
+        Notice: va_arg does not detect the last parameter passed to the function, nor does it recorgnize if it is trying to access more
+        arguments than were passed. The function should be designed in a way, so that the correct amount of calls to va_args can be
+        deduced from the fixed arguments given to the function (i.e. none of the variable argument list).
     
-    Frees any memory associated with the variable argument list `list`.
+.. c:macro:: void va_end(va_list list)
+    
+    Performs clean up actions, that are needed so that the function can return normally.
+    This macro should be executed before the function returns whenever va_start has been previously used in that function.
