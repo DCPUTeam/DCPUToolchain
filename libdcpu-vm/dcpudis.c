@@ -126,7 +126,7 @@ struct inst vm_disassemble(vm_t* vm, uint16_t pos, bool pretty)
         else if (result.original.a == NXT_LIT)
             result.pretty.a = bformat("0x%04X", result.next[0]);
         else if (result.original.a >= 0x20 && result.original.a <= 0x3F)
-            result.pretty.a = bformat("0x%04X", result.original.a - 0x21);
+            result.pretty.a = bformat("0x%04X", (uint16_t)(result.original.a - 0x21));
         else
             result.pretty.a = bfromcstr("???");
 
@@ -153,7 +153,7 @@ struct inst vm_disassemble(vm_t* vm, uint16_t pos, bool pretty)
             else if (result.original.b == NXT_LIT)
                 result.pretty.b = bformat("0x%04X", result.next[1]);
             else if (result.original.b >= 0x20 && result.original.b <= 0x3F)
-                result.pretty.b = bformat("0x%04X", result.original.b - 0x21);
+                result.pretty.b = bformat("0x%04X", (uint16_t)(result.original.b - 0x21));
             else
                 result.pretty.b = bfromcstr("???");
         }
