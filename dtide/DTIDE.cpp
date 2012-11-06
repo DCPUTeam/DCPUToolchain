@@ -87,7 +87,7 @@ void DTIDE::runCycles(int count)
                     {
                         CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
                         if(w->getFileName() == QString::fromLocal8Bit(line.Path))
-                            w->highlightLine(line.Line);
+                            w->highlightLine(line.LineNumber);
                     }
                     break;
                 }

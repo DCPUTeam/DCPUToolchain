@@ -34,7 +34,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
     //  this here has to be exactly reverse to the order in the
     //  parameter stack frame and thus the TypePosition
     uint16_t callerVarArgsStackSize = 0;
-    for (int i = this->arguments.size() - 1; i >= 0; --i)
+    for (size_t i = this->arguments.size() - 1; i >= 0; --i)
     {
         // Compile the expression.
         AsmBlock* inst = this->arguments[i]->compile(context);
@@ -160,7 +160,7 @@ void NMethodCall::analyse(AsmGenerator& context, bool reference)
         return;
     }
     
-    for(int i = 0; i < this->arguments.size(); i++)
+    for(size_t i = 0; i < this->arguments.size(); i++)
     {
         // analyse arguments
         this->arguments[i]->analyse(context,false);
@@ -168,7 +168,7 @@ void NMethodCall::analyse(AsmGenerator& context, bool reference)
     
     // check type compatibility of arguments
     this->m_parameterTypes = std::vector<IType*>(this->arguments.size());
-    for (int i = 0; i < this->arguments.size(); ++i)
+    for (size_t i = 0; i < this->arguments.size(); ++i)
     {
         this->m_parameterTypes[i] = this->arguments[i]->getExpressionType(context);
 

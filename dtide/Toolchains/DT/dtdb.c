@@ -16,7 +16,7 @@ int32_t dtdb_get_line_address(const char* file, int line)
 
 bool dtdb_line_at_address(uint16_t address)
 {
-    int i;
+    size_t i;
     struct dbg_sym* sym;
     struct dbg_sym_payload_line* payload_line;
 
