@@ -15,23 +15,28 @@
 #include <ppimpl.h>
 #include <derr.h>
 #include <osutil.h>
+#include <ppfind.h>
 
 char next = '\0';
 
 bool has_input()
 {
-    return !feof(stdin);
+    return !feof(stdin) && next != '~';
 }
 
-char input()
+char_t input()
 {
-    next = (char)getc(stdin);
-    return next;
+    char_t c;
+    c.value = (char)getc(stdin);
+    c.file = bfromcstr("<stdin>");
+    c.line = 0;
+    c.column = 0;
+    return c;
 }
 
-void output(char o)
+void output(char_t o)
 {
-    putc((int)o, stdout);
+    printf("%c (%s:%i:%i)\n", o.value, o.file->data, o.line, o.column);
 }
 
 int main(int argc, char* argv[])
@@ -53,6 +58,8 @@ int main(int argc, char* argv[])
         printf(derrstr[errval->errid], errval->errdata);
         return 1;
     }
+
+    ppfind_add_path(bautofree(bfromcstr("../0x10c/stdlib-c/include")));
 
     ppimpl(bautofree(bfromcstr("<stdin>")), 0, bautofree(bfromcstr(argv[1])), has_input, input, output);
     return 0;

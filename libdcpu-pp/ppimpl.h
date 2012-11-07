@@ -34,17 +34,15 @@ typedef struct
 ///
 /// Defines the preprocessor state.
 ///
-typedef struct
+typedef struct __pp_state
 {
+    list_t all_gc; ///< A list that keeps track of all of the characters ever used in the preprocessor.
     list_t cached_input;
     list_t cached_output;
     has_t has_input;
     pop_t input;
     push_t output;
     list_t handlers;
-    unsigned int current_line;
-    bstring current_filename;
-    bstring default_filename;
     bool in_single_string;
     bool in_double_string;
     list_t scopes;
@@ -79,11 +77,12 @@ typedef struct
 } parameter_t;
 
 bool ppimpl_has_input(state_t* state);
-char ppimpl_get_input(state_t* state);
+char_t* ppimpl_get_input(state_t* state);
 unsigned int ppimpl_get_current_line(state_t* state);
 bstring ppimpl_get_current_filename(state_t* state);
 char* ppimpl_get_location(state_t* state);
 void ppimpl_printf(state_t* state, const char* msg, ...);
+void ppimpl_oprintf(state_t* state, const char* msg, ...);
 bool ppimpl_isolates(char c, bool at_start);
 void ppimpl_push_scope(state_t* state, bool active);
 void ppimpl_flip_scope(state_t* state);

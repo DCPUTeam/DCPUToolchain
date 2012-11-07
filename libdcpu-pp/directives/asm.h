@@ -8,6 +8,7 @@ void ppimpl_asm_expr_register(state_t* state);
 void ppimpl_asm_define_register(state_t* state);
 void ppimpl_asm_include_register(state_t* state);
 void ppimpl_asm_lua_register(state_t* state);
+void ppimpl_asm_track_register(state_t* state);
 void ppimpl_asm_init(state_t* state);
 
 #endif

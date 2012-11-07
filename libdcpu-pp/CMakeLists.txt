@@ -27,12 +27,14 @@ add_library(libdcpu-pp ${LIBRARY_FORMAT}
     directives/asm/define.c
     directives/asm/expr.c
     directives/asm/lua.c
+    directives/asm/track.c
     directives/c.h
     directives/c.c
     directives/c/line.c
     directives/c/include.c
     directives/c/define.c
     directives/c/expr.c
+    directives/c/track.c
 )
 auto_group(libdcpu-pp)
 include_directories(
