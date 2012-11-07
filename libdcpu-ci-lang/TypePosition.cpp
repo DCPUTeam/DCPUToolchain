@@ -1,12 +1,11 @@
 /**
 
-    File:       TypePosition.cpp
+    File:           TypePosition.cpp
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang
 
-    Authors:    James Rhodes
-            Patrick Flick
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Defines the TypePosition class.
 
@@ -48,26 +47,41 @@ bool TypePosition::isFunction()
     return this->m_Function;
 }
 
+bool TypePosition::isAtomiclyAddressable()
+{
+    if (!this->m_Found)
+        return false;
+        
+    if (this->m_PreviousStackFrame)
+        return false;
+        
+    if (this->m_Global && (!this->m_Function))
+        return false;
+        
+    return true;
+}
 
-std::string TypePosition::getAddress()
+
+std::string TypePosition::getAtomicAddress()
 {
     std::stringstream sstr;
 
     if (!this->m_Found)
         throw new CompilerException(0, "<internal>", "Attempted to get reference position of unknown type position result (internal error).");
 
+    if (this->m_PreviousStackFrame)
+        throw new CompilerException(0, "<internal>", "Attempted to get reference position of previous Stack Frame");
+
     if (this->m_Function)
         sstr << "cfunc_" << this->m_FunctionName;
     else if (this->m_Global)
-        sstr << "_DATA+" << this->m_Position;
-    else if (this->m_PreviousStackFrame && this->m_IsFunctionParameter)
-        sstr << "[Y+1]+" << this->m_Position;
-    else if (this->m_PreviousStackFrame)
-        sstr << "[Y+1]+" << (0x10000 - (this->m_Position + 2));
+        // FIXME: once expressions are possible in the linker, we can do this!
+        throw new CompilerException(0, "<internal>", "Attempted to get reference position of global variable (will only be possible once expressions like '_DATA+1' are implemented in the linker)");
+        //sstr << "_DATA+" << this->m_Position;
     else if (this->m_IsFunctionParameter)
         sstr << "Y+" << this->m_Position;
     else
-        sstr << "Y+" << (0x10000 - (this->m_Position + 2));
+        sstr << "Y+" << (uint16_t)(0x0 - (this->m_Position + 2));
 
     return sstr.str();
 }
@@ -120,11 +134,9 @@ std::string TypePosition::pushAddress(char registr)
         }
         else
         {
-            // locals are in Y-3-pos
-            // jumping over next frame pointer and return address
-            sstr << "   SUB " << registr << ", 2" << std::endl;
-            if (this->m_Position != 0)
-                sstr << "   SUB " << registr << ", " << this->m_Position << std::endl;
+            // last word of first local is at Y-3, but position of first local
+            // includes its word size, thus Y-2-pos = Y - (2+pos)
+            sstr << "   SUB " << registr << ", " << (uint16_t) (2+this->m_Position) << std::endl;
         }
     }
 

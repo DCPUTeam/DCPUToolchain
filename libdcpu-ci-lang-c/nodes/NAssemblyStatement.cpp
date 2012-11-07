@@ -1,11 +1,11 @@
 /**
 
-    File:       NAssemblyStatement.cpp
+    File:           NAssemblyStatement.cpp
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Defines the NAssemblyStatement AST class.
 
@@ -18,30 +18,6 @@
 #include "NAssemblyStatement.h"
 #include <derr.defs.h>
 
-void NAssemblyStatement::findreplace(std::string& str, const std::string find, const std::string replace)
-{
-    size_t pos = 0;
-    while ((pos = str.find(find, pos)) != std::string::npos)
-    {
-        str.replace(pos, find.length(), replace);
-        pos += replace.length();
-    }
-}
-
-void NAssemblyStatement::finderrorglob(std::string& str, const std::string find)
-{
-    size_t pos = 0;
-    while ((pos = str.find(find, pos)) != std::string::npos)
-        throw new CompilerException(this->line, this->file, std::string("References to global variable '") + find + "' are not permitted in inline assembly.  Copy to temporary first.");
-}
-
-void NAssemblyStatement::finderrorref(std::string& str, const std::string find)
-{
-    size_t pos = 0;
-    while ((pos = str.find(find, pos)) != std::string::npos)
-        throw new CompilerException(this->line, this->file, std::string("Retrieving address of variable '") + find + "' is not permitted in inline assembly.  Copy address to temporary first.");
-}
-
 AsmBlock* NAssemblyStatement::compile(AsmGenerator& context)
 {
     AsmBlock* block = new AsmBlock();
@@ -49,60 +25,8 @@ AsmBlock* NAssemblyStatement::compile(AsmGenerator& context)
     // Add file and line information.
     *block << this->getFileAndLineState();
 
-    // Perform the inline reference replacements.
-    std::string clone = this->asmcode;
-    
-    /*
-    for (StackMap::iterator i = context.m_GlobalFrame->m_LocalsMap.begin(); i != context.m_GlobalFrame->m_LocalsMap.end(); i++)
-        this->finderrorglob(clone, std::string("<&") + i->first + ">");
-    
-    for (StackMap::iterator i = context.m_GlobalFrame->m_ParametersMap.begin(); i != context.m_GlobalFrame->m_ParametersMap.end(); i++)
-        this->finderrorglob(clone, std::string("<&") + i->first + ">");
-    
-    
-    for (StackMap::iterator i = context.m_CurrentFrame->m_LocalsMap.begin(); i != context.m_CurrentFrame->m_LocalsMap.end(); i++)
-        this->finderrorref(clone, std::string("<&") + i->first + ">");
-        
-    for (StackMap::iterator i = context.m_CurrentFrame->m_ParametersMap.begin(); i != context.m_CurrentFrame->m_ParametersMap.end(); i++)
-        this->finderrorref(clone, std::string("<&") + i->first + ">");
-        
-    
-    for (StackMap::iterator i = context.m_GlobalFrame->m_LocalsMap.begin(); i != context.m_GlobalFrame->m_LocalsMap.end(); i++)
-        this->finderrorglob(clone, std::string("<") + i->first + ">");
-        
-    for (StackMap::iterator i = context.m_GlobalFrame->m_ParametersMap.begin(); i != context.m_GlobalFrame->m_ParametersMap.end(); i++)
-        this->finderrorglob(clone, std::string("<") + i->first + ">");
-        
-        
-    for (StackMap::iterator i = context.m_CurrentFrame->m_LocalsMap.begin(); i != context.m_CurrentFrame->m_LocalsMap.end(); i++)
-        this->findreplace(clone, std::string("<") + i->first + ">", std::string("[") + context.m_CurrentFrame->getPositionOfVariable(i->first).getAddress() + "]");
-        
-    for (StackMap::iterator i = context.m_CurrentFrame->m_ParametersMap.begin(); i != context.m_CurrentFrame->m_ParametersMap.end(); i++)
-        this->findreplace(clone, std::string("<") + i->first + ">", std::string("[") + context.m_CurrentFrame->getPositionOfVariable(i->first).getAddress() + "]");
-
-    */
-    
-    // find all <variablename> tags in the asm:
-    size_t pos = 0;
-    while ((pos = clone.find("<", pos)) != std::string::npos)
-    {
-        size_t closing = clone.find(">", pos);
-        if (closing == std::string::npos)
-        {
-            // 
-            throw new CompilerException(this->line, this->file, "Malformed assembler in inline asm, check that every '<' is accompanied by another '>'.");
-        }
-        std::string varname = clone.substr(pos+1, closing-pos-1);
-        this->findreplace(clone, std::string("<") + varname+ ">", std::string("[") + context.symbolTable->getPositionOfVariable(varname).getAddress() + "]");
-        // FIXME: this is just to remind me to fix it later (to catch errors)
-        std::cout << "FIXME: fix inline asm!" << std::endl;
-        pos++;
-    }
-    
-    // TODO FIXME find variable with that name
-    
-    // Directly insert the assembly code.
-    *block << clone << std::endl;
+    // add output
+    *block << this->m_resultAsm << std::endl;
 
     return block;
 }
@@ -120,5 +44,81 @@ void NAssemblyStatement::analyse(AsmGenerator& context, bool reference)
         return;
     }
     
-    // TODO check for errors here, not during compile, compile shoulds just copy-paste the code
+    // find all <variablename> tags in the asm:
+    size_t pos = 0;
+    size_t closing = 0;
+    std::string clone = this->asmcode;
+    // using a for loop so that on "continue" the pos=closing will still be executed
+    for (pos = 0; (pos = clone.find("<", pos)) != std::string::npos; pos = closing)
+    {
+        closing = clone.find(">", pos);
+        if (closing == std::string::npos)
+        {
+            // there is no matching '>' to the last found '<'
+            context.errorList.addError(this->line, this->file, ERR_CC_MALFORMED_ASM_BLOCK);
+            return;
+        }
+        std::string varname = clone.substr(pos+1, closing-pos-1);
+        
+        // check that there actually is a variable name
+        if (varname.size() == 0)
+        {
+            context.errorList.addError(this->line, this->file, ERR_CC_VARIABLE_NOT_IN_SCOPE, "");
+            continue;
+        }
+        
+        // check if the user tries to reference something
+        bool isReference = false;
+        if (varname[0] == '&')
+        {
+            isReference = true;
+            varname = varname.substr(1);
+        }
+        
+        // get position of variable from symbol table
+        TypePosition typePos = context.symbolTable->getPositionOfVariable(varname);
+        
+        // check if there actually is a variable with the requested name
+        if (!typePos.isFound())
+        {
+            context.errorList.addError(this->line, this->file, ERR_CC_VARIABLE_NOT_IN_SCOPE, varname);
+            continue;
+        }
+        
+        // if the coder tries to access the value of the function,
+        //  throw an error (this doesn't make any sense)
+        if((!isReference) && typePos.isFunction())
+        {
+            context.errorList.addError(this->line, this->file, ERR_CC_VALUE_OF_FUNCTION, varname);
+            continue;
+        }
+        
+        if (isReference && (!typePos.isFunction()))
+        {
+            context.errorList.addError(this->line, this->file, ERR_CC_VAR_ASM_REF);
+            continue;
+        }
+        
+        // check if we can get an atomic address of the variable
+        // (this is not possible of the variable is in a previous
+        // stack frame)
+        if (!typePos.isAtomiclyAddressable())
+        {
+            context.errorList.addError(this->line, this->file, ERR_CC_VAR_NOT_ATOMIC_ADR, varname);
+            continue;
+        }
+        
+        // replace the <varname> tag in the asm block with the 
+        // address of the variable and dereference with [..]
+        // if the value and not the address was requested
+        std::string replaceWith;
+        if (isReference)
+            replaceWith = typePos.getAtomicAddress();
+        else
+            replaceWith = std::string("[") + typePos.getAtomicAddress() + "]";
+        clone.replace(pos, closing-pos+1, replaceWith);
+    }
+    
+    // save output
+    this->m_resultAsm = clone;
 }

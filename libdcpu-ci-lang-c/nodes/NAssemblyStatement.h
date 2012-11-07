@@ -1,11 +1,11 @@
 /**
 
-    File:       NAssemblyStatement.h
+    File:           NAssemblyStatement.h
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang-c
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang-c
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Declares the NAssemblyStatement AST class.
 
@@ -21,9 +21,7 @@
 class NAssemblyStatement : public NStatement
 {
 private:
-    void findreplace(std::string& str, const std::string find, const std::string replace);
-    void finderrorglob(std::string& str, const std::string find);
-    void finderrorref(std::string& str, const std::string find);
+    std::string m_resultAsm;
 
 public:
     std::string asmcode;
