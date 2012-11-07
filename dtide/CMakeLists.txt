@@ -7,7 +7,10 @@ if(${QT4_FOUND} AND ${qscintilla2_FOUND})
     set(dtide_SOURCES 
         main.cpp 
         Backends.cpp
+        Project.cpp
         DTIDE.cpp
+        DTIDEXMLProject.cpp
+        DTIDEDirView.cpp
         DTIDETabWidget.cpp
         DTIDESplash.cpp
         DTIDEBuildAPI.cpp
@@ -25,7 +28,10 @@ if(${QT4_FOUND} AND ${qscintilla2_FOUND})
     )
     set(dtide_HEADERS
         Backends.h
+        Project.h
         DTIDE.h
+        DTIDEXMLProject.h
+        DTIDEDirView.h
         DTIDETabWidget.h
         DTIDESplash.h
         DTIDEBuildAPI.h
@@ -53,6 +59,7 @@ if(${QT4_FOUND} AND ${qscintilla2_FOUND})
     QT4_WRAP_UI(dtide_FORMS_HEADERS ${dtide_FORMS})
 
     set(QT_USE_QTOPENGL TRUE)
+    set(QT_USE_QTXML TRUE)
     include(${QT_USE_FILE})
     add_definitions(${QT_DEFINITIONS})
 
@@ -75,6 +82,7 @@ if(${QT4_FOUND} AND ${qscintilla2_FOUND})
         ${GLFW_SOURCE_DIR}/include
         ${png_SOURCE_DIR}
         ${qscintilla2_SOURCE_DIR} 
+        ${QT_INCLUDES}
     )
 
     if(NOT MSVC)

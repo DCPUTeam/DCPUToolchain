@@ -12,19 +12,21 @@
 #include <QTimer>
 #include <QDockWidget>
 
+#include "Project.h"
 #include "Backends.h"
 #include "CodeEditor.h"
 #include "DTIDETabWidget.h"
 #include "DTIDEDebuggingWindow.h"
 #include "DTIDEDebuggingSession.h"
 #include "DTIDEGLWidgets.h"
+#include "DTIDEDirView.h"
 
 class DTIDE: public QMainWindow
 {
     Q_OBJECT
 
 public:
-    DTIDE(Toolchain* t, QString filename, QWidget* parent = 0);
+    DTIDE(Project* p, QWidget* parent = 0);
 
     QSize sizeHint();
 
@@ -61,9 +63,10 @@ private:
     DTIDEGLWidgets* glWidgets;
     QMenuBar* menu;
     QAction* nextTab;
-    Toolchain* toolchain;
     QTimer* timer;
     QList<QDockWidget*> dockWidgets;
+    Project* project;
+    Toolchain* toolchain;
 
     void setupMenuBar();
     void setupActions();

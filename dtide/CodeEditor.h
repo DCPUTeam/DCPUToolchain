@@ -60,10 +60,12 @@ private:
 
     int marginPadding;
     bool dirty;
+    bool loading;
 
     void setupEditor();
     void setupMargins();
     void setupSignals();
+    void readFile(QString path);
 };
 
 #endif

@@ -4,6 +4,7 @@
 
 #include "Backends.h"
 #include "DTIDESplash.h"
+#include "DTIDEXMLProject.h"
 #include "DTIDE.h"
 
 extern "C"
@@ -13,11 +14,12 @@ extern "C"
 #include <debug.h>
 #include <iio.h>
 #include <version.h>
-#include <GL/glfw3.h>
 }
 
 int main(int argc, char** argv)
 {
+    QApplication app(argc, argv);
+
     // Some set up required for toolchain to work.
     debug_setlevel(LEVEL_VERBOSE);
     osutil_setarg0(bautofree(bfromcstr(argv[0])));
@@ -26,26 +28,33 @@ int main(int argc, char** argv)
     // Show version information.
     version_print(bautofree(bfromcstr("IDE")));
 
-    // Start glfw.
-    glfwInit();
-
-    // Now start the IDE.
-    QApplication app(argc, argv);
-
+    // Project management.
+    DTIDEXMLProject* p = new DTIDEXMLProject();
     std::list<Toolchain*> toolchains;
     toolchains.insert(toolchains.end(), new DCPUToolchain());
 
-    /*DTIDESplash* splash = new DTIDESplash(toolchains);
-    if(!splash->exec())
-        return 0;
+    if(argc == 2)
+        p->read(argv[1]);
+    else
+        p->read("project.xml");
 
-    DTIDE mainWindow(splash->toolchain, splash->fileName);*/
+    if(!p->loaded)
+    {
 
-    DTIDE mainWindow(new DCPUToolchain(), "test.dasm16");
+        DTIDESplash* splash = new DTIDESplash(toolchains);
+        if(!splash->exec())
+            return 0;
+
+        p->setTitle(splash->projectTitle);
+        p->addFile(splash->fileName, true);
+        p->setToolchain(new DCPUToolchain());
+    }
+
+    // Now start the IDE.
+    DTIDE mainWindow(p);
     mainWindow.show();
 
     int returncode = app.exec();
-    glfwTerminate();
     return returncode;
 }
 

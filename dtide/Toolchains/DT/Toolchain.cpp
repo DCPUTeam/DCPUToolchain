@@ -189,7 +189,7 @@ std::string DCPUToolchain::GetLicense()
 
 std::string DCPUToolchain::GetName()
 {
-    return "DCPU-16 Toolchain";
+    return "DCPU Toolchain";
 }
 
 std::string DCPUToolchain::GetDescription()

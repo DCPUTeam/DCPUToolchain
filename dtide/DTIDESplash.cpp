@@ -25,7 +25,8 @@ void DTIDESplash::setupComboBox()
 
 void DTIDESplash::setAndAccept()
 {
-    fileName = lineEdit->text();
+    fileName = main_file->text();
+    projectTitle = project_title->text();
     QString sType = combo_project->currentText();
 
     std::list<Toolchain*>::iterator it;

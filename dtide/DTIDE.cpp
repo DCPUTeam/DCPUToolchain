@@ -1,7 +1,8 @@
 #include <cassert>
+#include <QDebug>
 #include "DTIDE.h"
 
-DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(parent)
+DTIDE::DTIDE(Project* p, QWidget* parent): QMainWindow(parent)
 {
     debuggingWindow = 0;
     menu = menuBar();
@@ -12,8 +13,11 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
 
     debuggingSession = 0;
     glWidgets = new DTIDEGLWidgets();
-    toolchain = t;
+    project = p;
+    toolchain = project->getToolchain();
     toolchain->SetWidgetFactory(glWidgets);
+
+    setWindowTitle("dtide - " + project->getTitle());
 
     setupMenuBar();
     setupActions();
@@ -22,8 +26,14 @@ DTIDE::DTIDE(Toolchain* t, QString fileName, QWidget* parent): QMainWindow(paren
 
     resize(QSize(640, 580));
 
-    addCodeTab(fileName);
-
+    QDir::setCurrent(project->getRootPath());
+    
+    QList<QString> files = project->getFileTabs();
+    for(int i = 0; i < files.size(); i++) 
+    {
+        addCodeTab(files[i]);
+    }
+  
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(cycleUpdate()));
     timer->start(1);
@@ -82,7 +92,7 @@ void DTIDE::runCycles(int count)
                 {
                     LineHitMessage hit = (LineHitMessage&) m.value;
                     Line line = hit.line;
-                    
+                   
                     for (int i = 0; i < tabs->count(); i++)
                     {
                         CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
@@ -162,6 +172,10 @@ void DTIDE::setupDockWidgets()
     registersDockWidget->setWidget(registers);
     registersDockWidget->setMinimumWidth(100);
     addDockWidget(Qt::RightDockWidgetArea, registersDockWidget);*/
+
+    QDockWidget* dirViewDockWidget = new QDockWidget(tr("File system"), this);
+    dirViewDockWidget->setWidget(new DTIDEDirView(project->getRootPath()));
+    addDockWidget(Qt::LeftDockWidgetArea, dirViewDockWidget); 
 }
 
 void DTIDE::addGLWidget(QGLWidget* w, QString title, int width, int height)
@@ -237,29 +251,39 @@ void DTIDE::compileAndRunProject()
 
     showDebuggerWindow();
 
+    QList<QString> compilableFiles = project->getCompilableFiles();
     for (int i = 0; i < tabs->count(); i++)
     {
         CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
-        QList<Breakpoint> breakpoints(w->getBreakpoints());
-        w->run(debuggingSession);
-
-        if(!breakpoints.empty())
+        if(compilableFiles.contains(w->getFileName()))
         {
-            for(int i = 0; i < breakpoints.size(); i++)
+            qDebug() << "running " << w->getFileName();
+            QList<Breakpoint> breakpoints(w->getBreakpoints());
+            w->run(debuggingSession);
+    
+            if(!breakpoints.empty())
             {
-                toolchain->AddBreakpoint(debuggingSession, breakpoints[i]);
+                for(int i = 0; i < breakpoints.size(); i++)
+                {
+                    toolchain->AddBreakpoint(debuggingSession, breakpoints[i]);
+                }
             }
-        }
+        } 
     }
 }
 
 void DTIDE::compileProject()
 {
+    QList<QString> compilableFiles = project->getCompilableFiles();
     for (int i = 0; i < tabs->count(); i++)
     {
         CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
-        w->ResetBuild();
-        w->build();
+        if(compilableFiles.contains(w->getFileName()))
+        {
+            qDebug() << "compiling";
+            w->ResetBuild();
+            w->build();
+        }
     }
 }
 

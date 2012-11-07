@@ -2,6 +2,7 @@
 
 CodeEditor::CodeEditor(Toolchain* t, QString filename, QWidget* parent): QsciScintilla(parent)
 {
+    loading = false;
     highlighter = 0;
     
     connect(this, SIGNAL(textChanged()), this, SLOT(updateFileName()));
@@ -17,6 +18,20 @@ CodeEditor::CodeEditor(Toolchain* t, QString filename, QWidget* parent): QsciSci
     setupEditor();
     setupMargins();
     setupSignals();
+
+    readFile(filename);
+}
+
+void CodeEditor::readFile(QString path)
+{
+    QFile file(path);
+    if(!file.open(QFile::ReadOnly))
+        return;
+    
+    QTextStream stream(&file);
+    loading = true;
+    setText(stream.readAll());    
+    loading = false;
 }
 
 void CodeEditor::setupEditor()
@@ -72,7 +87,7 @@ void CodeEditor::stopHighlighting()
 
 void CodeEditor::updateFileName()
 {
-    if(isModified() && !dirty)
+    if(isModified() && !dirty && !loading)
     {
         fileName = fileName + "*";
         emit fileNameChanged(fileName);

@@ -127,12 +127,6 @@ vm_t* start_emulation(
 
 void cycle_emulation()
 {
-    if (!has_initialized_glfw3)
-    {
-        glfwInit();
-        has_initialized_glfw3 = true;
-    }
-
     if (vm != NULL)
     {
         vm_cycle(vm);

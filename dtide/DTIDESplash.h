@@ -14,6 +14,7 @@ public:
     DTIDESplash(std::list<Toolchain*> toolchains, QWidget* parent = 0);
     Toolchain* toolchain;
     QString fileName;
+    QString projectTitle;
 
 private slots:
     void setAndAccept();
