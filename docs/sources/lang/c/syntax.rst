@@ -13,13 +13,16 @@ __asm block
 The __asm block can be used to integrate DCPU assembly into the C code.
 
 .. code-block:: c
+
     __asm {
         SET A, 0x1337
         SET B, 0xc0de
     }
 
 Inside the `__asm` block, local C variables can be accessed:
+
 .. code-block:: c
+
     void* screen = (void*) 0x8000;
     __asm {
         SET A, <screen>
@@ -36,7 +39,9 @@ You can also get the reference to a function with `<&someFunction>`.
         
 For using the value of global variables or the reference of local/global
 variables, create a temporay copy in C code first:
+
 .. code-block:: c
+
     int globalVar = 0xbeef;
     int main() {
         // set globalVar to 0xdead using __asm
