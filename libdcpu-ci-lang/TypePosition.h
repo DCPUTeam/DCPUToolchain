@@ -1,11 +1,11 @@
 /**
 
-    File:       TypePosition.h
+    File:           TypePosition.h
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-ci-lang
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-ci-lang
 
-    Authors:    James Rhodes
+    Authors:        James Rhodes, Patrick Flick
 
     Description:    Declares the TypePosition class.
 
@@ -33,7 +33,8 @@ public:
     TypePosition() : m_Found(false), m_Global(false), m_Function(false), m_IsFunctionParameter(false), m_Position(0) {}
     bool isFound();
     bool isFunction();
-    std::string getAddress();
+    bool isAtomiclyAddressable();
+    std::string getAtomicAddress();
     std::string pushAddress(char registr);
 };
 

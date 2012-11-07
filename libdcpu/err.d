@@ -118,5 +118,9 @@ ERR_CC_INVALID_INC_DEC_OPERAND                       cc-invalid-inc-dec-operand 
 ERR_CC_INC_DEC_CONST                                 cc-inc-dec-const                        "Cannot increase/decrease read-only variable"
 ERR_CC_MULTIPLE_DEFAULT                              cc-multiple-default                     "Invalid multiple default statements within switch statement."
 ERR_CC_INVALID_UNARY_OPERAND                         cc-invalid-unary-operand                 "Invalid operand to unary operation. (have '%s')"
+ERR_CC_MALFORMED_ASM_BLOCK                           cc-malformed-asm-block                   "Malformed assembler in inline asm, check that every '<' is accompanied by another '>'."
+ERR_CC_VAR_NOT_ATOMIC_ADR                            cc-var-not-atomic-adr                    "Cannot get atomic adress of '%s'. Make sure that only variables in the local scope are accessed."
+ERR_CC_VAR_ASM_REF                                   cc-var-asm-ref                           "Cannot reference a local variable in __asm."
+
 
 ERR_COULD_NOT_CREATE_OPENGL_CONTEXT                  failed-create-opengl-context           "failed to create an OpenGL context (check your graphic drivers)."
