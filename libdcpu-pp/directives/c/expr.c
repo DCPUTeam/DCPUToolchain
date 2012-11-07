@@ -69,7 +69,7 @@ static void ifdef_general_handle(bool exists, state_t* state, match_t* match, bo
 
     // Ensure the parameter format is correct.
     if (list_size(result) == 1 &&
-            ((parameter_t*)list_get_at(result, 0))->type == WORD)
+            ((parameter_t*)list_get_at(result, 0))->type == _WORD)
     {
         // Get the word.
         word = ((parameter_t*)list_get_at(result, 0))->string;

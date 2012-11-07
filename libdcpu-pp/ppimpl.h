@@ -48,6 +48,7 @@ typedef struct
     bool in_single_string;
     bool in_double_string;
     list_t scopes;
+    size_t print_index; ///< Tracks where the printing cursor is for printf so successive calls appear correctly.
 } state_t;
 
 ///
@@ -58,9 +59,9 @@ struct __match
     freed_bstring text;
     void(*handler)(state_t* state, struct __match* match, bool* reprocess);
     void* userdata;
-    bool line_start_only; //< Whether this match can only be made at the start of a line (ignoring whitespace).
-    bool identifier_only; //< Whether this match is treated as an identifier.
-    bool case_insensitive; //< Whether this match should be made case insensitively.
+    bool line_start_only; ///< Whether this match can only be made at the start of a line (ignoring whitespace).
+    bool identifier_only; ///< Whether this match is treated as an identifier.
+    bool case_insensitive; ///< Whether this match should be made case insensitively.
 };
 typedef void(*match_handler_t)(state_t* state, struct __match* match, bool* reprocess);
 typedef struct __match match_t;
@@ -83,7 +84,6 @@ unsigned int ppimpl_get_current_line(state_t* state);
 bstring ppimpl_get_current_filename(state_t* state);
 char* ppimpl_get_location(state_t* state);
 void ppimpl_printf(state_t* state, const char* msg, ...);
-void ppimpl_pprintf(state_t* state, size_t index, const char* msg, ...);
 bool ppimpl_isolates(char c, bool at_start);
 void ppimpl_push_scope(state_t* state, bool active);
 void ppimpl_flip_scope(state_t* state);

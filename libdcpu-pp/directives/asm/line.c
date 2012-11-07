@@ -12,7 +12,7 @@ static void line_handle(state_t* state, match_t* match, bool* reprocess)
     if (list_size(result) == 2 &&
             ((parameter_t*)list_get_at(result, 0))->type == NUMBER &&
             (((parameter_t*)list_get_at(result, 1))->type == STRING ||
-             ((parameter_t*)list_get_at(result, 1))->type == WORD))
+             ((parameter_t*)list_get_at(result, 1))->type == _WORD))
     {
         // Correct format.
         ppimpl_printf(state, "# %i %s\n",
@@ -39,7 +39,7 @@ static void uline_handle(state_t* state, match_t* match, bool* reprocess)
     if (list_size(result) == 2 &&
             ((parameter_t*)list_get_at(result, 0))->type == NUMBER &&
             (((parameter_t*)list_get_at(result, 1))->type == STRING ||
-             ((parameter_t*)list_get_at(result, 1))->type == WORD))
+             ((parameter_t*)list_get_at(result, 1))->type == _WORD))
     {
         // Correct format.
         ppimpl_printf(state, "#U %i %s\n",

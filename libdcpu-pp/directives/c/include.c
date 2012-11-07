@@ -13,7 +13,6 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
     BFILE* file;
     list_t* result = ppparam_get(state);
     char* store = malloc(1);
-    size_t pos = 0;
     size_t diff = 0;
 
     // Ensure the parameter format is correct.
@@ -44,7 +43,7 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
         while (!bfeof(file))
         {
             bfread(store, 1, 1, file);
-            ppimpl_pprintf(state, pos++, "%c", store[0]);
+            ppimpl_printf(state, "%c", store[0]);
         }
         ppimpl_printf(state, "\n# %i %s\n", 0, path->data);
 

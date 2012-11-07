@@ -26,6 +26,7 @@ add_library(libdcpu-pp ${LIBRARY_FORMAT}
     directives/asm/include.c
     directives/asm/define.c
     directives/asm/expr.c
+    directives/asm/lua.c
     directives/c.h
     directives/c.c
     directives/c/line.c

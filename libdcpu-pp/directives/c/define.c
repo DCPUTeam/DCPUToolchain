@@ -213,6 +213,14 @@ static void define_handle(state_t* state, match_t* match, bool* reprocess)
         }
         else if (blength(word) == 0 && c == '\n')
             dhalt(ERR_PP_C_DEFINE_PARAMETERS_INCORRECT, ppimpl_get_location(state));
+        else if (blength(word) > 0 && c == '\n')
+        {
+            // Empty definition.
+            btrimws(word);
+            btrimws(name);
+            getting_word = false;
+            getting_definition = false;
+        }
     }
 
     // Get the definition.

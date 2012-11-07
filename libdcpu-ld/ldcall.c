@@ -1,5 +1,5 @@
 ///
-/// @addtogroup LibDCPU-LD-Call
+/// @addtogroup LibDCPU-LD
 /// @{
 ///
 /// @file

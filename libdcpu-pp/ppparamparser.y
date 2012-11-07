@@ -24,7 +24,7 @@ extern list_t* ppparam_output;
 %token <token> ADD SUBTRACT MULTIPLY DIVIDE MODULUS EQUALS NOT_EQUALS LESS_THAN LESS_EQUALS GREATER_THAN GREATER_EQUALS
 %token <token> PAREN_OPEN PAREN_CLOSE BITWISE_AND BITWISE_BOR BITWISE_XOR BITWISE_NOT BOOLEAN_OR BOOLEAN_AND BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
 %token <token> EXPRESSION
-%token <string> STRING ANGLED_STRING WORD
+%token <string> STRING ANGLED_STRING _WORD
 %token <number> NUMBER
 
 // Start at the parameters node.
@@ -53,10 +53,10 @@ parameters:
         } ;
 
 parameter:
-        WORD
+        _WORD
         {
             $$ = malloc(sizeof(parameter_t));
-            $$->type = WORD;
+            $$->type = _WORD;
             $$->string = $1;
             assert($1 != NULL);
         } |
@@ -92,7 +92,7 @@ expr:
 		{
 			$$ = expr_new_number($1);
 		} |
-		WORD
+		_WORD
 		{
 			$$ = expr_new_label(bautofree($1));
 		} |
@@ -205,7 +205,7 @@ void ppparam_free(list_t* result)
         // Free parameter data.
         switch (param->type)
         {
-        case WORD:
+        case _WORD:
         case STRING:
         case ANGLED_STRING:
             bdestroy(param->string);

@@ -104,47 +104,11 @@ void ppimpl_printf(state_t* state, const char* fmt, ...)
     vsnprintf(store, count, fmt, argptr);
 #endif
     va_end(argptr);
-    for (i = count - 1; i >= 0; i--)
+    for (i = 0; i < count; i++)
     {
         if (store[i] == '\0')
             continue;
-        list_insert_at(&state->cached_input, (void*)store[i], 0);
-    }
-    free(store);
-}
-
-///
-/// Prints a formatted string at the specified index in the input cache.
-///
-void ppimpl_pprintf(state_t* state, size_t index, const char* fmt, ...)
-{
-    char* store;
-    int count, i;
-    va_list argptr;
-#ifndef WIN32
-    va_list argptrc;
-#endif
-    va_start(argptr, fmt);
-#ifndef WIN32
-    va_copy(argptrc, argptr);
-#endif
-    count = vsnprintf(NULL, 0, fmt, argptr);
-#ifndef WIN32
-    count++;
-#endif
-    store = malloc(count + 1);
-    memset(store, '\0', count + 1);
-#ifndef WIN32
-    vsnprintf(store, count, fmt, argptrc);
-#else
-    vsnprintf(store, count, fmt, argptr);
-#endif
-    va_end(argptr);
-    for (i = count - 1; i >= 0; i--)
-    {
-        if (store[i] == '\0')
-            continue;
-        list_insert_at(&state->cached_input, (void*)store[i], index);
+        list_insert_at(&state->cached_input, (void*)store[i], state->print_index++);
     }
     free(store);
 }
@@ -397,6 +361,9 @@ void ppimpl_process(state_t* state)
                                       list_size(&state->cached_output) - blength(m->text.ref),
                                       list_size(&state->cached_output) - 1);
 
+                    // Reset the printing index.
+                    state->print_index = 0;
+
                     // Call the match handler.
                     m->handler(state, m, &reprocess);
                     if (reprocess)
@@ -574,7 +541,8 @@ void ppimpl(freed_bstring filename, int line, freed_bstring lang, has_t has_inpu
         ppimpl_asm_expr_register(&state);
         ppimpl_asm_define_register(&state);
         ppimpl_asm_include_register(&state);
-	ppimpl_asm_init(&state);
+        ppimpl_asm_lua_register(&state);
+        ppimpl_asm_init(&state);
     }
     else if (biseqcstrcaseless(lang.ref, "c"))
     {

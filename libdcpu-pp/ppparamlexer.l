@@ -70,7 +70,7 @@ extern state_t* ppparam_current;
 
     /* String and character analysis */
 
-[A-Za-z_]+[A-Za-z0-9_]*         ppparamlval.string = bfromcstr(yytext); assert(ppparamlval.string != NULL); return WORD;
+[A-Za-z_]+[A-Za-z0-9_]*         ppparamlval.string = bfromcstr(yytext); assert(ppparamlval.string != NULL); return _WORD;
 0x[0-9A-Fa-f]+                  ppparamlval.number = strtoul(yytext, NULL, 16); return NUMBER;
 [1-9]+[0-9]*                    ppparamlval.number = strtoul(yytext, NULL, 10); return NUMBER;
 0[0-7]*                         ppparamlval.number = strtoul(yytext, NULL, 8); return NUMBER;
