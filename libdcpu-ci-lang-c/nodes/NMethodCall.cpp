@@ -34,7 +34,7 @@ AsmBlock* NMethodCall::compile(AsmGenerator& context)
     //  this here has to be exactly reverse to the order in the
     //  parameter stack frame and thus the TypePosition
     uint16_t callerVarArgsStackSize = 0;
-    for (size_t i = this->arguments.size() - 1; i >= 0; --i)
+    for (int i = (int) this->arguments.size() - 1; i >= 0; --i)
     {
         // Compile the expression.
         AsmBlock* inst = this->arguments[i]->compile(context);
