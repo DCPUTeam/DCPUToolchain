@@ -14,6 +14,8 @@
 #ifndef __STDLIB_STRING_H
 #define __STDLIB_STRING_H
 
+#include "stdint.h"
+
 #ifndef size_t
 #define size_t uint16_t
 #endif
