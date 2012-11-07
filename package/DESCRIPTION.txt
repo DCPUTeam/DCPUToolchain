@@ -1,0 +1,7 @@
+Website: http://dcputoolcha.in/
+
+0x10c is Notch's new game. The most important aspect of this game is that it contains a programmable CPU, known as the DCPU-16 which allows players to programmatically control every aspect of their ship.
+
+The DCPU-16 Toolchain is a project with the aim to provide the best set of tools for developing applications on the DCPU.
+
+In addition, as Notch has stated that he expects malicious code to be a part of the game, we feel as though it is very important that players are able to analyise the code produced by the tools they are using, as well as view the code that generates the resultant bytecode. This is one of the reasons why the DCPU-16 Toolchain is entirely open-source, available under an MIT license.

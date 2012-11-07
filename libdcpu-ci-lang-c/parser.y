@@ -227,9 +227,19 @@ func_decl:
             $$ = new NFunctionDeclaration($1, *$2, VariableList(), NULL, false);
             //delete $4;
         } |
+        type ident CURVED_OPEN TYPE_VOID CURVED_CLOSE SEMICOLON
+        {
+            $$ = new NFunctionDeclaration($1, *$2, VariableList(), NULL, false);
+            //delete $4;
+        } |
         type ident CURVED_OPEN CURVED_CLOSE block
         {
             $$ = new NFunctionDeclaration($1, *$2, VariableList(), $5, false);
+            //delete $4;
+        } |
+        type ident CURVED_OPEN TYPE_VOID CURVED_CLOSE block
+        {
+            $$ = new NFunctionDeclaration($1, *$2, VariableList(), $6, false);
             //delete $4;
         } |
         /* functions with arguments */

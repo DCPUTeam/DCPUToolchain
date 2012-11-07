@@ -303,6 +303,7 @@ void DCPUToolchain::Cycle()
 
 void DCPUToolchain::Step()
 {
+    vm->sleep_cycles = 0;
     cycle_emulation();
 }
 
