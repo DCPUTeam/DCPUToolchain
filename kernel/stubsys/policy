@@ -3,6 +3,8 @@ defaults
     kernel=@KERNEL_FOLDER@/stubsys.dkrn16
     jumplist=@KERNEL_FOLDER@/stubsys.djmp16
     symbols=@KERNEL_FOLDER@/stubsys.dsym16
+    direct-default=true
+    direct-target=image-direct
 }
 
 format(image):
