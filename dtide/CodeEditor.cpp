@@ -77,6 +77,7 @@ void CodeEditor::handleMarginClick(int margin, int line, Qt::KeyboardModifiers k
 void CodeEditor::highlightLine(int line)
 {
     markerDeleteAll(LINE_BG);
+    ensureLineVisible(line);
     markerAdd(line - 1, LINE_BG);
 }
 
