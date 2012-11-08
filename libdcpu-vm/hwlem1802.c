@@ -298,7 +298,23 @@ void vm_hw_lem1802_update_texture(struct lem1802_hardware* hw)
     }
     else
     {
-        // TODO blank/disconnected screen !?
+        if (hw->screen_was_updated)
+        {
+            for (i = 0; i < HW_LEM1802_SCREEN_TEXTURE_MEM_SIZE; i++)
+            {
+                hw->glfw_texture[i] = 0;
+
+            }
+            hw->screen_was_updated = 0;
+            hw->texture_has_changed = 1;
+        }
+        
+        if (hw->border_was_updated)
+        {
+            vm_hw_lem1802_mem_draw_border(hw);
+            hw->border_was_updated = 0;
+            hw->texture_has_changed = 1;
+        }
     }
 }
 
@@ -338,7 +354,7 @@ void vm_hw_lem1802_init(vm_t* vm)
     hw->break_hook = vm_hook_register(vm, &vm_hw_lem1802_break, HOOK_ON_BREAK, hw);
     hw->hw_id = vm_hw_register(vm, hw->device);
 
-    hw->glfw_texture = malloc(sizeof(unsigned char) * 3 * HW_LEM1802_SCREEN_TEXTURE_HEIGHT * HW_LEM1802_SCREEN_TEXTURE_WIDTH);
+    hw->glfw_texture = malloc(HW_LEM1802_SCREEN_TEXTURE_MEM_SIZE);
 
     // Initialize the memory for LEM1802.
     vm_hw_lem1802_mem_init(hw);
