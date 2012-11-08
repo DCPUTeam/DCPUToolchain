@@ -93,6 +93,9 @@ int main(int argc, char* argv[])
     // failure, we won't return incorrectly.
     unlink(actual_file->filename[0]);
 
+    // Do not attempt to link against a kernel in the test suite.
+    bcatcstr(ldargs, "-k none ");
+    
     // Output option.
     bcatcstr(ldargs, "-o \"");
     bcatcstr(ldargs, actual_file->filename[0]);

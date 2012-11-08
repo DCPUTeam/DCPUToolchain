@@ -22,18 +22,18 @@
 static BFILE* _in_file = NULL;
 static BFILE* _out_file = NULL;
 
-static bool _has_input()
+static bool _has_input(void* userdata)
 {
     return !bfeof(_in_file);
 }
 
-static char _input()
+static char _input(void* userdata)
 {
     char c = (char)bfgetc(_in_file);
     return c;
 }
 
-static void _output(char c)
+static void _output(void* userdata, char c)
 {
     bfputc(c, _out_file);
 }
@@ -97,7 +97,7 @@ bstring pp_do(freed_bstring lang, freed_bstring path)
     */
 
     // Now invoke the preprocessor's lexer and parser.
-    ppimpl(bautocpy(path.ref), 0, lang, _has_input, _input, _output);
+    ppimpl(bautocpy(path.ref), 1, lang, _has_input, _input, _output, NULL);
 
     // Now do some cleanup.
     if (!biseq(path.ref, bfromcstr("-")))

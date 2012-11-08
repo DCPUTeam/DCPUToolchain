@@ -106,6 +106,10 @@ int main(int argc, char* argv[])
         for (i = 0; i < gen_intermediate->count; i++) bconchar(ldargs, 'i');
         bconchar(ldargs, ' ');
     }
+    else
+    {
+        bcatcstr(ldargs, "--binary "); 
+    }
     if (little_endian_mode->count > 0)
     {
         for (i = 0; i < little_endian_mode->count; i++)

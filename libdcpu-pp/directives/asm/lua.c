@@ -66,8 +66,9 @@ static void lua_handle_wrapper(state_t* state, match_t* match, bool* reprocess)
 {
     list_t* parameters = ppparam_get(state);
     pp_lua_handle(&lstate, NULL, bstrcpy(match->userdata), parameters);
-    list_destroy(parameters);
-    free(parameters);
+    // FIXME?
+    //list_destroy(parameters);
+    //free(parameters);
 }
 
 static void lua_handle_wrapper_term(state_t* state, match_t* match, bool* reprocess)
@@ -75,8 +76,9 @@ static void lua_handle_wrapper_term(state_t* state, match_t* match, bool* reproc
     list_t* parameters = malloc(sizeof(list_t));
     list_init(parameters);
     pp_lua_handle(&lstate, NULL, bstrcpy(match->userdata), parameters);
-    list_destroy(parameters);
-    free(parameters);
+    // FIXME?
+    //list_destroy(parameters);
+    //free(parameters);
 }
 
 int pp_lua_add_preprocessor_directive(lua_State* L)

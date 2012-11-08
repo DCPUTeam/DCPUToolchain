@@ -87,6 +87,9 @@ int main(int argc, char* argv[])
     bconchar(cmdargs, '"');
     bconchar(cmdargs, ' ');
 
+    // Binary mode.
+    bcatcstr(cmdargs, "--binary ");
+    
     // Symbols file.
     bcatcstr(cmdargs, "-s \"");
     bcatcstr(cmdargs, file_sym);
@@ -114,6 +117,7 @@ int main(int argc, char* argv[])
     if (result != 0)
     {
         // Assembler returned error exit code.
+        printd(LEVEL_ERROR, "command run was: %s\n", cmdargs->data);
         printd(LEVEL_ERROR, "error: unable to assemble unit test (assembler returned non-zero exit code '%i').\n", result >> 8);
         return 1;
     }

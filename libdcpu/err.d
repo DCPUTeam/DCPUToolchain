@@ -52,6 +52,8 @@ ERR_CALL_CONVENTION_AMBIGIOUS                        call-convention-ambigious  
 ERR_CALL_CONVENTION_MISSING                          call-convention-missing                "the kernel policy does not specify either a jumplist or interrupt mappings and thus the calling convention is unknown for the use of .CALL"
 ERR_CALL_CONVENTION_UNKNOWN                          call-convention-unknown                "the interrupt calling convention specified in the kernel policy was not recognised by the linker and thus the calling convention is unknown for the use of .CALL"
 ERR_CALL_MISSING_INTERRUPT_PARAMETERS                call-missing-interrupt-parameters      "the interrupt calling convention specified in the kernel is missing either interrupt-call() or interrupt-size() for '%s' and thus the required code can not be determined."
+ERR_JUMPLIST_WITHOUT_KERNEL                          jumplist-without-kernel                "you must be linking in kernel mode (-l kernel) in order to use the --jumplist parameter."
+ERR_POLICY_WITH_KERNEL                               policy-with-kernel                     "you can not use the policy (-p) option when linking in kernel mode as it has no use."
 
 WARN_SKIPPING_SHORT_LITERALS_TYPE                    short-literals-skipped-type            "skipped short literal compression due to target type."
 WARN_SKIPPING_SHORT_LITERALS_REQUEST                 short-literals-skipped-request         "skipped short literal compression on request."

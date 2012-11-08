@@ -36,15 +36,18 @@ typedef struct
 ///
 typedef struct
 {
+    void* userdata; ///< The userdata associated with the preprocessor state.
     list_t cached_input;
     list_t cached_output;
     has_t has_input;
     pop_t input;
     push_t output;
     list_t handlers;
+    unsigned int actual_line;
     unsigned int current_line;
     bstring current_filename;
     bstring default_filename;
+    bstring language;
     bool in_single_string;
     bool in_double_string;
     list_t scopes;
@@ -83,11 +86,16 @@ char ppimpl_get_input(state_t* state);
 unsigned int ppimpl_get_current_line(state_t* state);
 bstring ppimpl_get_current_filename(state_t* state);
 char* ppimpl_get_location(state_t* state);
+void ppimpl_oprintf(state_t* state, const char* fmt, ...);
+void ppimpl_iprintf(state_t* state, const char* fmt, ...);
 void ppimpl_printf(state_t* state, const char* msg, ...);
 bool ppimpl_isolates(char c, bool at_start);
+void ppimpl_process(state_t* state);
 void ppimpl_push_scope(state_t* state, bool active);
 void ppimpl_flip_scope(state_t* state);
 void ppimpl_pop_scope(state_t* state);
 void ppimpl_register(state_t* state, match_t* match);
+state_t* ppimpl_new(freed_bstring filename, int line, freed_bstring lang, has_t has_input, pop_t input, push_t output, void* userdata);
+void ppimpl_free(state_t* state);
 
 #endif

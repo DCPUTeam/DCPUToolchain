@@ -144,6 +144,13 @@ int main(int argc, char* argv[])
         else
             target = IMAGE_APPLICATION;
     }
+    
+    // If the jumplist parameter is being used, we must be linking
+    // in kernel mode.
+    if (jumplist_file->count > 0 && target != IMAGE_KERNEL)
+        dhalt(ERR_JUMPLIST_WITHOUT_KERNEL, NULL);
+    else if (target == IMAGE_KERNEL && policy_file->count > 0)
+        dhalt(ERR_POLICY_WITH_KERNEL, NULL);
 
     // If this is an application, we need to handle linker policies.
     if (target == IMAGE_APPLICATION)
@@ -250,15 +257,14 @@ int main(int argc, char* argv[])
         dwarn(WARN_SKIPPING_SHORT_LITERALS_TYPE, NULL);
     else
         dwarn(WARN_SKIPPING_SHORT_LITERALS_REQUEST, NULL);
-    if (target == IMAGE_APPLICATION)
+    if (target == IMAGE_APPLICATION && policy_use_kernel)
         bins_resolve_kernel(loaded_policies);
     bins_resolve(
         target == IMAGE_STATIC_LIBRARY,
         target == IMAGE_STATIC_LIBRARY,
         target == IMAGE_STATIC_LIBRARY || target == IMAGE_KERNEL);
-    if (target == IMAGE_APPLICATION)
+    if (target == IMAGE_APPLICATION && policy_use_kernel)
     {
-        assert(policy_path != NULL);
         bins_apply_policy(
             bautofree(policy_path),
             bautocpy(policy_target),
@@ -267,7 +273,7 @@ int main(int argc, char* argv[])
             );
     }
     bins_save(
-        target == IMAGE_APPLICATION ? bautofree(bfromcstr("output_applied")) : bautofree(bfromcstr("output")),
+        (target == IMAGE_APPLICATION && policy_use_kernel) ? bautofree(bfromcstr("output_applied")) : bautofree(bfromcstr("output")),
         bautofree(bfromcstr(output_file->filename[0])),
         target,
         keep_output_arg->count > 0,

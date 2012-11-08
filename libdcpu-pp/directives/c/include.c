@@ -6,6 +6,32 @@
 #include <derr.h>
 #include "../c.h"
 #include "../../ppfind.h"
+#include "../../ppimpl.h"
+
+struct substate
+{
+    state_t* parent;
+    state_t* child;
+    BFILE* input;
+};
+
+static bool include_has(void* userdata)
+{
+    struct substate* ss = userdata;
+    return !bfeof(ss->input);
+}
+
+static char include_pop(void* userdata)
+{
+    struct substate* ss = userdata;
+    return (char)bfgetc(ss->input);
+}
+
+static void include_push(void* userdata, char value)
+{
+    struct substate* ss = userdata;
+    ppimpl_oprintf(ss->parent, "%c", value);
+}
 
 static void include_handle(state_t* state, match_t* match, bool* reprocess)
 {
@@ -13,7 +39,9 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
     BFILE* file;
     list_t* result = ppparam_get(state);
     char* store = malloc(1);
-    size_t diff = 0;
+    struct substate* substate = NULL;
+    list_t old_handlers;
+    list_t old_scopes;
 
     // Ensure the parameter format is correct.
     if (list_size(result) == 1 &&
@@ -28,27 +56,46 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
         if (((parameter_t*)list_get_at(result, 0))->type == ANGLED_STRING ||
             ((parameter_t*)list_get_at(result, 0))->type == STRING)
             path = ppfind_locate(bautocpy(path));
-
-        // If the path is NULL, then the file was not found.
+        
+        // Check that the file was found.
         if (path == NULL)
             dhalt(ERR_PP_C_INCLUDE_FILE_NOT_FOUND, ppimpl_get_location(state));
 
-        // Open the specified file.
-        file = bfopen(path->data, "r");
-        if (file == NULL)
+        // Create the new substate and open file.
+        substate = malloc(sizeof(struct substate));
+        substate->parent = state;
+        substate->input = bfopen(path->data, "r");
+        if (substate->input == NULL)
             dhalt(ERR_PP_C_INCLUDE_FILE_NOT_FOUND, ppimpl_get_location(state));
 
-        // Copy the data from the file, byte by byte.
-        ppimpl_printf(state, "\n# %i %s\n", state->current_line, state->current_filename->data);
-        while (!bfeof(file))
-        {
-            bfread(store, 1, 1, file);
-            ppimpl_printf(state, "%c", store[0]);
-        }
-        ppimpl_printf(state, "\n# %i %s\n", 0, path->data);
+        // Create new preprocessor state.
+        substate->child = ppimpl_new(bautofree(path), 1, bautocpy(state->language), include_has, include_pop, include_push, substate);
+        
+        // Switch out the current list references.
+        old_handlers = substate->child->handlers;
+        old_scopes = substate->child->scopes;
+        substate->child->handlers = substate->parent->handlers;
+        substate->child->scopes = substate->parent->scopes;
+        
+        // Perform preprocessing.
+        ppimpl_process(substate->child);
+        
+        // Switch lists back.
+        substate->child->handlers = old_handlers;
+        substate->child->scopes = old_scopes;
+        
+        // Free the child state.
+        ppimpl_free(substate->child);
+        substate->child = NULL;
 
         // Close the file.
-        bfclose(file);
+        bfclose(substate->input);
+        
+        // Output the tracking line.
+        ppimpl_oprintf(state, "# %i %s\n", state->current_line, state->current_filename->data);
+        
+        // Free the substate container.
+        free(substate);
     }
     else
         dhalt(ERR_PP_C_INCLUDE_PARAMETERS_INCORRECT, ppimpl_get_location(state));

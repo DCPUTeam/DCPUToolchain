@@ -84,6 +84,14 @@ bstring ppfind_locate(freed_bstring path)
     // Initialize if needed.
     if (!ppfind_initialized)
         ppfind_init();
+    
+    // If this is an absolute path, return it immediately.
+#ifdef WIN32
+    if (path.ref->data[1] == ':')
+#else
+    if (path.ref->data[0] == '/')
+#endif
+        return path.ref;
 
     // Go through all of the paths in the
     // include list and concatenate the

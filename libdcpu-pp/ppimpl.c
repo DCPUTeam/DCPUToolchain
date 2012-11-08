@@ -19,24 +19,32 @@
 #include "directives/c.h"
 
 ///
-/// Returns whether there is cached or provided input available.
+/// @brief Returns whether there is cached or provided input available.
 ///
 bool ppimpl_has_input(state_t* state)
 {
-    return (list_size(&state->cached_input) > 0 || state->has_input());
+    return (list_size(&state->cached_input) > 0 || state->has_input(state->userdata));
 }
 
 ///
-/// Retrieves a character from either cached or provided input.
+/// @brief Retrieves a character from either cached or provided input.
 ///
 char ppimpl_get_input(state_t* state)
 {
     assert(ppimpl_has_input(state));
     if (list_size(&state->cached_input) > 0)
-        return (char)list_extract_at(&state->cached_input, 0);
+    {
+        char c = (char)list_extract_at(&state->cached_input, 0);
+        
+        // If this is a newline, increment the actual line count.
+        if (c == '\n')
+            state->actual_line += 1;
+        
+        return c;
+    }
     else
     {
-        char c = state->input();
+        char c = state->input(state->userdata);
 
         // If this is a newline, increment the current line count.
         if (c == '\n')
@@ -47,7 +55,7 @@ char ppimpl_get_input(state_t* state)
 }
 
 ///
-/// Retrieves the current line number.
+/// @brief Retrieves the current line number.
 ///
 unsigned int ppimpl_get_current_line(state_t* state)
 {
@@ -55,7 +63,7 @@ unsigned int ppimpl_get_current_line(state_t* state)
 }
 
 ///
-/// Retrieves the current filename, or "<unknown>" if not previously set.
+/// @brief Retrieves the current filename, or "<unknown>" if not previously set.
 ///
 bstring ppimpl_get_current_filename(state_t* state)
 {
@@ -65,6 +73,8 @@ bstring ppimpl_get_current_filename(state_t* state)
         return state->current_filename;
 }
 
+///
+/// @brief Returns the current location as a formatted string.
 ///
 /// Generates a char* that contains location information for use with
 /// warnings or errors.  Since the location string is generated, you
@@ -78,9 +88,47 @@ char* ppimpl_get_location(state_t* state)
 }
 
 ///
-/// Prints a formatted string to the input cache of the current state.
+/// @brief Prints a formatted string to the output cache of the current state.
+/// @internal
 ///
-void ppimpl_printf(state_t* state, const char* fmt, ...)
+void ppimpl_oprintf(state_t* state, const char* fmt, ...)
+{
+    char* store;
+    int count, i;
+    va_list argptr;
+#ifndef WIN32
+    va_list argptrc;
+#endif
+    va_start(argptr, fmt);
+#ifndef WIN32
+    va_copy(argptrc, argptr);
+#endif
+    count = vsnprintf(NULL, 0, fmt, argptr);
+#ifndef WIN32
+    count++;
+#endif
+    store = malloc(count + 1);
+    memset(store, '\0', count + 1);
+#ifndef WIN32
+    vsnprintf(store, count, fmt, argptrc);
+#else
+    vsnprintf(store, count, fmt, argptr);
+#endif
+    va_end(argptr);
+    for (i = 0; i < count; i++)
+    {
+        if (store[i] == '\0')
+            continue;
+        list_insert_at(&state->cached_output, (void*)store[i], list_size(&state->cached_output));
+    }
+    free(store);
+}
+
+///
+/// @brief Prints a formatted string to the input cache of the current state.
+/// @internal
+///
+void ppimpl_iprintf(state_t* state, const char* fmt, ...)
 {
     char* store;
     int count, i;
@@ -114,6 +162,51 @@ void ppimpl_printf(state_t* state, const char* fmt, ...)
 }
 
 ///
+/// @brief Prints a formatted string to the input cache of the current state.
+///
+void ppimpl_printf(state_t* state, const char* fmt, ...)
+{
+    char* store;
+    int count, i;
+    va_list argptr;
+#ifndef WIN32
+    va_list argptrc;
+#endif
+    va_start(argptr, fmt);
+#ifndef WIN32
+    va_copy(argptrc, argptr);
+#endif
+    count = vsnprintf(NULL, 0, fmt, argptr);
+#ifndef WIN32
+    count++;
+#endif
+    store = malloc(count + 1);
+    memset(store, '\0', count + 1);
+#ifndef WIN32
+    vsnprintf(store, count, fmt, argptrc);
+#else
+    vsnprintf(store, count, fmt, argptr);
+#endif
+    va_end(argptr);
+    for (i = 0; i < count; i++)
+    {
+        if (store[i] == '\0')
+            continue;
+        if (store[i] == '\n')
+            state->actual_line++;
+        list_insert_at(&state->cached_input, (void*)store[i], state->print_index++);
+    }
+    if (count > 0 && store[count - 1] == '\n' && state->actual_line != state->current_line)
+    {
+        ppimpl_iprintf(state, "# %i %s", state->current_line, state->current_filename->data);
+        state->actual_line = state->current_line;
+    }
+    free(store);
+}
+
+///
+/// @brief Returns whether the character is an isolating character.
+///
 /// Returns whether the character is considered to isolate
 /// an identifier from it's surroundings.
 ///
@@ -128,6 +221,8 @@ bool ppimpl_isolates(char c, bool at_start)
         return true;
 }
 
+///
+/// @brief Checks to determine whether a match has occurred.
 ///
 /// Checks to see if the current output cache
 /// has a match against a specified match definition.
@@ -231,6 +326,8 @@ bool ppimpl_match_test(state_t* state, match_t* match)
 }
 
 ///
+/// @brief Track the start and end of string characters.
+///
 /// Tracks the last character in the output buffer and
 /// determines whether or not the current context is
 /// inside a string.
@@ -312,21 +409,29 @@ void ppimpl_track_strings(state_t* state)
 }
 
 ///
-/// Performs preprocessing using the internally
-/// constructed state object.
+/// @brief Performs preprocessing using the internally constructed state object.
 ///
 void ppimpl_process(state_t* state)
 {
     char c;
     match_t* m;
     bool reprocess = false;
-    size_t i;
+    size_t i, j;
     scope_t* current;
 
     while (ppimpl_has_input(state))
     {
         // Fetch a character from the input.
         c = ppimpl_get_input(state);
+        
+        // Print out a line correction if needed.
+        if (c == '\n')
+            state->actual_line++;
+        if (c == '\n' && state->actual_line != state->current_line)
+        {
+            ppimpl_oprintf(state, "\n# %i %s", state->current_line, state->current_filename->data);
+            state->actual_line = state->current_line;
+        }
 
         // Push it onto the output.
         list_append(&state->cached_output, (void*)c);
@@ -355,6 +460,14 @@ void ppimpl_process(state_t* state)
                 // Test for a match and if so, handle it.
                 if (ppimpl_match_test(state, m))
                 {
+                    // Check for newlines in the area we're removing.
+                    for (j = list_size(&state->cached_output) - blength(m->text.ref);
+                         j <= list_size(&state->cached_output) - 1; j++)
+                    {
+                        if ((char)list_get_at(&state->cached_output, j) == '\n')
+                            state->actual_line--;
+                    }
+                    
                     // Remove the characters from the cached input
                     // depending on the match text length.
                     list_delete_range(&state->cached_output,
@@ -377,11 +490,11 @@ void ppimpl_process(state_t* state)
     // We have finished processing; everything is stored in the cached output,
     // so now we push everything that was in the cached output.
     while (list_size(&state->cached_output) > 0)
-        state->output((char)list_extract_at(&state->cached_output, 0));
+        state->output(state->userdata, (char)list_extract_at(&state->cached_output, 0));
 }
 
 ///
-/// Pushes a new scope onto the stack.
+/// @brief Pushes a new scope onto the stack.
 ///
 void ppimpl_push_scope(state_t* state, bool active)
 {
@@ -394,7 +507,7 @@ void ppimpl_push_scope(state_t* state, bool active)
 }
 
 ///
-/// Flips the current scope on the stack.
+/// @brief Flips the current scope on the stack.
 ///
 void ppimpl_flip_scope(state_t* state)
 {
@@ -405,8 +518,7 @@ void ppimpl_flip_scope(state_t* state)
 }
 
 ///
-/// Adds a handler inside a scope, dealing with overridding
-/// existing handlers.
+/// @brief Adds a handler inside a scope, dealing with overridding existing handlers.
 ///
 void ppimpl_register(state_t* state, match_t* match)
 {
@@ -444,7 +556,7 @@ void ppimpl_register(state_t* state, match_t* match)
 }
 
 ///
-/// Pops a scope from the stack.
+/// @brief Pops a scope from the stack.
 ///
 void ppimpl_pop_scope(state_t* state)
 {
@@ -512,47 +624,87 @@ void ppimpl_pop_scope(state_t* state)
 #define list_hashcomputer_char_t list_hashcomputer_int8_t
 
 ///
-/// Performs preprocessing.
+/// @brief Creates a new preprocessing state.
 ///
-void ppimpl(freed_bstring filename, int line, freed_bstring lang, has_t has_input, pop_t input, push_t output)
+/// This function should only be used when you want to customize
+/// the state before preprocessing is actually done.
+///
+state_t* ppimpl_new(freed_bstring filename, int line, freed_bstring lang, has_t has_input, pop_t input, push_t output, void* userdata)
 {
-    state_t state;
-    list_init(&state.cached_input);
-    list_init(&state.cached_output);
-    list_init(&state.handlers);
-    list_init(&state.scopes);
-    list_attributes_comparator(&state.cached_input, list_comparator_char_t);
-    list_attributes_comparator(&state.cached_output, list_comparator_char_t);
-    list_attributes_copy(&state.cached_input, list_meter_char_t, false);
-    list_attributes_copy(&state.cached_output, list_meter_char_t, false);
-    list_attributes_hash_computer(&state.cached_input, list_hashcomputer_char_t);
-    list_attributes_hash_computer(&state.cached_output, list_hashcomputer_char_t);
-    state.has_input = has_input;
-    state.input = input;
-    state.output = output;
-    state.current_line = line;
-    state.current_filename = bstrcpy(filename.ref);
-    state.default_filename = bfromcstr("<unknown>");
-    state.in_single_string = false;
-    state.in_double_string = false;
+    state_t* state = malloc(sizeof(state_t));
+    list_init(&state->cached_input);
+    list_init(&state->cached_output);
+    list_init(&state->handlers);
+    list_init(&state->scopes);
+    list_attributes_comparator(&state->cached_input, list_comparator_char_t);
+    list_attributes_comparator(&state->cached_output, list_comparator_char_t);
+    list_attributes_copy(&state->cached_input, list_meter_char_t, false);
+    list_attributes_copy(&state->cached_output, list_meter_char_t, false);
+    list_attributes_hash_computer(&state->cached_input, list_hashcomputer_char_t);
+    list_attributes_hash_computer(&state->cached_output, list_hashcomputer_char_t);
+    state->userdata = userdata;
+    state->has_input = has_input;
+    state->input = input;
+    state->output = output;
+    if (line <= 0)
+        line = 1;
+    state->actual_line = line - 1;
+    state->current_line = line;
+    state->current_filename = filename.ref;
+    state->default_filename = bfromcstr("<unknown>");
+    state->language = lang.ref;
+    state->in_single_string = false;
+    state->in_double_string = false;
     if (biseqcstrcaseless(lang.ref, "asm"))
     {
-        ppimpl_asm_line_register(&state);
-        ppimpl_asm_expr_register(&state);
-        ppimpl_asm_define_register(&state);
-        ppimpl_asm_include_register(&state);
-        ppimpl_asm_lua_register(&state);
-        ppimpl_asm_init(&state);
+        ppimpl_asm_line_register(state);
+        ppimpl_asm_expr_register(state);
+        ppimpl_asm_define_register(state);
+        ppimpl_asm_include_register(state);
+        ppimpl_asm_lua_register(state);
+        ppimpl_asm_init(state);
     }
     else if (biseqcstrcaseless(lang.ref, "c"))
     {
-        ppimpl_c_line_register(&state);
-        ppimpl_c_expr_register(&state);
-        ppimpl_c_define_register(&state);
-        ppimpl_c_include_register(&state);
-        ppimpl_c_init(&state);
+        ppimpl_c_line_register(state);
+        ppimpl_c_expr_register(state);
+        ppimpl_c_define_register(state);
+        ppimpl_c_include_register(state);
+        ppimpl_c_init(state);
     }
-    ppimpl_process(&state);
-    bautodestroy(lang);
-    bautodestroy(filename);
+    ppimpl_oprintf(state, "# %i %s\n", state->current_line, state->current_filename->data);
+    return state;
+}
+
+///
+/// @brief Frees a preprocessor state.
+///
+/// @param state The state to free.
+///
+void ppimpl_free(state_t* state)
+{
+    // FIXME: Free structures inside the state as well.
+    if (state->current_filename != NULL)
+        bdestroy(state->current_filename);
+    if (state->language != NULL)
+        bdestroy(state->language);
+    free(state);
+}
+
+///
+/// @brief Performs preprocessing.
+///
+/// @param filename The filename of the input source.
+/// @param line The starting line number (must be >= 1).
+/// @param lang The language that is being preprocessed.
+/// @param has_input The has input (has_t) callback.
+/// @param input The input (pop_t) callback.
+/// @param output The output (push_t) callback.
+/// @param userdata The userdata to associate with the preprocessor state.
+///
+void ppimpl(freed_bstring filename, int line, freed_bstring lang, has_t has_input, pop_t input, push_t output, void* userdata)
+{
+    state_t* state = ppimpl_new(filename, line, lang, has_input, input, output, userdata);
+    ppimpl_process(state);
+    ppimpl_free(state);
 }

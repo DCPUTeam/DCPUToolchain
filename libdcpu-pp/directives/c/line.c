@@ -15,7 +15,7 @@ static void line_handle(state_t* state, match_t* match, bool* reprocess)
              ((parameter_t*)list_get_at(result, 1))->type == _WORD))
     {
         // Correct format.
-        ppimpl_printf(state, ".ULINE %i \"%s\"\n",
+        ppimpl_printf(state, "# %i \"%s\"\n",
                       ((parameter_t*)list_get_at(result, 0))->number,
                       ((parameter_t*)list_get_at(result, 1))->string->data);
 

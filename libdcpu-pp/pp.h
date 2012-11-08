@@ -18,10 +18,30 @@
 #include <dcpu.h>
 #include <bstring.h>
 
-typedef bool(*has_t)();
-typedef char(*pop_t)();
-typedef void(*push_t)(char);
+///
+/// @brief The callback when the preprocessor checks to see if there is more input.
+///
+/// @param userdata The userdata associated with the preprocessor state.
+/// @return Whether there is another character available.
+///
+typedef bool(*has_t)(void* userdata);
 
-void ppimpl(freed_bstring filename, int line, freed_bstring lang, has_t has_input, pop_t input, push_t output);
+///
+/// @brief The callback when the preprocessor wants to recieve another character.
+///
+/// @param userdata The userdata associated with the preprocessor state.
+/// @return The next character in the input.
+///
+typedef char(*pop_t)(void* userdata);
+
+///
+/// @brief The callback when the preprocessor is outputting a result character.
+///
+/// @param userdata The userdata associated with the preprocessor state.
+/// @param char The character the preprocessor wants to output.
+///
+typedef void(*push_t)(void* userdata, char value);
+
+void ppimpl(freed_bstring filename, int line, freed_bstring lang, has_t has_input, pop_t input, push_t output, void* userdata);
 
 #endif

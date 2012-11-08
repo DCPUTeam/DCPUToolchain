@@ -197,6 +197,14 @@ static void define_handle(state_t* state, match_t* match, bool* reprocess)
         }
         else if (blength(word) == 0 && c == '\n')
             dhalt(ERR_PP_ASM_DEFINE_PARAMETERS_INCORRECT, ppimpl_get_location(state));
+        else if (blength(word) > 0 && c == '\n')
+        {
+            // End of word.
+            btrimws(word);
+            getting_word = false;
+            getting_definition = false;
+            ppimpl_printf(state, "\n");
+        }
     }
 
     // Get the definition.
@@ -213,6 +221,7 @@ static void define_handle(state_t* state, match_t* match, bool* reprocess)
                 // End of definition.
                 btrimws(definition);
                 getting_definition = false;
+                ppimpl_printf(state, "\n");
             }
         }
         else if (blength(definition) == 0 && c == '\n')
@@ -220,6 +229,7 @@ static void define_handle(state_t* state, match_t* match, bool* reprocess)
             // By default, replace with 1.
             bassigncstr(definition, "1");
             getting_definition = false;
+            ppimpl_printf(state, "\n");
         }
     }
 
