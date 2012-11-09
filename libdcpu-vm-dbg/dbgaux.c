@@ -791,7 +791,10 @@ void ddbg_disassemble_default()
     // The parser can't access the VM instance, so we use
     // this function to default to printing the assembly
     // around the current instruction.
-    ddbg_disassemble(max_int32((int32_t)vm->pc - 10, 0x0), min_int32((int32_t)vm->pc + 10, 0x10000) - vm->pc);
+    int32_t from, diff;
+    from = max_int32((int32_t)vm->pc - 10, 0x0);
+    diff = min_int32((int32_t)vm->pc - from + 10, 0x10000);
+    ddbg_disassemble(from, diff);
 }
 
 void ddbg_disassemble(int start, int difference)
