@@ -37,7 +37,7 @@ void NStructureResolutionOperator::initStructType(AsmGenerator& context)
         if (!lhsType->isStruct())
             throw new CompilerException(this->line, this->file, "Unable to use AST node " + this->lhs.cType + " as part of the structure resolution operator; the resulting type is not a structure.");
 
-        this->m_structType = this->m_structType = (TStruct*) lhsType;
+        this->m_structType = (TStruct*) lhsType;
         this->m_structType->initContext(context);
     }
 }
