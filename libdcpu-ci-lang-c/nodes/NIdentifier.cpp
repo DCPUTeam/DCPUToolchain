@@ -17,6 +17,7 @@
 #include "NType.h"
 #include <derr.defs.h>
 #include <iostream>
+#include "TInt16.h"
 
 AsmBlock* NIdentifier::compile(AsmGenerator& context)
 {
@@ -74,7 +75,8 @@ IType* NIdentifier::getExpressionType(AsmGenerator& context)
     if (type == NULL)
     {
         context.errorList.addError(this->line, this->file, ERR_CC_VARIABLE_NOT_IN_SCOPE, this->name);
-        return NULL;
+        // return some void type (we need a class called "unknown type")
+        return new TInt16("void");
     }
     else
     {
