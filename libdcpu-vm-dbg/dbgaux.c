@@ -801,6 +801,10 @@ void ddbg_disassemble(int start, int difference)
 {
     int i = 0;
     unsigned int ii = 0;
+    int longest_label = 0;
+    int cur_length;
+    char strbuffer[512]; // 256 is maximum label size
+    char formatbuf[64];
     bool found = false;
     struct inst inst;
     struct dbg_sym* sym;
@@ -821,6 +825,7 @@ void ddbg_disassemble(int start, int difference)
         // Show symbols.
         if (symbols != NULL)
         {
+            found = false;
             for (ii = 0; ii < list_size(symbols); ii++)
             {
                 sym = list_get_at(symbols, ii);
@@ -830,35 +835,89 @@ void ddbg_disassemble(int start, int difference)
                         payload_line = (struct dbg_sym_payload_line*)sym->payload;
                         if (payload_line->address == start + i)
                         {
+                            cur_length = sprintf(strbuffer, " (%s:%d):", payload_line->path->data, payload_line->lineno);
+                            if (cur_length > longest_label)
+                                longest_label = cur_length;
                             found = true;
-                            printd(LEVEL_DEFAULT, "0x%04X (0x%04X) (%s:%d):\n", start + i, vm->ram[start + i], payload_line->path->data, payload_line->lineno);
-
                         }
                         break;
                     case DBGFMT_SYMBOL_LABEL:
                         payload_label = (struct dbg_sym_payload_label*)sym->payload;
                         if (payload_label->address == start + i)
                         {
+                            cur_length = sprintf(strbuffer, " (%s):", payload_line->path->data);
+                            if (cur_length > longest_label)
+                                longest_label = cur_length;
                             found = true;
-                            printd(LEVEL_DEFAULT, "0x%04X (0x%04X) (%s):\n", start + i, vm->ram[start + i], payload_label->label->data);
+                        }
+                        break;
+                }
+            }
+        }
+        inst = vm_disassemble(vm, start + i, true);
+        i += inst.size;
+    }
+
+    i = 0;
+    while (i < difference)
+    {
+        // Show symbols.
+        if (symbols != NULL)
+        {
+            found = false;
+            for (ii = 0; ii < list_size(symbols); ii++)
+            {
+                sym = list_get_at(symbols, ii);
+                switch (sym->type)
+                {
+                    case DBGFMT_SYMBOL_LINE:
+                        payload_line = (struct dbg_sym_payload_line*)sym->payload;
+                        if (payload_line->address == start + i)
+                        {
+                            if (found)
+                                // there already was another label
+                                printd(LEVEL_DEFAULT, "\n");
+                            sprintf(strbuffer, "0x%04X (0x%04X) (%s:%d):", start + i, vm->ram[start + i], payload_line->path->data, payload_line->lineno);
+                            sprintf(formatbuf, "%%-%ds", longest_label+15);
+                            printd(LEVEL_DEFAULT, formatbuf, strbuffer);
+                            found = true;
+                        }
+                        break;
+                    case DBGFMT_SYMBOL_LABEL:
+                        payload_label = (struct dbg_sym_payload_label*)sym->payload;
+                        if (payload_label->address == start + i)
+                        {
+                            if (found)
+                                // there already was another label
+                                printd(LEVEL_DEFAULT, "\n");
+                            sprintf(strbuffer, "0x%04X (0x%04X) (%s):", start + i, vm->ram[start + i], payload_label->label->data);
+                            sprintf(formatbuf, "%%-%ds", longest_label+15);
+                            printd(LEVEL_DEFAULT, formatbuf, strbuffer);
+                            found = true;
 
                         }
                         break;
                 }
             }
-            if (!found) printd(LEVEL_DEFAULT, "0x%04X (0x%04X):\n", start + i, vm->ram[start + i]);
+            if (!found)
+            {
+                sprintf(strbuffer, "0x%04X (0x%04X):", start + i, vm->ram[start + i]);
+                sprintf(formatbuf, "%%-%ds", longest_label+15);
+                printd(LEVEL_DEFAULT, formatbuf, strbuffer);
+            }
         }
         else
-            printd(LEVEL_DEFAULT, "0x%04X (0x%04X): ", start + i, vm->ram[start + i]);
+            // here we have no labels at all, so no padding needed
+            printd(LEVEL_DEFAULT, "0x%04X (0x%04X):", start + i, vm->ram[start + i]);
 
         // Disassemble.
         inst = vm_disassemble(vm, start + i, true);
-        if (symbols != NULL)
-            printd(LEVEL_DEFAULT, "    ");
+        
         if (vm->pc == start + i)
             printd(LEVEL_DEFAULT, " >>> ");
         else
             printd(LEVEL_DEFAULT, "     ");
+        
         if (inst.original.full == 0x0)
             printd(LEVEL_DEFAULT, "<null>\n");
         else if (inst.pretty.op == NULL)
