@@ -75,6 +75,8 @@ cotire(libdcpu-vm)
 
 if(${DEPLOYABLE})
     target_link_libraries(libdcpu-vm
+        lua
+        libdcpu-pp-expr
         z
         png
         glfw

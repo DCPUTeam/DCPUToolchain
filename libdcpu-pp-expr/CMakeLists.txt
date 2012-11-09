@@ -27,6 +27,8 @@ include_directories(
     ${FLEX_UNISTD_INCLUDE}
 )
 target_link_libraries(libdcpu-pp-expr
+    bstring
+    libdcpu
     lua
     simclist
 )

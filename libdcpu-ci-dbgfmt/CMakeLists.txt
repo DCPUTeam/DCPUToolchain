@@ -14,6 +14,12 @@ set_target_properties(libdcpu-ci-dbgfmt PROPERTIES PREFIX "")
 cotire(libdcpu-ci-dbgfmt)
 
 if(${DEPLOYABLE})
+    target_link_libraries(libdcpu-ci-dbgfmt
+        libdcpu-vm
+        bstring
+        simclist
+   )
+       
     install(TARGETS libdcpu-ci-dbgfmt
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib

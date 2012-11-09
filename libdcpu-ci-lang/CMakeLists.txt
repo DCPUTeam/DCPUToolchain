@@ -39,6 +39,9 @@ set_target_properties(libdcpu-ci-lang PROPERTIES PREFIX "")
 cotire(libdcpu-ci-lang)
 
 if(${DEPLOYABLE})
+    target_link_libraries(libdcpu-ci-lang
+        libdcpu
+    )
     install(TARGETS libdcpu-ci-lang
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib

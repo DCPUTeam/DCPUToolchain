@@ -31,7 +31,7 @@ void rparse_do(char* yytext, int* out_line, bstring* out_filename)
     bstring file = bmidstr(str, secondSpace + 1, blength(str) - secondSpace);
 
     // Convert the line number and trim file name.
-    int line = strtoul((const char*)bline->data, NULL, 10);
+    int line = strtoul((const char*)bline->data, NULL, 10) - 1;
     btrimws(file);
 
     // Set variables.

@@ -17,6 +17,9 @@ set_target_properties(libdcpu-ci-objfmt PROPERTIES PREFIX "")
 cotire(libdcpu-ci-objfmt)
 
 if(${DEPLOYABLE})
+    target_link_libraries(libdcpu-ci-objfmt
+        libdcpu
+    )
     install(TARGETS libdcpu-ci-objfmt
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
