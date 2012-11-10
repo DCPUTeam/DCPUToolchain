@@ -237,7 +237,13 @@ public:
     virtual void AddBreakpoint(uint16_t address) = 0;
     bool BreakpointAt(uint16_t address);
 
+    // Current line
+    virtual void SetCurrentLine(Line l);
+    virtual Line GetLine();
+
+
 protected:
+    Line m_CurrentLine;
     std::deque<DebuggingMessage> m_Queue;
     std::list<uint16_t> m_BreakList;
 };
@@ -296,7 +302,6 @@ public:
     virtual void Cycle() = 0;
     virtual void Step() = 0;
     virtual void SendStatus() = 0;
-    virtual void PostBatchHook() = 0;
 
     // Configuration interface.
     //virtual std::list<ConfigurationOption> GetOptions() = 0;
@@ -328,6 +333,9 @@ public:
     //virtual std::list<Device&> GetCustomDevices() = 0;
     DTIDEGLWidgets* gl;
 
+    virtual bool IsPaused();
+protected:
+    bool paused;
 };
 
 #include "Toolchains/Toolchains.h"

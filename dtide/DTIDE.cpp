@@ -41,7 +41,19 @@ DTIDE::DTIDE(Project* p, QWidget* parent): QMainWindow(parent)
 
 void DTIDE::cycleUpdate()
 {
-    runCycles(100); // 1ms = 1kHz, 100 * 1kHz = 100kHz
+    if(!this->toolchain->IsPaused())
+        runCycles(100); // 1ms = 1kHz, 100 * 1kHz = 100kHz
+}
+
+void DTIDE::highlightCurrentLine()
+{
+    Line line = debuggingSession->GetLine();                
+    for (int i = 0; i < tabs->count(); i++)
+    {
+        CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
+        if(w->getFileName() == QString::fromLocal8Bit(line.Path))
+            w->highlightLine(line.LineNumber);
+    }
 }
 
 void DTIDE::runCycles(int count)
@@ -49,13 +61,20 @@ void DTIDE::runCycles(int count)
     if (debuggingSession != 0)
     {
         if (count == 1)
+        {
             this->toolchain->Step();
+            highlightCurrentLine();
+        }
         else
+        {
             for (int i = 0; i < count; i++)
+            {
                 this->toolchain->Cycle();
+                highlightCurrentLine();                
+            }
+        }
 
         this->toolchain->SendStatus();
-        this->toolchain->PostBatchHook();
 
         while (debuggingSession->HasMessages())
         {
@@ -93,12 +112,6 @@ void DTIDE::runCycles(int count)
                     LineHitMessage hit = (LineHitMessage&) m.value;
                     Line line = hit.line;
                    
-                    for (int i = 0; i < tabs->count(); i++)
-                    {
-                        CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
-                        if(w->getFileName() == QString::fromLocal8Bit(line.Path))
-                            w->highlightLine(line.LineNumber);
-                    }
                     break;
                 }
                 default:

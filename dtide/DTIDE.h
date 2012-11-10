@@ -74,6 +74,6 @@ private:
     void setupDockWidgets();
 
     void showDebuggerWindow();
+    void highlightCurrentLine();
 };
-
 #endif

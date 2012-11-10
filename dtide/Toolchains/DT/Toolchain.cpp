@@ -48,28 +48,17 @@ void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
 {
     DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
 
+    Line line = t->LineAt(t->debuggingSession, vm->pc);
+    if(line.LineNumber != 0 && !vm->skip) {
+        t->debuggingSession->SetCurrentLine(line);
+    }
+
     // Check for breakpoints
     if(t->debuggingSession->BreakpointAt(vm->pc))
     {
         t->Pause(t->debuggingSession);
     }
 
-}
-
-void DCPUToolchain::PostBatchHook()
-{
-    Line line = LineAt(debuggingSession, vm->pc);
-    if(line.LineNumber != 0) {
-        DebuggingMessage m;
-        LineHitMessage payload;
-
-        payload.line = line;
-
-        m.type = LineHitType;
-        m.value = (MessageValue&) payload;
-
-        debuggingSession->AddMessage(m);
-    }
 }
 
 void DCPUToolchain_WriteHook(vm_t* vm, uint16_t pos, void* ud)

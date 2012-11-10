@@ -46,17 +46,15 @@ public:
     virtual Line LineAt(DebuggingSession* session, uint16_t address);
 
     virtual void SendStatus();
-    virtual void PostBatchHook();
 
     DebuggingSession* debuggingSession;
 
     virtual void AddBreakpoint(DebuggingSession* session, Breakpoint& b);
-
+    
 private:
     vm_t* vm;
 
     void AddStatusMessage(vm_t* vm);
-    bool paused;
 };
 
 #endif

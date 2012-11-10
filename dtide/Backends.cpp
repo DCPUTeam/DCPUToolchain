@@ -23,6 +23,16 @@ bool DebuggingSession::BreakpointAt(uint16_t address)
     return false;
 }
 
+Line DebuggingSession::GetLine()
+{
+    return m_CurrentLine;
+}
+
+void DebuggingSession::SetCurrentLine(Line l)
+{
+    m_CurrentLine = l;
+}
+
 Language* Toolchain::GetLanguageByExtension(std::string ext)
 {
     std::list<Language*>::iterator it;
@@ -45,4 +55,9 @@ Language* Toolchain::GetLanguageByExtension(std::string ext)
 void Toolchain::SetWidgetFactory(DTIDEGLWidgets* w)
 {
     gl = w;
+}
+
+bool Toolchain::IsPaused()
+{
+    return paused;
 }
