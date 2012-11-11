@@ -42,7 +42,7 @@ foreach(k ${KERNELS})
             ${CMAKE_CURRENT_BINARY_DIR}/${k}/${k}.djmp16
             ${CMAKE_CURRENT_BINARY_DIR}/${k}/${k}.dkrn16
             ${CMAKE_CURRENT_BINARY_DIR}/${k}/${k}.dsym16
-            ${CMAKE_CURRENT_SOURCE_DIR}/${k}/${k}/policy
+            ${CMAKE_CURRENT_SOURCE_DIR}/${k}/policy
             DESTINATION
             share/dcpu/kernels/${k})
     endif()
