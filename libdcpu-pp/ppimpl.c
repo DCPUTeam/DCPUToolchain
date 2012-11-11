@@ -88,6 +88,20 @@ char* ppimpl_get_location(state_t* state)
 }
 
 ///
+/// @brief Returns the previous location as a formatted string.
+///
+/// This is like ppimpl_get_location(), however it is used when the
+/// parameters to a preprocessor directive have been parsed and thus
+/// the newline consumed.  In order for the correct location to be
+/// printed, the error message must refer to the previous line.
+///
+char* ppimpl_get_location_prev(state_t* state)
+{
+    bstring b = bformat("line %u of '%s'", ppimpl_get_current_line(state) - 1, ppimpl_get_current_filename(state)->data);
+    return b->data;
+}
+
+///
 /// @brief Prints a formatted string to the output cache of the current state.
 /// @internal
 ///
