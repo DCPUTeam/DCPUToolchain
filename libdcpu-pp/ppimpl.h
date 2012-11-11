@@ -86,6 +86,7 @@ char ppimpl_get_input(state_t* state);
 unsigned int ppimpl_get_current_line(state_t* state);
 bstring ppimpl_get_current_filename(state_t* state);
 char* ppimpl_get_location(state_t* state);
+char* ppimpl_get_location_prev(state_t* state);
 void ppimpl_oprintf(state_t* state, const char* fmt, ...);
 void ppimpl_iprintf(state_t* state, const char* fmt, ...);
 void ppimpl_printf(state_t* state, const char* msg, ...);
