@@ -1,19 +1,20 @@
 /**
 
-    File:       timing.h
+    File:           timing.h
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-vm
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-vm
 
-    Authors:    Patrick Flick
+    Authors:        Patrick Flick
 
     Description:    Declares the timing functions for precise timing of
-            the 100 kHz cycle speed.
+                    the 100 kHz cycle speed.
 
 **/
 
 #ifndef __TIMING_H
 #define __TIMING_H
+
 
 
 struct vm_tod_timer
