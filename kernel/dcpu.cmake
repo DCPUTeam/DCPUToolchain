@@ -39,33 +39,33 @@ function(define_dcpu_tool tool toolargs verb files runasm outvar)
                 add_custom_command(
                     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa
                     COMMAND ${main_path}
-                        ARGS ${toolargs} ${toolwarningsilence} -I "${CMAKE_CURRENT_SOURCE_DIR}/include" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
+                        ARGS ${toolargs} ${toolwarningsilence} -I "${CMAKE_CURRENT_SOURCE_DIR}/include" -o "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.oa" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
                 add_custom_command(
-                    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
+                    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o
                     COMMAND ${asm_path}
-                        ARGS ${asmwarningsilence} -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
-                    DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}" "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.oa"
+                        ARGS ${asmwarningsilence} -o "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o" -s "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.os" "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.oa"
+                    DEPENDS ${tool} dtasm "${CMAKE_CURRENT_SOURCE_DIR}/${i}" "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.oa"
                     COMMENT "Assembling ${fpth}/${fbse}.oa with DCPU-Toolchain...")
                 if("${tout}" STREQUAL "")
-                    set(tout "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o")
+                    set(tout "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o")
                 else("${tout}" STREQUAL "")
-                    list(APPEND tout "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o")
+                    list(APPEND tout "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o")
                 endif("${tout}" STREQUAL "")
                 set(${outvar} "${${outvar}} ${tout}" PARENT_SCOPE)
             else(${runasm} STREQUAL "true")
                 calculate_tool_path(${tool} main_path)
                 add_custom_command(
-                    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o
+                    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o
                     COMMAND ${main_path}
-                        ARGS ${toolargs} ${toolwarningsilence} -s "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.os" -o "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
+                        ARGS ${toolargs} ${toolwarningsilence} -s "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.os" -o "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o" "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     DEPENDS ${tool} "${CMAKE_CURRENT_SOURCE_DIR}/${i}"
                     COMMENT "${verb} ${fbse}${fext} with DCPU-Toolchain...")
                 if("${tout}" STREQUAL "")
-                    set(tout "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o")
+                    set(tout "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o")
                 else("${tout}" STREQUAL "")
-                    list(APPEND tout "${CMAKE_CURRENT_SOURCE_DIR}/${fpth}/${fbse}.o")
+                    list(APPEND tout "${CMAKE_CURRENT_BINARY_DIR}/${fpth}/${fbse}.o")
                 endif("${tout}" STREQUAL "")
                 set(${outvar} "${${outvar}} ${tout}" PARENT_SCOPE)
             endif(${runasm} STREQUAL "true")
@@ -86,11 +86,11 @@ function(add_dcpu_image target)
     string(STRIP "${tcoutputs}" tcoutputs)
     calculate_tool_path(dtld main_path)
     add_custom_command(
-        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${target}.dkrn16"
+        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${target}/${target}.dkrn16"
         COMMAND ${main_path}
-        ARGS -s "${CMAKE_CURRENT_BINARY_DIR}/${target}.dsym16" -O3 --symbol-extension="os"
-            --keep-outputs -l kernel -o "${CMAKE_CURRENT_BINARY_DIR}/${target}.dkrn16"
-            --jumplist "${CMAKE_CURRENT_BINARY_DIR}/${target}.djmp16" ${tasmoutputs} ${tcoutputs}
+        ARGS -s "${CMAKE_CURRENT_BINARY_DIR}/${target}/${target}.dsym16" -O3 --symbol-extension="os"
+            --keep-outputs -l kernel -o "${CMAKE_CURRENT_BINARY_DIR}/${target}/${target}.dkrn16"
+            --jumplist "${CMAKE_CURRENT_BINARY_DIR}/${target}/${target}.djmp16" ${tasmoutputs} ${tcoutputs}
         DEPENDS dtld ${tasmoutputs} ${tcoutputs}
         COMMENT "Linking ${target}.dkrn16 as kernel with DCPU-Toolchain...")
 
@@ -112,7 +112,7 @@ function(add_dcpu_image target)
         endif(DEFINED params)
     endforeach(i ${tcoutputs})
     list(APPEND params DEPENDS)
-    list(APPEND params "${CMAKE_CURRENT_BINARY_DIR}/${target}.dkrn16")
+    list(APPEND params "${CMAKE_CURRENT_BINARY_DIR}/${target}/${target}.dkrn16")
     add_custom_target(${target} ALL ${params})
 endfunction(add_dcpu_image target)
 

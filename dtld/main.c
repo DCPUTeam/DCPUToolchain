@@ -219,6 +219,8 @@ int main(int argc, char* argv[])
             // Replace @KERNEL_FOLDER@ with the kernel's folder.
             find = bfromcstr("@KERNEL_FOLDER@");
             repl = osutil_getkernelpath();
+            bconchar(repl, '/');
+            bcatcstr(repl, policy_kernel);
             bfindreplace(policy_kernel_path, find, repl, 0);
             bfindreplace(policy_jumplist_path, find, repl, 0);
             bdestroy(find);

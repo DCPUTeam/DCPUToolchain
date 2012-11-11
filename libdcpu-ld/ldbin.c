@@ -514,10 +514,9 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, bool isAdjust
             {
                 // Adjust the address stored in the entry down
                 // by the amount of words that were removed.
-                //entry->address -= count;
+                entry->address -= count;
             }
         }
-
 
         // Loop through all of the bins.
         for (k = 0; k < list_size(all); k++)

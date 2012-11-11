@@ -26,6 +26,8 @@ foreach(k ${KERNELS})
     foreach(f ${files})
         list(APPEND files_append ${k}/${f})
     endforeach()
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${k})
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${k}/policy DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/${k})
     add_dcpu_image(${k} ${files_append})
 
     if(${DEPLOYABLE})
@@ -37,10 +39,10 @@ foreach(k ${KERNELS})
                 OWNER_WRITE GROUP_WRITE WORLD_WRITE
                 OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
         install(FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/${k}.djmp16
-            ${CMAKE_CURRENT_BINARY_DIR}/${k}.dkrn16
-            ${CMAKE_CURRENT_BINARY_DIR}/${k}.dsym16
-            ${CMAKE_CURRENT_SOURCE_DIR}/${k}/policy
+            ${CMAKE_CURRENT_BINARY_DIR}/${k}/${k}.djmp16
+            ${CMAKE_CURRENT_BINARY_DIR}/${k}/${k}.dkrn16
+            ${CMAKE_CURRENT_BINARY_DIR}/${k}/${k}.dsym16
+            ${CMAKE_CURRENT_SOURCE_DIR}/${k}/${k}/policy
             DESTINATION
             share/dcpu/kernels/${k})
     endif()
