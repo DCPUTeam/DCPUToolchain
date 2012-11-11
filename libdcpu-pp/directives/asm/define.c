@@ -385,6 +385,26 @@ void ppimpl_asm_define_register(state_t* state)
     match->identifier_only = false;
     match->case_insensitive = true;
     ppimpl_register(state, match);
+    
+    // Register .EQUATE directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr(".EQUATE "));
+    match->handler = define_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    match->case_insensitive = true;
+    ppimpl_register(state, match);
+    
+    // Register .EQU directive.
+    match = malloc(sizeof(match_t));
+    match->text = bautofree(bfromcstr(".EQU "));
+    match->handler = define_handle;
+    match->userdata = NULL;
+    match->line_start_only = true;
+    match->identifier_only = false;
+    match->case_insensitive = true;
+    ppimpl_register(state, match);
 
     // Register .MACRO directive.
     match = malloc(sizeof(match_t));
