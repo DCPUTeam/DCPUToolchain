@@ -514,7 +514,8 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, bool isAdjust
             {
                 // Adjust the address stored in the entry down
                 // by the amount of words that were removed.
-                entry->address -= count;
+                // FIXME: This causes silent corruption (see issue #191).
+                //entry->address -= count;
             }
         }
 
@@ -537,6 +538,8 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, bool isAdjust
 
                 // Get the existing value of the adjustment.
                 word = (uint16_t*)list_get_at(&abin->words, entry->address);
+                if (word == NULL)
+                    dhalt(ERR_BUG_191_WORKAROUND, NULL);
                 assert(word != NULL);
 
                 // Check to see if this adjustment entry is pointing into

@@ -54,7 +54,8 @@ ERR_CALL_CONVENTION_UNKNOWN                          call-convention-unknown    
 ERR_CALL_MISSING_INTERRUPT_PARAMETERS                call-missing-interrupt-parameters      "the interrupt calling convention specified in the kernel is missing either interrupt-call() or interrupt-size() for '%s' and thus the required code can not be determined."
 ERR_JUMPLIST_WITHOUT_KERNEL                          jumplist-without-kernel                "you must be linking in kernel mode (-l kernel) in order to use the --jumplist parameter."
 ERR_POLICY_WITH_KERNEL                               policy-with-kernel                     "you can not use the policy (-p) option when linking in kernel mode as it has no use."
-
+ERR_BUG_191_WORKAROUND                               bug-191-workaround                     "avoided silent corruption during link stage (see GitHub issue #191)."
+ 
 WARN_SKIPPING_SHORT_LITERALS_TYPE                    short-literals-skipped-type            "skipped short literal compression due to target type."
 WARN_SKIPPING_SHORT_LITERALS_REQUEST                 short-literals-skipped-request         "skipped short literal compression on request."
 WARN_KERNEL_NOT_PROVIDING_JUMP_LIST                  jump-list-missing                      "kernel did not specify a position to output a jump list with .JUMP."
