@@ -1,0 +1,11 @@
+.. _module-hmd2043:
+
+Harold Media Drive (deprecated)
+======================================
+
+This hardware module partially implements the Harold Media Drive.
+
+.. warning::
+    
+    This hardware should not be used.  Use the official floppy drive instead.
+    

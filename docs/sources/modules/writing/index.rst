@@ -6,15 +6,9 @@ Writing Modules
 All modules, regardless of what service they extend have a constant format for defining
 their type, who wrote them and the version number applicable.
 
-All modules are written in `Lua <http://www.lua.org/>`_, a highly flexible and extendable language designed
+All modules are written in `Lua <http://www.lua.org/>`_, a highly flexible and language designed
 for extending applications.
 
-.. warning::
-
-    When the toolchain is at a point where it is able to compile it's own preprocessor
-    and assembler to the DCPU, it is not guaranteed that Lua modules will be able to
-    run under this environment due to memory restrictions (despite how memory efficient
-    Lua is).
     
 Module Format
 --------------------
@@ -36,10 +30,13 @@ the module type) and a general module information table.  Thus every module will
 Each type of module is addressed in it's own documentation section.  The following module types
 exist:
 
-  * :ref:`modules-hardware`
-  * :ref:`modules-preprocessor`
-  * :ref:`modules-debugger`
+.. toctree::
+   :maxdepth: 1
 
+   hardware
+   preprocessor
+   debugger
+   
 Module Location
 --------------------
 

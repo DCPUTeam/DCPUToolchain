@@ -1,0 +1,8 @@
+.. _module-spc2000:
+
+SPC2000 (official)
+=============================================
+
+This hardware module implements the official SPC2000 hardware.
+
+See `http://dcpu.com/sleep-chamber/ <http://dcpu.com/sleep-chamber/>`_ for the latest specification on this hardware.

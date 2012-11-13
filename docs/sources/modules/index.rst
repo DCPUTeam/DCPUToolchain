@@ -7,7 +7,5 @@ Contents:
    :maxdepth: 2
 
    download
-   writing
-   hardware
-   preprocessor
-   debugger
+   writing/index
+   list/index
