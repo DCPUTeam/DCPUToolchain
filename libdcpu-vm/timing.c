@@ -42,7 +42,7 @@ long long vm_timing_microsecsonds_since_midnight_GMT()
 #else
     unsigned __int64 frequency;
     unsigned __int64 t_64;
-    if (timer_initialized == 0)
+    if (vm_timing_windows_timer_initialized == 0)
     {
         // init timer before returning 
         if (QueryPerformanceFrequency((LARGE_INTEGER*)&frequency)) {
