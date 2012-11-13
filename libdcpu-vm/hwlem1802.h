@@ -73,6 +73,7 @@ void vm_hw_lem1802_free(void* ud);
 void vm_hw_lem1802_interrupt(vm_t* vm, void* ud);
 
 // TODO relocate the functions somewhere else:
+void vm_hw_lem1802_resize_handler(struct lem1802_hardware* hw, int w, int h);
 void vm_hw_lem1802_glfw_resize_handler(GLFWwindow window, int w, int h);
 void vm_hw_lem1802_init_glfw(struct lem1802_hardware* hw);
 void vm_hw_lem1802_glfw_draw(struct lem1802_hardware* hw);

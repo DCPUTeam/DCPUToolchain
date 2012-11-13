@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include "../../Backends.h"
+#include "../../DTIDEGLWidget.h"
 
 #include <QDebug>
 #include <QGLWidget>
@@ -45,6 +46,8 @@ public:
     virtual void Pause(DebuggingSession* session);
     virtual void Resume(DebuggingSession* session);
     virtual Line LineAt(DebuggingSession* session, uint16_t address);
+    
+    virtual void RelayResize(int w, int h, void* ud);
 
     virtual void SendStatus();
 

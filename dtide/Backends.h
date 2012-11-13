@@ -5,7 +5,9 @@
 #include <string>
 #include <deque>
 #include <stdint.h>
+class DTIDEGLWidgets;
 #include "DTIDEGLWidgets.h"
+
 
 struct Line
 {
@@ -308,6 +310,8 @@ public:
     virtual void Resume(DebuggingSession* session) = 0;
     virtual void Stop(DebuggingSession* session) = 0;
     virtual Line LineAt(DebuggingSession* session, uint16_t address) = 0;
+    virtual void RelayResize(int w, int h, void* ud) = 0;
+    
     //virtual void AttachDevice(DebuggingSession& session, Device& device) = 0;
     //virtual void DetachDevice(DebuggingSession& session, Device& device) = 0;
     //virtual void SendCommand(DebuggingSession& session, std::string cmd) = 0; // send custom command (only to be used on user input).

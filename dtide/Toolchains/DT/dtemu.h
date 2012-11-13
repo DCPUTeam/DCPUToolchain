@@ -10,6 +10,7 @@ extern "C" {
 #include <dcpuhook.h>
 
     vm_t* get_vm(void);
+    void lem_resize(void* ud, int w, int h);
     vm_t* start_emulation(
         const char* filename,
 

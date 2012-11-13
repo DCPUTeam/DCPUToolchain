@@ -18,19 +18,19 @@ DCPUToolchain* g_this;
 void* DCPUToolchain_CreateContext(const char* title, int width, int height, bool resizeable, void* ud)
 {
     QString qtitle = QString::fromLocal8Bit(title);
-    QGLWidget* context = g_this->gl->requestWidget(qtitle, width, height);
-    return context;
+    DTIDEGLWidget* context = g_this->gl->requestWidget(g_this, qtitle, width, height, ud);
+    return (void*) context;
 }
 
 void DCPUToolchain_ActivateContext(void* context)
 {
-    QGLWidget* w = static_cast<QGLWidget*>(context);
+    QGLWidget* w = static_cast<DTIDEGLWidget*>(context);
     w->makeCurrent();
 }
 
 void DCPUToolchain_SwapBuffers(void* context)
 {
-    QGLWidget* w = static_cast<QGLWidget*>(context);
+    QGLWidget* w = static_cast<DTIDEGLWidget*>(context);
     w->makeCurrent();
     w->swapBuffers();
     w->doneCurrent();
@@ -183,6 +183,12 @@ std::list<Language*> DCPUToolchain::GetLanguages()
 
     list.insert(list.end(), dasm);
     return list;
+}
+
+
+void DCPUToolchain::RelayResize(int w, int h, void* ud)
+{
+    lem_resize(ud, w, h);
 }
 
 void DCPUToolchain::Start(BuildAPI& result, DebuggingSession* session)

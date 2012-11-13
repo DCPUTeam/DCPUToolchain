@@ -113,6 +113,7 @@ int dtdb_get_line_number()
 char* dtdb_get_line_path()
 {
     if(found_line == NULL) return NULL;
+    if(found_line->path == NULL) return NULL;
     return found_line->path->data;
 }
 

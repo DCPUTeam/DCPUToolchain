@@ -38,7 +38,7 @@ DTIDE::DTIDE(Project* p, QWidget* parent): QMainWindow(parent)
   
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(cycleUpdate()));
-    timer->start(1);
+    timer->start(5);
     
     // start the frequency timer, that checks and prints
     // the current event loop frequency
@@ -52,8 +52,8 @@ DTIDE::DTIDE(Project* p, QWidget* parent): QMainWindow(parent)
 
 void DTIDE::cycleUpdate()
 {
-    int db_update_hz = 15;
-    int cycle_hz = 120;
+    int db_update_hz = 5;
+    int cycle_hz = 60;
     
     //if(!this->toolchain->IsPaused())
     //    runCycles(1667); // 1ms = 1kHz, 100 * 1kHz = 100kHz
@@ -81,15 +81,13 @@ void DTIDE::cycleUpdate()
     }
     
     // FIXME: only for debugging, please leave it here for now - r4d2
-    
-    /*
     if (vm_timing_has_reached_mics(&freq_timer, 1000000))
     {
         std::cout << "current speed: " << cycle_count << " Hz" << std::endl;
         vm_timing_reset_timer(&freq_timer);
         cycle_count = 0;
     }
-    */
+    
 }
 
 
@@ -99,8 +97,9 @@ void DTIDE::highlightCurrentLine()
     for (int i = 0; i < tabs->count(); i++)
     {
         CodeEditor* w = qobject_cast<CodeEditor*>(tabs->widget(i));
-        if(w->getFileName() == QString::fromLocal8Bit(line.Path))
-            w->highlightLine(line.LineNumber);
+        if (line.Path != NULL)
+            if(w->getFileName() == QString::fromLocal8Bit(line.Path))
+                w->highlightLine(line.LineNumber);
     }
 }
 
