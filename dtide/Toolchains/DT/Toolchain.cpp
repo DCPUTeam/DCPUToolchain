@@ -31,7 +31,9 @@ void DCPUToolchain_ActivateContext(void* context)
 void DCPUToolchain_SwapBuffers(void* context)
 {
     QGLWidget* w = static_cast<QGLWidget*>(context);
+    w->makeCurrent();
     w->swapBuffers();
+    w->doneCurrent();
 }
 
 void DCPUToolchain_DestroyContext(void* context)
@@ -58,34 +60,22 @@ void DCPUToolchain_CycleHook(vm_t* vm, uint16_t pos, void* ud)
     {
         t->Pause(t->debuggingSession);
     }
-
 }
 
 void DCPUToolchain_WriteHook(vm_t* vm, uint16_t pos, void* ud)
 {
     DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
-    DebuggingMessage m;
-    MemoryMessage payload;
-
-    payload.pos = pos;
-    payload.value = vm->ram[pos];
-
-    m.type = MemoryType;
-    m.value = (MessageValue&) payload;
-
-    t->debuggingSession->AddMessage(m);
+    t->debuggingSession->RegisterMemoryChange(pos, vm->ram[pos]);
 }
 
 void DCPUToolchain_InterruptHook(vm_t* vm, uint16_t pos, void* ud)
 {
     DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
-
 }
 
 void DCPUToolchain_HardwareHook(vm_t* vm, uint16_t pos, void* ud)
 {
     DCPUToolchain* t = static_cast<DCPUToolchain*>(ud);
-
 }
 
 void DCPUToolchain_60HZHook(vm_t* vm, uint16_t pos, void* ud)
@@ -232,15 +222,8 @@ void DCPUToolchain::Start(BuildAPI& result, DebuggingSession* session)
 
         static_cast<void*>(this));
     
-    DebuggingMessage m;
-    MemoryDumpMessage payload;
-
-    payload.data = vm->ram;
-
-    m.type = MemoryDumpType;
-    m.value = (MessageValue&) payload;
-
-    debuggingSession->AddMessage(m);
+    // set initial memory configuration to debuggingSession
+    debuggingSession->SetMemory(vm->ram);
 
     // Load debugging symbols
     std::list<std::string> symbolFiles = result.GetSymbolFiles();

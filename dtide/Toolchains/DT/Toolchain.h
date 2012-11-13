@@ -7,6 +7,7 @@
 
 #include <QDebug>
 #include <QGLWidget>
+#include <QGLFormat>
 
 extern "C" {
 #include <dcpu.h>
@@ -51,8 +52,9 @@ public:
 
     virtual void AddBreakpoint(DebuggingSession* session, Breakpoint& b);
     
-private:
     vm_t* vm;
+private:
+    
 
     void AddStatusMessage(vm_t* vm);
 };
