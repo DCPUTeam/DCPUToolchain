@@ -52,7 +52,7 @@ long long vm_timing_microsecsonds_since_midnight_GMT()
         }
     }
     if (QueryPerformanceCounter((LARGE_INTEGER*)&t_64)) {
-        return (long long)((double)(t_64 - vm_timing_thread_time64)*vm_timing_windows_thread_time_res);
+        return (long long)(1000000.0*(double)(t_64 - vm_timing_thread_time64)*vm_timing_windows_thread_time_res);
     } else {
         return 0;
     }
