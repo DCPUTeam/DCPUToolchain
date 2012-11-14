@@ -2,6 +2,7 @@
 #define DTIDEGLWIDGETS_H
 
 #include <QGLWidget>
+class DTIDEGLWidget;
 #include "Backends.h"
 #include "DTIDEGLWidget.h"
 
