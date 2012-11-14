@@ -42,6 +42,7 @@ long long vm_timing_microsecsonds_since_midnight_GMT()
 #else
     unsigned __int64 frequency;
     unsigned __int64 t_64;
+    DWORD_PTR oldmask;
     if (vm_timing_windows_timer_initialized == 0)
     {
         // init timer before returning 
@@ -51,11 +52,13 @@ long long vm_timing_microsecsonds_since_midnight_GMT()
             QueryPerformanceCounter((LARGE_INTEGER*)&vm_timing_thread_time64);
         }
     }
+    oldmask = SetThreadAffinityMask(GetCurrentThread(), 0);
     if (QueryPerformanceCounter((LARGE_INTEGER*)&t_64)) {
         return (long long)(1000000.0*(double)(t_64 - vm_timing_thread_time64)*vm_timing_windows_thread_time_res);
     } else {
         return 0;
     }
+    SetThreadAffinityMask(GetCurrentThread(), oldmask);
 #endif
 }
 
