@@ -5,6 +5,9 @@
 
 class DTIDEDebuggingSession: public DebuggingSession
 {
+private:
+    uint16_t* m_memory;
+    
 public:
     DTIDEDebuggingSession();
 
@@ -14,6 +17,9 @@ public:
     void AddWarning(int id, std::string message);
 
     void SetMemory(uint16_t memory[0x10000]);
+    uint16_t* getMemory();
+    void RegisterMemoryChange(uint16_t address, uint16_t newValue);
+    
     void PushCall(std::string call, std::string language, std::string file, int line);
     void PopCall(std::string language);
 

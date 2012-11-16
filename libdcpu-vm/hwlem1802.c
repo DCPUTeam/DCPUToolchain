@@ -156,33 +156,40 @@ void vm_hw_lem1802_interrupt(vm_t* vm, void* ud)
 
 void vm_hw_lem1802_glfw_resize_handler(GLFWwindow window, int w, int h)
 {
-    double original_aspect_ratio, new_aspect_ratio, x_frust, y_frust;
-
     struct lem1802_hardware* hw = (struct lem1802_hardware*) glfwGetWindowUserPointer(window);
+    vm_hw_lem1802_resize_handler(hw, w, h);
+}
 
-    original_aspect_ratio = (double)HW_LEM1802_SCREEN_TEXTURE_WIDTH / (double)HW_LEM1802_SCREEN_TEXTURE_HEIGHT;
-    new_aspect_ratio = (double)w / (double)h;
-
-    hw->vm->host->activate_context(hw->context);
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    if (new_aspect_ratio > original_aspect_ratio)
+void vm_hw_lem1802_resize_handler(struct lem1802_hardware* hw, int w, int h)
+{
+    if (hw != NULL && hw->context != NULL)
     {
-        // black areas on the sides
-        x_frust = (double)w / (h * original_aspect_ratio);
-        glOrtho(-x_frust, x_frust, -1.0, 1.0, -1.0, 2.0);
-    }
-    else
-    {
-        // black areas top and bottom
-        y_frust = (h * original_aspect_ratio) / ((double) w);
-        glOrtho(-1.0, 1.0, -y_frust, y_frust, -1.0, 2.0);
-    }
+        double original_aspect_ratio, new_aspect_ratio, x_frust, y_frust;
 
-    // redraw
-    vm_hw_lem1802_glfw_draw(hw);
+        original_aspect_ratio = (double)HW_LEM1802_SCREEN_TEXTURE_WIDTH / (double)HW_LEM1802_SCREEN_TEXTURE_HEIGHT;
+        new_aspect_ratio = (double)w / (double)h;
+
+        hw->vm->host->activate_context(hw->context);
+        glViewport(0, 0, w, h);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+
+        if (new_aspect_ratio > original_aspect_ratio)
+        {
+            // black areas on the sides
+            x_frust = (double)w / (h * original_aspect_ratio);
+            glOrtho(-x_frust, x_frust, -1.0, 1.0, -1.0, 2.0);
+        }
+        else
+        {
+            // black areas top and bottom
+            y_frust = (h * original_aspect_ratio) / ((double) w);
+            glOrtho(-1.0, 1.0, -y_frust, y_frust, -1.0, 2.0);
+        }
+
+        // redraw
+        vm_hw_lem1802_glfw_draw(hw);
+    }
 }
 
 int vm_hw_lem1802_close(void* ud)
@@ -337,6 +344,7 @@ void vm_hw_lem1802_init(vm_t* vm)
     hw->screen_was_updated = 1;
     hw->texture_has_changed = 1;
     hw->window_closed = 0;
+    hw->context = NULL;
 
     // Set up the LEM1802 hardware information.
     hw->device.id = LEM1802_ID;

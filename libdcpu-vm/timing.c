@@ -1,14 +1,14 @@
 /**
 
-    File:       dcpu.c
+    File:           dcpu.c
 
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-vm
+    Project:        DCPU-16 Tools
+    Component:      LibDCPU-vm
 
-    Authors:    Patrick Flick
+    Authors:        Patrick Flick
 
     Description:    Implements the timing functions for precise timing of
-            the 100 kHz cycle speed.
+                    the 100 kHz cycle speed.
 
 **/
 
@@ -16,11 +16,21 @@
 #include <sys/time.h>
 #include <unistd.h>
 #else
-// TODO windows compatible timing functions
+#include <windows.h>
 #endif
 
 #include "timing.h"
 #include <stdlib.h>
+
+
+#ifdef WIN32
+// whether the timer has been initialized (which has to happen)
+int vm_timing_windows_timer_initialized = 0;
+//resolution
+double vm_timing_windows_thread_time_res = 0.0;
+//initial time
+unsigned __int64 vm_timing_thread_time64 = 0;
+#endif
 
 
 long long vm_timing_microsecsonds_since_midnight_GMT()
@@ -30,8 +40,25 @@ long long vm_timing_microsecsonds_since_midnight_GMT()
     gettimeofday(&t, NULL);
     return((long long)t.tv_sec % (24 * 3600) * 1000000 + t.tv_usec);
 #else
-    // TODO
-    return 0;
+    unsigned __int64 frequency;
+    unsigned __int64 t_64;
+    DWORD_PTR oldmask;
+    if (vm_timing_windows_timer_initialized == 0)
+    {
+        // init timer before returning 
+        if (QueryPerformanceFrequency((LARGE_INTEGER*)&frequency)) {
+            vm_timing_windows_thread_time_res = 1.0 / (double)frequency;
+            vm_timing_windows_timer_initialized = 1;
+            QueryPerformanceCounter((LARGE_INTEGER*)&vm_timing_thread_time64);
+        }
+    }
+    oldmask = SetThreadAffinityMask(GetCurrentThread(), 0);
+    if (QueryPerformanceCounter((LARGE_INTEGER*)&t_64)) {
+        return (long long)(1000000.0*(double)(t_64 - vm_timing_thread_time64)*vm_timing_windows_thread_time_res);
+    } else {
+        return 0;
+    }
+    SetThreadAffinityMask(GetCurrentThread(), oldmask);
 #endif
 }
 
@@ -84,7 +111,7 @@ void vm_timing_sleep_microseconds(unsigned int microseconds)
 #ifndef WIN32
     usleep(microseconds);
 #else
-    // TODO
+    Sleep(microseconds/1000u);
 #endif
 }
 

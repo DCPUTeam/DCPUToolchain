@@ -2,6 +2,9 @@
 #define DTIDEGLWIDGETS_H
 
 #include <QGLWidget>
+class DTIDEGLWidget;
+#include "Backends.h"
+#include "DTIDEGLWidget.h"
 
 class DTIDEGLWidgets: public QObject
 {
@@ -10,7 +13,7 @@ class DTIDEGLWidgets: public QObject
 public:
     DTIDEGLWidgets();
 
-    QGLWidget* requestWidget(QString title, int width, int height);
+    DTIDEGLWidget* requestWidget(Toolchain* toolchain, QString title, int width, int height, void* ud);
     void killWidgets();
 
 signals:

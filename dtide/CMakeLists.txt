@@ -19,6 +19,7 @@ if(${QT4_FOUND} AND ${qscintilla2_FOUND})
         DTIDEDebuggingWindow.cpp
         qhexview/qhexview.cpp
         DTIDEGLWidgets.cpp
+        DTIDEGLWidget.cpp
         CodeEditor.cpp
         Highlighters/QsciLexerDASM16.cpp
         Toolchains/DT/Toolchain.cpp
@@ -40,6 +41,7 @@ if(${QT4_FOUND} AND ${qscintilla2_FOUND})
         DTIDEDebuggingWindow.h
         qhexview/qhexview.h
         DTIDEGLWidgets.h
+        DTIDEGLWidget.h
         CodeEditor.h
         Highlighters/Highlighters.h
         Highlighters/QsciLexerDASM16.h

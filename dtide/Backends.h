@@ -5,7 +5,9 @@
 #include <string>
 #include <deque>
 #include <stdint.h>
+class DTIDEGLWidgets;
 #include "DTIDEGLWidgets.h"
+
 
 struct Line
 {
@@ -37,19 +39,6 @@ class HardwareMessage
 
 };
 
-class MemoryMessage
-{
-public:
-    uint16_t pos;
-    uint16_t value;
-};
-
-class MemoryDumpMessage
-{
-public:
-    uint16_t* data;
-};
-
 class LineHitMessage
 {
 public:
@@ -60,8 +49,6 @@ union MessageValue
 {
     StatusMessage status;
     HardwareMessage hardware;
-    MemoryMessage memory;
-    MemoryDumpMessage dump;
     LineHitMessage hit;
 };
 
@@ -220,7 +207,9 @@ public:
     void AddWarning(int id, std::string message); // Show warning at breakpoint.
 
     // Views.
-    void SetMemory(uint16_t memory[0x10000]); // Sets memory for display in IDE.
+    virtual void SetMemory(uint16_t memory[0x10000]) = 0; // Sets memory for display in IDE.
+    virtual uint16_t* getMemory() = 0;
+    virtual void RegisterMemoryChange(uint16_t address, uint16_t newValue) = 0;
     void PushCall(std::string call, std::string language, std::string file, int line); // Pushes a call onto the call stack for the call stack pane.
     void PopCall(std::string language); // Pop a call from the call stack.
 
@@ -321,6 +310,8 @@ public:
     virtual void Resume(DebuggingSession* session) = 0;
     virtual void Stop(DebuggingSession* session) = 0;
     virtual Line LineAt(DebuggingSession* session, uint16_t address) = 0;
+    virtual void RelayResize(int w, int h, void* ud) = 0;
+    
     //virtual void AttachDevice(DebuggingSession& session, Device& device) = 0;
     //virtual void DetachDevice(DebuggingSession& session, Device& device) = 0;
     //virtual void SendCommand(DebuggingSession& session, std::string cmd) = 0; // send custom command (only to be used on user input).

@@ -21,6 +21,10 @@
 #include "DTIDEGLWidgets.h"
 #include "DTIDEDirView.h"
 
+extern "C" {
+    #include <timing.h>
+}
+
 class DTIDE: public QMainWindow
 {
     Q_OBJECT
@@ -29,7 +33,7 @@ public:
     DTIDE(Project* p, QWidget* parent = 0);
 
     QSize sizeHint();
-
+    
 protected:
     void addCodeTab(const QString& fileName);
     void runCycles(int count);
@@ -67,7 +71,13 @@ private:
     QList<QDockWidget*> dockWidgets;
     Project* project;
     Toolchain* toolchain;
-
+    
+    
+    struct vm_tod_timer freq_timer;
+    struct vm_tod_timer cycle_timer;
+    struct vm_tod_timer db_update_timer;
+    int cycle_count;
+    
     void setupMenuBar();
     void setupActions();
     void setupSignals();
@@ -75,5 +85,7 @@ private:
 
     void showDebuggerWindow();
     void highlightCurrentLine();
+    
+    void updateDebuggerUI();
 };
 #endif

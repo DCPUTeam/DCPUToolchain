@@ -31,6 +31,19 @@ vm_t* get_vm(void)
     return vm;
 }
 
+void lem_resize(void* ud, int w, int h)
+{
+    hw_t* device;
+    uint32_t device_id;
+    device = (hw_t*) ud;
+    device_id = device->id;
+    
+    if (device_id == LEM1802_ID)
+    {
+        vm_hw_lem1802_resize_handler((struct lem1802_hardware*) ud, w, h);
+    }
+}
+
 vm_t* start_emulation(
     const char* filename,
 

@@ -1,17 +1,22 @@
 #include "DTIDEGLWidgets.h"
+#include "DTIDEGLWidget.h"
 #include <QDebug>
 
 DTIDEGLWidgets::DTIDEGLWidgets(): QObject()
 {
 }
 
-QGLWidget* DTIDEGLWidgets::requestWidget(QString title, int width, int height)
+DTIDEGLWidget* DTIDEGLWidgets::requestWidget(Toolchain* toolchain, QString title, int width, int height, void* ud)
 {
     QGLFormat glFormat(QGL::SampleBuffers);
     glFormat.setSwapInterval(0);
-    QGLWidget* res = new QGLWidget(glFormat);
     
-    res->resize(width, height);
+    // apparently only works in single buffer mode !?
+    glFormat.setDoubleBuffer(false);
+    
+    DTIDEGLWidget* res = new DTIDEGLWidget(toolchain, glFormat, ud);
+    
+    //res->resize(width, height);
     res->setWindowTitle(title);
     res->show();
     activeWidgets.append(res);

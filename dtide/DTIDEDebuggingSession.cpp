@@ -23,6 +23,18 @@ void DTIDEDebuggingSession::AddWarning(int id, std::string message)
 
 void DTIDEDebuggingSession::SetMemory(uint16_t memory[0x10000])
 {
+    this->m_memory = memory;
+}
+
+uint16_t* DTIDEDebuggingSession::getMemory()
+{
+    return this->m_memory;
+}
+
+void DTIDEDebuggingSession::RegisterMemoryChange(uint16_t address, uint16_t newValue)
+{
+    // TODO add a flag to bit array of what has been changed
+    this->m_memory[address] = newValue;
 }
 
 void DTIDEDebuggingSession::PushCall(std::string call, std::string language, std::string file, int line)
