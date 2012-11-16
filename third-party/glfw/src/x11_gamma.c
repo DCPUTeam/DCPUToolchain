@@ -57,8 +57,11 @@ void _glfwInitGammaRamp(void)
         XRRScreenResources* rr = XRRGetScreenResources(_glfwLibrary.X11.display,
                                                        _glfwLibrary.X11.root);
 
-        _glfwLibrary.originalRampSize = XRRGetCrtcGammaSize(_glfwLibrary.X11.display,
-                                                            rr->crtcs[0]);
+        // FIXME: This is broken under remote X, where the X client does not
+        // support this method.
+        _glfwLibrary.originalRampSize = 0;
+        //XRRGetCrtcGammaSize(_glfwLibrary.X11.display, rr->crtcs[0]);
+
         if (!_glfwLibrary.originalRampSize)
         {
             // This is probably Nvidia RandR with broken gamma support
