@@ -120,6 +120,7 @@ int main(int argc, char* argv[])
     struct arg_file* execution_dump_file = arg_file0("e", "execution-dump", "<file>", "Produce a very large execution dump file.");
     struct arg_lit* debug_mode = arg_lit0("d", "debug", "Show each executed instruction.");
     struct arg_lit* terminate_mode = arg_lit0("t", "show-on-terminate", "Show state of machine when program is terminated.");
+    struct arg_lit* headless_mode = arg_lit0("h", "headless", "Run machine witout displaying monitor and SPED output");
     struct arg_lit* legacy_mode = arg_lit0("l", "legacy", "Automatically initialize hardware to legacy values.");
     struct arg_str* warning_policies = arg_strn("W", NULL, "policy", 0, _WARN_COUNT * 2 + 10, "Modify warning policies.");
     struct arg_lit* little_endian_mode = arg_lit0(NULL, "little-endian", "Use little endian serialization (for compatibility with older versions).");
@@ -128,7 +129,7 @@ int main(int argc, char* argv[])
     struct arg_int* radiation = arg_intn("r", NULL, "<n>", 0, 1, "Radiation factor (higher is less radiation)");
     struct arg_lit* catch_fire = arg_lit0("c", "catch-fire", "The virtual machine should catch fire instead of halting.");
     struct arg_end* end = arg_end(20);
-    void* argtable[] = { input_file, warning_policies, debug_mode, execution_dump_file, terminate_mode, legacy_mode, little_endian_mode, radiation, catch_fire, verbose, quiet, end };
+    void* argtable[] = { input_file, warning_policies, debug_mode, execution_dump_file, terminate_mode, headless_mode, legacy_mode, little_endian_mode, radiation, catch_fire, verbose, quiet, end };
 
     // Parse arguments.
     nerrors = arg_parse(argc, argv, argtable);
@@ -249,7 +250,10 @@ int main(int argc, char* argv[])
 
     // Init hardware.
     vm_hw_timer_init(vm);
-    vm->host = dtemu;
+
+    if (headless_mode->count < 1)
+        vm->host = dtemu;
+
     vm_hw_sped3_init(vm);
     vm_hw_lem1802_init(vm);
     vm_hw_m35fd_init(vm);
