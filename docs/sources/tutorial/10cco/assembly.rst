@@ -1,3 +1,5 @@
+.. _tutorial-10cco-assembly:
+
 Getting a feel for Assembly
 =================================
 

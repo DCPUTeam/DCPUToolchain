@@ -1,4 +1,4 @@
-.. _tutorial-getting-tools:
+.. _tutorial-10cco-getting-tools:
 
 Getting the tools for DCPU-16 Programming
 ===============================================

@@ -1,3 +1,5 @@
+.. _tutorial-10cco-dcpu:
+
 How the DCPU-16 works
 =================================
 
