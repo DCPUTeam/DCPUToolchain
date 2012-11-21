@@ -42,7 +42,7 @@ DCPU-16 Memory
 
 So, your device contains 0x10000 (or 128 KiB) words of memory. This memory consists of a number of **words**. A word is a 16-bit unsigned number (between 0 and 65535, or 0x0000-0xFFFF). Each word is assigned an **address**, which you can use to refer to it. Typically, addresses are referred to in hexadecimal - some value between 0x0000 and 0xFFFF. For example, let's simplify it and assume that there are only 16 words of memory, and that they look like this (in hex):
 
-.. code-block::
+.. code::
 
     0000 1234 0000 BEEF 0000 FACE 0000 4321 0000 0000 0000 0000 0000 0000 0000 0000
 
@@ -59,6 +59,8 @@ The CPU itself
 ----------------
 
 The actual DCPU is responsible for manipulating this memory to execute programs and store data. Let's have a look at our example program from last time. Assemble it again, but this time, use this command: "organic.exe helloworld.dasm --listing helloworld.lst". Organic will generate a listing file that looks something like this (I've simplified this version a bit):
+
+.. code::
 
     [0x0000]               init:
     [0x0000] 1A00            HWN I
@@ -110,7 +112,7 @@ So, in addition to 0x10000 words of memory, we also have **registers**.  The DCP
 
 Now that you know about those, let's look at that example file again. When it's loaded into the DCPU, the first bit of memory looks like this:
 
-.. code-block::
+.. code::
 
     1A00 88C3 84D2 8B83 1A20 7C12 F615 7C32 7349 B381 8B81 8401 7C21 8000 1A40 8401
     8421 7C41 0024 7C20 0016 8B83 7C24 0020 0402 7C02 8000 8552 6381 2821 7C2B F000
@@ -121,14 +123,14 @@ Have a look at the listing file again - notice how the memory we have here corre
 
 .. note::
 
-    Quick tip: memory and programs are the same thing. You can set memory with the SET instruction, which will allow you to not only store data, but modify executable memory. This even allows for fancy tricks like **self-modifying code**, which lets you change your code while it's running!
+    Memory and programs are the same thing. You can set memory with the SET instruction, which will allow you to not only store data, but modify executable memory. This even allows for fancy tricks like **self-modifying code**, which lets you change your code while it's running!
 
 This is where the CPU comes in. The CPU looks at the value at the address the PC register refers to (known as [PC]), and interprets it as an **instruction**, such as "HWN I". The CPU then **executes** that instruction, and moves on to the next one. Some instructions can do fancy stuff like moving PC somewhere else, or changing memory. So if PC is ``0x0000``, the CPU will execute ``[0x0000]``, which is ``0x1A00``.  ``0x1A00`` translates to ``HWI I``, so the CPU executes that instruction.
 
 CPU Timing
 --------------
 
-Computers don't operate instantaneously. It takes time to execute each instruction. But how much? Well, the stock DCPU-16 is clocked to 100 kHz (kilohertz). That means that it executes a **cycle** 100,000 times per second. This is the basis for timing on DCPU-16. Each instruction takes a certain number of cycles to execute. For instance, take the SET instruction. SET is used for moving data, such as ``SET A, B`` to set the A register to the value of the B register (A = B).  ``SET A, B`` takes one cycle, or 10 microseconds. Each instruction has a base cycle count, and depending on how you use it, more cycles can be added. For example, when you load a constant number into a register, it can add another cycle, like ``SET A, 100``.  You can read the timings for all the instructions in the official `DCPU-16 specification <http://dcpu.com/dcpu-16/>`.
+Computers don't operate instantaneously. It takes time to execute each instruction. But how much? Well, the stock DCPU-16 is clocked to 100 kHz (kilohertz). That means that it executes a **cycle** 100,000 times per second. This is the basis for timing on DCPU-16. Each instruction takes a certain number of cycles to execute. For instance, take the SET instruction. SET is used for moving data, such as ``SET A, B`` to set the A register to the value of the B register (A = B).  ``SET A, B`` takes one cycle, or 10 microseconds. Each instruction has a base cycle count, and depending on how you use it, more cycles can be added. For example, when you load a constant number into a register, it can add another cycle, like ``SET A, 100``.  You can read the timings for all the instructions in the official `DCPU-16 specification <http://dcpu.com/dcpu-16/>`_.
 
 Let's see an example
 -----------------------
