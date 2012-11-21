@@ -1,3 +1,5 @@
+.. _tutorial-getting-tools:
+
 Getting the tools for DCPU-16 Programming
 ===============================================
    
@@ -30,7 +32,7 @@ There are a huge number of assemblers out there to choose from, but most of them
 .. admonition:: Editor's Note
     :class: warning
 
-    As of re-mirroring, Organic is no longer maintained (as with 10c.co).  Users are advised that due to this, it may not be up-to-date with the latest DCPU-16 specifications.
+    As of re-mirroring, Lettuce and Organic are no longer maintained (as with 10c.co).  Due to this, users are advised that they may not be up-to-date with the latest DCPU-16 specifications.
 
 Choosing an Emulator
 -------------------------
