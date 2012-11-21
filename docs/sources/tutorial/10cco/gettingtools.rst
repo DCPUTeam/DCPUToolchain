@@ -101,7 +101,7 @@ Once you've downloaded your tools, create a directory to work in and place them 
         SET PC, .loop
 
     message:
-        DAT "Hello, world!" 0
+        DAT "Hello, world!", 0
 
 Save this file and drag the file on to ``Organic.exe``.  You'll see ``helloworld.bin`` appear, and you can drag this on to ``Lettuce.exe``.  Click accept on the window that appears, then press F5, and you should see the screen say "Hello, world!".
 

@@ -12,6 +12,10 @@ write code for the DCPU-16.
 010.co Mirrored Tutorials
 ----------------------------
 
+These tutorials are updated versions of the ones originally found on 10c.co.  Editor's notes are
+made where these tutorials deviate from the originals or where adjustments must be made in order
+for the tutorial to work with the DCPU-16 toolchain.
+
 .. toctree::
    :numbered:
    :maxdepth: 2

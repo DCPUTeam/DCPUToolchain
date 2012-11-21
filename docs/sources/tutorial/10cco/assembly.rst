@@ -121,5 +121,5 @@ Here's the full code of the hello world demo:
         SET PC, end ; Loop forever
         
     message:
-        DAT "Hello, world!" 0
+        DAT "Hello, world!", 0
 
