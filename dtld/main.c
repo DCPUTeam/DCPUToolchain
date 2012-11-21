@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
     struct arg_file* symbol_file = arg_file0("s", "symbols", "<file>", "Produce a combined symbol file (~triples memory usage!).");
     struct arg_str* symbol_ext = arg_str0(NULL, "symbol-extension", "ext", "When -s is used, specifies the extension for symbol files.  Defaults to \"dsym16\".");
     struct arg_file* input_files = arg_filen(NULL, NULL, "<file>", 1, 100, "The input object files.");
-    struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
+    struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file.");
     struct arg_str* kernel_name = arg_str0("k", "kernel", "<name>", "Target the specified kernel.");
     struct arg_file* policy_file = arg_file0("p", "policy", "<file>", "Use the specified policy file instead of the kernel policy.");
     struct arg_file* jumplist_file = arg_file0(NULL, "jumplist", "<file>", "The path to output the jumplist to (only used for building kernels.");
