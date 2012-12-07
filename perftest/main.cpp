@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
             
     // And then use the VM.
     
-
+    //for (int size = 1024; size < 1025; size <<= 1){
     for (int size = 16; size < 5000; size <<= 1){
         std::vector<vm_t*> vms(size);
         
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
         {
             if (vm_timing_has_reached_mics(&freq_timer, 1000000))
             {
-                std::cout << "Emulating " << size << " at " << (double) freq_cycle_count / (double)vm_timing_get_cur_elapsed_mics(&freq_timer)*1000.0 << " kHz each." << std::endl;
+                std::cout << "Emulating " << size << " DCPUs at " << (double) freq_cycle_count / (double)vm_timing_get_cur_elapsed_mics(&freq_timer)*1000.0 << " kHz each." << std::endl;
                 vm_timing_reset_timer(&freq_timer);
                 freq_cycle_count = 0;
                 j++;

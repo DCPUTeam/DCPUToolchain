@@ -72,16 +72,44 @@ uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos)
         vm->sleep_cycles += 1; // Resolving this costs an additional cycle
         return &vm->ram[(uint16_t)(vm->registers[loc - NXT_VAL_A] + vm_consume_word(vm))];
     }
-    else if (loc == PUSH_POP)
+    else
     {
-        if (pos == POS_A)
-            t = vm->sp++;
-        else if (pos == POS_B)
-            t = --vm->sp;
-        else
-            t = vm->sp;
+        switch(loc)
+        {
+            case PUSH_POP: 
+                if (pos == POS_A)
+                    t = vm->sp++;
+                else if (pos == POS_B)
+                    t = --vm->sp;
+                else
+                    t = vm->sp;
+                
+                return &vm->ram[t];
+            case PEEK:
+                return &vm->ram[vm->sp];
+            case PICK:
+                vm->sleep_cycles += 1; // Resolving this costs an additional cycle
+                return &vm->ram[(uint16_t)(vm->sp + vm_consume_word(vm))];
+            case IA:
+                return &vm->ia;
+            case SP:
+                return &vm->sp;
+            case PC:
+                return &vm->pc;
+            case EX:
+                return &vm->ex;
+            case NXT:
+                vm->sleep_cycles += 1; //Resolving this costs an additional cycle
+                return &vm->ram[vm_consume_word(vm)];
+            default:
+                return &vm->dummy;
+        }
+        
+    }
+        /*
+        if (loc == PUSH_POP)
+    {
 
-        return &vm->ram[t];
     }
     else if (loc == PEEK)
         return &vm->ram[vm->sp];
@@ -105,6 +133,7 @@ uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos)
     }
     else
         return &vm->dummy; // Dummy position for assignments that silently fail.
+        */
 }
 
 // Sometimes an instruction will get the value of 'a' for a second
