@@ -88,8 +88,8 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 else(MSVC)
     # Assume GNU since there doesn't appear to be
     # a better way of detecting this.
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wdeclaration-after-statement -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Wno-unused-value")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wdeclaration-after-statement -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Wno-unused-value -O3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 endif()
 
 # Show configuration.
@@ -171,11 +171,10 @@ add_subdirectory(tool-errgen)
 add_subdirectory(libdcpu)
 add_subdirectory(libdcpu-pp-expr)
 add_subdirectory(libdcpu-vm)
+add_subdirectory(libdcpu-ci-objfmt)
 if(NOT ${RUNTIME_ONLY})
-    add_subdirectory(libdcpu-ci-dbgfmt)
     add_subdirectory(libdcpu-vm-dbg)
     add_subdirectory(libdcpu-pp)
-    add_subdirectory(libdcpu-ci-objfmt)
     add_subdirectory(libdcpu-ci-lang)
     add_subdirectory(libdcpu-ci-lang-c)
     add_subdirectory(libdcpu-ci-asm)
@@ -186,6 +185,8 @@ endif()
 # Put the GFLW projects in the correct directories.
 set_property(TARGET glfw PROPERTY FOLDER "third-party")
 set_property(TARGET uninstall PROPERTY FOLDER "third-party")
+
+add_subdirectory(perftest)
 
 ## Add executable folders.
 if(${BUILD_TOOLS} AND NOT ${RUNTIME_ONLY})
@@ -204,19 +205,6 @@ if(${BUILD_TOOLS} AND NOT ${RUNTIME_ONLY})
 endif()
 if(EXISTS "${toolchain_SOURCE_DIR}/dtgame/CMakeLists.txt")
     add_subdirectory(dtgame)
-endif()
-
-# Add documentation.
-if(${BUILD_DOCS})
-    add_subdirectory(docs)
-endif()
-
-# Add kernel and standard libraries.
-if(${BUILD_KERNELS})
-    add_subdirectory(kernel)
-endif()
-if(${BUILD_STDLIB})
-    add_subdirectory(stdlib-c)
 endif()
 
 # Add test suite.

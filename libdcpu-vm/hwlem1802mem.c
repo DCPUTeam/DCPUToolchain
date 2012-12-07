@@ -268,7 +268,7 @@ void vm_hw_lem1802_mem_put_char_to_screen(struct lem1802_hardware* hw, uint16_t 
     vm_hw_lem1802_mem_get_palette_color(hw, fore, foreclr);
     vm_hw_lem1802_mem_get_palette_color(hw, back, backclr);
 
-    // TODO get correct font position
+    // get correct font position
     fontloc = vm_hw_lem1802_mem_get_font(hw);
     if (fontloc == HW_LEM1802_DEFAULT_FONT_LOC)
     {
@@ -299,7 +299,7 @@ void vm_hw_lem1802_mem_put_char_to_screen(struct lem1802_hardware* hw, uint16_t 
             }
             else
             {
-                // foreground
+                // background
                 hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x, y)] = backclr[0];
                 hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x, y) + 1] = backclr[1];
                 hw->glfw_texture[HW_LEM1802_SCREEN_RGB_COOR(x, y) + 2] = backclr[2];
