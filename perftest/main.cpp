@@ -107,47 +107,50 @@ int main(int argc, char* argv[])
     
             
     // And then use the VM.
-    unsigned int num_vms = 1000;
-    std::vector<vm_t*> vms(num_vms);
     
-    // create all vms
-    for (std::vector<vm_t*>::iterator it = vms.begin(); it != vms.end(); ++it)
-    {
-        *it = vm_create();
-        (*it)->debug = 0;
-        (*it)->radiation_factor = 0;
-        (*it)->can_fire = true;
-        vm_flash(*it, flash);
-        //vm_hw_timer_init(*it);
-    }
-    
-    struct vm_tod_timer freq_timer;
-    unsigned long freq_cycle_count = 0;
-    const unsigned int ticks_per_cycle = 1667;
-    vm_timing_start_timer(&freq_timer);
-    while (1)
-    {
-        if (vm_timing_has_reached_mics(&freq_timer, 1000000))
-        {
-            std::cout << "Emulating " << num_vms << " at " << (double) freq_cycle_count / 1000.0 << " kHz each." << std::endl;
-            vm_timing_reset_timer(&freq_timer);
-            freq_cycle_count = 0;
-        }
+
+    for (int size = 16; size < 5000; size <<= 1){
+        std::vector<vm_t*> vms(size);
+        
+        // create all vms
         for (std::vector<vm_t*>::iterator it = vms.begin(); it != vms.end(); ++it)
         {
-            for (int i = 0; i < ticks_per_cycle; i++)
-                vm_cycle(*it);
-            
+            *it = vm_create();
+            (*it)->debug = 0;
+            (*it)->radiation_factor = 0;
+            (*it)->can_fire = true;
+            vm_flash(*it, flash);
+            //vm_hw_timer_init(*it);
         }
-        freq_cycle_count += ticks_per_cycle;
+        
+        struct vm_tod_timer freq_timer;
+        unsigned long freq_cycle_count = 0;
+        const unsigned int ticks_per_cycle = 10000;
+        vm_timing_start_timer(&freq_timer);
+        for (int j = 0; j < 1;)
+        {
+            if (vm_timing_has_reached_mics(&freq_timer, 1000000))
+            {
+                std::cout << "Emulating " << size << " at " << (double) freq_cycle_count / (double)vm_timing_get_cur_elapsed_mics(&freq_timer)*1000.0 << " kHz each." << std::endl;
+                vm_timing_reset_timer(&freq_timer);
+                freq_cycle_count = 0;
+                j++;
+            }
+            for (std::vector<vm_t*>::iterator it = vms.begin(); it != vms.end(); ++it)
+            {
+                for (int i = 0; i < ticks_per_cycle; i++)
+                    vm_cycle(*it);
+                
+            }
+            freq_cycle_count += ticks_per_cycle;
+        }
+        
+        // clean up
+        for (std::vector<vm_t*>::iterator it = vms.begin(); it != vms.end(); ++it)
+        {
+            vm_free(*it);
+        }
     }
-    
-    // clean up
-    for (std::vector<vm_t*>::iterator it = vms.begin(); it != vms.end(); ++it)
-    {
-        vm_free(*it);
-    }
-    
     
     
 

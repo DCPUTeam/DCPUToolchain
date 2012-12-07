@@ -272,17 +272,6 @@ void vm_cycle(vm_t* vm)
 
     if (vm->halted) return; // skip if the precycle hook halted the virtual machine
 
-    if (vm->on_fire)
-    {
-        vm_op_fire(vm);
-        return;
-    }
-
-    if (vm->radiation)
-    {
-        vm_op_radiation(vm);
-    }
-
     instruction = vm_consume_word(vm);
     op = INSTRUCTION_GET_OP(instruction);
     b = INSTRUCTION_GET_B(instruction);
@@ -291,137 +280,137 @@ void vm_cycle(vm_t* vm)
     switch (op)
     {
         case OP_SET:
-            vm_print_op("SET", vm, b, a);
+            // vm_print_op("SET", vm, b, a);
             vm_op_set(vm, b, a);
             break;
 
         case OP_ADD:
-            vm_print_op("ADD", vm, b, a);
+            // vm_print_op("ADD", vm, b, a);
             vm_op_add(vm, b, a);
             break;
 
         case OP_SUB:
-            vm_print_op("SUB", vm, b, a);
+            // vm_print_op("SUB", vm, b, a);
             vm_op_sub(vm, b, a);
             break;
 
         case OP_MUL:
-            vm_print_op("MUL", vm, b, a);
+            // vm_print_op("MUL", vm, b, a);
             vm_op_mul(vm, b, a);
             break;
 
         case OP_MLI:
-            vm_print_op("MLI", vm, b, a);
+            // vm_print_op("MLI", vm, b, a);
             vm_op_mli(vm, b, a);
             break;
 
         case OP_DIV:
-            vm_print_op("DIV", vm, a, b);
+            // vm_print_op("DIV", vm, a, b);
             vm_op_div(vm, b, a);
             break;
 
         case OP_DVI:
-            vm_print_op("DVI", vm, b, a);
+            // vm_print_op("DVI", vm, b, a);
             vm_op_dvi(vm, b, a);
             break;
 
         case OP_MOD:
-            vm_print_op("MOD", vm, b, a);
+            // vm_print_op("MOD", vm, b, a);
             vm_op_mod(vm, b, a);
             break;
 
         case OP_MDI:
-            vm_print_op("MDI", vm, b, a);
+            // vm_print_op("MDI", vm, b, a);
             vm_op_mdi(vm, b, a);
             break;
 
         case OP_AND:
-            vm_print_op("AND", vm, b, a);
+            // vm_print_op("AND", vm, b, a);
             vm_op_and(vm, b, a);
             break;
 
         case OP_BOR:
-            vm_print_op("BOR", vm, b, a);
+            // vm_print_op("BOR", vm, b, a);
             vm_op_bor(vm, b, a);
             break;
 
         case OP_XOR:
-            vm_print_op("XOR", vm, b, a);
+            // vm_print_op("XOR", vm, b, a);
             vm_op_xor(vm, b, a);
             break;
 
         case OP_SHR:
-            vm_print_op("SHR", vm, b, a);
+            // vm_print_op("SHR", vm, b, a);
             vm_op_shr(vm, b, a);
             break;
 
         case OP_ASR:
-            vm_print_op("ASR", vm, b, a);
+            // vm_print_op("ASR", vm, b, a);
             vm_op_asr(vm, b, a);
             break;
 
         case OP_SHL:
-            vm_print_op("SHL", vm, b, a);
+            // vm_print_op("SHL", vm, b, a);
             vm_op_shl(vm, b, a);
             break;
 
         case OP_IFB:
-            vm_print_op("IFB", vm, b, a);
+            // vm_print_op("IFB", vm, b, a);
             vm_op_ifb(vm, b, a);
             break;
 
         case OP_IFC:
-            vm_print_op("IFC", vm, b, a);
+            // vm_print_op("IFC", vm, b, a);
             vm_op_ifc(vm, b, a);
             break;
 
         case OP_IFE:
-            vm_print_op("IFE", vm, b, a);
+            // vm_print_op("IFE", vm, b, a);
             vm_op_ife(vm, b, a);
             break;
 
         case OP_IFN:
-            vm_print_op("IFN", vm, b, a);
+            // vm_print_op("IFN", vm, b, a);
             vm_op_ifn(vm, b, a);
             break;
 
         case OP_IFG:
-            vm_print_op("IFG", vm, b, a);
+            // vm_print_op("IFG", vm, b, a);
             vm_op_ifg(vm, b, a);
             break;
 
         case OP_IFA:
-            vm_print_op("IFA", vm, b, a);
+            // vm_print_op("IFA", vm, b, a);
             vm_op_ifa(vm, b, a);
             break;
 
         case OP_IFL:
-            vm_print_op("IFL", vm, b, a);
+            // vm_print_op("IFL", vm, b, a);
             vm_op_ifl(vm, b, a);
             break;
 
         case OP_IFU:
-            vm_print_op("IFU", vm, b, a);
+            // vm_print_op("IFU", vm, b, a);
             vm_op_ifu(vm, b, a);
             break;
 
         case OP_ADX:
-            vm_print_op("ADX", vm, b, a);
+            // vm_print_op("ADX", vm, b, a);
             vm_op_adx(vm, b, a);
             break;
 
         case OP_SBX:
-            vm_print_op("SBX", vm, b, a);
+            // vm_print_op("SBX", vm, b, a);
             vm_op_sbx(vm, b, a);
             break;
 
         case OP_STI:
-            vm_print_op("STI", vm, b, a);
+            // vm_print_op("STI", vm, b, a);
             vm_op_sti(vm, b, a);
             break;
 
         case OP_STD:
-            vm_print_op("STD", vm, b, a);
+            // vm_print_op("STD", vm, b, a);
             vm_op_std(vm, b, a);
             break;
 
@@ -429,47 +418,47 @@ void vm_cycle(vm_t* vm)
             switch (b)
             {
                 case NBOP_JSR:
-                    vm_print_op_nonbasic("JSR", vm, a);
+                    // vm_print_op_nonbasic("JSR", vm, a);
                     vm_op_jsr(vm, a);
                     break;
 
                 case NBOP_INT:
-                    vm_print_op_nonbasic("INT", vm, a);
+                    // vm_print_op_nonbasic("INT", vm, a);
                     vm_op_int(vm, a);
                     break;
 
                 case NBOP_IAG:
-                    vm_print_op_nonbasic("IAG", vm, a);
+                    // vm_print_op_nonbasic("IAG", vm, a);
                     vm_op_iag(vm, a);
                     break;
 
                 case NBOP_IAS:
-                    vm_print_op_nonbasic("IAS", vm, a);
+                    // vm_print_op_nonbasic("IAS", vm, a);
                     vm_op_ias(vm, a);
                     break;
 
                 case NBOP_RFI:
-                    vm_print_op_nonbasic("RFI", vm, a);
+                    // vm_print_op_nonbasic("RFI", vm, a);
                     vm_op_rfi(vm, a);
                     break;
 
                 case NBOP_IAQ:
-                    vm_print_op_nonbasic("IAQ", vm, a);
+                    // vm_print_op_nonbasic("IAQ", vm, a);
                     vm_op_iaq(vm, a);
                     break;
 
                 case NBOP_HWN:
-                    vm_print_op_nonbasic("HWN", vm, a);
+                    // vm_print_op_nonbasic("HWN", vm, a);
                     vm_op_hwn(vm, a);
                     break;
 
                 case NBOP_HWQ:
-                    vm_print_op_nonbasic("HWQ", vm, a);
+                    // vm_print_op_nonbasic("HWQ", vm, a);
                     vm_op_hwq(vm, a);
                     break;
 
                 case NBOP_HWI:
-                    vm_print_op_nonbasic("HWI", vm, a);
+                    // vm_print_op_nonbasic("HWI", vm, a);
                     vm_op_hwi(vm, a);
                     break;
 
@@ -500,10 +489,4 @@ void vm_cycle(vm_t* vm)
                 vm_halt(vm, "Invalid non-basic opcode %u. (0x%04X at 0x%04X)\n", b, instruction, vm->pc);
             break;
     }
-
-    if (vm->debug || vm->dump != NULL)
-        fprintf(vm->dump == NULL ? stdout : vm->dump, "\n");
-
-    if (vm->dump != NULL)
-        vm_dump_state(vm);
 }
