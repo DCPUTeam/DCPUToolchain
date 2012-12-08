@@ -52,7 +52,8 @@ int main(int argc, char* argv[])
     struct arg_lit* assemble_only = arg_lit0("c", NULL, "Compile and assemble, but do not link");
     struct arg_str* type_assembler = arg_str0("t", NULL, "<type>", "The type of assembler to output for.");
     struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
-    struct arg_file* object_files = arg_file1(NULL, NULL, "<object_files>", "The object files to link with.");
+    // 50 is maxcount for object files, increase this if someone needs more than fifty object files
+    struct arg_file* object_files = arg_filen(NULL, NULL, "<object_files>", 0, 50, "The object files to link with.");
     struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
     // 20 is maxcount for include directories, this has to be set to some constant number.
     struct arg_file* include_dirs = arg_filen("I", NULL, "<directory>", 0, 20, "Adds the directory <dir> to the directories to be searched for header files.");
