@@ -48,15 +48,18 @@ int main(int argc, char* argv[])
 
     // Define arguments.
     struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
+    struct arg_lit* compile_only = arg_lit0("S", NULL, "Compile only; do not assemble or link");
+    struct arg_lit* assemble_only = arg_lit0("c", NULL, "Compile and assemble, but do not link");
     struct arg_str* type_assembler = arg_str0("t", NULL, "<type>", "The type of assembler to output for.");
     struct arg_file* input_file = arg_file1(NULL, NULL, "<file>", "The input file (or - to read from standard input).");
+    struct arg_file* object_files = arg_file1(NULL, NULL, "<object_files>", "The object files to link with.");
     struct arg_file* output_file = arg_file1("o", "output", "<file>", "The output file (or - to send to standard output).");
     // 20 is maxcount for include directories, this has to be set to some constant number.
     struct arg_file* include_dirs = arg_filen("I", NULL, "<directory>", 0, 20, "Adds the directory <dir> to the directories to be searched for header files.");
     struct arg_lit* verbose = arg_litn("v", NULL, 0, LEVEL_EVERYTHING - LEVEL_DEFAULT, "Increase verbosity.");
     struct arg_lit* quiet = arg_litn("q", NULL,  0, LEVEL_DEFAULT - LEVEL_SILENT, "Decrease verbosity.");
     struct arg_end* end = arg_end(20);
-    void* argtable[] = { output_file, show_help, type_assembler, include_dirs, input_file, verbose, quiet, end };
+    void* argtable[] = { output_file, show_help, compile_only, assemble_only, type_assembler, include_dirs, input_file, object_files, verbose, quiet, end };
 
     // Parse arguments.
     int nerrors = arg_parse(argc, argv, argtable);
