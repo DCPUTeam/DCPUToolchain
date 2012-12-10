@@ -45,8 +45,15 @@ int main(int argc, char** argv)
         if(!splash->exec())
             return 0;
 
+		QString fileName = splash->fileName;
+		QStringList parts = fileName.split(".");
+
+		if(parts.count() < 2) {
+			fileName.append(".dasm");
+		}
+
         p->setTitle(splash->projectTitle);
-        p->addFile(splash->fileName, true);
+        p->addFile(fileName, true);
         p->setToolchain(new DCPUToolchain());
     }
 
