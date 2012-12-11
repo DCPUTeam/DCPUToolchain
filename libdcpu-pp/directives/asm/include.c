@@ -81,6 +81,8 @@ static void include_handle(state_t* state, match_t* match, bool* reprocess)
         ppimpl_process(substate->child);
         
         // Switch lists back.
+        substate->parent->handlers = substate->child->handlers;
+        substate->parent->scopes = substate->child->scopes;
         substate->child->handlers = old_handlers;
         substate->child->scopes = old_scopes;
         

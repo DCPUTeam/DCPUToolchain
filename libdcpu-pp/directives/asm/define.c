@@ -183,7 +183,7 @@ static void define_handle(state_t* state, match_t* match, bool* reprocess)
         bltrimws(word);
 
         // Handle termination.
-        if (blength(word) > 0 && c == ' ')
+        if (blength(word) > 0 && (c == ' ' || c == '\t'))
         {
             // End of word.
             btrimws(word);
@@ -279,7 +279,7 @@ static void macro_def_handle(state_t* state, match_t* match, bool* reprocess)
         bltrimws(word);
 
         // Handle termination.
-        if (blength(word) > 0 && c == ' ' && !is_macro)
+        if (blength(word) > 0 && (c == ' ' || c == '\t') && !is_macro)
         {
             // End of word.
             btrimws(word);
