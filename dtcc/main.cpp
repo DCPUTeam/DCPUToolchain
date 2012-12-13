@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 
     if (nerrors != 0 || show_help->count != 0)
     {
-        if (nerrors != 0)
+        if (nerrors != 0 && show_help->count == 0)
             arg_print_errors(stderr, end, "compiler");
 
         fprintf(stderr, "syntax:\n    dtcc");

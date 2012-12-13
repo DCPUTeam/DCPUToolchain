@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 
     if (nerrors != 0 || show_help->count != 0)
     {
-        if (nerrors != 0)
+        if (nerrors != 0 && show_help->count == 0)
             arg_print_errors(stdout, end, "preprocessor");
 
         printd(LEVEL_DEFAULT, "syntax:\n    dtpp");

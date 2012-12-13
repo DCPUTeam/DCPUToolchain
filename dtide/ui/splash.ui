@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>372</width>
-    <height>178</height>
+    <height>208</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>130</y>
+     <y>160</y>
      <width>351</width>
      <height>31</height>
     </rect>
@@ -53,7 +53,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>40</y>
      <width>351</width>
      <height>27</height>
     </rect>
@@ -63,7 +63,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>50</y>
+     <y>80</y>
      <width>351</width>
      <height>71</height>
     </rect>
@@ -90,6 +90,19 @@
      <widget class="QLineEdit" name="main_file"/>
     </item>
    </layout>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>351</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#ff0004;&quot;&gt;Warning: This software is in alpha. Use only for testing.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </widget>
  </widget>
  <resources/>
