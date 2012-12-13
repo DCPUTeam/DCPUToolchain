@@ -360,18 +360,3 @@ void osutil_usleep(int milliseconds)
     usleep(milliseconds);
 #endif
 }
-
-FILE* osutil_popen(bstring command, bstring mode)
-{
-    char *ccommand = bstr2cstr(command, '0');
-    char *cmode = bstr2cstr(mode, '0');
-
-    FILE *pipe;
-#ifdef _WIN32
-    pipe = _popen(ccommand, cmode);
-#else
-    pipe = popen(ccommand, cmode);
-#endif
-
-    return pipe;
-}

@@ -37,6 +37,5 @@ bstring osutil_getstdlibpath();
 const char* osutil_getkerneldefault();
 int osutil_gettimeofday(struct ostimeval* tv, void* unused);
 void osutil_usleep(int milliseconds);
-FILE* osutil_popen(bstring command, bstring type);
 
 #endif

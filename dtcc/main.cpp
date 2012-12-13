@@ -198,45 +198,81 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    // Re-open the temporary file for reading.
-    std::ifstream input(temp.c_str(), std::ios::in);
-    if (input.bad() || input.fail())
-    {
-        printd(LEVEL_ERROR, "compiler: temporary file not readable.\n");
-        arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-        return 1;
-    }
+	if(compile_only->count > 0)
+	{
+		// Re-open the temporary file for reading.
+	    std::ifstream input(temp.c_str(), std::ios::in);
+		if (input.bad() || input.fail())
+	    {
+	        printd(LEVEL_ERROR, "compiler: temporary file not readable.\n");
+			arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+			return 1;
+	    }
 
-    // Open the output file.
-    std::ostream* output;
-    if (strcmp(output_file->filename[0], "-") != 0)
-    {
-        // Write to file.
-        output = new std::ofstream(output_file->filename[0], std::ios::out | std::ios::trunc);
+		// Open the output file.
+		std::ostream* output;
+		if (strcmp(output_file->filename[0], "-") != 0)
+		{
+	        // Write to file.
+			output = new std::ofstream(output_file->filename[0], std::ios::out | std::ios::trunc);
 
-        if (output->bad() || output->fail())
-        {
-            printd(LEVEL_ERROR, "compiler: output file not readable.\n");
-            arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-            return 1;
-        }
-    }
-    else
-    {
-        // Set output to cout.
-        output = &std::cout;
-    }
+			if (output->bad() || output->fail())
+			{
+				printd(LEVEL_ERROR, "compiler: output file not readable.\n");
+				arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+	            return 1;
+			}
+		}
+		else
+	    {
+			// Set output to cout.
+			output = &std::cout;
+		}
 
-    // Copy data.
-    std::copy(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>(), std::ostreambuf_iterator<char>(*output));
+		// Copy data.
+		std::copy(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>(), std::ostreambuf_iterator<char>(*output));
 
-    // Close files and delete temporary.
-    if (strcmp(output_file->filename[0], "-") != 0)
-    {
-        ((std::ofstream*)output)->close();
-        delete output;
-    }
-    input.close();
+		// Close files and delete temporary.
+		if (strcmp(output_file->filename[0], "-") != 0)
+		{
+	        ((std::ofstream*)output)->close();
+			delete output;
+		}
+		input.close();
+	} else if(assemble_only->count > 0) {
+		bstring command = bfromcstr("dtasm -o ");
+		bcatcstr(command, output_file->filename[0]);
+		bconchar(command, ' ');
+		bcatcstr(command, temp.c_str());
+		printf("%s\n", bstr2cstr(command, '\0'));
+		system(bstr2cstr(command, '\0'));
+	} else {
+		std::string temp2 = std::string(tempnam(".", "cc."));
+		bstring command = bfromcstr("dtasm -o ");
+		bcatcstr(command, temp2.c_str());
+		bconchar(command, ' ');
+		bcatcstr(command, temp.c_str());
+		printf("%s\n", bstr2cstr(command, '\0'));
+		system(bstr2cstr(command, '\0'));
+
+		command = bfromcstr("dtld ");
+		bcatcstr(command, " -o ");
+		bcatcstr(command, output_file->filename[0]);
+		bconchar(command, ' ');
+		bcatcstr(command, temp.c_str());
+
+		int i;
+		for(i = 0; i < object_files->count; i++) {
+			bconchar(command, ' ');
+			bcatcstr(command, object_files->filename[i]);
+		}
+
+		printf("%s\n", bstr2cstr(command, '\0'));
+		system(bstr2cstr(command, '\0'));
+
+		unlink(temp2.c_str());
+	}
+
     unlink(temp.c_str());
 
     arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
