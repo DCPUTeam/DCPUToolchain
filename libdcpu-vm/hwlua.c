@@ -170,7 +170,7 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
     luaX_loadexpressionlib(hw->state);
 
     // Execute the code in the new Lua context.
-    if (luaL_dofile(hw->state, path->data) != 0)
+    if (luaL_dofile(hw->state, (char*)path->data) != 0)
     {
         printf("lua error was %s.\n", lua_tostring(hw->state, -1));
 
@@ -268,7 +268,7 @@ void vm_hw_lua_init(vm_t* vm)
 #endif
 
     // Attempt to open the hw directory.
-    dir = opendir(hwpath->data);
+    dir = opendir((char*)hwpath->data);
     if (dir == NULL)
     {
         // The directory does not exist, so we don't load

@@ -632,6 +632,7 @@ void vm_op_jsr(vm_t* vm, uint16_t a)
 void vm_op_hcf(vm_t* vm, uint16_t a)
 {
     uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+    (void)val_a;
     OP_NUM_CYCLES(9);
     vm->halted = true;
 }
@@ -663,6 +664,7 @@ void vm_op_ias(vm_t* vm, uint16_t a)
 void vm_op_rfi(vm_t* vm, uint16_t a)
 {
     uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+    (void)val_a;
     OP_NUM_CYCLES(3);
     VM_SKIP_RESET;
     vm->registers[REG_A] = vm->ram[vm->sp++];
@@ -675,7 +677,6 @@ void vm_op_rfi(vm_t* vm, uint16_t a)
 
 void vm_op_iaq(vm_t* vm, uint16_t a)
 {
-    uint16_t i = 0x0;
     uint16_t val_a = vm_resolve_value(vm, a, POS_A);
     OP_NUM_CYCLES(2);
 

@@ -16,6 +16,13 @@ else()
         DEPENDS font.png embedfont)
 endif()
 
+if()
+else(MSVC)
+    # Assume GNU since there doesn't appear to be
+    # a better way of detecting this.
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+endif()
+
 find_package(OpenGL REQUIRED)
 add_library(libdcpu-vm ${LIBRARY_FORMAT}
     dcpu.c
