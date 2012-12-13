@@ -705,8 +705,6 @@ void vm_op_hwn(vm_t* vm, uint16_t a)
 
     *store_a = vm_hw_count(vm);
 
-    if (vm->debug) printf("\nhwn: %d devices", *store_a);
-
     VM_HOOK_FIRE(store_a);
     vm->skip = false;
 }
