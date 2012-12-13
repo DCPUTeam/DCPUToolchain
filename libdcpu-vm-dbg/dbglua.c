@@ -28,6 +28,7 @@
 #include <luaglob.h>
 #include "dbglua.h"
 #include "dcpu.h"
+#include "dcpuexec.h"
 
 #define HANDLER_TABLE_COMMANDS_NAME "__cmdhandlers"
 #define HANDLER_TABLE_HOOKS_NAME "__hookhandlers"

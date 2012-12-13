@@ -28,6 +28,7 @@
 #include <bstring.h>
 #include <argtable2.h>
 #include <dcpu.h>
+#include <dcpuexec.h>
 #include <osutil.h>
 #include <version.h>
 #include <ldata.h>

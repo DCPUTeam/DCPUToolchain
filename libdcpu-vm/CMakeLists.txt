@@ -28,6 +28,7 @@ add_library(libdcpu-vm ${LIBRARY_FORMAT}
     dcpu.c
     dcpubase.h
     dcpudis.h
+    dcpuexec.h
     dcpuhook.h
     dcpuops.h
     glfwutils.h
@@ -45,6 +46,7 @@ add_library(libdcpu-vm ${LIBRARY_FORMAT}
     timing.h
     dcpubase.c
     dcpudis.c
+    dcpuexec.c
     dcpuhook.c
     dcpuops.c
     glfwutils.c

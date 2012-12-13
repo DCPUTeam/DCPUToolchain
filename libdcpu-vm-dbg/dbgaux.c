@@ -31,6 +31,7 @@
 #include "dbgaux.h"
 #include "dbglua.h"
 #include "dcpudis.h"
+#include "dcpuexec.h"
 
 uint16_t flash_size = 0;
 uint16_t flash[0x10000];
