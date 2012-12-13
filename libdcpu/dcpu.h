@@ -337,6 +337,32 @@ typedef struct
 // Pre declared.
 typedef struct vm vm_t;
 
+/// The number of maximum amout of hardwear units that can be attached to a VM.
+#define VM_HW_MAX 32 /*0x1000*/
+
+///
+/// @brief The function signature of an internal hardware interrupt.
+///
+typedef void (*hw_interrupt)(vm_t* vm, void* ud);
+
+///
+/// @brief The function signature for freeing resources used by hardware.
+///
+typedef void (*hw_free_handler)(void* ud);
+
+///
+/// @brief Represents a DCPU-16 hardware component.
+///
+typedef struct
+{
+    uint32_t id;                ///< The hardware identifier.
+    uint16_t version;           ///< The hardware version.
+    uint32_t manufacturer;      ///< The hardware manufacturer.
+    hw_interrupt handler;       ///< The function which handles interrupts sent to this hardware component.
+    hw_free_handler free_handler; ///< The function which handles free'ing any data this hardware component uses.
+    void* userdata;             ///< Userdata associated with the hardware.
+} hw_t;
+
 /// The number of maximum hooks that the vm can have installed.
 #define VM_HOOK_MAX 50
 
@@ -386,33 +412,12 @@ struct vm
     uint16_t hook_mode[VM_HOOK_MAX];
     void* hook_userdata[VM_HOOK_MAX];
 
+    hw_t* hw_list[VM_HW_MAX];
+
     FILE* dump;                 ///< An open file descriptor where instruction execution information should be sent, or NULL.
 
     host_context_t* host;       ///< The hardware emulation host.
 };
-
-///
-/// @brief The function signature of an internal hardware interrupt.
-///
-typedef void (*hw_interrupt)(vm_t* vm, void* ud);
-
-///
-/// @brief The function signature for freeing resources used by hardware.
-///
-typedef void (*hw_free_handler)(void* ud);
-
-///
-/// @brief Represents a DCPU-16 hardware component.
-///
-typedef struct
-{
-    uint32_t id;                ///< The hardware identifier.
-    uint16_t version;           ///< The hardware version.
-    uint32_t manufacturer;      ///< The hardware manufacturer.
-    hw_interrupt handler;       ///< The function which handles interrupts sent to this hardware component.
-    hw_free_handler free_handler; ///< The function which handles free'ing any data this hardware component uses.
-    void* userdata;             ///< Userdata associated with the hardware.
-} hw_t;
 
 vm_t* vm_create();
 void vm_init(vm_t* vm);

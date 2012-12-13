@@ -117,7 +117,6 @@ vm_t* start_emulation(
     // And then use the VM.
     vm = vm_create();
     vm_flash(vm, flash);
-    vm_hw_initialize();
 
     // Init hardware.
     vm_hw_timer_init(vm);
@@ -156,7 +155,6 @@ void stop_emulation()
     if(vm)
     {
         vm_hw_lua_free(vm);
-        vm_hw_free_all(vm);
         vm_free(vm);
         vm = NULL;
         has_initialized_glfw3 = false;

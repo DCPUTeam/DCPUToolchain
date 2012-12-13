@@ -262,12 +262,18 @@ int main(int argc, char* argv[])
 
     if (legacy_mode->count > 0)
     {
-        for (i = 0; i < vm_hw_count(vm); i++)
-            if (vm_hw_get_device(vm, i).id == 0x7349F615 && vm_hw_get_device(vm, i).manufacturer == 0x1C6C8B36)
+        for (i = 0; i < vm_hw_count(vm); i++) {
+
+            hw_t* device = vm_hw_get_device(vm, i);
+            if (device == NULL)
+                continue;
+
+            if (device->id == 0x7349F615 && device->manufacturer == 0x1C6C8B36)
             {
-                vm_hw_lem1802_mem_set_screen((struct lem1802_hardware*)vm_hw_get_device(vm, i).userdata, 0x8000);
+                vm_hw_lem1802_mem_set_screen((struct lem1802_hardware*)device->userdata, 0x8000);
                 break;
             }
+        }
     }
 
     vm_execute(vm, execution_dump_file->count > 0 ? execution_dump_file->filename[0] : NULL);
@@ -288,7 +294,6 @@ int main(int argc, char* argv[])
     }
 
     vm_hw_lua_free(vm);
-    vm_hw_free_all(vm);
     vm_free(vm);
 
     arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));

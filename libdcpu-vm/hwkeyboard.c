@@ -199,9 +199,10 @@ void vm_hw_keyboard_init(vm_t* vm)
     hw->device.version = 0x0001;
     hw->device.manufacturer = 0x0;
     hw->device.handler = &vm_hw_keyboard_interrupt;
+    hw->device.free_handler = NULL;
     hw->device.userdata = hw;
 
-    hw->hw_id = vm_hw_register(vm, hw->device);
+    hw->hw_id = vm_hw_register(vm, &hw->device);
 
     g_hw = hw;
 }

@@ -90,7 +90,7 @@ void vm_hw_timer_init(vm_t* vm)
     hw->device.userdata = hw;
 
     hw->hook_id = vm_hook_register(vm, &vm_hw_timer_cycle, HOOK_ON_PRE_CYCLE, hw);
-    hw->hw_id = vm_hw_register(vm, hw->device);
+    hw->hw_id = vm_hw_register(vm, &hw->device);
 
     vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
 }
@@ -100,5 +100,5 @@ void vm_hw_timer_free(void* ud)
     struct timer_hardware* hw = (struct timer_hardware*) ud;
 
     vm_hook_unregister(hw->vm, hw->hook_id);
-    vm_hw_unregister(hw->vm, hw->hw_id);
+    free(hw);
 }

@@ -232,7 +232,7 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
     hw->device.handler = &vm_hw_lua_interrupt;
     hw->device.free_handler = NULL;
     hw->device.userdata = hw;
-    vm_hw_register(vm, hw->device);
+    vm_hw_register(vm, &hw->device);
 
     // Register the hooks.
     hw->cycle_id = vm_hook_register(vm, &vm_hw_lua_cycle, HOOK_ON_POST_CYCLE, hw);

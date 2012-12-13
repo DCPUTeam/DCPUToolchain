@@ -187,7 +187,7 @@ void vm_hw_m35fd_init(vm_t* vm)
     hw->device.userdata = hw;
 
     hw->hw_hook = vm_hook_register(vm, &vm_hw_m35fd_cycle, HOOK_ON_60HZ, hw);
-    hw->hw_id = vm_hw_register(vm, hw->device);
+    hw->hw_id = vm_hw_register(vm, &hw->device);
 
     vm_hw_m35fd_load_disk(hw, "m35fd.bin");
 }

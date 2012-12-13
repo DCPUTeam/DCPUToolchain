@@ -11,6 +11,8 @@
 /// This implements the supporting functions found in dcpu.h.
 ///
 
+#define PRIVATE_VM_ACCESS
+
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -54,6 +56,7 @@ void vm_init(vm_t* vm)
 
     // Init subsystem that hangs on the vm struct.
     vm_hook_initialize(vm);
+    vm_hw_initialize(vm);
 }
 
 ///
@@ -137,7 +140,8 @@ vm_t* vm_create()
 ///
 void vm_free(vm_t* vm)
 {
-    // Free the memory.
+    // Hw have free hooks, call them.
+    vm_hw_free_all(vm);
     free(vm);
 }
 
