@@ -396,7 +396,8 @@ typedef struct
 } hw_t;
 
 vm_t* vm_create();
-void vm_init(vm_t* vm, bool init_memory);
+void vm_init(vm_t* vm);
+void vm_reset(vm_t* vm, bool reset_memory);
 void vm_flash(vm_t* vm, uint16_t memory[0x10000]);
 void vm_free(vm_t* vm);
 
