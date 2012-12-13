@@ -51,6 +51,9 @@ void vm_init(vm_t* vm)
     // This should only be done on init.
     vm->host = NULL;
     vm->debug = false;
+
+    // Init subsystem that hangs on the vm struct.
+    vm_hook_initialize(vm);
 }
 
 ///

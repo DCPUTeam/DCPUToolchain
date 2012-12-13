@@ -334,13 +334,27 @@ typedef struct
     get_ud_t get_ud;
 } host_context_t;
 
+// Pre declared.
+typedef struct vm vm_t;
+
+/// The number of maximum hooks that the vm can have installed.
+#define VM_HOOK_MAX 50
+
+///
+/// @brief Called when the registerd hook has been fired.
+///
+/// @param pos On write hook the memory location written.
+/// @param ud The given userdata when the hook was registered.
+/// 
+typedef void (*vm_hook)(vm_t*, uint16_t pos, void* ud);
+
 ///
 /// @brief Represents a DCPU-16 virtual machine.
 ///
 /// One of the core structures of the toolchain.  Represents a DCPU-16
 /// virtual machine upon which you can perform operations using the library.
 ///
-typedef struct
+struct vm
 {
     uint16_t registers[8];      ///< The 8 virtual machine registers: A, B, C, X, Y, Z, I, J.
     uint16_t pc;                ///< The virtual machine's current instruction position.
@@ -367,10 +381,15 @@ typedef struct
     bool radiation;
     int radiation_cycles;
     int radiation_cycles_target;
+
+    vm_hook hook_list[VM_HOOK_MAX];
+    uint16_t hook_mode[VM_HOOK_MAX];
+    void* hook_userdata[VM_HOOK_MAX];
+
     FILE* dump;                 ///< An open file descriptor where instruction execution information should be sent, or NULL.
 
     host_context_t* host;       ///< The hardware emulation host.
-} vm_t;
+};
 
 ///
 /// @brief The function signature of an internal hardware interrupt.

@@ -117,7 +117,6 @@ vm_t* start_emulation(
     // And then use the VM.
     vm = vm_create();
     vm_flash(vm, flash);
-    vm_hook_initialize();
     vm_hw_initialize();
 
     // Init hardware.
