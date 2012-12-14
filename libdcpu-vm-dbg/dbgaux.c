@@ -18,8 +18,7 @@
 #include <bstring.h>
 #include <simclist.h>
 #include <iio.h>
-#include <dcpu.h>
-#include <dcpubase.h>
+#include <vm.h>
 #include <dcpuhook.h>
 #include <debug.h>
 #include <imap.h>

@@ -15,7 +15,7 @@
 #ifndef __DCPUHWTIMER_H
 #define __DCPUHWTIMER_H
 
-#include "dcpu.h"
+#include "vm.h"
 
 struct timer_hardware
 {

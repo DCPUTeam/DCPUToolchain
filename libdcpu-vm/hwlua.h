@@ -15,7 +15,7 @@
 #ifndef __DCPUHWLUA_H
 #define __DCPUHWLUA_H
 
-#include "dcpu.h"
+#include "vm.h"
 
 void vm_hw_lua_init(vm_t* vm);
 void vm_hw_lua_free(vm_t* vm);

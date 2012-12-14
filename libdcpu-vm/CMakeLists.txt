@@ -25,8 +25,6 @@ endif()
 
 find_package(OpenGL REQUIRED)
 add_library(libdcpu-vm ${LIBRARY_FORMAT}
-    dcpu.c
-    dcpubase.h
     dcpudis.h
     dcpuexec.h
     dcpuhook.h
@@ -44,6 +42,8 @@ add_library(libdcpu-vm ${LIBRARY_FORMAT}
     hwsped3.h
     hwtimer.h
     timing.h
+    vm.h
+    dcpu.c
     dcpubase.c
     dcpudis.c
     dcpuexec.c

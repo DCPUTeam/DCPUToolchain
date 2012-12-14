@@ -19,12 +19,12 @@
 #include <stdio.h>
 #include <time.h>
 #include <debug.h>
-#include "hw.h"
-#include "hwtimer.h"
-#include "dcpu.h"
-#include "dcpubase.h"
+
+#include "vm.h"
 #include "dcpuhook.h"
 #include "dcpuops.h"
+#include "hw.h"
+#include "hwtimer.h"
 
 void vm_hw_timer_cycle(vm_t* vm, uint16_t pos, void* ud)
 {

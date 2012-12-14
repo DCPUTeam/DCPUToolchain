@@ -15,7 +15,7 @@
 #ifndef __DCPUHW_H
 #define __DCPUHW_H
 
-#include "dcpu.h"
+#include "vm.h"
 
 #ifdef PRIVATE_VM_ACCESS
 void vm_hw_initialize(vm_t* vm);

@@ -22,15 +22,16 @@
 #include <debug.h>
 #include <GL/glfw3.h>
 #include <stdlib.h>
+#include "glfwutils.h"
+
+#include "vm.h"
+#include "dcpuhook.h"
 #include "hw.h"
 #include "hwkeyboard.h"
 #include "hwlem1802.h"
 #include "hwlem1802mem.h"
 #include "hwlem1802util.h"
 #include "hwioascii.h"
-#include "dcpuhook.h"
-#include "dcpubase.h"
-#include "glfwutils.h"
 
 GLint next_texture_id = 13;
 

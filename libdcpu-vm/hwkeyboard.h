@@ -13,6 +13,9 @@
 #ifndef __DCPUKEYBOARD_H
 #define __DCPUKEYBOARD_H
 
+#include <GL/glfw3.h>
+#include "vm.h"
+
 #define KB_BUFFER_COUNT    100
 #define KB_PRESSED_COUNT   0x91
 
@@ -20,9 +23,6 @@
 #define KB_INTERRUPT_STORE 1
 #define KB_INTERRUPT_TEST  2
 #define KB_INTERRUPT_MSG   3
-
-#include "dcpu.h"
-#include <GL/glfw3.h>
 
 struct keyboard_hardware
 {

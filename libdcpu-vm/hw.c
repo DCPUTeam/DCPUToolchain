@@ -18,7 +18,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <debug.h>
-#include "dcpubase.h"
+
+#include "vm.h"
 #include "hw.h"
 
 void vm_hw_initialize(vm_t* vm)

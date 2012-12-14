@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <debug.h>
-#include "dcpubase.h"
+#include "vm.h"
 #include "dcpuops.h"
 #include "dcpuhook.h"
 #include "hw.h"

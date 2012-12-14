@@ -13,7 +13,7 @@
 #ifndef __DCPUHWM35FD_H
 #define __DCPUHWM35FD_H
 
-#include "dcpu.h"
+#include "vm.h"
 
 #define M35FD_STATE_NO_MEDIA     0
 #define M35FD_STATE_READY     1

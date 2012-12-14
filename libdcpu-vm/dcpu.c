@@ -19,12 +19,9 @@
 #include <stdint.h>
 #include <time.h>
 #include <debug.h>
-#include "dcpu.h"
-#include "dcpubase.h"
+#include "vm.h"
 #include "dcpuhook.h"
-#include "hwtimer.h"
 #include "hw.h"
-#include "timing.h"
 
 ///
 /// @brief Initializes a new virtual machine structure.

@@ -12,7 +12,7 @@
 #ifndef __DCPUEXEC_H
 #define __DCPUEXEC_H
 
-#include "dcpu.h"
+#include "vm.h"
 
 void vm_execute(vm_t* vm, const char* execution_dump);
 

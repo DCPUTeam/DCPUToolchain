@@ -15,7 +15,7 @@
 #ifndef __DCPUHOOK_H
 #define __DCPUHOOK_H
 
-#include "dcpu.h"
+#include "vm.h"
 
 #define HOOK_ON_NONE        0
 #define HOOK_ON_WRITE       1

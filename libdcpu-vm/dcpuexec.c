@@ -13,8 +13,7 @@
 
 #include <debug.h>
 
-#include "dcpu.h"
-#include "dcpubase.h"
+#include "vm.h"
 #include "timing.h"
 
 ///

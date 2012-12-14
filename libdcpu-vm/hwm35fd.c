@@ -14,12 +14,11 @@
 #include <stdlib.h>
 #include <debug.h>
 #include <iio.h>
-#include "hw.h"
-#include "hwm35fd.h"
-#include "dcpu.h"
-#include "dcpubase.h"
+#include "vm.h"
 #include "dcpuhook.h"
 #include "dcpuops.h"
+#include "hw.h"
+#include "hwm35fd.h"
 
 void vm_hw_m35fd_set_state(struct m35fd_hardware* hw, uint16_t state)
 {

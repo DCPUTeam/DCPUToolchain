@@ -16,7 +16,7 @@
 #ifndef __DCPUOPS_H
 #define __DCPUOPS_H
 
-#include "dcpu.h"
+#include "vm.h"
 
 #ifdef PRIVATE_VM_ACCESS
 uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos);

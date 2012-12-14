@@ -29,14 +29,13 @@
 #include <time.h>
 #include <debug.h>
 #include <math.h>
+#include "glfwutils.h"
 
-#include "hw.h"
-#include "hwsped3.h"
-#include "dcpu.h"
-#include "dcpubase.h"
+#include "vm.h"
 #include "dcpuhook.h"
 #include "dcpuops.h"
-#include "glfwutils.h"
+#include "hw.h"
+#include "hwsped3.h"
 
 #define SPED3_SPEED 0.8
 

@@ -17,12 +17,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <debug.h>
-#include "hw.h"
-#include "hwkeyboard.h"
-#include "dcpu.h"
-#include "dcpubase.h"
+#include "vm.h"
 #include "dcpuhook.h"
 #include "dcpuops.h"
+#include "hw.h"
+#include "hwkeyboard.h"
 
 // We can't set a window pointer, so a global variable will have to do here. Ugly...
 struct keyboard_hardware* g_hw;

@@ -23,7 +23,7 @@
 #include <imap.h>
 #include <osutil.h>
 
-#include "dcpubase.h"
+#include "vm.h"
 #include "dcpuops.h"
 #include "dcpuhook.h"
 

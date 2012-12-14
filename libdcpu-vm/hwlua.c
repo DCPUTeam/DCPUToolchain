@@ -24,12 +24,13 @@
 #include <lualib.h>
 #include <assert.h>
 #include <ppexprlua.h>
+
+#include "vm.h"
+#include "dcpuhook.h"
+#include "dcpuops.h"
 #include "hw.h"
 #include "hwlua.h"
 #include "hwluacpu.h"
-#include "dcpuhook.h"
-#include "dcpubase.h"
-#include "dcpuops.h"
 
 bool vm_lua_online;
 list_t vm_hardware;

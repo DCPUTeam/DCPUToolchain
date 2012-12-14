@@ -16,9 +16,7 @@
 #ifndef __DCPUDIS_H
 #define __DCPUDIS_H
 
-#include <stdint.h>
-#include <bstring.h>
-#include "dcpu.h"
+#include "vm.h"
 
 ///
 /// Represents an instruction that was observed or

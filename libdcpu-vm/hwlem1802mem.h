@@ -17,8 +17,7 @@
 #ifndef __DCPU_HW_LEM1802_MEM_H
 #define __DCPU_HW_LEM1802_MEM_H
 
-#include <stdint.h>
-#include "dcpu.h"
+#include "vm.h"
 #include "hwlem1802.h"
 
 #define HW_LEM1802_DISCONNECTED             0

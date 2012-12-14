@@ -11,8 +11,8 @@
 #include <ldata.h>
 #include <debug.h>
 #include <iio.h>
+#include <vm.h>
 #include <dcpuhook.h>
-#include <dcpubase.h>
 
 // hardware
 #include <hwsped3.h>

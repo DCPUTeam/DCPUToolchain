@@ -15,8 +15,8 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <bstring.h>
-#include <dcpu.h>
-#include "dcpubase.h"
+
+#include "vm.h"
 #include "dcpudis.h"
 #include "hwluacpu.h"
 
