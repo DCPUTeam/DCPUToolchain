@@ -1,34 +1,32 @@
-/**
-
-    File:    hwio.c
-
-    Project:    DCPU-16 Tools
-    Component:    LibDCPU-vm
-
-    Authors:    James Rhodes
-        Jose Manuel Diez
-
-    Description:    Hosts the virtual screen and keyboard for the
-        emulator.
-
-**/
+///
+/// @addtogroup LibDCPU-VM
+/// @{
+///
+/// @file
+/// @brief Implementation of timer hardware.
+/// @author James Rhodes
+/// @author Jose Manuel Diez
+///
 
 #define PRIVATE_VM_ACCESS
 
 #include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
 #include <debug.h>
 
-#include "vm.h"
 #include "dcpuhook.h"
-#include "dcpuops.h"
-#include "hw.h"
 #include "hwtimer.h"
 
+///
+/// @brief Hook callback triggered each VM cycle.
+///
+/// @param vm The virtual machine where the hook was fired from.
+/// @param pos Not used.
+/// @param ud The timer that the interrupt was sent to.
+///
 void vm_hw_timer_cycle(vm_t* vm, uint16_t pos, void* ud)
 {
     struct timer_hardware* hw = (struct timer_hardware*) ud;
+    (void)pos;
 
     if (hw->message != 0)
     {
@@ -42,6 +40,12 @@ void vm_hw_timer_cycle(vm_t* vm, uint16_t pos, void* ud)
     }
 }
 
+///
+/// @brief Interrupt callback, triggered by the HWI instruction.
+///
+/// @param vm The virtual machine where the interrupt was fired from.
+/// @param ud The timer that the interrupt was sent to
+///
 void vm_hw_timer_interrupt(vm_t* vm, void* ud)
 {
     struct timer_hardware* hw = (struct timer_hardware*) ud;
@@ -72,6 +76,11 @@ void vm_hw_timer_interrupt(vm_t* vm, void* ud)
     }
 }
 
+///
+/// @brief Add a timer hardware to the given VM.
+///
+/// @param vm The virutal machine to install the hardware on.
+///
 void vm_hw_timer_init(vm_t* vm)
 {
     struct timer_hardware* hw;
@@ -95,6 +104,11 @@ void vm_hw_timer_init(vm_t* vm)
     vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
 }
 
+///
+/// @brief Callback that frees the timer hardware.
+///
+/// @param ud The hw to free that was given as a userdata.
+///
 void vm_hw_timer_free(void* ud)
 {
     struct timer_hardware* hw = (struct timer_hardware*) ud;
