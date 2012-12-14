@@ -43,8 +43,6 @@ add_library(libdcpu-vm ${LIBRARY_FORMAT}
     hwtimer.h
     timing.h
     vm.h
-    dcpu.c
-    dcpubase.c
     dcpudis.c
     dcpuexec.c
     dcpuhook.c
@@ -62,6 +60,7 @@ add_library(libdcpu-vm ${LIBRARY_FORMAT}
     hwsped3.c
     hwtimer.c
     timing.c
+    vm.c
     ${CMAKE_CURRENT_BINARY_DIR}/font.c
 )
 include_directories(

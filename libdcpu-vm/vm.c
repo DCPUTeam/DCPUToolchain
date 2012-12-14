@@ -1,17 +1,16 @@
-/**
-
-    File:   dcpubase.c
-
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-vm
-
-    Authors:    James Rhodes
-        Aaron Miller
-
-    Description:    Handles core functionality of
-        the virtual machine.
-
-**/
+///
+/// @addtogroup LibDCPU-VM
+/// @{
+///
+/// @file
+/// @brief General functions and definitions used through-out the toolchain.
+/// @author James Rhodes
+/// @author Patrick Flick
+/// @author Jose Manuel Diez
+/// @author Aaron Miller
+/// 
+/// This implements the functions found in vm.h.
+///
 
 #define PRIVATE_VM_ACCESS
 
@@ -19,6 +18,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <debug.h>
 #include <debug.h>
 #include <imap.h>
 #include <osutil.h>
@@ -26,7 +27,159 @@
 #include "vm.h"
 #include "dcpuops.h"
 #include "dcpuhook.h"
+#include "hw.h"
 
+static void vm_print_op(const char* opname, vm_t* vm, uint16_t a, uint16_t b);
+static void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a);
+static void vm_dump_state(vm_t* vm);
+
+///
+/// @brief Initializes a new virtual machine structure.
+///
+/// This function is ment to be used when you have embedded the vm_t
+/// in your own struct and you don't want to use vm_create. Note when
+/// have embedded it you must call this function to set pointers into
+/// a valid state, if you have created vm_t via vm_create and added
+/// hardware you must @b NOT call this function, since this function
+/// assumes that vm_t is in a unkown state. Use vm_reset for resetting
+/// the vm without removing the hardware.
+///
+/// @param vm The virtual machine structure to initialize.
+///
+void vm_init(vm_t* vm)
+{
+    // Since we use the big memset hammer here, a lot of the
+    // setting we do is not needed it is more for bookkeeping.
+
+    // Rule 2, double tap.
+    memset(vm, 0, sizeof(*vm));
+
+    // Some fields isn't supposed to be Zero.
+    vm_reset(vm, false);
+
+    // This should only be done on init.
+    vm->host = NULL;
+    vm->debug = false;
+
+    // Init subsystem that hangs on the vm struct.
+    vm_hook_initialize(vm);
+    vm_hw_initialize(vm);
+}
+
+///
+/// @brief Resets a virtual machine structure.
+///
+/// This function is intended to be used when reseting the hardware back
+/// to initial state on a vm_t struct created with vm_create or initialized
+/// with vm_init first. It does not remove hardware nor any installed hooks.
+/// All interrupts are removed from the interrupt queue tho.
+///
+/// @param vm The virtual machine structure to reset.
+/// @param reset_memory Whether to wipe the virtual machine's memory.
+///
+void vm_reset(vm_t* vm, bool reset_memory)
+{
+    unsigned int i;
+
+    for (i = 0; i < 0x8; i++)
+        vm->registers[i] = 0x0;
+
+    vm->pc = 0x0;
+    vm->sp = 0x0;
+    vm->ex = 0x0;
+    vm->ia = 0x0;
+
+    if (reset_memory)
+    {
+        for (i = 0; i < 0x10000; i++)
+            vm->ram[i] = 0x0;
+    }
+
+    vm->sleep_cycles = 0;
+    vm->dummy = 0x0;
+    vm->halted = false;
+    vm->exit = false;
+    vm->skip = false;
+
+    vm->can_fire = false;
+    vm->on_fire = false;
+    vm->fire_cycles = 0;
+    vm->fire_cycles_target = 0;
+
+    vm->radiation = false;
+    vm->radiation_cycles = 0;
+    vm->radiation_cycles_target = 0;
+    vm->radiation_factor = 1;
+
+    printd(LEVEL_DEBUG, "turning off interrupt queue\n");
+
+    vm->queue_interrupts = false;
+    vm->irq_count = 0;
+    vm->dump = NULL;
+
+    for (i = 0; i < 256; i++)
+        vm->irq[i] = 0x0;
+}
+
+///
+/// @brief Allocates a new virtual machine in memory and initializes it.
+///
+/// @return The new virtual machine structure.  It must be later freed
+///         with vm_free().
+///
+vm_t* vm_create()
+{
+    // Define variables.
+    vm_t* new_vm;
+
+    // Allocate and wipe vm memory.
+    new_vm = (vm_t*)malloc(sizeof(vm_t));
+    vm_init(new_vm);
+
+    // Return.
+    return new_vm;
+}
+
+///
+/// @brief Frees a virtual machine structure from memory.
+///
+/// @param vm The virtual machine structure previously allocated with vm_create().
+///
+void vm_free(vm_t* vm)
+{
+    // Hw have free hooks, call them.
+    vm_hw_free_all(vm);
+    free(vm);
+}
+
+///
+/// @brief Flashes the virtual machine's memory.
+///
+/// Flashes the virtual machine's memory from the array of unsigned 16-bit
+/// integers also calls vm_reset on the virtual machine.
+///
+/// @param vm The virtual machine whose memory should be flashed.
+/// @param memory The unsigned 16-bit integers to flash the memory with.
+///
+void vm_flash(vm_t* vm, uint16_t memory[0x10000])
+{
+    // Flash the VM's memory from the specified array.
+    unsigned int i;
+    vm_reset(vm, false);
+
+    for (i = 0; i < 0x10000; i++)
+        vm->ram[i] = memory[i];
+}
+
+///
+/// @brief Halts the VM upon an error condition.
+///
+/// This function is called by other VM parts when an error codition
+/// happens to signal that the VM should be halted.
+///
+/// @param vm The virtual machine who should be halted.
+/// @param message C print format string.
+///
 void vm_halt(vm_t* vm, const char* message, ...)
 {
     va_list argptr;
@@ -37,6 +190,12 @@ void vm_halt(vm_t* vm, const char* message, ...)
     return;
 }
 
+///
+/// @brief Raise a interrupt or put it on the interrupt queue.
+///
+/// @param vm The virtual machine where the interrupt should be raised.
+/// @param msgid The value that should be put into REG_A on interrupt.
+///
 void vm_interrupt(vm_t* vm, uint16_t msgid)
 {
     uint16_t save;
@@ -45,8 +204,7 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
     {
         if (vm->irq_count >= INTERRUPT_MAX)
         {
-            printd(LEVEL_ERROR, "interrupt queue hit maximum number (halted VM)\n");
-            vm->halted = true;
+            vm_halt(vm, "interrupt queue hit maximum number (halted VM)\n");
         }
         else
         {
@@ -74,6 +232,11 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
     }
 }
 
+///
+/// @brief Consume a word from memory and increments PC.
+///
+/// @param vm The virtual machine whose memory should be read.
+///
 uint16_t vm_consume_word(vm_t* vm)
 {
     uint16_t v = vm->ram[vm->pc];
@@ -81,6 +244,13 @@ uint16_t vm_consume_word(vm_t* vm)
     return v;
 }
 
+///
+/// @brief Get a value as if executed by a instruction.
+///
+/// @param vm The virtual machine from which we should read from.
+/// @param val A instruction type lookup operator for instance REG_A.
+/// @param pos Magic value used for PUSH_POP.
+///
 uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
 {
     uint16_t t;
@@ -170,79 +340,11 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
     }
 }
 
-void vm_print_op(const char* opname, vm_t* vm, uint16_t a, uint16_t b)
-{
-    FILE* target = stdout;
-    if (!vm->debug && vm->dump == NULL)
-        return;
-    if (vm->dump != NULL)
-        target = vm->dump;
-
-    if (vm->skip)
-    {
-        if (get_register_by_value(a) != NULL && get_register_by_value(b) != NULL)
-            fprintf(target, "0x%04X: (skipped) %s %s %s", vm->pc, opname, get_register_by_value(a)->name, get_register_by_value(b)->name);
-        else
-            fprintf(target, "0x%04X: (skipped) %s 0x%04X 0x%04X", vm->pc, opname, a, b);
-    }
-    else
-    {
-        if (get_register_by_value(a) != NULL && get_register_by_value(b) != NULL)
-            fprintf(target, "0x%04X: %s %s %s", vm->pc, opname, get_register_by_value(a)->name, get_register_by_value(b)->name);
-        else
-            fprintf(target, "0x%04X: %s 0x%04X 0x%04X", vm->pc, opname, a, b);
-    }
-}
-
-void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
-{
-    FILE* target = stdout;
-    if (!vm->debug && vm->dump == NULL)
-        return;
-    if (vm->dump != NULL)
-        target = vm->dump;
-
-    if (vm->skip)
-    {
-        if (get_register_by_value(a) != NULL)
-            fprintf(target, "0x%04X: (skipped) %s %s", vm->pc, opname, get_register_by_value(a)->name);
-        else
-            fprintf(target, "0x%04X: (skipped) %s 0x%04X", vm->pc, opname, a);
-    }
-    else
-    {
-        if (get_register_by_value(a) != NULL)
-            fprintf(target, "0x%04X: %s %s", vm->pc, opname, get_register_by_value(a)->name);
-        else
-            fprintf(target, "0x%04X: %s 0x%04X", vm->pc, opname, a);
-    }
-}
-
-void vm_dump_state(vm_t* vm)
-{
-    if (vm->dump == NULL)
-        return;
-
-    fprintf(vm->dump, "--------------------------------\n");
-    fprintf(vm->dump, "A:   0x%04X   [A]:   0x%04X\n", vm->registers[REG_A], vm->ram[vm->registers[REG_A]]);
-    fprintf(vm->dump, "B:   0x%04X   [B]:   0x%04X\n", vm->registers[REG_B], vm->ram[vm->registers[REG_B]]);
-    fprintf(vm->dump, "C:   0x%04X   [C]:   0x%04X\n", vm->registers[REG_C], vm->ram[vm->registers[REG_C]]);
-    fprintf(vm->dump, "X:   0x%04X   [X]:   0x%04X\n", vm->registers[REG_X], vm->ram[vm->registers[REG_X]]);
-    fprintf(vm->dump, "Y:   0x%04X   [Y]:   0x%04X\n", vm->registers[REG_Y], vm->ram[vm->registers[REG_Y]]);
-    fprintf(vm->dump, "Z:   0x%04X   [Z]:   0x%04X\n", vm->registers[REG_Z], vm->ram[vm->registers[REG_Z]]);
-    fprintf(vm->dump, "I:   0x%04X   [I]:   0x%04X\n", vm->registers[REG_I], vm->ram[vm->registers[REG_I]]);
-    fprintf(vm->dump, "J:   0x%04X   [J]:   0x%04X\n", vm->registers[REG_J], vm->ram[vm->registers[REG_J]]);
-    fprintf(vm->dump, "PC:  0x%04X   SP:    0x%04X\n", vm->pc, vm->sp);
-    fprintf(vm->dump, "EX:  0x%04X   IA:    0x%04X\n", vm->ex, vm->ia);
-    if (vm->queue_interrupts)
-        fprintf(vm->dump, "IRQ ENABLED:       true\n");
-    else
-        fprintf(vm->dump, "IRQ ENABLED:      false\n");
-    fprintf(vm->dump, "IRQ COUNT:   0x%04X\n", vm->irq_count);
-    fprintf(vm->dump, "CYCLES TO SLEEP: 0x%04X\n", vm->sleep_cycles);
-    fprintf(vm->dump, "\n");
-}
-
+///
+/// @brief Step the VM one cycle.
+///
+/// @param vm The virtual machine which we should step.
+///
 void vm_cycle(vm_t* vm)
 {
     static struct ostimeval t;
@@ -518,3 +620,89 @@ void vm_cycle(vm_t* vm)
 
     vm_hook_fire(vm, 0, HOOK_ON_POST_CYCLE, NULL);
 }
+
+///
+/// @brief Private op printing function, in vm.c file.
+///
+static void vm_print_op(const char* opname, vm_t* vm, uint16_t a, uint16_t b)
+{
+    FILE* target = stdout;
+    if (!vm->debug && vm->dump == NULL)
+        return;
+    if (vm->dump != NULL)
+        target = vm->dump;
+
+    if (vm->skip)
+    {
+        if (get_register_by_value(a) != NULL && get_register_by_value(b) != NULL)
+            fprintf(target, "0x%04X: (skipped) %s %s %s", vm->pc, opname, get_register_by_value(a)->name, get_register_by_value(b)->name);
+        else
+            fprintf(target, "0x%04X: (skipped) %s 0x%04X 0x%04X", vm->pc, opname, a, b);
+    }
+    else
+    {
+        if (get_register_by_value(a) != NULL && get_register_by_value(b) != NULL)
+            fprintf(target, "0x%04X: %s %s %s", vm->pc, opname, get_register_by_value(a)->name, get_register_by_value(b)->name);
+        else
+            fprintf(target, "0x%04X: %s 0x%04X 0x%04X", vm->pc, opname, a, b);
+    }
+}
+
+///
+/// @brief Private op printing function, in vm.c file.
+///
+static void vm_print_op_nonbasic(const char* opname, vm_t* vm, uint16_t a)
+{
+    FILE* target = stdout;
+    if (!vm->debug && vm->dump == NULL)
+        return;
+    if (vm->dump != NULL)
+        target = vm->dump;
+
+    if (vm->skip)
+    {
+        if (get_register_by_value(a) != NULL)
+            fprintf(target, "0x%04X: (skipped) %s %s", vm->pc, opname, get_register_by_value(a)->name);
+        else
+            fprintf(target, "0x%04X: (skipped) %s 0x%04X", vm->pc, opname, a);
+    }
+    else
+    {
+        if (get_register_by_value(a) != NULL)
+            fprintf(target, "0x%04X: %s %s", vm->pc, opname, get_register_by_value(a)->name);
+        else
+            fprintf(target, "0x%04X: %s 0x%04X", vm->pc, opname, a);
+    }
+}
+
+///
+/// @brief Private state printing function, in vm.c file.
+///
+static void vm_dump_state(vm_t* vm)
+{
+    if (vm->dump == NULL)
+        return;
+
+    fprintf(vm->dump, "--------------------------------\n");
+    fprintf(vm->dump, "A:   0x%04X   [A]:   0x%04X\n", vm->registers[REG_A], vm->ram[vm->registers[REG_A]]);
+    fprintf(vm->dump, "B:   0x%04X   [B]:   0x%04X\n", vm->registers[REG_B], vm->ram[vm->registers[REG_B]]);
+    fprintf(vm->dump, "C:   0x%04X   [C]:   0x%04X\n", vm->registers[REG_C], vm->ram[vm->registers[REG_C]]);
+    fprintf(vm->dump, "X:   0x%04X   [X]:   0x%04X\n", vm->registers[REG_X], vm->ram[vm->registers[REG_X]]);
+    fprintf(vm->dump, "Y:   0x%04X   [Y]:   0x%04X\n", vm->registers[REG_Y], vm->ram[vm->registers[REG_Y]]);
+    fprintf(vm->dump, "Z:   0x%04X   [Z]:   0x%04X\n", vm->registers[REG_Z], vm->ram[vm->registers[REG_Z]]);
+    fprintf(vm->dump, "I:   0x%04X   [I]:   0x%04X\n", vm->registers[REG_I], vm->ram[vm->registers[REG_I]]);
+    fprintf(vm->dump, "J:   0x%04X   [J]:   0x%04X\n", vm->registers[REG_J], vm->ram[vm->registers[REG_J]]);
+    fprintf(vm->dump, "PC:  0x%04X   SP:    0x%04X\n", vm->pc, vm->sp);
+    fprintf(vm->dump, "EX:  0x%04X   IA:    0x%04X\n", vm->ex, vm->ia);
+    if (vm->queue_interrupts)
+        fprintf(vm->dump, "IRQ ENABLED:       true\n");
+    else
+        fprintf(vm->dump, "IRQ ENABLED:      false\n");
+    fprintf(vm->dump, "IRQ COUNT:   0x%04X\n", vm->irq_count);
+    fprintf(vm->dump, "CYCLES TO SLEEP: 0x%04X\n", vm->sleep_cycles);
+    fprintf(vm->dump, "\n");
+}
+
+///
+/// @}
+///
