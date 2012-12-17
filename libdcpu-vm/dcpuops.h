@@ -29,7 +29,9 @@ void vm_op_fire(vm_t* vm);
 void vm_op_radiation(vm_t* vm);
 
 ///
-/// @brief Perform the named basic operation on the given vm_t.
+/// @name Basic operations.
+/// Perform the named basic operation on the given vm_t. These
+/// functions are mostly intended to be called from vm_cycle.
 /// @{
 ///
 void vm_op_set(vm_t* vm, uint16_t b, uint16_t a);
@@ -65,7 +67,9 @@ void vm_op_std(vm_t* vm, uint16_t b, uint16_t a);
 ///
 
 ///
-/// @brief Perform the named non-basic operation on the given vm_t.
+/// @name Non-basic operations.
+/// Perform the named non-basic operation on the given vm_t. These
+/// functions are mostly intended to be called from vm_cycle.
 /// @{
 ///
 void vm_op_jsr(vm_t* vm, uint16_t a);
