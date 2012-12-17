@@ -330,9 +330,9 @@ void ddbg_hardware_change_hook(vm_t* vm, uint16_t id, void* ud)
                     hw->border_color);
             break;
         }
-        case TIMER_ID:
+        case CLOCK_HARDWARE_ID:
         {
-            struct timer_hardware* hw = (struct timer_hardware*) ud;
+            struct clock_hardware* hw = (struct clock_hardware*) ud;
             fprintf(output, "%d:%04x:%u:%u\n",
                     id, TIMER_ID,
                     hw->clock_target,
@@ -471,7 +471,7 @@ void ddbg_attach(bstring hw)
         // TODO: keyboard
         vm_hw_lem1802_init(vm);
     else if (biseq(hw, bfromcstr("clock")))
-        vm_hw_timer_init(vm);
+        vm_hw_clock_init(vm);
     else if (biseq(hw, bfromcstr("m35fd")))
         vm_hw_m35fd_init(vm);
     else if (biseq(hw, bfromcstr("sped3")))

@@ -40,7 +40,7 @@ add_library(libdcpu-vm ${LIBRARY_FORMAT}
     hwluacpu.h
     hwm35fd.h
     hwsped3.h
-    hwtimer.h
+    hwclock.h
     timing.h
     vm.h
     dcpudis.c
@@ -58,7 +58,7 @@ add_library(libdcpu-vm ${LIBRARY_FORMAT}
     hwluacpu.c
     hwm35fd.c
     hwsped3.c
-    hwtimer.c
+    hwclock.c
     timing.c
     vm.c
     ${CMAKE_CURRENT_BINARY_DIR}/font.c

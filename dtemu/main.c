@@ -40,7 +40,7 @@
 #include <hwsped3.h>
 #include <hwlem1802.h>
 #include <hwlem1802mem.h>
-#include <hwtimer.h>
+#include <hwclock.h>
 #include <hwm35fd.h>
 #include <hwlua.h>
 #include <hw.h>
@@ -250,7 +250,7 @@ int main(int argc, char* argv[])
         vm->can_fire = true;
 
     // Init hardware.
-    vm_hw_timer_init(vm);
+    vm_hw_clock_init(vm);
 
     if (headless_mode->count < 1)
         vm->host = dtemu;

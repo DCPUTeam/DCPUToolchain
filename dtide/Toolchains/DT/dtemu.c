@@ -18,7 +18,7 @@
 #include <hwsped3.h>
 #include <hwlem1802.h>
 #include <hwlem1802mem.h>
-#include <hwtimer.h>
+#include <hwclock.h>
 #include <hwm35fd.h>
 #include <hwlua.h>
 #include <hw.h>
@@ -119,7 +119,7 @@ vm_t* start_emulation(
     vm_flash(vm, flash);
 
     // Init hardware.
-    vm_hw_timer_init(vm);
+    vm_hw_clock_init(vm);
     vm->host = dtide;
     vm_hw_lem1802_init(vm);
     vm_hw_sped3_init(vm);
