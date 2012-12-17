@@ -1,11 +1,16 @@
 ///
 /// @addtogroup LibDCPU-VM
+/// @{
 ///
 /// @file
-/// @brief  Declares macros and functions used to host the interrupt clock (generic clock).
+/// @brief  Holds the implementation for all of the dcpu execution of ops.
 /// @sa     http://dcpu.com/dcpu-16/
 /// @author James Rhodes
 /// @author Aaron Miller
+///
+
+///
+/// @}
 ///
 
 #define PRIVATE_VM_ACCESS

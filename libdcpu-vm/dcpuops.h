@@ -3,7 +3,7 @@
 /// @{
 ///
 /// @file
-/// @brief  Declares macros and functions used to host the interrupt clock (generic clock).
+/// @brief  Defines the functions for executing ops on a vm_t.
 /// @sa     http://dcpu.com/dcpu-16/
 /// @author James Rhodes
 /// @author Tyrel Haveman
