@@ -24,12 +24,13 @@
 #include <lualib.h>
 #include <assert.h>
 #include <ppexprlua.h>
+
+#include "vm.h"
+#include "dcpuhook.h"
+#include "dcpuops.h"
 #include "hw.h"
 #include "hwlua.h"
 #include "hwluacpu.h"
-#include "dcpuhook.h"
-#include "dcpubase.h"
-#include "dcpuops.h"
 
 bool vm_lua_online;
 list_t vm_hardware;
@@ -170,7 +171,7 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
     luaX_loadexpressionlib(hw->state);
 
     // Execute the code in the new Lua context.
-    if (luaL_dofile(hw->state, path->data) != 0)
+    if (luaL_dofile(hw->state, (char*)path->data) != 0)
     {
         printf("lua error was %s.\n", lua_tostring(hw->state, -1));
 
@@ -232,7 +233,7 @@ struct lua_hardware* vm_hw_lua_load(vm_t* vm, bstring name)
     hw->device.handler = &vm_hw_lua_interrupt;
     hw->device.free_handler = NULL;
     hw->device.userdata = hw;
-    vm_hw_register(vm, hw->device);
+    vm_hw_register(vm, &hw->device);
 
     // Register the hooks.
     hw->cycle_id = vm_hook_register(vm, &vm_hw_lua_cycle, HOOK_ON_POST_CYCLE, hw);
@@ -268,7 +269,7 @@ void vm_hw_lua_init(vm_t* vm)
 #endif
 
     // Attempt to open the hw directory.
-    dir = opendir(hwpath->data);
+    dir = opendir((char*)hwpath->data);
     if (dir == NULL)
     {
         // The directory does not exist, so we don't load

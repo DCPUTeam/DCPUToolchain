@@ -52,6 +52,17 @@ bstring curr_label; // Used for local labels.
 extern int  yyulineno;
 extern bstring  yyufilename;
 
+
+// Tiny helper.
+static void strupper(char* str)
+{
+    while (*str != '\0')
+    {
+        *str = toupper(*str);
+        str++;
+    }
+}
+
 #define NODE_SET_GLOBALS(node) \
     node->line = yylineno; \
     node->file = bstrcpy(yyfilename); \

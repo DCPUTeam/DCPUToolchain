@@ -11,10 +11,10 @@
 
 **/
 
-#include "hwlem1802.h"
-#include "hwsped3.h"
 #include <GL/glfw3.h>
-#include "dcpu.h"
+#include "vm.h"
+#include "hwsped3.h"
+#include "hwlem1802.h"
 
 int vm_hw_glfw_close_window_callback(GLFWwindow w)
 {

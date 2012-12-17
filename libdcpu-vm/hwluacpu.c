@@ -15,8 +15,8 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <bstring.h>
-#include <dcpu.h>
-#include "dcpubase.h"
+
+#include "vm.h"
 #include "dcpudis.h"
 #include "hwluacpu.h"
 
@@ -160,6 +160,7 @@ int vm_hw_lua_cpu_handle_irq_set(lua_State* L)
 {
     // Table is at 1, key is at 2, value is at 3.
     vm_t* vm = vm_hw_lua_cpu_extract_cpu(L, 1);
+    (void)vm;
     lua_pushstring(L, "irq write not permitted");
     lua_error(L);
     return 0;
@@ -190,17 +191,17 @@ int vm_hw_lua_cpu_disassemble(lua_State* L)
     lua_setfield(L, -2, "original");
     lua_newtable(L);
     if (inst.pretty.op != NULL)
-        lua_pushstring(L, inst.pretty.op->data);
+        lua_pushstring(L, (char*)inst.pretty.op->data);
     else
         lua_pushnil(L);
     lua_setfield(L, -2, "op");
     if (inst.pretty.a != NULL)
-        lua_pushstring(L, inst.pretty.a->data);
+        lua_pushstring(L, (char*)inst.pretty.a->data);
     else
         lua_pushnil(L);
     lua_setfield(L, -2, "a");
     if (inst.pretty.b != NULL)
-        lua_pushstring(L, inst.pretty.b->data);
+        lua_pushstring(L, (char*)inst.pretty.b->data);
     else
         lua_pushnil(L);
     lua_setfield(L, -2, "b");

@@ -234,7 +234,7 @@ int bin_lua_reflash(lua_State* L)
     size_t i;
     struct ldbin* bin = bin_lua_extract_bin(L, 1);
     vm_t* vm = bin_lua_extract_vm(L, 1);
-    vm_init(vm, true);
+    vm_reset(vm, true);
     for (i = 0; i < list_size(&bin->words); i++)
         vm->ram[i] = *(uint16_t*)(list_get_at(&bin->words, i));
     return 0;
@@ -253,7 +253,7 @@ int bin_lua_remove(lua_State* L)
         bin_remove(&ldbins.bins, bin, offset, count);
 
         // Implicit reflash.
-        vm_init(vm, true);
+        vm_reset(vm, true);
         for (i = 0; i < list_size(&bin->words); i++)
             vm->ram[i] = *(uint16_t*)(list_get_at(&bin->words, i));
     }
@@ -318,7 +318,7 @@ void bin_lua_push_state(lua_State* L, struct ldbin* bin)
 
     // Initialize new virtual machine without hardware so that
     // the optimizer can disassemble instructions.
-    vm_init(vm, true);
+    vm_init(vm);
     for (i = 0; i < list_size(&bin->words); i++)
         vm->ram[i] = *(uint16_t*)(list_get_at(&bin->words, i));
 

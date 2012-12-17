@@ -26,8 +26,10 @@
 #include <hwluacpu.h>
 #include <ddata.h>
 #include <luaglob.h>
+
+#include "vm.h"
+#include "dcpuexec.h"
 #include "dbglua.h"
-#include "dcpu.h"
 
 #define HANDLER_TABLE_COMMANDS_NAME "__cmdhandlers"
 #define HANDLER_TABLE_HOOKS_NAME "__hookhandlers"

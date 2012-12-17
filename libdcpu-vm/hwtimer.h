@@ -1,21 +1,16 @@
-/**
-
-    File:       hwtimer.h
-
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-vm
-
-    Authors:    James Rhodes
-
-    Description:    Declares macros and functions used to
-            host the interrupt timer.
-
-**/
+///
+/// @addtogroup LibDCPU-VM
+/// @{
+///
+/// @file
+/// @brief Declares macros and functions used to host the interrupt timer.
+/// @author James Rhodes
+///
 
 #ifndef __DCPUHWTIMER_H
 #define __DCPUHWTIMER_H
 
-#include "dcpu.h"
+#include "hw.h"
 
 struct timer_hardware
 {

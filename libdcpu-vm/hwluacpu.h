@@ -16,7 +16,7 @@
 #define __DCPU_HWLUACPU_H
 
 #include <lua.h>
-#include "dcpu.h"
+#include "vm.h"
 
 void vm_hw_lua_cpu_push_cpu(lua_State* L, vm_t* vm);
 

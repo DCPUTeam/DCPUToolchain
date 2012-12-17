@@ -16,7 +16,7 @@
 #define __DCPUHWSPED3_H
 
 #include <GL/glfw3.h>
-#include "dcpu.h"
+#include "vm.h"
 
 #define SPED3_ID        0x42babf3c
 #define SPED3_VERSION       0x0003

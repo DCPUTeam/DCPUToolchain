@@ -244,12 +244,3 @@ struct register_mapping* get_register_by_name_next(char* name)
 
     return NULL;
 }
-
-void strupper(char* str)
-{
-    while (*str != '\0')
-    {
-        *str = toupper(*str);
-        str++;
-    }
-}

@@ -198,7 +198,7 @@ uint16_t vm_hw_lem1802_mem_get_font(struct lem1802_hardware* hw)
 
 void vm_hw_lem1802_mem_load_default_font()
 {
-    unsigned int character, font_row, font_col, output_index;
+    unsigned int character, font_row, font_col;
     int img_top_left_x, img_top_left_y, x, y;
     uint16_t word1, word2, shift;
 
@@ -207,7 +207,6 @@ void vm_hw_lem1802_mem_load_default_font()
     {
         font_row = character / HW_LEM1802_FONT_IMG_COLS;
         font_col = character % HW_LEM1802_FONT_IMG_COLS;
-        output_index = 2 * character;
 
         img_top_left_x = font_col * HW_LEM1802_FONT_CHAR_ADDRESSABLE_WIDTH;
         img_top_left_y = font_row * HW_LEM1802_FONT_CHAR_ADDRESSABLE_HEIGHT;

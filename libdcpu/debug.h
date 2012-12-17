@@ -15,10 +15,7 @@
 #ifndef __DCPU_DEBUG_H
 #define __DCPU_DEBUG_H
 
-#include <stdio.h>
 #include <stdarg.h>
-#include "dcpu.h"
-#include "bstring.h"
 
 #define LEVEL_EVERYTHING 7
 #define LEVEL_DEBUG 6

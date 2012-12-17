@@ -15,11 +15,11 @@
 
 #include <stdint.h>
 #include <bstring.h>
-#include "dcpu.h"
-#include "imap.h"
-#include "dcpubase.h"
-#include "dcpudis.h"
 #include <lobject.h>
+
+#include "imap.h"
+#include "vm.h"
+#include "dcpudis.h"
 
 ///
 /// Disassembles a single instruction located at the specified position.

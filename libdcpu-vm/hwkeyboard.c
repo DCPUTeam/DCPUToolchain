@@ -17,12 +17,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <debug.h>
-#include "hw.h"
-#include "hwkeyboard.h"
-#include "dcpu.h"
-#include "dcpubase.h"
+#include "vm.h"
 #include "dcpuhook.h"
 #include "dcpuops.h"
+#include "hw.h"
+#include "hwkeyboard.h"
 
 // We can't set a window pointer, so a global variable will have to do here. Ugly...
 struct keyboard_hardware* g_hw;
@@ -199,9 +198,10 @@ void vm_hw_keyboard_init(vm_t* vm)
     hw->device.version = 0x0001;
     hw->device.manufacturer = 0x0;
     hw->device.handler = &vm_hw_keyboard_interrupt;
+    hw->device.free_handler = NULL;
     hw->device.userdata = hw;
 
-    hw->hw_id = vm_hw_register(vm, hw->device);
+    hw->hw_id = vm_hw_register(vm, &hw->device);
 
     g_hw = hw;
 }

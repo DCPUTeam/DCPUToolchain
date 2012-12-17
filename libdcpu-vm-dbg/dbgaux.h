@@ -12,16 +12,8 @@
 
 **/
 
-#include <dcpu.h>
-#include <dcpuhook.h>
+#include <stdint.h>
 #include <bstrlib.h>
-
-// import hardware
-#include <hw.h>
-#include <hwlem1802.h>
-#include <hwtimer.h>
-#include <hwsped3.h>
-#include <hwm35fd.h>
 
 
 ///

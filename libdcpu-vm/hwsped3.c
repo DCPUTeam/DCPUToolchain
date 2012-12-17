@@ -29,14 +29,13 @@
 #include <time.h>
 #include <debug.h>
 #include <math.h>
+#include "glfwutils.h"
 
-#include "hw.h"
-#include "hwsped3.h"
-#include "dcpu.h"
-#include "dcpubase.h"
+#include "vm.h"
 #include "dcpuhook.h"
 #include "dcpuops.h"
-#include "glfwutils.h"
+#include "hw.h"
+#include "hwsped3.h"
 
 #define SPED3_SPEED 0.8
 
@@ -209,7 +208,7 @@ void vm_hw_sped3_init(vm_t* vm)
     hw->device.userdata = hw;
 
     hw->cycle_hook = vm_hook_register(vm, &vm_hw_sped3_cycle, HOOK_ON_60HZ, hw);
-    hw->hw_id = vm_hw_register(vm, hw->device);
+    hw->hw_id = vm_hw_register(vm, &hw->device);
 
     if (vm->host != NULL)
     {
@@ -226,7 +225,6 @@ void vm_hw_sped3_free(void* ud)
 {
     struct sped3_hardware* hw = (struct sped3_hardware*)ud;
     vm_hook_unregister(hw->vm, hw->cycle_hook);
-    vm_hw_unregister(hw->vm, hw->hw_id);
     if (hw->vm->host != NULL)
         hw->vm->host->destroy_context(hw->context);
     free(hw);

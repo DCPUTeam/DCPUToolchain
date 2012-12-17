@@ -26,6 +26,7 @@
 #include <curl/easy.h>
 #include <sys/stat.h>
 #include <osutil.h>
+#include <dcpu.h>
 #include <debug.h>
 
 size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream)

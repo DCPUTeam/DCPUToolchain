@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <version.h>
+#include <dcpu.h>
 #include <debug.h>
 
 #define lua_c
