@@ -26,7 +26,7 @@ function(add_unit_test tname)
     get_property(dtdb_loc TARGET dtdb PROPERTY LOCATION)
     string(REPLACE "$(Configuration)" "${CMAKE_BUILD_TYPE}" dtasm_loc "${dtasm_loc}")
     string(REPLACE "$(Configuration)" "${CMAKE_BUILD_TYPE}" dtdb_loc "${dtdb_loc}")
-    add_test(${tname} ${CMAKE_CURRENT_BINARY_DIR}/testvm -a "${dtasm_loc}" -d "${dtdb_loc}" -m "${toolchain_SOURCE_DIR}/modules" "${BASE_DIR}/${tname}.i")
+    add_test(${tname} ${CMAKE_CURRENT_BINARY_DIR}/testvm -a "${dtasm_loc}" -d "${dtdb_loc}" -m "${CMAKE_CURRENT_SOURCE_DIR}/modules" "${BASE_DIR}/${tname}.i")
 endfunction(add_unit_test tname)
 
 # Define the tests.
