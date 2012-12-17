@@ -62,8 +62,7 @@ vm_t* vm_create()
 
 void vm_free(vm_t* vm)
 {
-    // Hw have free hooks, call them.
-    vm_hw_free_all(vm);
+    vm_close(vm);
     free(vm);
 }
 
@@ -85,6 +84,12 @@ void vm_init(vm_t* vm)
     // Init subsystem that hangs on the vm struct.
     vm_hook_initialize(vm);
     vm_hw_initialize(vm);
+}
+
+void vm_close(vm_t* vm)
+{
+    // Hw have free hooks, call them.
+    vm_hw_free_all(vm);
 }
 
 void vm_reset(vm_t* vm, bool reset_memory)

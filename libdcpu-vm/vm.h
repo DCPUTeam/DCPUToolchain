@@ -202,6 +202,10 @@ struct vm
 ///
 /// @brief Allocates a new virtual machine in memory and initializes it.
 ///
+/// Make sure to use vm_free to free this the allocated struct, and you
+/// do not need to (or should) call vm_init on the struct as this function
+/// does that internaly.
+///
 /// @return The new virtual machine structure.  It must be later freed
 ///         with vm_free().
 ///
@@ -209,6 +213,9 @@ vm_t* vm_create();
 
 ///
 /// @brief Frees a virtual machine structure from memory.
+///
+/// Do not call this function if you have embedded the vm_t in a struct
+/// and used vm_init to initalize it, instead use vm_close for that.
 ///
 /// @param vm The virtual machine structure previously allocated with vm_create().
 ///
@@ -228,6 +235,20 @@ void vm_free(vm_t* vm);
 /// @param vm The virtual machine structure to initialize.
 ///
 void vm_init(vm_t* vm);
+
+///
+/// @brief Initializes a new virtual machine structure.
+///
+/// This function is ment to be used when you have embedded the vm_t
+/// in your own struct and you don't want to use vm_create. Note when
+/// have embedded it you must call this function to free any internal
+/// allocated pointers or hardware that has been added to the VM.
+/// If you have created vm_t via vm_create you must @b NOT call this
+/// function, but instead use vm_free.
+///
+/// @param vm The virtual machine structure to close.
+///
+void vm_close(vm_t* vm);
 
 ///
 /// @brief Resets a virtual machine structure.
