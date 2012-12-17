@@ -3,7 +3,8 @@
 /// @{
 ///
 /// @file
-/// @brief Implementation of timer hardware.
+/// @brief  Implementation of generic clock hardware.
+/// @sa     http://dcpu.com/clock/
 /// @author James Rhodes
 /// @author Jose Manuel Diez
 ///
@@ -14,18 +15,12 @@
 #include <debug.h>
 
 #include "dcpuhook.h"
-#include "hwtimer.h"
+#include "hwclock.h"
 
-///
-/// @brief Hook callback triggered each VM cycle.
-///
-/// @param vm The virtual machine where the hook was fired from.
-/// @param pos Not used.
-/// @param ud The timer that the interrupt was sent to.
-///
-void vm_hw_timer_cycle(vm_t* vm, uint16_t pos, void* ud)
+// Hook callback triggered each VM cycle.
+void vm_hw_clock_cycle(vm_t* vm, uint16_t pos, void* ud)
 {
-    struct timer_hardware* hw = (struct timer_hardware*) ud;
+    struct clock_hardware* hw = (struct clock_hardware*) ud;
     (void)pos;
 
     if (hw->message != 0)
@@ -40,15 +35,10 @@ void vm_hw_timer_cycle(vm_t* vm, uint16_t pos, void* ud)
     }
 }
 
-///
-/// @brief Interrupt callback, triggered by the HWI instruction.
-///
-/// @param vm The virtual machine where the interrupt was fired from.
-/// @param ud The timer that the interrupt was sent to
-///
-void vm_hw_timer_interrupt(vm_t* vm, void* ud)
+// Interrupt callback, triggered by the HWI instruction.
+void vm_hw_clock_interrupt(vm_t* vm, void* ud)
 {
-    struct timer_hardware* hw = (struct timer_hardware*) ud;
+    struct clock_hardware* hw = (struct clock_hardware*) ud;
 
     switch (vm->registers[REG_A])
     {
@@ -76,43 +66,40 @@ void vm_hw_timer_interrupt(vm_t* vm, void* ud)
     }
 }
 
-///
-/// @brief Add a timer hardware to the given VM.
-///
-/// @param vm The virutal machine to install the hardware on.
-///
-void vm_hw_timer_init(vm_t* vm)
+// Add a clock hardware to the given VM.
+void vm_hw_clock_init(vm_t* vm)
 {
-    struct timer_hardware* hw;
+    struct clock_hardware* hw;
 
-    hw = malloc(sizeof(struct timer_hardware));
+    hw = malloc(sizeof(struct clock_hardware));
     hw->clock_target = 0;
     hw->clock_ticks = 0;
     hw->message = 0;
     hw->vm = vm;
 
-    hw->device.id = 0x12D0B402;
-    hw->device.version = 0x0001;
-    hw->device.manufacturer = 0x00000000;
-    hw->device.handler = &vm_hw_timer_interrupt;
-    hw->device.free_handler = &vm_hw_timer_free;
+    hw->device.id = CLOCK_HARDWARE_ID;
+    hw->device.version = CLOCK_VERSION;
+    hw->device.manufacturer = CLOCK_MANUFACTURER;
+    hw->device.handler = &vm_hw_clock_interrupt;
+    hw->device.free_handler = &vm_hw_clock_free;
     hw->device.userdata = hw;
 
-    hw->hook_id = vm_hook_register(vm, &vm_hw_timer_cycle, HOOK_ON_PRE_CYCLE, hw);
+    hw->hook_id = vm_hook_register(vm, &vm_hw_clock_cycle, HOOK_ON_PRE_CYCLE, hw);
     hw->hw_id = vm_hw_register(vm, &hw->device);
 
     vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
 }
 
-///
-/// @brief Callback that frees the timer hardware.
-///
-/// @param ud The hw to free that was given as a userdata.
-///
-void vm_hw_timer_free(void* ud)
+// Callback that frees the clock hardware.
+void vm_hw_clock_free(void* ud)
 {
-    struct timer_hardware* hw = (struct timer_hardware*) ud;
+    struct clock_hardware* hw = (struct clock_hardware*) ud;
 
     vm_hook_unregister(hw->vm, hw->hook_id);
     free(hw);
 }
+
+
+///
+/// @}
+///
