@@ -17,7 +17,6 @@
 #include "dcpuhook.h"
 #include "hwclock.h"
 
-// Hook callback triggered each VM cycle.
 void vm_hw_clock_cycle(vm_t* vm, uint16_t pos, void* ud)
 {
     struct clock_hardware* hw = (struct clock_hardware*) ud;
@@ -35,7 +34,6 @@ void vm_hw_clock_cycle(vm_t* vm, uint16_t pos, void* ud)
     }
 }
 
-// Interrupt callback, triggered by the HWI instruction.
 void vm_hw_clock_interrupt(vm_t* vm, void* ud)
 {
     struct clock_hardware* hw = (struct clock_hardware*) ud;
@@ -66,7 +64,6 @@ void vm_hw_clock_interrupt(vm_t* vm, void* ud)
     }
 }
 
-// Add a clock hardware to the given VM.
 void vm_hw_clock_init(vm_t* vm)
 {
     struct clock_hardware* hw;
@@ -90,7 +87,6 @@ void vm_hw_clock_init(vm_t* vm)
     vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
 }
 
-// Callback that frees the clock hardware.
 void vm_hw_clock_free(void* ud)
 {
     struct clock_hardware* hw = (struct clock_hardware*) ud;
@@ -98,7 +94,6 @@ void vm_hw_clock_free(void* ud)
     vm_hook_unregister(hw->vm, hw->hook_id);
     free(hw);
 }
-
 
 ///
 /// @}
