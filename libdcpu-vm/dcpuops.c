@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <debug.h>
-#include "dcpubase.h"
+#include "vm.h"
 #include "dcpuops.h"
 #include "dcpuhook.h"
 #include "hw.h"
@@ -144,14 +144,14 @@ void vm_op_fire(vm_t* vm)
 {
     static int screen_id = -1;
     uint16_t count = vm_hw_count(vm), i = 0;
-    hw_t device;
+    hw_t* device;
 
     if (screen_id == -1)
     {
         for (i = 0; i < count; i++)
         {
             device = vm_hw_get_device(vm, i);
-            if (device.id == 0x7349F615)
+            if (device != NULL && device->id == 0x7349F615)
             {
                 vm->registers[REG_A] = 0;
                 vm->registers[REG_B] = 0x1000;
@@ -632,6 +632,7 @@ void vm_op_jsr(vm_t* vm, uint16_t a)
 void vm_op_hcf(vm_t* vm, uint16_t a)
 {
     uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+    (void)val_a;
     OP_NUM_CYCLES(9);
     vm->halted = true;
 }
@@ -663,6 +664,7 @@ void vm_op_ias(vm_t* vm, uint16_t a)
 void vm_op_rfi(vm_t* vm, uint16_t a)
 {
     uint16_t val_a = vm_resolve_value(vm, a, POS_A);
+    (void)val_a;
     OP_NUM_CYCLES(3);
     VM_SKIP_RESET;
     vm->registers[REG_A] = vm->ram[vm->sp++];
@@ -675,7 +677,6 @@ void vm_op_rfi(vm_t* vm, uint16_t a)
 
 void vm_op_iaq(vm_t* vm, uint16_t a)
 {
-    uint16_t i = 0x0;
     uint16_t val_a = vm_resolve_value(vm, a, POS_A);
     OP_NUM_CYCLES(2);
 
@@ -704,15 +705,13 @@ void vm_op_hwn(vm_t* vm, uint16_t a)
 
     *store_a = vm_hw_count(vm);
 
-    if (vm->debug) printf("\nhwn: %d devices", *store_a);
-
     VM_HOOK_FIRE(store_a);
     vm->skip = false;
 }
 
 void vm_op_hwq(vm_t* vm, uint16_t a)
 {
-    hw_t queried_device;
+    hw_t* queried_device;
     uint16_t* store_a = vm_internal_get_store(vm, REG_A, POS__);
     uint16_t* store_b = vm_internal_get_store(vm, REG_B, POS__);
     uint16_t* store_c = vm_internal_get_store(vm, REG_C, POS__);
@@ -726,14 +725,20 @@ void vm_op_hwq(vm_t* vm, uint16_t a)
     if (val_a < vm_hw_count(vm))
     {
         queried_device = vm_hw_get_device(vm, val_a);
+        if (queried_device == NULL)
+        {
+            vm_halt(vm, "queried hw is null (%d)", val_a);
+            vm->skip = false;
+            return;
+        }
 
-        printd(LEVEL_DEBUG, "hwq: index %d %08X\n", val_a, queried_device.id);
+        printd(LEVEL_DEBUG, "hwq: index %d %08X\n", val_a, queried_device->id);
 
-        *store_a = (queried_device.id & 0x0000FFFF) >>  0;
-        *store_b = (queried_device.id & 0xFFFF0000) >> 16;
-        *store_c = queried_device.version;
-        *store_x = (queried_device.manufacturer & 0x0000FFFF) >>  0;
-        *store_y = (queried_device.manufacturer & 0xFFFF0000) >> 16;
+        *store_a = (queried_device->id & 0x0000FFFF) >>  0;
+        *store_b = (queried_device->id & 0xFFFF0000) >> 16;
+        *store_c = queried_device->version;
+        *store_x = (queried_device->manufacturer & 0x0000FFFF) >>  0;
+        *store_y = (queried_device->manufacturer & 0xFFFF0000) >> 16;
 
         VM_HOOK_FIRE(store_a);
         VM_HOOK_FIRE(store_b);

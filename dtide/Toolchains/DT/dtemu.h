@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include <dcpu.h>
+#include <vm.h>
 #include <stdio.h>
 #include <dcpuhook.h>
 

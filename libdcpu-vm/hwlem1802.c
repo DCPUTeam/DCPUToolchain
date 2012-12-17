@@ -22,15 +22,16 @@
 #include <debug.h>
 #include <GL/glfw3.h>
 #include <stdlib.h>
+#include "glfwutils.h"
+
+#include "vm.h"
+#include "dcpuhook.h"
 #include "hw.h"
 #include "hwkeyboard.h"
 #include "hwlem1802.h"
 #include "hwlem1802mem.h"
 #include "hwlem1802util.h"
 #include "hwioascii.h"
-#include "dcpuhook.h"
-#include "dcpubase.h"
-#include "glfwutils.h"
 
 GLint next_texture_id = 13;
 
@@ -360,7 +361,7 @@ void vm_hw_lem1802_init(vm_t* vm)
     hw->cycle_hook = vm_hook_register(vm, &vm_hw_lem1802_cycle, HOOK_ON_60HZ, hw);
     hw->write_hook = vm_hook_register(vm, &vm_hw_lem1802_write, HOOK_ON_WRITE, hw);
     hw->break_hook = vm_hook_register(vm, &vm_hw_lem1802_break, HOOK_ON_BREAK, hw);
-    hw->hw_id = vm_hw_register(vm, hw->device);
+    hw->hw_id = vm_hw_register(vm, &hw->device);
 
     hw->glfw_texture = malloc(HW_LEM1802_SCREEN_TEXTURE_MEM_SIZE);
 
@@ -385,7 +386,6 @@ void vm_hw_lem1802_free(void* ud)
     vm_hook_unregister(hw->vm, hw->write_hook);
     vm_hook_unregister(hw->vm, hw->cycle_hook);
     vm_hook_unregister(hw->vm, hw->break_hook);
-    vm_hw_unregister(hw->vm, hw->hw_id);
 
     if(hw->vm) 
     {

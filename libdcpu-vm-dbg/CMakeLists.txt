@@ -34,6 +34,7 @@ include_directories(
     ${FLEX_UNISTD_INCLUDE}
 )
 target_link_libraries(libdcpu-vm-dbg
+    libdcpu-vm
     libdcpu-ci-dbgfmt
     libdcpu-pp-expr
     simclist

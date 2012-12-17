@@ -17,7 +17,7 @@
 #define __DCPU_HW_LEM1802_H
 
 #include <GL/glfw3.h>
-#include "dcpu.h"
+#include "hw.h"
 
 #define LEM1802_ID          0x7349F615
 #define LEM1802_VERSION         0x1802

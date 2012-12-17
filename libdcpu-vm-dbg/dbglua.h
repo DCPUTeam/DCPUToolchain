@@ -17,7 +17,7 @@
 
 #include <simclist.h>
 #include <bstring.h>
-#include "dcpu.h"
+#include "vm.h"
 
 struct dbg_state
 {

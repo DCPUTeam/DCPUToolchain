@@ -18,8 +18,7 @@
 #include <bstring.h>
 #include <simclist.h>
 #include <iio.h>
-#include <dcpu.h>
-#include <dcpubase.h>
+#include <vm.h>
 #include <dcpuhook.h>
 #include <debug.h>
 #include <imap.h>
@@ -31,6 +30,7 @@
 #include "dbgaux.h"
 #include "dbglua.h"
 #include "dcpudis.h"
+#include "dcpuexec.h"
 
 uint16_t flash_size = 0;
 uint16_t flash[0x10000];

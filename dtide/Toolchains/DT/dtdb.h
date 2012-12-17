@@ -8,6 +8,8 @@ extern "C" {
 #include <dbgaux.h>
 #include <ddata.h>
 #include <simclist.h>
+// For bool and stdint
+#include <dcpu.h>
 
 int     dtdb_read_symbols(const char* path);
 int32_t dtdb_get_line_address(const char* file, int line);

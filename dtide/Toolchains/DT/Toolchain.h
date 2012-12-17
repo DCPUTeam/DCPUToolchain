@@ -11,7 +11,7 @@
 #include <QGLFormat>
 
 extern "C" {
-#include <dcpu.h>
+#include <vm.h>
 }
 
 class DCPUToolchainASM: public Language
