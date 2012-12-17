@@ -1,17 +1,12 @@
-/**
-
-    File:   dcpuops.c
-
-    Project:    DCPU-16 Tools
-    Component:  LibDCPU-vm
-
-    Authors:    James Rhodes
-        Aaron Miller
-
-    Description:    Handles opcode instructions in the
-        virtual machine.
-
-**/
+///
+/// @addtogroup LibDCPU-VM
+///
+/// @file
+/// @brief  Declares macros and functions used to host the interrupt clock (generic clock).
+/// @sa     http://dcpu.com/dcpu-16/
+/// @author James Rhodes
+/// @author Aaron Miller
+///
 
 #define PRIVATE_VM_ACCESS
 
