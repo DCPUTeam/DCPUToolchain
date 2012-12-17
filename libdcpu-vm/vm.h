@@ -10,6 +10,7 @@
 /// @file
 /// @brief Main VM functions and declarations.
 /// @author James Rhodes
+/// @author Jakob Bornecrantz
 ///
 /// It includes dcpu.h and defines virtual machine definitions.
 ///
@@ -198,15 +199,104 @@ struct vm
     host_context_t* host;       ///< The hardware emulation host.
 };
 
+///
+/// @brief Allocates a new virtual machine in memory and initializes it.
+///
+/// @return The new virtual machine structure.  It must be later freed
+///         with vm_free().
+///
 vm_t* vm_create();
-void vm_init(vm_t* vm);
-void vm_reset(vm_t* vm, bool reset_memory);
-void vm_flash(vm_t* vm, uint16_t memory[0x10000]);
+
+///
+/// @brief Frees a virtual machine structure from memory.
+///
+/// @param vm The virtual machine structure previously allocated with vm_create().
+///
 void vm_free(vm_t* vm);
+
+///
+/// @brief Initializes a new virtual machine structure.
+///
+/// This function is ment to be used when you have embedded the vm_t
+/// in your own struct and you don't want to use vm_create. Note when
+/// have embedded it you must call this function to set pointers into
+/// a valid state, if you have created vm_t via vm_create and added
+/// hardware you must @b NOT call this function, since this function
+/// assumes that vm_t is in a unkown state. Use vm_reset for resetting
+/// the vm without removing the hardware.
+///
+/// @param vm The virtual machine structure to initialize.
+///
+void vm_init(vm_t* vm);
+
+///
+/// @brief Resets a virtual machine structure.
+///
+/// This function is intended to be used when reseting the hardware back
+/// to initial state on a vm_t struct created with vm_create or initialized
+/// with vm_init first. It does not remove hardware nor any installed hooks.
+/// All interrupts are removed from the interrupt queue tho.
+///
+/// @param vm The virtual machine structure to reset.
+/// @param reset_memory Whether to wipe the virtual machine's memory.
+///
+void vm_reset(vm_t* vm, bool reset_memory);
+
+///
+/// @brief Flashes the virtual machine's memory.
+///
+/// Flashes the virtual machine's memory from the array of unsigned 16-bit
+/// integers also calls vm_reset on the virtual machine.
+///
+/// @param vm The virtual machine whose memory should be flashed.
+/// @param memory The unsigned 16-bit integers to flash the memory with.
+///
+void vm_flash(vm_t* vm, uint16_t memory[0x10000]);
+
+///
+/// @brief Halts the VM upon an error condition.
+///
+/// This function is called by other VM parts when an error codition
+/// happens to signal that the VM should be halted.
+///
+/// @param vm The virtual machine who should be halted.
+/// @param message C print format string.
+///
 void vm_halt(vm_t* vm, const char* message, ...);
+
+///
+/// @brief Raise a interrupt or put it on the interrupt queue.
+///
+/// @param vm The virtual machine where the interrupt should be raised.
+/// @param msgid The value that should be put into REG_A on interrupt.
+///
 void vm_interrupt(vm_t* vm, uint16_t msgid);
+
+///
+/// @brief Consume a word from memory and increments PC.
+///
+/// @param vm The virtual machine whose memory should be read.
+///
 uint16_t vm_consume_word(vm_t* vm);
+
+///
+/// @brief Get a value as if executed by a instruction.
+///
+/// @param vm The virtual machine from which we should read from.
+/// @param val A instruction type lookup operator for instance REG_A.
+/// @param pos Magic value used for PUSH_POP.
+///
 uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos);
+
+///
+/// @brief Step the VM one cycle.
+///
+/// @param vm The virtual machine which we should step.
+///
 void vm_cycle(vm_t* vm);
 
 #endif
+
+///
+/// @}
+///
