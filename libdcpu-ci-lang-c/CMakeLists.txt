@@ -12,6 +12,10 @@ endif()
 include_directories(${libdcpu_SOURCE_DIR})
 target_link_libraries(libdcpu)
 
+add_dependencies(libdcpu-ci-lang-c
+    ${toolchain_SOURCE_DIR}/libdcpu/derr.defs.h 
+    )
+
 add_library(libdcpu-ci-lang-c ${LIBRARY_FORMAT}
     nodes/Lists.h
     nodes/NAddressOfOperator.cpp
