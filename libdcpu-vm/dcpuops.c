@@ -343,8 +343,10 @@ void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a)
 
 void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
 {
-    int16_t val_a;
+    // handle the right side of the mod operation always as unsigned!
+    uint16_t val_a;
     int16_t val_b;
+    int16_t result;
     uint16_t* store_b;
     val_a = vm_resolve_value(vm, a, POS_A);
     store_b = vm_internal_get_store(vm, b, POS_B);
@@ -354,10 +356,24 @@ void vm_op_mdi(vm_t* vm, uint16_t b, uint16_t a)
     VM_SKIP_RESET;
 
     if (val_a == 0)
-        *store_b = 0;
+        result = 0;
     else
-        *store_b = val_b % val_a;
+        result = val_b % val_a;
+    
+    // C returns negative numbers on negative operand
+    // Java returns positive numbers on negative operand
+    // example:
+    //  C:      -13 % 64 = -13
+    // Java:    -13 % 64 = 51
+    // because notch is programming in java, we here assume that MDI
+    // always returns postive numbers
+    // TODO verify once notch releases something
+    if (result < 0)
+        result += val_a;
 
+    // save result
+    *store_b = result;
+    
     VM_HOOK_FIRE(store_b);
 }
 
