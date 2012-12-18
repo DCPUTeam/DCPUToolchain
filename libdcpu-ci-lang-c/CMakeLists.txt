@@ -12,10 +12,6 @@ endif()
 include_directories(${libdcpu_SOURCE_DIR})
 target_link_libraries(libdcpu)
 
-add_dependencies(libdcpu-ci-lang-c
-    ${toolchain_SOURCE_DIR}/libdcpu/derr.defs.h 
-    )
-
 add_library(libdcpu-ci-lang-c ${LIBRARY_FORMAT}
     nodes/Lists.h
     nodes/NAddressOfOperator.cpp
@@ -119,6 +115,12 @@ add_library(libdcpu-ci-lang-c ${LIBRARY_FORMAT}
     parser.y
     lexer.l
 )
+
+
+add_dependencies(libdcpu-ci-lang-c
+    ${toolchain_SOURCE_DIR}/libdcpu/derr.defs.h 
+    )
+
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
