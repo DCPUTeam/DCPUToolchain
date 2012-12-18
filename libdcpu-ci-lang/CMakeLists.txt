@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libdcpu-ci-lang)
 
+include_directories(${libdcpu_SOURCE_DIR})
+target_link_libraries(libdcpu)
+
 add_library(libdcpu-ci-lang ${LIBRARY_FORMAT}
     AsmBlock.cpp
     AsmBlock.h
