@@ -7,6 +7,11 @@ add_flex_bison_dependency(libdcpu-ci-lang-c-lexer libdcpu-ci-lang-c-parser)
 if(NOT MSVC AND NOT APPLE)
     set_source_files_properties(${FLEX_libdcpu-ci-lang-c-lexer_OUTPUTS} ${BISON_libdcpu-ci-lang-c-parser_OUTPUTS} PROPERTIES COMPILE_FLAGS -Wno-dangling-else)
 endif()
+
+
+include_directories(${libdcpu_SOURCE_DIR})
+target_link_libraries(libdcpu)
+
 add_library(libdcpu-ci-lang-c ${LIBRARY_FORMAT}
     nodes/Lists.h
     nodes/NAddressOfOperator.cpp
