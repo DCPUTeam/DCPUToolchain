@@ -112,7 +112,6 @@ int main(int argc, char* argv[])
     else
         file_input = fopen(input_file->filename[0], "r");
     
-    ppfind_add_autopath(bautofree(bfromcstr("/home/james/0x10c/tests/data/dcpu-pp/include-01.pp")));
     ppimpl(bautofree(bfromcstr("<stdin>")), 0, bautofree(bfromcstr(argv[1])), has_input, input, output, NULL);
     
     if (strcmp(input_file->filename[0], "-") != 0)
