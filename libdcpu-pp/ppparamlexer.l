@@ -56,8 +56,15 @@ extern state_t* ppparam_current;
 
 #define YY_INPUT(buf,result,max_size) \
 { \
-    int c = ppimpl_get_input(ppparam_current); \
-    result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
+    if (ppimpl_has_input(ppparam_current))\
+    { \
+        int c = ppimpl_get_input(ppparam_current); \
+        result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
+    } \
+    else \
+    { \
+        result = YY_NULL; \
+    } \
 }
 
 %}
