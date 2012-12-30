@@ -164,22 +164,58 @@ option(RUNTIME_ONLY "Only build libdcpu, libdcpu-vm and dependencies" OFF)
 find_package(FLEX)
 find_package(BISON)
 
+# Options for removing bundled libraries
+option(BUNDLE_ARGTABLE "Bundle argtable" ON)
+option(BUNDLE_CURL "Bundle curl" ON)
+option(BUNDLE_GLFW "Bundle glfw" ON)
+option(BUNDLE_LIBPNG "Bundle libpng" ON)
+option(BUNDLE_PTHREAD "Bundle pthread" ON)
+option(BUNDLE_SIMCLIST "Bundle simclist" ON)
+option(BUNDLE_ZLIB "Bundle zlib" ON)
+
 # Add library folders.
-add_subdirectory(third-party/zlib)
-add_subdirectory(third-party/libpng)
-add_subdirectory(third-party/glfw)
-add_subdirectory(third-party/pthread)
-add_subdirectory(third-party/readline)
-add_subdirectory(third-party/argtable2)
 add_subdirectory(third-party/bstring)
-add_subdirectory(third-party/simclist)
-add_subdirectory(third-party/curl)
 add_subdirectory(third-party/lua)
 add_subdirectory(third-party/qscintilla2)
+add_subdirectory(third-party/readline)
+
+if(BUNDLE_ARGTABLE)
+    add_subdirectory(third-party/argtable2)
+endif()
+
+if(BUNDLE_CURL)
+    add_subdirectory(third-party/curl)
+endif()
+
+if(BUNDLE_GLFW)
+    add_subdirectory(third-party/glfw)
+
+    # Put the GFLW projects in the correct directories.
+    set_property(TARGET glfw PROPERTY FOLDER "third-party")
+    set_property(TARGET uninstall PROPERTY FOLDER "third-party")
+endif()
+
+if(BUNDLE_LIBPNG)
+    add_subdirectory(third-party/libpng)
+endif()
+
+if(BUNDLE_PTHREAD)
+    add_subdirectory(third-party/pthread)
+endif()
+
+if(BUNDLE_SIMCLIST)
+    add_subdirectory(third-party/simclist)
+endif()
+
+if(BUNDLE_ZLIB)
+    add_subdirectory(third-party/zlib)
+endif()
+
 # libmalp should remain disabled until such time as it builds correctly on all major OS's
 # if(EXISTS "${toolchain_SOURCE_DIR}/third-party/libmalp/CMakeLists.txt")
 #     add_subdirectory(third-party/libmalp)
 # endif()
+
 add_subdirectory(tool-errgen)
 add_subdirectory(libdcpu)
 add_subdirectory(libdcpu-pp-expr)
@@ -195,10 +231,6 @@ if(NOT ${RUNTIME_ONLY})
     add_subdirectory(libdcpu-ld-policy)
     add_subdirectory(libdcpu-ld)
 endif()
-
-# Put the GFLW projects in the correct directories.
-set_property(TARGET glfw PROPERTY FOLDER "third-party")
-set_property(TARGET uninstall PROPERTY FOLDER "third-party")
 
 ## Add executable folders.
 if(${BUILD_TOOLS} AND NOT ${RUNTIME_ONLY})
