@@ -212,7 +212,7 @@ void vm_hw_lem1802_init_glfw(struct lem1802_hardware* hw)
         height = 4 * HW_LEM1802_SCREEN_TEXTURE_HEIGHT;
         hw->context = hw->vm->host->create_context("LEM 1802", width, height, true, hw);
 
-        glfwSetWindowCloseCallback(&vm_hw_glfw_close_window_callback);
+        glfwSetWindowCloseCallback(hw->context, &vm_hw_glfw_close_window_callback);
         glfwSwapInterval(0);
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -372,8 +372,8 @@ void vm_hw_lem1802_init(vm_t* vm)
 
     // Set up the keyboard.
     vm_hw_keyboard_init(vm);
-    glfwSetKeyCallback(&vm_hw_keyboard_handle_key);
-    glfwSetCharCallback(&vm_hw_keyboard_handle_char);
+    glfwSetKeyCallback(hw->context, &vm_hw_keyboard_handle_key);
+    glfwSetCharCallback(hw->context, &vm_hw_keyboard_handle_char);
 
 
     vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);

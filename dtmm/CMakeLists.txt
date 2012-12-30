@@ -14,6 +14,7 @@ include_directories(
 target_link_libraries(dtmm
     argtable2
     bstring
+    curl
     simclist
     lua
     ${curl_LIBRARY}

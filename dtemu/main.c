@@ -63,8 +63,8 @@ void* dtemu_create_context(const char* title, int width, int height, bool resize
 
     glfwSetWindowUserPointer(*context, ud);
     glfwMakeContextCurrent(*context);
-    glfwSetWindowCloseCallback(&vm_hw_glfw_close_window_callback);
-    glfwSetWindowSizeCallback(&vm_hw_glfw_resize_window_callback);
+    glfwSetWindowCloseCallback(context, &vm_hw_glfw_close_window_callback);
+    glfwSetWindowSizeCallback(context, &vm_hw_glfw_resize_window_callback);
     glfwSwapInterval(0);
 
     glfwSetTime(0.0);

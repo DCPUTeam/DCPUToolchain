@@ -66,7 +66,7 @@ $ cd dcputoolchain
 Now generate the makefiles and and compile with
 
 ```
-[dcputoolchain]$ cmake . && make
+[dcputoolchain]$ cmake . && make -C libdcpu && make
 ```
 
 If everything went well the binaries are in ```dcputoolchain/Debug```
@@ -91,7 +91,7 @@ $ cd dcputoolchain
 Now generate the makefiles and and compile with
 
 ```
-[dcputoolchain]$ cmake . && make
+[dcputoolchain]$ cmake . && make -C libdcpu && make
 ```
 
 If everything went well the binaries are in ```dcputoolchain/Debug```
@@ -122,7 +122,7 @@ $ cd dcputoolchain
 Now we can build it.
 
 ```
-[dcputoolchain]$ cmake . && make
+[dcputoolchain]$ cmake . && make -C libdcpu && make
 ```
 
 If everything looks like it didn't crash and burn, then you should find everything you need in ```dcputoolchain/Debug```

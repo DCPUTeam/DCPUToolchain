@@ -153,7 +153,7 @@ struct lua_preproc* pp_lua_load(bstring name)
 
     // Create the new lua preprocessor structure.
     pp = malloc(sizeof(struct lua_preproc));
-    pp->state = lua_open();
+    pp->state = luaL_newstate();
     assert(pp->state != NULL);
     luaL_openlibs(pp->state);
     luaX_loadexpressionlib(pp->state);
