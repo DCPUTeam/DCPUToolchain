@@ -185,6 +185,8 @@ endif()
 
 if(BUNDLE_CURL)
     add_subdirectory(third-party/curl)
+else()
+    set(curl_LIBRARY curl)
 endif()
 
 if(BUNDLE_GLFW)
