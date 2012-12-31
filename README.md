@@ -48,39 +48,22 @@ When using Cygwin, then there are some important notes:
 
 ### Instructions for Linux
 
-#### Ubuntu 12.04
+#### Installing libraries
+First you have to install some required libraries
 
-First install a few required packages with
-
+##### Ubuntu 12.04
 ```
 $ sudo apt-get install bison flex cmake build-essential libreadline-dev libsdl1.2-dev libcurl4-openssl-dev 
 ```
 
-Next clone the repository into a new folder
-
-```
-$ git clone git://github.com/DCPUTeam/DCPUToolchain.git dcputoolchain
-$ cd dcputoolchain
-```
-
-Now generate the makefiles and and compile with
-
-```
-[dcputoolchain]$ cmake . && make
-```
-
-If everything went well the binaries are in ```dcputoolchain/Debug```
-
-#### Fedora 16
-First install a few required packages with
-
+##### Fedora 16
 **IMPORTANT NOTICE: Build Instructions outdated** libcurl dev headers need to be installed aswell
-
 ```
 $ sudo yum install bison flex cmake mesa-lib* zlib-devel libpng-devel
 $ sudo yum groupinstall "Development Tools"
 ```
 
+#### Getting the sources from Git
 Next clone the repository into a new folder
 
 ```
@@ -88,13 +71,18 @@ $ git clone git://github.com/DCPUTeam/DCPUToolchain.git dcputoolchain
 $ cd dcputoolchain
 ```
 
-Now generate the makefiles and and compile with
+#### Building
+Now generate the Makefiles and and compile with
 
 ```
 [dcputoolchain]$ cmake . && make
 ```
 
-If everything went well the binaries are in ```dcputoolchain/Debug```
+There's a possible issue about generating error definitions with the CMake
+scripts. If the make fails for you try this instead:
+```
+[dcputoolchain]$ cmake . && make -C libdcpu && make
+```
 
 ### Instructions for Mac
 
