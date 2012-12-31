@@ -16,7 +16,7 @@ target_link_libraries(dtmm
     bstring
     simclist
     lua
-    curl
+    ${curl_LIBRARY}
     libdcpu
 )
 cotire(dtmm)

@@ -179,12 +179,12 @@ add_subdirectory(third-party/lua)
 add_subdirectory(third-party/qscintilla2)
 add_subdirectory(third-party/readline)
 
-if(BUNDLE_ARGTABLE)
-    add_subdirectory(third-party/argtable2)
+if(BUNDLE_ZLIB)
+    add_subdirectory(third-party/zlib)
 endif()
 
-if(BUNDLE_CURL)
-    add_subdirectory(third-party/curl)
+if(BUNDLE_LIBPNG)
+    add_subdirectory(third-party/libpng)
 endif()
 
 if(BUNDLE_GLFW)
@@ -195,20 +195,22 @@ if(BUNDLE_GLFW)
     set_property(TARGET uninstall PROPERTY FOLDER "third-party")
 endif()
 
-if(BUNDLE_LIBPNG)
-    add_subdirectory(third-party/libpng)
-endif()
-
 if(BUNDLE_PTHREAD)
     add_subdirectory(third-party/pthread)
+endif()
+
+if(BUNDLE_ARGTABLE)
+    add_subdirectory(third-party/argtable2)
 endif()
 
 if(BUNDLE_SIMCLIST)
     add_subdirectory(third-party/simclist)
 endif()
 
-if(BUNDLE_ZLIB)
-    add_subdirectory(third-party/zlib)
+if(BUNDLE_CURL)
+    add_subdirectory(third-party/curl)
+else()
+    set(curl_LIBRARY curl)
 endif()
 
 # libmalp should remain disabled until such time as it builds correctly on all major OS's
