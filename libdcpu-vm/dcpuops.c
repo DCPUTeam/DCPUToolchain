@@ -552,8 +552,9 @@ void vm_op_ifa(vm_t* vm, uint16_t b, uint16_t a)
 void vm_op_ifl(vm_t* vm, uint16_t b, uint16_t a)
 {
     uint16_t val_b, val_a;
-    val_b = vm_resolve_value(vm, b, POS_B);
+    
     val_a = vm_resolve_value(vm, a, POS_A);
+    val_b = vm_resolve_value(vm, b, POS_B);
 
     VM_BRANCHING_SKIP;
     vm->skip = !(val_b < val_a);
