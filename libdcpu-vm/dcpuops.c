@@ -536,7 +536,7 @@ void vm_op_ifg(vm_t* vm, uint16_t b, uint16_t a)
     val_b = vm_resolve_value(vm, b, POS_B);
 
     VM_BRANCHING_SKIP;
-    vm->skip = !(val_b < val_a);
+    vm->skip = !(val_b > val_a);
 }
 
 void vm_op_ifa(vm_t* vm, uint16_t b, uint16_t a)
@@ -556,7 +556,7 @@ void vm_op_ifl(vm_t* vm, uint16_t b, uint16_t a)
     val_a = vm_resolve_value(vm, a, POS_A);
 
     VM_BRANCHING_SKIP;
-    vm->skip = !(val_b > val_a);
+    vm->skip = !(val_b < val_a);
 }
 
 void vm_op_ifu(vm_t* vm, uint16_t b, uint16_t a)
