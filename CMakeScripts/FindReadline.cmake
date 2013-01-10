@@ -1,5 +1,10 @@
 find_path(Readline_INCLUDE_DIR readline/readline.h)
 find_library(Readline_LIBRARY NAMES readline)
+find_library(NCURSES_LIBRARY NAMES ncurses)
+
+if (NCURSES_LIBRARY)
+    set (NCURSES_FOUND TRUE)
+endif()
 
 if (Readline_INCLUDE_DIR AND Readline_LIBRARY)
   set (Readline_FOUND TRUE)
@@ -24,7 +29,6 @@ if (Readline_INCLUDE_DIR AND EXISTS "${Readline_INCLUDE_DIR}/readline/readline.h
 
   set(Readline_VERSION "${Readline_MAJOR_VERSION}.${Readline_MINOR_VERSION}")
 endif ()
-
 
 if (Readline_FOUND)
   if (Readline_FIND_VERSION VERSION_GREATER Readline_VERSION)
