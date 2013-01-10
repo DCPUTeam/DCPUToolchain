@@ -161,30 +161,24 @@ void vm_hw_keyboard_interrupt(vm_t* vm, void* ud)
 
             break;
         case KB_INTERRUPT_STORE:
-            if (hw->buffer_idx_w > 0)
+            if (hw->buffer_idx_r == hw->buffer_idx_w)
             {
-                if (hw->buffer_idx_r == hw->buffer_idx_w)
-                {
-                    // Do nothing when read idx caught up with write idx
-                }
-                else
-                {
-                    vm->registers[REG_C] = hw->buffer[hw->buffer_idx_r];
-
-                    hw->buffer_idx_r++;
-                    // Should the read index wrap back to the beginning?
-                    if (hw->buffer_idx_r >= KB_BUFFER_COUNT)
-                    {
-                        hw->buffer_idx_r = 0;
-                    }
-                    
-                }
+                // Do nothing when read idx caught up with write idx
+                vm->registers[REG_C] = 0;
             }
             else
             {
-                vm->registers[REG_C] = 0;
-            }
+                vm->registers[REG_C] = hw->buffer[hw->buffer_idx_r];
 
+                hw->buffer_idx_r++;
+                // Should the read index wrap back to the beginning?
+                if (hw->buffer_idx_r >= KB_BUFFER_COUNT)
+                {
+                    hw->buffer_idx_r = 0;
+                }
+                
+            }
+                
             break;
         case KB_INTERRUPT_TEST:
             if (vm->registers[REG_B] > 0 && vm->registers[REG_B] <= KB_PRESSED_COUNT)
