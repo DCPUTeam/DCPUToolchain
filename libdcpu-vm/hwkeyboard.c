@@ -29,10 +29,24 @@ struct keyboard_hardware* g_hw;
 void vm_hw_keyboard_append_to_buffer(struct keyboard_hardware* hw, int index)
 {
     hw->buffer[hw->buffer_idx_w++] = index;
-    if (hw->buffer_idx_w == KB_BUFFER_COUNT)
+    // Should the write index wrap back to the beginning?
+    if (hw->buffer_idx_w >= KB_BUFFER_COUNT)
     {
         hw->buffer_idx_w = 0;
-        hw->buffer_idx_r = 0;
+    }
+
+    // Has the write index caught up with the read index?
+    if (hw->buffer_idx_r == hw->buffer_idx_w)
+    {
+        // The oldest character has been discarded.
+        // Advance the read index to compensate.
+        hw->buffer_idx_r++;
+
+        // Should the read index wrap back to the beginning?
+        if (hw->buffer_idx_r >= KB_BUFFER_COUNT)
+        {
+            hw->buffer_idx_r = 0;
+        }
     }
 }
 
@@ -149,17 +163,21 @@ void vm_hw_keyboard_interrupt(vm_t* vm, void* ud)
         case KB_INTERRUPT_STORE:
             if (hw->buffer_idx_w > 0)
             {
-                hw->buffer_idx_r++;
-
-                if (hw->buffer_idx_r <= KB_BUFFER_COUNT)
+                if (hw->buffer_idx_r == hw->buffer_idx_w)
                 {
-                    vm->registers[REG_C] = hw->buffer[hw->buffer_idx_r - 1];
+                    // Do nothing when read idx caught up with write idx
                 }
-
-                hw->buffer_idx_w--;
-                if (hw->buffer_idx_w == 0)
+                else
                 {
-                    hw->buffer_idx_r = 0;
+                    vm->registers[REG_C] = hw->buffer[hw->buffer_idx_r];
+
+                    hw->buffer_idx_r++;
+                    // Should the read index wrap back to the beginning?
+                    if (hw->buffer_idx_r >= KB_BUFFER_COUNT)
+                    {
+                        hw->buffer_idx_r = 0;
+                    }
+                    
                 }
             }
             else
