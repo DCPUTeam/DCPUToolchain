@@ -30,6 +30,7 @@ include_directories(
     ${png_SOURCE_DIR}
 )
 target_link_libraries(dtdb
+    ${ncurses_LIBRARY}
     ${readline_LIBRARY}
     ${pthread_LIBRARY}
     argtable2

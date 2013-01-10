@@ -45,6 +45,7 @@ if(${QT4_FOUND})
     )
     target_link_libraries(dtdb-gui
         ${QT_LIBRARIES}
+        ${ncurses_LIBRARY}
         ${readline_LIBRARY}
         ${pthread_LIBRARY}
         argtable2
