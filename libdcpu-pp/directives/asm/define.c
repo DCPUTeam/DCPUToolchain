@@ -34,7 +34,7 @@ static void macro_handle(state_t* state, match_t* match, bool* reprocess)
     match_t* new_match;
     struct replace_info* new_info;
 
-    // Parse the arguments out of the name.
+    // Parse the parameters out of the name.
     list_init(&parameters);
     temp = bfromcstr("");
     for (i = 0; i < blength(info->full); i++)
@@ -56,6 +56,7 @@ static void macro_handle(state_t* state, match_t* match, bool* reprocess)
         {
             if (c == ',' || c == ')')
             {
+                btrimws(temp);
                 list_append(&parameters, bstrcpy(temp));
                 bassigncstr(temp, "");
                 if (c == ')')

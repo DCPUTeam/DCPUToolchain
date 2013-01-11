@@ -546,8 +546,8 @@ void ppimpl_register(state_t* state, match_t* match)
         list_append(&state->handlers, match);
         return;
     }
-    scope = list_extract_at(&state->scopes, list_size(&state->scopes) - 1);
-
+    scope = list_get_at(&state->scopes, list_size(&state->scopes) - 1);
+    
     // Check to see if this is already defined.
     for (a = 0; a < list_size(&state->handlers); a++)
     {
@@ -608,8 +608,6 @@ void ppimpl_pop_scope(state_t* state)
                 i--;
             }
         }
-
-        bdestroy(name);
     }
     list_iterator_stop(&scope->new_handlers);
     list_destroy(&scope->new_handlers);
