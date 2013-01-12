@@ -68,6 +68,7 @@ void vm_hw_keyboard_handle_key(GLFWwindow w, int key, int state)
             g_hw->pressed[0x10] = state;
             index = 0x10;
             break;
+	case 335:    /* numpad enter */
         case GLFW_KEY_ENTER:
             g_hw->pressed[0x11] = state;
             index = 0x11;
