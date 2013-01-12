@@ -136,7 +136,8 @@ void vm_hw_keyboard_handle_key(GLFWwindow w, int key, int state)
     }
 
     // Char events are handled by the char handler.
-    if (state == true && (index < 0x20 || index > 0x7f))
+    // No index should be larger than 0x91: Control
+    if (state == true && (index < 0x20 || index > 0x7f) && index < 0x91)
     {
         vm_hw_keyboard_append_to_buffer(g_hw, index);
     }
