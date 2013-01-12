@@ -24,7 +24,7 @@ static void skip_to_endln(state_t* state)
 static bstring skip_to_endif(state_t* state, bool stop_at_else, bool* stopped_at_else)
 {
     char c;
-    bool fresh_line;
+    bool fresh_line = true;
     bstring temp = bfromcstr("");
     bstring temp_output = bfromcstr("");
     bstring output = bfromcstr("");
