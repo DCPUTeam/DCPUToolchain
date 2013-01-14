@@ -15,6 +15,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <debug.h>
 #include "vm.h"
@@ -184,9 +185,9 @@ void vm_hw_keyboard_interrupt(vm_t* vm, void* ud)
             break;
         case KB_INTERRUPT_TEST:
             if (vm->registers[REG_B] > 0 && vm->registers[REG_B] <= KB_PRESSED_COUNT)
-            {
                 vm->registers[REG_C] = hw->pressed[vm->registers[REG_B]];
-            }
+            else
+                vm->registers[REG_C] = 0;
 
             break;
         case KB_INTERRUPT_MSG:
@@ -203,7 +204,11 @@ void vm_hw_keyboard_init(vm_t* vm)
     hw->buffer = malloc(sizeof(uint16_t) * KB_BUFFER_COUNT);
     hw->buffer_idx_w = 0;
     hw->buffer_idx_r = 0;
+    
     hw->pressed = malloc(sizeof(bool) * KB_PRESSED_COUNT);
+    // Initialize all keys to released
+    memset(hw->pressed, GLFW_RELEASE, sizeof(bool) * KB_PRESSED_COUNT);
+    
     hw->interrupt_message = 0;
     hw->lowercase = true;
     hw->vm = vm;
