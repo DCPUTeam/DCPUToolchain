@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
     else
         file_input = fopen(input_file->filename[0], "r");
     
-    ppimpl(bautofree(bfromcstr("<stdin>")), 0, bautofree(bfromcstr(argv[1])), has_input, input, output, NULL);
+    ppimpl(bautofree(bfromcstr("<stdin>")), 0, bautofree(bfromcstr(*input_lang->sval)), has_input, input, output, NULL);
     
     if (strcmp(input_file->filename[0], "-") != 0)
         fclose(file_input);
