@@ -486,7 +486,7 @@ void process_line(struct ast_node_line* line)
         case type_instruction:
 
             // Check to see if this is DAT.
-            if (strcmp(line->instruction->instruction, "DAT") == 0)
+            if (strcmp(line->instruction->instruction, "DAT") == 0 || strcmp(line->instruction->instruction, ".DAT") == 0)
             {
                 // Handle data.
                 printd(LEVEL_VERBOSE, "EMIT DAT");

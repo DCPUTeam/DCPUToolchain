@@ -209,6 +209,7 @@ bstring yyfilename = NULL;
 [Ii][Aa]            yylval.word = strdup(yytext); return REGISTER;
 [Nn][Xx][Tt]            yylval.word = strdup(yytext); return REGISTER;
 [A-Za-z_]+[A-Za-z0-9_]*  yylval.word = strdup(yytext); return WORD;
+\.?[Dd][Aa][Tt]          yylval.word = strdup(yytext); return WORD;
 0b[0-1]+            yylval.number = strtoul(yytext, NULL, 2); return ADDRESS;
 0x[0-9A-Fa-f]+          yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
 [0-9]+              yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
