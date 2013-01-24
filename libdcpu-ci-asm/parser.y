@@ -99,7 +99,7 @@ static void strupper(char* str)
 %token <token> ADD SUBTRACT MULTIPLY DIVIDE MODULUS EQUALS NOT_EQUALS LESS_THAN LESS_EQUALS GREATER_THAN GREATER_EQUALS
 %token <token> PAREN_OPEN PAREN_CLOSE BITWISE_AND BITWISE_BOR BITWISE_XOR BITWISE_NOT BOOLEAN_OR BOOLEAN_AND BINARY_LEFT_SHIFT BINARY_RIGHT_SHIFT
 %token <token> LEX_PICK KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL SECTION OUTPUT SYMBOL SEEK JUMP CALL IMPORT_OPTIONAL
-%token <word> WORD REGISTER LOCAL_LABEL LOCAL_LABEL_PARAM
+%token <word> WORD REGISTER LOCAL_LABEL
 %token <string> STRING CHARACTER
 %token <number> ADDRESS
 
@@ -109,7 +109,7 @@ static void strupper(char* str)
 %type <address> address
 %type <registr> bracketed_register
 %type <registr> register
-%type <parameter> parameter local_label_param
+%type <parameter> parameter
 %type <parameters> parameters
 %type <instruction> instruction
 %type <label> label
@@ -444,13 +444,12 @@ local_label:
         $$ = malloc(sizeof(struct ast_node_label));
         $$->name = bstr2cstr(full_name, '\0');       
     } |
-    LOCAL_LABEL
+    LOCAL_LABEL COLON
     {
         bstring full_name = bstrcpy(curr_label);
         bstring stripped = bfromcstr($1);
 
         stripped = bmidstr(stripped, 1, stripped->slen);
-        bdelete(stripped, stripped->slen - 1, 1);
 
         bconcat(full_name, bfromcstr("_"));
         bconcat(full_name, stripped);
@@ -478,17 +477,6 @@ parameters:
             $$ = malloc(sizeof(struct ast_node_parameters));
             $$->last = $1;
         } |
-        parameters local_label_param
-        {
-            if ($2 != NULL)
-            {
-                if ($1->last != NULL)
-                    $2->prev = $1->last;
-                $1->last = $2;
-            }
-
-            $$ = $1;
-        } |
         parameters COMMA parameter
         {
             if ($3 != NULL)
@@ -498,32 +486,6 @@ parameters:
                 $1->last = $3;
             }
             $$ = $1;
-        } ;
-
-local_label_param:
-        LOCAL_LABEL_PARAM
-        {
-            bstring result = bstrcpy(curr_label);
-            bstring clean = bstrcpy(bfromcstr($1));
-
-            struct ast_node_address* address = malloc(sizeof(struct ast_node_address));
-            $$ = malloc(sizeof(struct ast_node_parameter));
-            
-            bfindreplace(clean, bfromcstr(" "), bfromcstr(""), 0);
-            clean = bmidstr(clean, 2, clean->slen);
-            bconcat(result, bfromcstr("_"));
-            bconcat(result, clean);
-
-            address->value = expr_new_label(bautofree(result));
-            address->bracketed = 0;
-            address->added = 0;
-            address->addcmpt = NULL;
-
-            $$->type = type_address;
-            $$->registr = NULL;
-            $$->address = address;
-            $$->raw = NULL;
-            $$->prev = NULL;
         } ;
 
 parameter:
@@ -677,6 +639,20 @@ expr:
             bconcat(full, bfromcstr("_"));
             bconcat(full, bfromcstr($2));
             $$ = expr_new_label(bautofree(full));
+        } |
+        LOCAL_LABEL
+        {
+            // Local label.
+
+			bstring full_name = bstrcpy(curr_label);
+            bstring stripped = bfromcstr($1);
+
+            stripped = bmidstr(stripped, 1, stripped->slen);
+
+            bconcat(full_name, bfromcstr("_"));
+            bconcat(full_name, stripped);
+
+            $$ = expr_new_label(bautofree(full_name));
         } |
         WORD
         {
