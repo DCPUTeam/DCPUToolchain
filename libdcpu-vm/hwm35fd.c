@@ -111,7 +111,7 @@ void vm_hw_m35fd_cycle(vm_t* vm, uint16_t pos, void* ud)
         return;
     }
 
-    if (hw->disk == NULL)
+    if (hw->disk == NULL && (hw->state == M35FD_STATE_READY_WP || hw->state == M35FD_STATE_READY))
     {
         vm_hw_m35fd_set_error(hw, M35FD_ERROR_EJECT);
         vm_hw_m35fd_reset_state(hw);
