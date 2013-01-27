@@ -247,7 +247,7 @@ if(${BUILD_TOOLS} AND NOT ${RUNTIME_ONLY})
     add_subdirectory(dtemu)
     add_subdirectory(dtmm)
     add_subdirectory(dtdb)
-    add_subdirectory(dtdb-gui)
+#    add_subdirectory(dtdb-gui) # disabled at jdiez's request - LDM
 endif()
 if(EXISTS "${toolchain_SOURCE_DIR}/dtgame/CMakeLists.txt")
     add_subdirectory(dtgame)
