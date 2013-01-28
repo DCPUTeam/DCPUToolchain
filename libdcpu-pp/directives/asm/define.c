@@ -151,6 +151,7 @@ static void macro_handle(state_t* state, match_t* match, bool* reprocess)
         new_match->line_start_only = false;
         new_match->identifier_only = true;
         new_match->userdata = new_info;
+        new_match->case_insensitive = false;
         ppimpl_register(state, new_match);
     }
     
@@ -249,6 +250,7 @@ static void define_handle(state_t* state, match_t* match, bool* reprocess)
     new_match->line_start_only = false;
     new_match->identifier_only = true;
     new_match->userdata = info;
+    new_match->case_insensitive = false;
     ppimpl_register(state, new_match);
     *reprocess = true;
 }
@@ -371,6 +373,7 @@ static void macro_def_handle(state_t* state, match_t* match, bool* reprocess)
     new_match->line_start_only = false;
     new_match->identifier_only = true;
     new_match->userdata = info;
+    new_match->case_insensitive = false;
     ppimpl_register(state, new_match);
     *reprocess = true;
 }

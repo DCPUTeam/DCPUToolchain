@@ -151,6 +151,7 @@ static void macro_handle(state_t* state, match_t* match, bool* reprocess)
         new_match->line_start_only = false;
         new_match->identifier_only = true;
         new_match->userdata = new_info;
+        new_match->case_insensitive = false;
         ppimpl_register(state, new_match);
     }
     
@@ -276,6 +277,7 @@ static void define_handle(state_t* state, match_t* match, bool* reprocess)
     new_match->line_start_only = false;
     new_match->identifier_only = true;
     new_match->userdata = info;
+    new_match->case_insensitive = false;
     ppimpl_register(state, new_match);
     *reprocess = true;
 }
@@ -289,6 +291,7 @@ void ppimpl_c_define_register(state_t* state)
     match->userdata = NULL;
     match->line_start_only = true;
     match->identifier_only = false;
+    match->case_insensitive = true;
     ppimpl_register(state, match);
 
     // Register macro terminator.
@@ -298,5 +301,6 @@ void ppimpl_c_define_register(state_t* state)
     match->userdata = NULL;
     match->line_start_only = false;
     match->identifier_only = false;
+    match->case_insensitive = false;
     ppimpl_register(state, match);
 }
