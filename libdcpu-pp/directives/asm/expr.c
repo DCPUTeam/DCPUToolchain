@@ -28,8 +28,7 @@ static bstring skip_to_endif(state_t* state, bool stop_at_else, bool* stopped_at
     bstring temp = bfromcstr("");
     bstring temp_output = bfromcstr("");
     bstring output = bfromcstr("");
-    int if_open = 1;
-    
+    int if_open = 1; 
     
     while (ppimpl_has_input(state))
     {
@@ -107,11 +106,14 @@ static bstring skip_to_endif(state_t* state, bool stop_at_else, bool* stopped_at
                 bconchar(output, c);
                 break;
         }
-        
     }
     
-    // no endif was found
+    // No .ENDIF was found.
     dhalt(ERR_PP_ASM_NO_ENDIF_TO_IF, ppimpl_get_location(state));
+
+    // dhalt will trigger before this, but the compiler warns about
+    // control potentially reaching the end of this function.
+    return NULL;
 }
 
 

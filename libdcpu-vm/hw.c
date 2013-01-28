@@ -90,7 +90,7 @@ void vm_hw_free_all(vm_t* vm)
 
     do {
         hw = vm->hw_list[id];
-        vm->hw_list[id++] == NULL;
+        vm->hw_list[id++] = NULL;
 
         if (hw == NULL)
             continue;

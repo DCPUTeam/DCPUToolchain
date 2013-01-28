@@ -25,6 +25,10 @@
 #include <ddata.h>
 #include <time.h>
 #include <string.h>
+#include <hwlem1802.h>
+#include <hwclock.h>
+#include <hwm35fd.h>
+#include <hwsped3.h>
 #include "breakpoint.h"
 #include "backtrace.h"
 #include "dbgaux.h"
