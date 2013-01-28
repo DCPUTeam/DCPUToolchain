@@ -26,11 +26,11 @@ private:
     std::string m_endlbl;
     std::string m_continuelbl;
 public:
-    NExpression& initEval;
+    NExpression* initEval;
     NExpression& checkEval;
-    NExpression& loopEval;
+    NExpression* loopEval;
     NBlock& expr;
-    NForStatement(NExpression& initEval, NExpression& checkEval, NExpression& loopEval, NBlock& expr) :
+    NForStatement(NExpression* initEval, NExpression& checkEval, NExpression* loopEval, NBlock& expr) :
         initEval(initEval), checkEval(checkEval), loopEval(loopEval), expr(expr), NStatement("for") { }
     virtual AsmBlock* compile(AsmGenerator& context);
     virtual AsmBlock* reference(AsmGenerator& context);

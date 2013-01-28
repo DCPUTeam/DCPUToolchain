@@ -134,7 +134,7 @@ void yyerror(const char *str);
 /* TYPES */
 %type <type> type type_base
 %type <ident> ident
-%type <expr> expr numeric string character deref fldref addressable arrayref
+%type <expr> expr numeric string character deref fldref addressable arrayref optional_expr
 %type <declvec> struct_decl_args
 %type <varvec> func_decl_args
 %type <exprvec> call_args array_init_list
@@ -584,10 +584,14 @@ stmt_while:
             $$ = new NWhileStatement(*$3, *$5);
         } ;
 
+optional_expr:
+        /* empty */ |
+        expr ;
+
 stmt_for:
-        FOR CURVED_OPEN expr SEMICOLON expr SEMICOLON expr CURVED_CLOSE block_or_stmt
+        FOR CURVED_OPEN optional_expr SEMICOLON expr SEMICOLON optional_expr CURVED_CLOSE block_or_stmt
         {
-            $$ = new NForStatement(*$3, *$5, *$7, *$9);
+            $$ = new NForStatement($3, *$5, $7, *$9);
         } ;
 
 stmt_asm:

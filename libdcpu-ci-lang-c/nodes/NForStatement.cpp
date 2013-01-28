@@ -27,9 +27,12 @@ AsmBlock* NForStatement::compile(AsmGenerator& context)
     context.pushLoopStack(this->m_endlbl, this->m_continuelbl);
 
     // Do the initalization statement.
-    AsmBlock* initEval = this->initEval.compile(context);
-    *block << *initEval;
-    delete initEval;
+    if (this->initEval != NULL)
+    {
+        AsmBlock* initEval = this->initEval->compile(context);
+        *block << *initEval;
+        delete initEval;
+    }
 
     // Output the start label.
     *block << ":" << this->m_startlbl << std::endl;
@@ -52,9 +55,12 @@ AsmBlock* NForStatement::compile(AsmGenerator& context)
     *block << ":" << this->m_continuelbl << std::endl;
 
     // Do the loop statement.
-    AsmBlock* loopEval = this->loopEval.compile(context);
-    *block << *loopEval;
-    delete loopEval;
+    if (this->loopEval != NULL)
+    {
+        AsmBlock* loopEval = this->loopEval->compile(context);
+        *block << *loopEval;
+        delete loopEval;
+    }
 
     // Jump back up to the start to do the evaluation.
     *block <<   "   SET PC, " << this->m_startlbl << std::endl;
@@ -89,10 +95,12 @@ void NForStatement::analyse(AsmGenerator& context, bool reference)
     // push stack for loop control statements
     context.pushLoopStack(this->m_endlbl, this->m_continuelbl);
 
-    initEval.analyse(context, false);
-    checkEval.analyse(context, false);
-    expr.analyse(context, false);
-    loopEval.analyse(context, false);
+    if (this->initEval != NULL)
+        this->initEval->analyse(context, false);
+    this->checkEval.analyse(context, false);
+    this->expr.analyse(context, false);
+    if (this->loopEval != NULL)
+        this->loopEval->analyse(context, false);
 
     // pop stack for loop control statements
     context.popLoopStack();
