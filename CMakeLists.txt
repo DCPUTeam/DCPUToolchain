@@ -158,6 +158,7 @@ option(BUILD_KERNELS "Build all the kernels" ON)
 option(BUILD_STDLIB "Build the C standard library" ON)
 option(BUILD_DOCS "Build the documentation if possible" ON)
 option(BUILD_TOOLS "Build the actual tools" ON)
+option(BUILD_API_DEMOS "Build the API demos" OFF)
 option(RUNTIME_ONLY "Only build libdcpu, libdcpu-vm and dependencies" OFF)
 
 # Find Bison and Flex
@@ -248,7 +249,9 @@ if(${BUILD_TOOLS} AND NOT ${RUNTIME_ONLY})
     add_subdirectory(dtmm)
     add_subdirectory(dtdb)
 #    add_subdirectory(dtdb-gui) # disabled at jdiez's request - LDM
-    add_subdirectory(json-test)
+endif()
+if(${BUILD_API_DEMOS} AND NOT ${RUNTIME_ONLY})
+    add_subdirectory(api-demos/json-test)
 endif()
 if(EXISTS "${toolchain_SOURCE_DIR}/dtgame/CMakeLists.txt")
     add_subdirectory(dtgame)
