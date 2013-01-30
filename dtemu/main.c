@@ -109,11 +109,7 @@ int main(int argc, char* argv[])
     int nerrors;
     bstring ss, st;
     host_context_t* dtemu = malloc(sizeof(host_context_t));
-    struct errinfo* errval;
-    const char* prepend = "error: ";
     const char* warnprefix = "no-";
-    int msglen;
-    char* msg;
 
     // Define arguments.
     struct arg_lit* show_help = arg_lit0("h", "help", "Show this help.");
@@ -166,17 +162,8 @@ int main(int argc, char* argv[])
     // Set up error handling.
     if (dsethalt())
     {
-        errval = derrinfo();
-
-        // FIXME: Use bstrings here.
-        msglen = strlen(derrstr[errval->errid]) + strlen(prepend) + 1;
-        msg = malloc(msglen);
-        memset(msg, '\0', msglen);
-        strcat(msg, prepend);
-        strcat(msg, derrstr[errval->errid]);
-        printd(LEVEL_ERROR, msg, errval->errdata);
-
         // Handle the error.
+        dautohandle();
         printd(LEVEL_ERROR, "emulator: error occurred.\n");
 
         arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));

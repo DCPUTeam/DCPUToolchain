@@ -37,11 +37,7 @@ int main(int argc, char* argv[])
     // Define our variables.
     int nerrors, i;
     int32_t saved = 0; // The number of words saved during compression and optimization.
-    struct errinfo* errval;
-    const char* prepend = "error: ";
     const char* warnprefix = "no-";
-    int msglen;
-    char* msg;
     int target;
     policies_t* loaded_policies = NULL;
     const char* policy_kernel = NULL;
@@ -115,17 +111,8 @@ int main(int argc, char* argv[])
     // Set up error handling.
     if (dsethalt())
     {
-        errval = derrinfo();
-
-        // FIXME: Use bstrings here.
-        msglen = strlen(derrstr[errval->errid]) + strlen(prepend) + 1;
-        msg = malloc(msglen);
-        memset(msg, '\0', msglen);
-        strcat(msg, prepend);
-        strcat(msg, derrstr[errval->errid]);
-        printd(LEVEL_ERROR, msg, errval->errdata);
-
         // Handle the error.
+        dautohandle();
         printd(LEVEL_ERROR, "linker: error occurred.\n");
 
         arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));

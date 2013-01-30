@@ -28,11 +28,7 @@ int main(int argc, char* argv[])
 {
     int nerrors, w;
     bstring temp = NULL;
-    struct errinfo* errval;
-    const char* prepend = "error: ";
     const char* warnprefix = "no-";
-    int msglen;
-    char* msg;
     bool expect_failure;
     
     // Define arguments.
@@ -79,17 +75,8 @@ int main(int argc, char* argv[])
     // Set up error handling.
     if (dsethalt())
     {
-        errval = derrinfo();
-
-        // FIXME: Use bstrings here.
-        msglen = strlen(derrstr[errval->errid]) + strlen(prepend) + 1;
-        msg = malloc(msglen);
-        memset(msg, '\0', msglen);
-        strcat(msg, prepend);
-        strcat(msg, derrstr[errval->errid]);
-        printd(LEVEL_ERROR, msg, errval->errdata);
-
         // Handle the error.
+        dautohandle();
         printd(LEVEL_ERROR, "libdcpu-pp test suite: error occurred.\n");
 
         if (temp != NULL)

@@ -43,15 +43,21 @@ extern struct warnpolicy warnpolicies[];
 // Structure for holding error information
 struct errinfo
 {
-    int errid;
-    const char* errdata;
+    int errid; ///< The error ID.
+    const char* errdata; ///< Additional error information.
+    bool has_location; ///< Whether this error contains location information.
+    unsigned int line; ///< The line number the error occurred on (in the source file).
+    const char* filename; ///< The filename of the source file that caused the error.
 };
 
 // Utility method for throwing errors.
 #define dsethalt() ((__derrset = true), setjmp(__derrjmp))
 struct errinfo* derrinfo();
 void dhalt(int errid, const char* errdata);
+void dhaltloc(int errid, const char* errdata, unsigned int line, const char* filename);
 void dwarn(int errid, const char* errdata);
+void dwarnloc(int errid, const char* errdata, unsigned int line, const char* filename);
+void dautohandle();
 #ifdef ARGTABLE2
 // Only show this function if we're including
 // argtable2 anyway.
