@@ -4,13 +4,15 @@ project(dtcc)
 add_executable(dtcc
     main.cpp
 )
+
+message("cc include dir ${libdcpu-cc_SOURCE_DIR}")
+
 include_directories(
     ${bstring_SOURCE_DIR}
     ${argtable2_SOURCE_DIR}
     ${libdcpu_SOURCE_DIR}
     ${libdcpu-pp_SOURCE_DIR}
-    ${libdcpu-ci-lang_SOURCE_DIR}
-    ${libdcpu-ci-lang-c_SOURCE_DIR}
+    ${libdcpu-cc_SOURCE_DIR}
     ${FLEX_UNISTD_INCLUDE}
 )
 target_link_libraries(dtcc
@@ -18,8 +20,7 @@ target_link_libraries(dtcc
     bstring
     libdcpu
     libdcpu-pp
-    libdcpu-ci-lang-c
-    libdcpu-ci-lang
+    libdcpu-cc
 )
 cotire(dtcc)
 

@@ -67,8 +67,8 @@ void* realloc(void* ptr, size_t size)
     // now we know that the standard library's malloc has the length
     // 2 words behind the pointer, but this is an assumption that
     // will not work across kernels!
-    for (i = 0; i < * (ptr - 2); i++)
-        mem[i] = ptr[i];
+    for (i = 0; i < * ((size_t*)(ptr - 2)); i++)
+        ((size_t*)mem)[i] = ((size_t*)ptr)[i];
     free(ptr);
     return mem;
 }
