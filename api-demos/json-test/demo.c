@@ -9,6 +9,9 @@ void json_demo(struct ast_node_root ast_root)
     // JSON output, but I'm just going to output JSON text.  Keep in mind
     // that this would be a lot more elegant using a JSON library...
     struct ast_node_line* line = ast_root.values->last;
+    struct ast_node_parameter* parameter;
+    bool pfirst;
+    int i;
     bool first = true;
     printf("[\n");
     while (line != NULL)
@@ -101,10 +104,10 @@ void json_demo(struct ast_node_root ast_root)
                     printf("\"instruction\": null,\n");
                 else
                     printf("\"instruction\": \"%s\",\n", line->instruction->instruction);
-                struct ast_node_parameter* parameter = NULL;
+                parameter = NULL;
                 if (line->instruction->parameters != NULL)
                     parameter = line->instruction->parameters->last;
-                bool pfirst = true;
+                pfirst = true;
                 printf("\"parameters\": [\n");
                 while (parameter != NULL)
                 {
@@ -120,7 +123,7 @@ void json_demo(struct ast_node_root ast_root)
                             printf("\"raw\": [\n");
                             if (blength(parameter->raw) > 0)
                                 printf("%u\n", parameter->raw->data[0]);
-                            for (int i = 1; i < blength(parameter->raw); i++)
+                            for (i = 1; i < blength(parameter->raw); i++)
                                 printf(",%u\n", parameter->raw->data[i]);
                             printf("]\n");
                             break;
