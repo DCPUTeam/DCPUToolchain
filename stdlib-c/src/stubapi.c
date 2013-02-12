@@ -4,7 +4,7 @@ int main(int argc, char** argv);
 
 void _stdlib_enter()
 {
-    int code = main(0, NULL);
+    int code = main(0, 0);
     __asm
     {
         SET A, <code>

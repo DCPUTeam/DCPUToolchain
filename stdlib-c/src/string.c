@@ -18,7 +18,7 @@ void* memcpy(void* destination, const void* source, size_t num)
 {
     size_t i;
     for (i = 0; i < num; i++)
-        destination[i] = source[i];
+        ((char*)destination)[i] = ((char*)source)[i];
     return destination;
 }
 
@@ -27,9 +27,9 @@ void* memmove(void* destination, const void* source, size_t num)
     size_t i;
     void* temp = malloc(num);
     for (i = 0; i < num; i++)
-        temp[i] = source[i];
+        ((char*)temp)[i] = ((char*)source)[i];
     for (i = 0; i < num; i++)
-        destination[i] = temp[i];
+        ((char*)destination)[i] = ((char*)temp)[i];
     free(temp);
     return destination;
 }
@@ -80,9 +80,9 @@ int memcmp(const void* first, const void* second, size_t num)
     size_t i;
     for (i = 0; i < num; i++)
     {
-        if (first[i] > second[i])
+        if (((char*)first)[i] > ((char*)second)[i])
             return 1;
-        else if (first[i] < second[i])
+        else if (((char*)first)[i] < ((char*)second)[i])
             return -1;
     }
     return 0;
@@ -169,7 +169,7 @@ void* memset(void* destination, int value, size_t num)
 {
     size_t i;
     for (i = 0; i < num; i++)
-        destination[i] = value;
+        ((int*)destination)[i] = value;
     return destination;
 }
 

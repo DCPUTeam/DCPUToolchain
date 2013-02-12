@@ -16,6 +16,7 @@ ipch/*
 # Vim and backup files #
 ########################
 *.swp
+*.kate-swp
 *~
 
 # Binary files #

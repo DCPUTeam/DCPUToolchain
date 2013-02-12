@@ -18,14 +18,14 @@
 #define va_list void*
 
 // use built-in va_start, needs access to function parameter stack
-#define va_start(list,nparam)   __builtin_va_start(list,nparam)
+#define va_start(list,nparam)     list = ((void*)&nparam) + sizeof(nparam)
 
 // cast the void* to pointer to wanted type and deref, then increase
 // va list pointer
 #define va_arg(list,type)       *((type *) list); list+=sizeof(type)
 
 // va_end doesn't do anything at all
-#define va_end(list)            
+#define va_end(list)
 
 
 #endif
