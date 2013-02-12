@@ -17,11 +17,8 @@
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
-#include <nodes/NDeclarations.h>
-#include <StackMap.h>
-#include <AsmGenerator.h>
-#include <CompilerException.h>
 #include <argtable2.h>
+#include <Compiler.h>
 
 extern "C"
 {
@@ -34,10 +31,6 @@ extern "C"
 #include <derr.h>
 #include <stdlib.h>
 }
-
-extern int yyparse();
-extern FILE* yyin, *yyout;
-extern NDeclarations* program;
 
 int main(int argc, char* argv[])
 {
@@ -78,17 +71,17 @@ int main(int argc, char* argv[])
     // Set global path variable.
     osutil_setarg0(bautofree(bfromcstr(argv[0])));
 
-    // Set up error handling.
+    // Set up error handling. (for PP)
     if (dsethalt())
     {
         // Handle the error.
         dautohandle();
         printd(LEVEL_ERROR, "compiler: error occurred.\n");
-
+        
         arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
         return 1;
     }
-
+    
     // Run the preprocessor.
     ppfind_add_path(bautofree(bfromcstr(".")));
     ppfind_add_path(bautofree(bfromcstr("include")));
@@ -106,121 +99,74 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    // Parse C.
-    yyout = stderr;
-    yyin = fopen((const char*)(pp_result_name->data), "r");
-
-    if (yyin == NULL)
+    
+    std::ifstream cc_input((const char*)(pp_result_name->data), std::istream::in);
+    if (!cc_input.is_open())
     {
         pp_cleanup(bautofree(pp_result_name));
         arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
         return 1;
     }
 
-    yyparse();
-
-    if (yyin != stdin)
-        fclose(yyin);
-
+    // create compiler
+    dcpucc::Compiler cc;
+    
+    // compile code
+    cc.compile(cc_input);
+    
+    // check for errors (in that case exit with error code)
+    if (cc.hasErrors())
+    {
+        cc.printErrors();
+        arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
+        exit(1);
+    }
+    
+    // check for warnings and print them
+    if (cc.hasWarnings())
+    {
+        cc.printErrors();
+    }
+   
+    // clean up PP
     pp_cleanup(bautofree(pp_result_name));
 
-    if (program == NULL)
-    {
-        std::cerr << "An error occurred while compiling." << std::endl;
-        arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-        return 1;
-    }
 
+    /*
+     * TODO add assembler support again
     // Assembler type.
     const char* asmtype = "toolchain";
 
     if (type_assembler->count > 0)
         asmtype = type_assembler->sval[0];
+    
+    */
 
     // Initially save to a temporary file.
     std::string temp = std::string(tempnam(".", "cc."));
 
-    // Generate assembly using the AST.
-    try
-    {
-        AsmGenerator generator(asmtype);
-        
-        // 1st pass: analyse (which generates errors)
-        program->analyse(generator, false);
-        
-        if(generator.errorList.hasErrors())
-        {
-            generator.errorList.printall();
-            dhalt(0, "There were errors while compiling");
-        }
-        
-        // TODO eventually an optimization pass here!
-        
-        // 2nd pass: compile (only in case no errors occured)
-        AsmBlock* block = program->compile(generator);
-
-        std::ofstream output(temp.c_str(), std::ios::out | std::ios::trunc);
-        if (output.bad() || output.fail())
-        {
-            printd(LEVEL_ERROR, "compiler: temporary file not writable.\n");
-            arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-            return 1;
-        }
-        output << *block << std::endl;
-        output.close();
-
-        delete block;
-    }
-    catch (CompilerException* ex)
-    {
-        std::string msg = ex->getMessage();
-        std::cerr << "An error occurred while compiling." << std::endl;
-        std::cerr << msg << std::endl;
-        arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-        return 1;
-    }
-
-    // Re-open the temporary file for reading.
-    std::ifstream input(temp.c_str(), std::ios::in);
-    if (input.bad() || input.fail())
-    {
-        printd(LEVEL_ERROR, "compiler: temporary file not readable.\n");
-        arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-        return 1;
-    }
-
     // Open the output file.
-    std::ostream* output;
     if (strcmp(output_file->filename[0], "-") != 0)
     {
         // Write to file.
-        output = new std::ofstream(output_file->filename[0], std::ios::out | std::ios::trunc);
-
-        if (output->bad() || output->fail())
+        std::ofstream output(output_file->filename[0], std::ios::out | std::ios::trunc);
+        
+        if (output.bad() || output.fail())
         {
-            printd(LEVEL_ERROR, "compiler: output file not readable.\n");
+            std::cerr << "error: cannot write to output file '" << output_file->filename[0] << "'" << std::endl;
             arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
             return 1;
         }
+        output << cc.getAssembler();
+        output.close();
     }
     else
     {
         // Set output to cout.
-        output = &std::cout;
+        std::cout << cc.getAssembler();
     }
-
-    // Copy data.
-    std::copy(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>(), std::ostreambuf_iterator<char>(*output));
-
-    // Close files and delete temporary.
-    if (strcmp(output_file->filename[0], "-") != 0)
-    {
-        ((std::ofstream*)output)->close();
-        delete output;
-    }
-    input.close();
-    unlink(temp.c_str());
-
+    
+    // free argtable
     arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
     return 0;
 }

@@ -244,6 +244,7 @@ int sprintf ( char * str, const char * format, ... )
                     *(str++) = '%';
                     break;
                 default:
+                    ;
                     // dont do anything
             }
             format++;

@@ -159,6 +159,9 @@ void vm_halt(vm_t* vm, const char* message, ...)
 void vm_interrupt(vm_t* vm, uint16_t msgid)
 {
     uint16_t save;
+    uint16_t pc;
+    uint16_t op;
+    int skip_branch;
 
     if (vm->queue_interrupts)
     {
@@ -181,7 +184,39 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
         }
 
         save = vm->pc;
-        vm->ram[--vm->sp] = vm->pc;
+        pc = vm->pc;
+        
+        /* skip all logical ops if the current skip flag is set */
+        if (vm->skip)
+        {
+            pc++;
+            while (1)
+            {
+                op = INSTRUCTION_GET_OP(vm->ram[pc]);
+                switch(op)
+                {
+                    case OP_IFB:
+                    case OP_IFC:
+                    case OP_IFE:
+                    case OP_IFN:
+                    case OP_IFG:
+                    case OP_IFA:
+                    case OP_IFL:
+                    case OP_IFU:
+                        skip_branch = 1;
+                        break;
+                    default:
+                        skip_branch = 0;
+                        break;
+                }
+                if (skip_branch)
+                    pc++;
+                else
+                    break;
+            }
+        }
+        // push current pc to stack
+        vm->ram[--vm->sp] = pc;
         vm->ram[--vm->sp] = vm->registers[REG_A];
         vm->registers[REG_A] = msgid;
         vm->pc = vm->ia;
@@ -233,6 +268,7 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
         case NXT_VAL_Z:
         case NXT_VAL_I:
         case NXT_VAL_J:
+            vm->sleep_cycles += 1;
             return vm->ram[(uint16_t)(vm->registers[val - NXT_VAL_A] + vm_consume_word(vm))];
 
         case PUSH_POP:
@@ -255,6 +291,7 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
 
         case PICK:
             t = vm->sp;
+            vm->sleep_cycles += 1; // Resolving this costs an additional cycle
             return vm->ram[(uint16_t)(t + vm_consume_word(vm))];
 
         case IA:
@@ -271,14 +308,14 @@ uint16_t vm_resolve_value(vm_t* vm, uint16_t val, uint8_t pos)
 
         case NXT:
             t = vm->ram[vm_consume_word(vm)];
-
+            vm->sleep_cycles += 1; //Resolving this costs an additional cycle
             if (vm->debug || vm->dump != NULL) fprintf(vm->dump == NULL ? stdout : vm->dump, " (0x%04X) ", t);
 
             return t;
 
         case NXT_LIT:
             t = vm_consume_word(vm);
-
+            vm->sleep_cycles += 1; //Resolving this costs an additional cycle
             if (vm->debug || vm->dump != NULL) fprintf(vm->dump == NULL ? stdout : vm->dump, " (0x%04X) ", t);
 
             return t;
