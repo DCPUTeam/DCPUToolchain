@@ -255,5 +255,7 @@ int sprintf ( char * str, const char * format, ... )
         }
     }
     
+    *str = '\0';
+    
     va_end(vl);
 }

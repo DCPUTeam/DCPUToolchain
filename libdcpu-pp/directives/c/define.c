@@ -232,32 +232,39 @@ static void define_handle(state_t* state, match_t* match, bool* reprocess)
         char c = ppimpl_get_input(state);
         bconchar(definition, c);
         bltrimws(definition);
-        if (blength(definition) > 0 && c == '\n')
+        
+        if (c == '\n')
         {
-            // Only terminate if not preceeded by a slash.
-            if (definition->data[blength(definition) - 2] != '\\')
+            if (blength(definition) > 1 && definition->data[blength(definition) - 2] == '\\')
             {
-                // End of definition.
+                // Remove the new slash.
+                bdelete(definition, blength(definition) - 2, 1);
+                ppimpl_oprintf(state, "\n");
+            }
+            else
+            {
                 btrimws(definition);
                 getting_definition = false;
                 ppimpl_printf(state, "\n");
             }
-            else
+        }
+        else if (c == '/' || c == '*')
+        {
+            if (blength(definition) > 1 && definition->data[blength(definition) - 2] == '/')
             {
-                // Remove the slash.
-                bdelete(definition, blength(definition) - 2, 1);
-                ppimpl_oprintf(state, "\n");
+                // a line or block comment
+                ppimpl_iprintf(state, "/%c", c);
+                // remove the slashes
+                bdelete(definition, blength(definition) - 2, 2);
+                btrimws(definition);
+                getting_definition = false;
             }
         }
-        else if (blength(definition) == 0 && c == '\n')
-        {
-            // By default, replace with 1 if it is not a macro.
-            if (!is_macro)
-                bassigncstr(definition, "1");
-            getting_definition = false;
-            ppimpl_printf(state, "\n");
-        }
     }
+    
+    if (blength(definition) == 0 && !is_macro)
+        bassigncstr(definition, "1");
+        
 
     // Create the new replacement handler.
     info = malloc(sizeof(struct replace_info));

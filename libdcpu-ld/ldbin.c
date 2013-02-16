@@ -460,6 +460,7 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, bool isAdjust
     struct lconv_entry* entry;
     struct ldbin* abin;
     size_t k, j;
+    unsigned int del_start, del_end;
     uint16_t* word;
 
     // Skip if the list is NULL.
@@ -471,9 +472,12 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, bool isAdjust
     // Go through all of the information entries in the list.
     if (!isAdjustment)
     {
-        for (k = 0; k < list_size(list); k++)
+        del_start = -1;
+        del_end = -1;
+        for (list_iterator_start(list); list_iterator_hasnext(list);)
         {
-            entry = (struct lconv_entry*)list_get_at(list, k);
+            //entry = (struct lconv_entry*)list_get_at(list, k);
+            entry = (struct lconv_entry*) list_iterator_next(list);
 
             if (entry->address < offset)
                 // Prior to the current address, so don't touch it.
@@ -481,24 +485,41 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, bool isAdjust
             else if (entry->address >= offset && entry->address < offset + count)
             {
                 // Remove this linker information entry.
+                if (del_start == -1)
+                    del_start = list->iter_pos-1;
+                /*
                 bdestroy(entry->label);
                 assert(list_delete_at(list, k) == 0);
                 k--;
+                */
             }
             else if (entry->address >= offset + count)
             {
                 // Adjust the address stored in the entry down
                 // by the amount of words that were removed.
                 entry->address -= count;
+                
+                if (del_end == -1)
+                    del_end = list->iter_pos-2;
             }
         }
+        
+        if (del_end == -1)
+            del_end = list->iter_pos-1;
+        
+        list_iterator_stop(list);
+        
+        if (del_end != -1 && del_start != -1 && del_end >= del_start)
+            list_delete_range(list, del_start, del_end);
     }
     else
     {
-        // adjust adjustment addresses
-        for (k = 0; k < list_size(list); k++)
+        del_start = -1;
+        del_end = -1;
+        for (list_iterator_start(list); list_iterator_hasnext(list);)
         {
-            entry = (struct lconv_entry*)list_get_at(list, k);
+            //entry = (struct lconv_entry*)list_get_at(list, k);
+            entry = (struct lconv_entry*) list_iterator_next(list);
 
             if (entry->address < offset)
                 // Prior to the current address, so don't touch it.
@@ -506,9 +527,8 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, bool isAdjust
             else if (entry->address >= offset && entry->address < offset + count)
             {
                 // Remove this linker information entry.
-                bdestroy(entry->label);
-                assert(list_delete_at(list, k) == 0);
-                k--;
+                if (del_start == -1)
+                    del_start = list->iter_pos-1;
             }
             else if (entry->address >= offset + count)
             {
@@ -516,9 +536,19 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, bool isAdjust
                 // by the amount of words that were removed.
                 // FIXME: This causes silent corruption (see issue #191).
                 //entry->address -= count;
+                if (del_end == -1)
+                    del_end = list->iter_pos-2;
             }
         }
 
+        if (del_end == -1)
+            del_end = list->iter_pos-1;
+        
+        list_iterator_stop(list);
+        
+        if (del_end != -1 && del_start != -1 && del_end >= del_start)
+            list_delete_range(list, del_start, del_end);
+        
         // Loop through all of the bins.
         for (k = 0; k < list_size(all); k++)
         {
@@ -526,7 +556,7 @@ void bin_info_remove(list_t* all, struct ldbin* bin, list_t* list, bool isAdjust
             if (abin->adjustment == NULL) continue;
 
             // Loop through all of the adjustments and modify them
-            // if they are targetting the from bin.
+            // if they are targeting the from bin.
             for (j = 0; j < list_size(abin->adjustment); j++)
             {
                 entry = (struct lconv_entry*)list_get_at(abin->adjustment, j);
