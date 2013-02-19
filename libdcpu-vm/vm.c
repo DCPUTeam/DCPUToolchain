@@ -161,6 +161,8 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
     uint16_t save;
     uint16_t pc;
     uint16_t op;
+    uint16_t a,b;
+    uint16_t instruction;
     int skip_branch;
 
     if (vm->queue_interrupts)
@@ -189,10 +191,15 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
         /* skip all logical ops if the current skip flag is set */
         if (vm->skip)
         {
-            pc++;
             while (1)
             {
-                op = INSTRUCTION_GET_OP(vm->ram[pc]);
+                instruction = vm_consume_word(vm);
+                op = INSTRUCTION_GET_OP(instruction);
+                a = INSTRUCTION_GET_A(instruction);
+                b = INSTRUCTION_GET_B(instruction);
+                vm_resolve_value(vm, a, POS_A);
+                vm_resolve_value(vm, b, POS_B);
+                vm->sleep_cycles++;
                 switch(op)
                 {
                     case OP_IFB:
@@ -209,11 +216,10 @@ void vm_interrupt(vm_t* vm, uint16_t msgid)
                         skip_branch = 0;
                         break;
                 }
-                if (skip_branch)
-                    pc++;
-                else
+                if (!skip_branch)
                     break;
             }
+            vm->skip = false;
         }
         // push current pc to stack
         vm->ram[--vm->sp] = pc;

@@ -52,11 +52,14 @@ struct keyboard_hardware
     bool control_right;
     bool shift_left;
     bool shift_right;
-
+    uint16_t cycle_id;
+    bool pending_interrupt;
 
     uint16_t interrupt_message;
     bool lowercase;
 };
+
+void vm_hw_keyboard_cycle(vm_t* vm, uint16_t pos, void* ud);
 
 void vm_hw_keyboard_handle_char(GLFWwindow w, int key);
 void vm_hw_keyboard_handle_key(GLFWwindow w, int key, int state);

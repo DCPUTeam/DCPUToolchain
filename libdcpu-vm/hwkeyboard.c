@@ -27,6 +27,20 @@
 // We can't set a window pointer, so a global variable will have to do here. Ugly...
 struct keyboard_hardware* g_hw;
 
+void vm_hw_keyboard_cycle(vm_t* vm, uint16_t pos, void* ud)
+{
+    struct keyboard_hardware* hw = (struct keyboard_hardware*) ud;
+    
+    if (hw->pending_interrupt)
+    {
+        if (hw->interrupt_message)
+        {
+            vm_interrupt(hw->vm, hw->interrupt_message);
+        }
+        hw->pending_interrupt = false;
+    }
+}
+
 void vm_hw_keyboard_append_to_buffer(struct keyboard_hardware* hw, int index)
 {
     // Sanity checking
@@ -159,7 +173,7 @@ void vm_hw_keyboard_handle_key(GLFWwindow w, int key, int state)
 
     if (g_hw->interrupt_message)
     {
-        vm_interrupt(g_hw->vm, g_hw->interrupt_message);
+        g_hw->pending_interrupt = true;
     }
 }
 
@@ -231,6 +245,7 @@ void vm_hw_keyboard_init(vm_t* vm)
     hw->interrupt_message = 0;
     hw->lowercase = true;
     hw->vm = vm;
+    hw->cycle_id = vm_hook_register(vm, &vm_hw_keyboard_cycle, HOOK_ON_POST_CYCLE, hw);
 
     hw->device.id = 0x30cf7406;
     hw->device.version = 0x0001;

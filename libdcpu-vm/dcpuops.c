@@ -56,7 +56,7 @@ uint16_t* vm_internal_get_store(vm_t* vm, uint16_t loc, uint8_t pos)
     // we're skipping.
     if (vm->skip)
     {
-        if ((loc >= NXT_VAL_A && loc <= NXT_VAL_J) || loc == NXT)
+        if ((loc >= NXT_VAL_A && loc <= NXT_VAL_J) || loc == NXT || loc == PICK)
             vm_consume_word(vm);
 
         return &vm->dummy;
@@ -226,7 +226,6 @@ void vm_op_set(vm_t* vm, uint16_t b, uint16_t a)
     VM_SKIP_RESET;
     *store_b = val_a;
     VM_HOOK_FIRE(store_b);
-    vm->skip = false;
 }
 
 void vm_op_add(vm_t* vm, uint16_t b, uint16_t a)
