@@ -21,16 +21,25 @@ void vm_hw_clock_cycle(vm_t* vm, uint16_t pos, void* ud)
 {
     struct clock_hardware* hw = (struct clock_hardware*) ud;
     (void)pos;
-
-    if (hw->message != 0)
+    
+    // if clock is enabled:
+    if (hw->cylces_per_tick != 0)
     {
-        if (hw->clock_ticks >= hw->clock_target)
+        // count cycles
+        hw->clock_cycles++;
+        
+        // if we have reached enough cycles, do a tick
+        if (hw->clock_cycles >= hw->cylces_per_tick)
         {
-            vm_interrupt(vm, hw->message);
-            hw->clock_ticks = 0;
-        }
-        else
             hw->clock_ticks++;
+            hw->clock_cycles = 0;
+            
+            // if there is a non-zero interrupt message, issue an interrupt
+            if (hw->message != 0)
+            {
+                vm_interrupt(vm, hw->message);
+            }
+        }
     }
 }
 
@@ -41,20 +50,15 @@ void vm_hw_clock_interrupt(vm_t* vm, void* ud)
     switch (vm->registers[REG_A])
     {
         case TIMER_SET_ENABLED:
-            if (vm->registers[REG_B] == 0x0)
-                break;
-            else
-            {
-                if (vm->registers[REG_B] > 60) break;
-                hw->clock_target = (DCPU_TICKS_KHZ * 1000 * vm->registers[REG_B]) / 60;
-                vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
-            }
-
+            // set cycles per tick, if B==0, then this will also be zero
+            hw->cylces_per_tick = (DCPU_TICKS_KHZ * 1000 * vm->registers[REG_B]) / 60;
+            hw->clock_ticks = 0;
+            hw->clock_cycles = 0;
+            vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
             break;
 
         case TIMER_GET_ELAPSED:
             vm->registers[REG_C] = hw->clock_ticks;
-            hw->clock_ticks = 0;
             break;
 
         case TIMER_SET_INTERRUPT:
@@ -69,8 +73,9 @@ void vm_hw_clock_init(vm_t* vm)
     struct clock_hardware* hw;
 
     hw = malloc(sizeof(struct clock_hardware));
-    hw->clock_target = 0;
+    hw->cylces_per_tick = 0;
     hw->clock_ticks = 0;
+    hw->clock_cycles = 0;
     hw->message = 0;
     hw->vm = vm;
 
