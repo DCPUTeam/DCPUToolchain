@@ -22,7 +22,7 @@ struct clock_hardware
     uint16_t hook_id;
     uint16_t hw_id;
 
-    uint32_t cylces_per_tick;
+    uint32_t cycles_per_tick;
     uint16_t clock_ticks;
     uint32_t clock_cycles;
 

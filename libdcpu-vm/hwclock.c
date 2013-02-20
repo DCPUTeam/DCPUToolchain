@@ -23,13 +23,13 @@ void vm_hw_clock_cycle(vm_t* vm, uint16_t pos, void* ud)
     (void)pos;
     
     // if clock is enabled:
-    if (hw->cylces_per_tick != 0)
+    if (hw->cycles_per_tick != 0)
     {
         // count cycles
         hw->clock_cycles++;
         
         // if we have reached enough cycles, do a tick
-        if (hw->clock_cycles >= hw->cylces_per_tick)
+        if (hw->clock_cycles >= hw->cycles_per_tick)
         {
             hw->clock_ticks++;
             hw->clock_cycles = 0;
@@ -51,7 +51,7 @@ void vm_hw_clock_interrupt(vm_t* vm, void* ud)
     {
         case TIMER_SET_ENABLED:
             // set cycles per tick, if B==0, then this will also be zero
-            hw->cylces_per_tick = (DCPU_TICKS_KHZ * 1000 * vm->registers[REG_B]) / 60;
+            hw->cycles_per_tick = (DCPU_TICKS_KHZ * 1000 * vm->registers[REG_B]) / 60;
             hw->clock_ticks = 0;
             hw->clock_cycles = 0;
             vm_hook_fire(hw->vm, hw->hw_id, HOOK_ON_HARDWARE_CHANGE, hw);
@@ -73,7 +73,7 @@ void vm_hw_clock_init(vm_t* vm)
     struct clock_hardware* hw;
 
     hw = malloc(sizeof(struct clock_hardware));
-    hw->cylces_per_tick = 0;
+    hw->cycles_per_tick = 0;
     hw->clock_ticks = 0;
     hw->clock_cycles = 0;
     hw->message = 0;
