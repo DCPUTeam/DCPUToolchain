@@ -88,6 +88,7 @@ void vm_hw_lem1802_cycle(vm_t* vm, uint16_t pos, void* ud)
     {
         hw->blink_tick = 0;
         hw->blink_status = 1 - hw->blink_status;
+        hw->screen_was_updated = 1;
     }
 
     // update the texture from the screen and font memory
