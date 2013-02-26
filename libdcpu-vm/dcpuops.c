@@ -304,7 +304,7 @@ void vm_op_div(vm_t* vm, uint16_t b, uint16_t a)
     if (val_a != 0)
     {
         *store_b = val_b / val_a;
-        vm->ex = ((val_b << 16) / val_a) & 0xffff;
+        vm->ex = (((uint32_t)val_b << 16) / val_a) & 0xffff;
     }
     else
     {
@@ -330,7 +330,7 @@ void vm_op_dvi(vm_t* vm, uint16_t b, uint16_t a)
     if (val_a != 0)
     {
         *store_b = val_b / val_a;
-        vm->ex = ((val_b << 16) / val_a) & 0xffff;
+        vm->ex = (((uint64_t)val_b << 16) / val_a) & 0xffff;
     }
     else
     {
