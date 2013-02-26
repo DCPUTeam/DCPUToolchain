@@ -1,6 +1,6 @@
 /**
  *
- *	File:		stdint.h
+ *  File:		stdint.h
  *
  *	Project:	DCPU-16 Toolchain
  *	Component:	C Standard Library
@@ -14,12 +14,11 @@
 #ifndef __STDLIB_STDINT_H
 #define __STDLIB_STDINT_H
 
-// TODO: Make these typedefs instead.
-#define uint8_t unsigned char
-#define uint16_t unsigned short
-#define uint32_t unsigned long
-#define int8_t signed char
-#define int16_t signed short
-#define int32_t signed long
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned long uint32_t;
+typedef signed char int8_t;
+typedef signed short int16_t;
+typedef signed long int32_t;
 
 #endif

@@ -104,7 +104,7 @@ int strcmp(const char* first, const char* second)
 
 int strncmp(const char* first, const char* second, size_t num)
 {
-    size_t i;
+    size_t i = 0;
     while (first[i] != 0 && second[i] != 0 && i++ < num)
     {
         if (first[i] > second[i])
@@ -177,5 +177,5 @@ size_t strlen(const char* str)
 {
     size_t i = 0;
     while (str[i++] != 0) ;
-    return i;
+    return i - 1;
 }
