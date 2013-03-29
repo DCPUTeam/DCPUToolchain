@@ -32,12 +32,12 @@
     vm->ex = AR_NOFLOW;
 
 #define VM_CHECK_ARITHMETIC_FLOW_EX(op, val_a, val_b, val_ex) \
-    if ((int32_t)val_a op (int32_t)val_b + (int32_t)val_ex < (int32_t)0) \
-    vm->ex = AR_UNDERFLOW; \
-    else if ((int32_t)val_a op (int32_t)val_b + (int32_t)val_ex > (int32_t)AR_MAX) \
-    vm->ex = AR_OVERFLOW; \
+    if ((int32_t)val_a op (int32_t)val_b + (int16_t)val_ex < 0) \
+		vm->ex = AR_UNDERFLOW; \
+    else if ((int32_t)val_a op (int32_t)val_b + (int16_t)val_ex > AR_MAX) \
+		vm->ex = AR_OVERFLOW; \
     else \
-    vm->ex = AR_NOFLOW;
+		vm->ex = AR_NOFLOW;
 
 #define VM_SKIP_RESET if(vm->skip) {vm->skip = false; return;}
 #define VM_BRANCHING_SKIP if(vm->skip) { return; }
