@@ -1,9 +1,8 @@
 # DCPU-16 Toolchain
 
-The build server and it's waterfall status can be accessed from http://bb.dcputoolcha.in:8080/waterfall.
+This was a set of tools to assemble, link and compile code for the DCPU-16 virtual CPU. Since the game that originally used this CPU was cancelled way back in 2013, this project was sunset not long after that. This repository is provided for historical and education purposes.
 
-## Binaries
-You can download binaries for Windows from the main http://dcputoolcha.in/ website.
+![#f03c15](https://placehold.it/15/f03c15/000000?text=+) **_THIS PROJECT IS NO LONGER MAINTAINED._** ![#f03c15](https://placehold.it/15/f03c15/000000?text=+)
 
 ## Source
 
